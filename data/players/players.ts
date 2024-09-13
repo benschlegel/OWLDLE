@@ -36,7 +36,7 @@ export const s1Players: Player[] = [
 	{ name: 'Profit', country: 'KR', role: 'Damage', team: 'LondonSpitfire' },
 	{ name: 'Hooreg', country: 'KR', role: 'Damage', team: 'LondonSpitfire' },
 	{ name: 'Fury', country: 'KR', role: 'Tank', team: 'LondonSpitfire', isFlex: true },
-	{ name: 'WooHyal', country: 'KR', role: 'Tank', team: 'LondonSpitfire', isFlex: true },
+	{ name: 'WooHyaL', country: 'KR', role: 'Tank', team: 'LondonSpitfire', isFlex: true },
 	{ name: 'Gesture', country: 'KR', role: 'Tank', team: 'LondonSpitfire' },
 	{ name: 'TiZi', country: 'KR', role: 'Tank', team: 'LondonSpitfire' },
 	{ name: 'HaGoPeun', country: 'KR', role: 'Support', team: 'LondonSpitfire' },
