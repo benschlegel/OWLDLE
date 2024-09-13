@@ -1,0 +1,25 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"files": {
+		"ignore": ["**/*.js", "node_modules/"],
+		"include": ["*.tsx", "*.ts", "next.config.mjs"]
+	},
+	"organizeImports": { "enabled": true },
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"correctness": {},
+			"style": { "noUnusedTemplateLiteral": "off" }
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"jsxQuoteStyle": "double",
+			"trailingCommas": "es5",
+			"bracketSameLine": true,
+			"lineWidth": 160,
+			"quoteStyle": "single"
+		}
+	}
+}
