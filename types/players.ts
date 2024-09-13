@@ -38,6 +38,10 @@ export const playerSchema = z.object({
 	 */
 	isEastern: z.boolean().optional(),
 	/**
+	 * Wether player is marked as flex by liquipedia
+	 */
+	isFlex: z.boolean().optional(),
+	/**
 	 * Player id
 	 */
 	id: z.number().optional(),
