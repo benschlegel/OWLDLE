@@ -1,7 +1,7 @@
-import type { PlayerFull } from '@/types/players';
+import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';
 
-export function validateGuess(guess: PlayerFull, correct: PlayerFull): GuessResponse {
+export function validateGuess(guess: Player, correct: Player): GuessResponse {
 	// TODO: make clean
 	const response: GuessResponse = { isRegionCorrect: false, isCountryCorrect: false, isNameCorrect: false, isRoleCorrect: false, isTeamCorrect: false };
 

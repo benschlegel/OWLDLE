@@ -6,8 +6,6 @@ import { z } from 'zod';
  */
 export type Player = z.infer<typeof playerSchema>;
 
-export type PlayerFull = Player & { isEastern: boolean; id: number };
-
 const ROLES = ['Damage', 'Tank', 'Support'] as const;
 
 // Keep types in array to check what region player is from
