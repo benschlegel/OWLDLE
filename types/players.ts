@@ -34,7 +34,7 @@ export const playerSchema = z.object({
 	/**
 	 * What team the player is from
 	 */
-	team: z.enum(EASTERN).or(z.enum(WESTERN)),
+	team: z.union([z.enum(EASTERN), z.enum(WESTERN)]),
 	/**
 	 * Wether player is eastern (player is western if false)
 	 */
