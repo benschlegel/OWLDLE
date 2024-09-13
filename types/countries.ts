@@ -148,6 +148,7 @@ export const countries = [
 	'PE', // Peru
 	'PH', // Philippines
 	'PL', // Poland
+	'PR', // Puerto Rico
 	'PT', // Portugal
 	'QA', // Qatar
 	'RO', // Romania
