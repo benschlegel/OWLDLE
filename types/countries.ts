@@ -1,5 +1,3 @@
-// https://vectorflags.s3.amazonaws.com/flags/kr-square-01.png
-
 export type CountryCode = (typeof countries)[number];
 
 export const countries = [

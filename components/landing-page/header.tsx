@@ -1,9 +1,17 @@
+'use client';
+
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { PLAYERS } from '@/data/players/formattedPlayers';
 import { InfoIcon } from 'lucide-react';
+import { useEffect } from 'react';
 
 export default function Header() {
+	useEffect(() => {
+		console.log('Players: ', PLAYERS);
+	}, []);
+
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
