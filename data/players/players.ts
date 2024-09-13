@@ -1,3 +1,6 @@
 import type { Player } from '@/types/players';
 
-export const s1Players: Player[] = [{ country: 'US', team: 'BostonUprising', role: 'Damage', name: 'Seagull', isEastern: true, id: 9 }];
+export const s1Players: Player[] = [
+	{ name: 'Mistakes', country: 'RU', role: 'Damage', team: 'BostonUprising' },
+	{ name: 'Striker', country: 'KR', role: 'Damage', team: 'BostonUprising' },
+] as const;
