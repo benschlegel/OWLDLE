@@ -6,7 +6,7 @@ type TeamLogoData = {
 };
 
 export const TEAM_COLORS_S1: TeamLogoData[] = [
-	{ teamName: 'BostonUprising', backgroundColor: '#ffffff' },
+	{ teamName: 'BostonUprising', backgroundColor: '#25487e' },
 	{ teamName: 'DallasFuel', backgroundColor: '#152841' },
 	{ teamName: 'FloridaMayhem', backgroundColor: '#fdda00' },
 	{ teamName: 'HoustonOutlaws', backgroundColor: '#000000' },
