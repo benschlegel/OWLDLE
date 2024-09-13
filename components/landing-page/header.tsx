@@ -8,7 +8,7 @@ export default function Header() {
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
 				<Button variant="ghost" size="icon" className="p-0">
-					<InfoIcon className="h-[1.3rem] w-[1.3rem]" />
+					<InfoIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 				</Button>
 				<div className="mb-3">
 					<h1 className="text-4xl font-bold text-center">
