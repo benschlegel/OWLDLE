@@ -1,8 +1,6 @@
-import type { PlayerFull } from '@/types/players';
+import { playerSchema } from '@/types/players';
 
 export const dynamic = 'force-static';
-
-// TODO: zod validation
 
 /**
  * Verifies a guess
@@ -10,7 +8,18 @@ export const dynamic = 'force-static';
  * @returns what fields are correct and what fields are incorrect
  */
 export async function POST(req: Request) {
-	const player = (await req.json()) as PlayerFull;
+	// Try to parse request
+	const parsedBody = await req.json();
+	const playerRes = playerSchema.safeParse(parsedBody);
+
+	// Error handling
+	if (!playerRes.success) {
+		const errMessage = playerRes.error.errors.map((err) => `${err.path}: ${err.message},`);
+		return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
+	}
+
+	// Raw data
+	const player = playerRes.data;
 
 	return Response.json({ hello: 'world', player });
 }
