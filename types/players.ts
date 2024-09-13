@@ -1,36 +1,49 @@
-import type { CountryCode } from '@/types/countries';
+import { countries, type CountryCode } from '@/types/countries';
+import { z } from 'zod';
 
 /**
  * Type for player from database
  */
-export type Player = {
+export type Player = z.infer<typeof playerSchema>;
+
+export type PlayerFull = Player & { isEastern: boolean; id: number };
+
+const ROLES = ['Damage', 'Tank', 'Support'] as const;
+
+// Keep types in array to check what region player is from
+const EASTERN = ['BostonUprising', 'FloridaMayhem', 'HoustonOutlaws', 'LondonSpitfire', 'NewYorkExcelsior', 'PhiladelphiaFusion'] as const;
+const WESTERN = ['DallasFuel', 'LosAngelesGladiators', 'LosAngelesValiant', 'SanFranciscoShock', 'SeoulDynasty', 'ShanghaiDragons'] as const;
+
+type EasternTeam = (typeof EASTERN)[number];
+type WesternTeam = (typeof WESTERN)[number];
+type OWLTeam = EasternTeam | WesternTeam;
+
+export const playerSchema = z.object({
 	/**
 	 * Player name
 	 */
-	name: string;
+	name: z.string(),
 	/**
 	 * Role of player
 	 */
-	role: Role;
+	role: z.enum(ROLES),
 	/**
 	 * What country player is from
 	 */
-	country: CountryCode;
+	country: z.enum(countries),
 	/**
 	 * What team the player is from
 	 */
-	team: OWLTeam;
-};
-
-type Role = 'Damage' | 'Tank' | 'Support';
-
-// Keep types in array to check what region player is from
-const eastern = ['BostonUprising', 'FloridaMayhem', 'HoustonOutlaws', 'LondonSpitfire', 'NewYorkExcelsior', 'PhiladelphiaFusion'] as const;
-const western = ['DallasFuel', 'LosAngelesGladiators', 'LosAngelesValiant', 'SanFranciscoShock', 'SeoulDynasty', 'ShanghaiDragons'] as const;
-
-type EasternTeam = (typeof eastern)[number];
-type WesternTeam = (typeof western)[number];
-type OWLTeam = EasternTeam | WesternTeam;
+	team: z.enum(EASTERN).or(z.enum(WESTERN)),
+	/**
+	 * Wether player is eastern (player is western if false)
+	 */
+	isEastern: z.boolean().optional(),
+	/**
+	 * Player id
+	 */
+	id: z.number().optional(),
+});
 
 /**
  * Checks if a team is Eastern/Western (or Atlantic/Pacific)
@@ -38,5 +51,5 @@ type OWLTeam = EasternTeam | WesternTeam;
  * @returns true, if team is Eastern/Atlantic and false, if the team is Western/Pacific
  */
 export function isEastern(team: OWLTeam): boolean {
-	return eastern.includes(team as unknown as EasternTeam);
+	return EASTERN.includes(team as unknown as EasternTeam);
 }
