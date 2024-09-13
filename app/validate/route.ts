@@ -1,9 +1,9 @@
 import { validateGuess } from '@/lib/server';
-import { type PlayerFull, playerSchema } from '@/types/players';
+import { type Player, playerSchema } from '@/types/players';
 
 export const dynamic = 'force-static';
 
-const CURR_PLAYER: PlayerFull = { country: 'US', team: 'DallasFuel', role: 'Damage', name: 'Seagull', isEastern: true, id: 9 };
+const CURR_PLAYER: Player = { country: 'US', team: 'DallasFuel', role: 'Damage', name: 'Seagull', isEastern: true, id: 9 };
 
 /**
  * Verifies a guess
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 	}
 
 	// Raw data
-	const player = playerRes.data as PlayerFull;
+	const player = playerRes.data as Player;
 	const resResponse = validateGuess(player, CURR_PLAYER);
 
 	return Response.json(resResponse);
