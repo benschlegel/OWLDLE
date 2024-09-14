@@ -194,7 +194,7 @@ export const countries = [
 	'UG', // Uganda
 	'UA', // Ukraine
 	'AE', // United Arab Emirates
-	'GB', // United Kingdom
+	'UK', // United Kingdom
 	'US', // United States
 	'UY', // Uruguay
 	'UZ', // Uzbekistan

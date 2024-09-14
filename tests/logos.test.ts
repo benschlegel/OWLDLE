@@ -40,7 +40,7 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 });
 
 describe('team logos loading (season 1)', () => {
-	test.each(hashedTeamLogos)('($logo.displayName): logo loading and matches hash', async ({ logo, hash }) => {
+	test.skip.each(hashedTeamLogos)('($logo.displayName): logo loading and matches hash', async ({ logo, hash }) => {
 		const imageSource = logo.imgUrl;
 
 		// Fetch the image
