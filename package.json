@@ -33,6 +33,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@vitest/ui": "^2.1.1",
     "bun": "^1.1.27",
     "eslint": "^8",
     "eslint-config-next": "14.2.11",
