@@ -54,17 +54,17 @@ describe('game result', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_4);
 		expect(formattedResult).toEndWith(FORMAT_CONFIG_WON_4.siteUrlShorthand);
 	});
-	test('won after 4 guesses', () => {
+	test('won after 4/8 guesses', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_4);
 		const expectedString = getExpectedString(FORMAT_CONFIG_WON_4, '🟩🟥🟥🟥\n🟩🟩🟥🟥\n🟩🟩🟩🟥\n🟩🟩🟩🟩✅');
 		expect(formattedResult).toBe(expectedString);
 	});
-	test('won after 8 guesses', () => {
+	test('won after 8/8 guesses', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_8);
-		const expectedString = getExpectedString(FORMAT_CONFIG_WON_8, '🟩🟥🟥🟥\n🟩🟩🟥🟥\n🟩🟩🟩🟥\n🟩🟩🟩🟩✅');
+		const expectedString = getExpectedString(FORMAT_CONFIG_WON_8, '🟩🟥🟥🟥\n🟩🟥🟥🟥\n🟩🟩🟩🟥\n🟥🟥🟩🟩\n🟥🟥🟥🟩\n🟩🟥🟩🟩\n🟩🟩🟥🟥\n🟩🟩🟩🟩✅');
 		expect(formattedResult).toBe(expectedString);
 	});
-	test('lost after 8 guesses', () => {
+	test('lost after 8/8 guesses', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_LOST_8);
 		const expectedString = getExpectedString(FORMAT_CONFIG_LOST_8, '🟩🟥🟥🟥\n🟩🟥🟥🟥\n🟩🟩🟩🟥\n🟩🟥🟩🟩\n🟥🟥🟩🟩\n🟩🟥🟩🟩\n🟩🟥🟥🟩\n🟩🟥🟩🟩❌');
 		expect(formattedResult).toBe(expectedString);
