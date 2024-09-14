@@ -42,26 +42,7 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 });
 
 describe('team logos loading (season 1)', () => {
-	test.skip.each(hashedTeamLogos)('($logo.displayName): logo loading and matches hash', async ({ logo, hash }) => {
-		const imageSource = logo.imgUrl;
-
-		// Fetch the image
-		const response = await fetch(imageSource);
-
-		// Ensure the request was successful
-		expect(response.ok).toBe(true);
-
-		// Get the image data as ArrayBuffer
-		const imageData = await response.arrayBuffer();
-
-		// Hash the image data
-		const imageHash = hashImage(imageData);
-
-		// Compare the fetched image's hash with the expected hash
-		expect(imageHash).toBe(hash);
-		//
-	});
-	test.skip.each(hashedTeamLogos)('($logo.displayName): logo exists and can be read', async ({ logo, hash }) => {
+	test.concurrent.each(hashedTeamLogos)('$logo.displayName: logo exists and can be read', async ({ logo, hash }) => {
 		// Convert the public folder URL path into a local file system path
 		const absoluteImagePath = join(__dirname, '../public', logo.imgUrl);
 
@@ -71,7 +52,12 @@ describe('team logos loading (season 1)', () => {
 		// Check that the image was successfully read
 		expect(imageBuffer).toBeInstanceOf(Buffer);
 		// Ensures it's not an empty file
-		expect(imageBuffer.length).toBeGreaterThan(0);
-		//
+		expect(imageBuffer.length).toBeGreaterThan(10);
+
+		// TODO: consider comparing hash data
+		// Hash the image data
+		// const imageHash = hashImage(imageData);
+		// Compare the fetched image's hash with the expected hash
+		// expect(imageHash).toBe(hash);
 	});
 });
