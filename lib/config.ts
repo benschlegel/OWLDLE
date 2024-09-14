@@ -14,6 +14,10 @@ const configSchema = z.object({
 	 * Name of the game (used in header of game result), e.g. OWLS1LE
 	 */
 	gameName: z.string(),
+	/**
+	 * What image extensions all images in /public/teams/s1 use (e.g. "png" or "avif")
+	 */
+	teamLogoImgExtension: z.string(),
 });
 
 export const GAME_CONFIG = configSchema.parse(config);
