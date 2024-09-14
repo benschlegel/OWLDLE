@@ -1,6 +1,7 @@
 import type { Player } from '@/types/players';
 
 export const s1Players: Player[] = [
+	// Eastern teams
 	{ name: 'Mistakes', country: 'RU', role: 'Damage', team: 'BostonUprising' },
 	{ name: 'Striker', country: 'KR', role: 'Damage', team: 'BostonUprising' },
 	{ name: 'Kalios', country: 'KR', role: 'Tank', team: 'BostonUprising', isFlex: true },
@@ -64,6 +65,8 @@ export const s1Players: Player[] = [
 	{ name: 'Dayfly', country: 'KR', role: 'Support', team: 'PhiladelphiaFusion' },
 	{ name: 'neptuNo', country: 'ES', role: 'Support', team: 'PhiladelphiaFusion' },
 	{ name: 'Joemeister', country: 'CA', role: 'Support', team: 'PhiladelphiaFusion' },
+
+	// Western teams
 	{ name: 'Seagull', country: 'US', role: 'Damage', team: 'DallasFuel' },
 	{ name: 'Taimou', country: 'FI', role: 'Damage', team: 'DallasFuel' },
 	{ name: 'EFFECT', country: 'KR', role: 'Damage', team: 'DallasFuel' },
