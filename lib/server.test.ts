@@ -19,4 +19,44 @@ describe('validate guesses', () => {
 			expect(result).toEqual({ isCountryCorrect: true, isNameCorrect: true, isRegionCorrect: true, isRoleCorrect: true, isTeamCorrect: true });
 		});
 	});
+	describe('partial correct (1 right)', () => {
+		test('role correct', () => {
+			const player: Player = { name: 'Shaz', country: 'FI', role: 'Support', team: 'LosAngelesGladiators', isEastern: false };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: false, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: true, isTeamCorrect: false });
+		});
+		test('country correct', () => {
+			const player: Player = { name: 'Fleta', country: 'KR', role: 'Damage', team: 'SeoulDynasty', isEastern: false };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: false, isTeamCorrect: false });
+		});
+		test('region correct', () => {
+			const player: Player = { name: 'iRemiix', country: 'PR', role: 'Tank', team: 'LosAngelesGladiators', isEastern: true };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: false, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false });
+		});
+		test('team correct', () => {
+			const player: Player = { name: 'dhaK', country: 'ES', role: 'Support', team: 'SanFranciscoShock' };
+			const result = validateGuess(player, CORRECT_PLAYER_2);
+			expect(result).toEqual({ isCountryCorrect: false, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: false, isTeamCorrect: true });
+		});
+	});
+	describe('partial correct (2 right)', () => {
+		// Skipping country + team (as team also automatically means region)
+		test('country + role correct', () => {
+			const player: Player = { name: 'Izayaki', country: 'KR', role: 'Support', team: 'LosAngelesValiant', isEastern: false };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: true, isTeamCorrect: false });
+		});
+		test('country + region correct', () => {
+			const player: Player = { name: 'Gamsu', country: 'KR', role: 'Tank', team: 'BostonUprising', isEastern: true };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false });
+		});
+		test('role + region correct', () => {
+			const player: Player = { name: 'Bani', country: 'CA', role: 'Support', team: 'HoustonOutlaws', isEastern: true };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: false, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: true, isTeamCorrect: false });
+		});
+	});
 });
