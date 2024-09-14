@@ -9,7 +9,7 @@ import { PLAYERS } from '@/data/players/formattedPlayers';
 import { formatResult } from '@/lib/client';
 import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';
-import { InfoIcon } from 'lucide-react';
+import { CircleHelpIcon, InfoIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 const guesses: RowData[] = [
@@ -31,7 +31,7 @@ export default function Header() {
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
 				<Button variant="ghost" size="icon" className="p-0">
-					<InfoIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 				</Button>
 				<div className="mb-3">
 					<h1 className="text-4xl font-bold text-center">
