@@ -3,6 +3,7 @@
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import GameContainer from '@/components/wordle/GameContainer';
 import TeamLogo from '@/components/wordle/TeamLogo';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import { formatResult } from '@/lib/client';
@@ -32,8 +33,8 @@ export default function Header() {
 				</div>
 				<ModeToggle />
 			</div>
-			<Separator className="mb-4 mt-1" />
-			<TeamLogo teamName={PLAYERS[93].team} />
+			<Separator className="mb-6 mt-1" />
+			<GameContainer />
 		</>
 	);
 }
