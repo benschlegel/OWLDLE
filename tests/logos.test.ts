@@ -43,8 +43,8 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 const cases = [hashedTeamLogos];
 
 describe('team logos loading (season 1)', () => {
-	test.each(cases)('%logo.teamName logo loading and matches hash', async (logoData) => {
-		const imageSource = logoData.logo.imgUrl;
+	test.each(cases)('($logo.displayName): logo loading and matches hash', async ({ logo, hash }) => {
+		const imageSource = logo.imgUrl;
 
 		// Fetch the image
 		const response = await fetch(imageSource);
@@ -59,7 +59,7 @@ describe('team logos loading (season 1)', () => {
 		const imageHash = hashImage(imageData);
 
 		// Compare the fetched image's hash with the expected hash
-		expect(imageHash).toBe(logoData.hash);
+		expect(imageHash).toBe(hash);
 		//
 	});
 });
