@@ -11,12 +11,11 @@ export type TeamLogoData = {
 // Next.js local image docs: https://nextjs.org/docs/pages/building-your-application/optimizing/images
 // Vercel image optimization pricing: https://vercel.com/docs/image-optimization/limits-and-pricing
 
-export const TEAM_LOGOS_S1: TeamLogoData[] = [
+const teamLogosS1: Partial<TeamLogoData>[] = [
 	{
 		teamName: 'BostonUprising',
 		displayName: 'Boston Uprising',
 		backgroundColor: '#25487e',
-		imgUrl: 'https://liquipedia.net/commons/images/thumb/0/05/Boston_Uprising_darkmode.png/285px-Boston_Uprising_darkmode.png',
 	},
 	{
 		teamName: 'DallasFuel',
@@ -85,3 +84,5 @@ export const TEAM_LOGOS_S1: TeamLogoData[] = [
 		imgUrl: 'https://liquipedia.net/commons/images/thumb/b/b7/Shanghai_Dragons_lightmode.png/285px-Shanghai_Dragons_lightmode.png',
 	},
 ];
+
+export const TEAM_LOGOS_S1: TeamLogoData[] = teamLogosS1.map((team) => ({ ...team, imgUrl: `/teams/s1/${team.teamName}.png` }) as TeamLogoData);

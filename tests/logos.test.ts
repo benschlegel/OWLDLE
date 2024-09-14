@@ -1,6 +1,8 @@
 import { TEAM_LOGOS_S1, type TeamLogoData } from '@/data/teams/logos';
 import { test, expect, describe } from 'vitest';
 import crypto from 'node:crypto';
+import { join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 // Function to create a hash of the image data
 const hashImage = (data: ArrayBuffer): string => {
@@ -57,6 +59,19 @@ describe('team logos loading (season 1)', () => {
 
 		// Compare the fetched image's hash with the expected hash
 		expect(imageHash).toBe(hash);
+		//
+	});
+	test.skip.each(hashedTeamLogos)('($logo.displayName): logo exists and can be read', async ({ logo, hash }) => {
+		// Convert the public folder URL path into a local file system path
+		const absoluteImagePath = join(__dirname, '../public', logo.imgUrl);
+
+		// Read the image file from the public folder
+		const imageBuffer = readFileSync(absoluteImagePath);
+
+		// Check that the image was successfully read
+		expect(imageBuffer).toBeInstanceOf(Buffer);
+		// Ensures it's not an empty file
+		expect(imageBuffer.length).toBeGreaterThan(0);
 		//
 	});
 });
