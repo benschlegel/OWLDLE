@@ -1,14 +1,10 @@
 import { test, expect, describe } from 'vitest';
-import crypto from 'node:crypto';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 
-// Function to create a hash of the image data
-const hashImage = (data: ArrayBuffer): string => {
-	return crypto.createHash('md5').update(Buffer.from(data)).digest('hex');
-};
-
+// Get the country and flag url from each player
 const playerCountries = PLAYERS.map((player) => ({ country: player.country, imgUrl: player.countryImg }));
 
+// Test if all flags for countries that players are from are working
 describe('country flag logos loading', () => {
 	test.concurrent.each(playerCountries)('$country: flag url loading', async ({ country, imgUrl }) => {
 		// Fetch the image
