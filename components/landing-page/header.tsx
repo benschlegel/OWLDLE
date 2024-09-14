@@ -4,12 +4,17 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { PLAYERS } from '@/data/players/formattedPlayers';
+import { formatResult } from '@/lib/client';
+import type { GuessResponse } from '@/types/server';
 import { InfoIcon } from 'lucide-react';
 import { useEffect } from 'react';
 
 export default function Header() {
 	useEffect(() => {
 		console.log('Players: ', PLAYERS);
+		const guesses: GuessResponse[] = [{ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: false, isTeamCorrect: false }];
+		const formattedResult = formatResult({ guesses: guesses, gameIteration: 1, maxGuesses: 8 });
+		console.log('Result: ', formattedResult);
 	}, []);
 
 	return (
