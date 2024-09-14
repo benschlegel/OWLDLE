@@ -13,7 +13,7 @@ export default function Header() {
 	useEffect(() => {
 		console.log('Players: ', PLAYERS);
 		const guesses: GuessResponse[] = [{ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: false, isTeamCorrect: false }];
-		const formattedResult = formatResult({ guesses: guesses, gameIteration: 1, maxGuesses: 8 });
+		const formattedResult = formatResult({ guesses: guesses, gameIteration: 1 });
 		console.log('Result: ', formattedResult);
 	}, []);
 
