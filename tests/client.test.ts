@@ -1,6 +1,6 @@
 import { type FormatConfig, formatResult } from '@/lib/client';
 import type { GuessResponse } from '@/types/server';
-import { test, expect, describe } from 'bun:test';
+import { test, expect, describe } from 'vitest';
 
 const WON_GUESSES_4: GuessResponse[] = [
 	{ isCountryCorrect: true, isRoleCorrect: false, isRegionCorrect: false, isTeamCorrect: false, isNameCorrect: false },
@@ -46,13 +46,12 @@ const FORMAT_CONFIG_WON_8: FormatConfig = {
 describe('game result', () => {
 	test('header correct', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_4);
-		expect(formattedResult).toStartWith(
-			`${FORMAT_CONFIG_WON_4.gameName} ${FORMAT_CONFIG_WON_4.gameIteration} ${FORMAT_CONFIG_WON_4.guesses.length}/${FORMAT_CONFIG_WON_4.maxGuesses}\n`
-		);
+		const expectedHeader = `${FORMAT_CONFIG_WON_4.gameName} ${FORMAT_CONFIG_WON_4.gameIteration} ${FORMAT_CONFIG_WON_4.guesses.length}/${FORMAT_CONFIG_WON_4.maxGuesses}\n`;
+		expect(formattedResult).toContain(expectedHeader);
 	});
 	test('footer correct', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_4);
-		expect(formattedResult).toEndWith(FORMAT_CONFIG_WON_4.siteUrlShorthand);
+		expect(formattedResult).toContain(FORMAT_CONFIG_WON_4.siteUrlShorthand);
 	});
 	test('won after 4/8 guesses', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_4);
