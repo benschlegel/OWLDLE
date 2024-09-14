@@ -15,35 +15,32 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 		case 'BostonUprising':
 			return { logo: teamData, hash: '5b874e8a9e4ce66ab9bcab597b82485b' } as HashedLogo;
 		case 'DallasFuel':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: 'f12203f3b27bb190657cdfe5c3344a2e' } as HashedLogo;
 		case 'FloridaMayhem':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: 'a016a9974e6df38ac09d800aa5438e38' } as HashedLogo;
 		case 'HoustonOutlaws':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: '124a5e03e803874f96c2d421862c51a7' } as HashedLogo;
 		case 'LondonSpitfire':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: '032d2f106965b1f88f890c042442e5f8' } as HashedLogo;
 		case 'LosAngelesGladiators':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: 'ad84bbc797cb06243f20e79a8afdff9b' } as HashedLogo;
 		case 'LosAngelesValiant':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: 'cfbea1a4d74d81726112f0fb6eca20f5' } as HashedLogo;
 		case 'NewYorkExcelsior':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: 'd868c45ef3656030337279c7c48d51d8' } as HashedLogo;
 		case 'PhiladelphiaFusion':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: 'e2dd58d419ad41bfb7a96252b7f17a5f' } as HashedLogo;
 		case 'SanFranciscoShock':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: '8b3e63a1ec6da47256be209559a4e029' } as HashedLogo;
 		case 'SeoulDynasty':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: '049dbe116ff21e6082916692a6a0528c' } as HashedLogo;
 		case 'ShanghaiDragons':
-			return { logo: teamData, hash: '' } as HashedLogo;
+			return { logo: teamData, hash: '5ff27894dbc5eb7682db0703795a8dee' } as HashedLogo;
 	}
 });
 
-// Run test for all teams of season 1
-const cases = [hashedTeamLogos];
-
 describe('team logos loading (season 1)', () => {
-	test.each(cases)('($logo.displayName): logo loading and matches hash', async ({ logo, hash }) => {
+	test.each(hashedTeamLogos)('($logo.displayName): logo loading and matches hash', async ({ logo, hash }) => {
 		const imageSource = logo.imgUrl;
 
 		// Fetch the image
