@@ -1,11 +1,24 @@
 import { Card, CardContent } from '@/components/ui/card';
+import GuessRow from '@/components/wordle/GuessRow';
+import type { Player } from '@/types/players';
+import type { GuessResponse } from '@/types/server';
 
-export default function GameContainer() {
+type Props = {
+	guesses: RowData[];
+};
+
+export type RowData = {
+	player: Player;
+	guessResult: GuessResponse;
+};
+
+export default function GameContainer({ guesses }: Props) {
 	return (
-		<Card>
-			<CardContent className="flex gap-2 px-4 py-2">
-				<div className="h-8 w-8 bg-accent" />
-				<div className="grid items-center gap-3">abc</div>
+		<Card className="transition-colors">
+			<CardContent className="flex gap-2 p-4 transition-colors">
+				{guesses.map((guess, index) => {
+					return <GuessRow data={guess} key={`${index}-${guess.player.name}`} />;
+				})}
 			</CardContent>
 		</Card>
 	);

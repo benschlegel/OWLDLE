@@ -3,13 +3,21 @@
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import GameContainer from '@/components/wordle/GameContainer';
+import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
 import TeamLogo from '@/components/wordle/TeamLogo';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import { formatResult } from '@/lib/client';
+import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';
 import { InfoIcon } from 'lucide-react';
 import { useEffect } from 'react';
+
+const guesses: RowData[] = [
+	{
+		player: { name: 'JJoNak', country: 'KR', role: 'Support', team: 'NewYorkExcelsior', isEastern: true },
+		guessResult: { isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false },
+	},
+];
 
 export default function Header() {
 	useEffect(() => {
@@ -34,7 +42,7 @@ export default function Header() {
 				<ModeToggle />
 			</div>
 			<Separator className="mb-6 mt-1" />
-			<GameContainer />
+			<GameContainer guesses={guesses} />
 		</>
 	);
 }
