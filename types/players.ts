@@ -53,5 +53,6 @@ export const playerSchema = z.object({
  * @returns true, if team is Eastern/Atlantic and false, if the team is Western/Pacific
  */
 export function isEastern(team: OWLTeam): boolean {
-	return EASTERN.includes(team as unknown as EasternTeam);
+	// Type casting to fix readonly behavior from array definition
+	return (EASTERN as ReadonlyArray<string>).includes(team);
 }
