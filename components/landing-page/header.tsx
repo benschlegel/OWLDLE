@@ -3,6 +3,7 @@
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import TeamLogo from '@/components/wordle/TeamLogo';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import { formatResult } from '@/lib/client';
 import type { GuessResponse } from '@/types/server';
@@ -13,8 +14,8 @@ export default function Header() {
 	useEffect(() => {
 		console.log('Players: ', PLAYERS);
 		const guesses: GuessResponse[] = [{ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: false, isTeamCorrect: false }];
-		const formattedResult = formatResult({ guesses: guesses, gameIteration: 1 });
-		console.log('Result: ', formattedResult);
+		// const formattedResult = formatResult({ guesses: guesses, gameIteration: 1, });
+		// console.log('Result: ', formattedResult);
 	}, []);
 
 	return (
@@ -32,6 +33,7 @@ export default function Header() {
 				<ModeToggle />
 			</div>
 			<Separator className="mb-4 mt-1" />
+			<TeamLogo teamName={PLAYERS[93].team} />
 		</>
 	);
 }
