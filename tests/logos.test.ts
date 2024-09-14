@@ -43,7 +43,7 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 const cases = [hashedTeamLogos];
 
 describe('team logos loading (season 1)', () => {
-	test.each(cases)('%p.logo.teamName logo loading and matches hash', async (logoData) => {
+	test.each(cases)('%logo.teamName logo loading and matches hash', async (logoData) => {
 		const imageSource = logoData.logo.imgUrl;
 
 		// Fetch the image
