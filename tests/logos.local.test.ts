@@ -41,7 +41,7 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 	}
 });
 
-describe('team logos loading (season 1)', () => {
+describe('all team logos loading (season 1)', () => {
 	test.concurrent.each(hashedTeamLogos)('$logo.displayName: logo exists and can be read', async ({ logo, hash }) => {
 		// Convert the public folder URL path into a local file system path
 		const absoluteImagePath = join(__dirname, '../public', logo.imgUrl);
