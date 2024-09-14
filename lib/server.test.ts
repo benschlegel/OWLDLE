@@ -59,4 +59,21 @@ describe('validate guesses', () => {
 			expect(result).toEqual({ isCountryCorrect: false, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: true, isTeamCorrect: false });
 		});
 	});
+	describe('partial correct (3 right)', () => {
+		test('country + role + region correct', () => {
+			const player: Player = { name: 'Neko', country: 'KR', role: 'Support', team: 'BostonUprising', isEastern: true };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: true, isTeamCorrect: false });
+		});
+		test('team + region + role correct', () => {
+			const player: Player = { name: 'nomy', country: 'MX', role: 'Tank', team: 'SanFranciscoShock', isEastern: false };
+			const result = validateGuess(player, CORRECT_PLAYER_2);
+			expect(result).toEqual({ isCountryCorrect: false, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: true, isTeamCorrect: true });
+		});
+		test('team + region + country correct', () => {
+			const player: Player = { name: 'Saebyeolbe', country: 'KR', role: 'Damage', team: 'NewYorkExcelsior', isEastern: true };
+			const result = validateGuess(player, CORRECT_PLAYER_1);
+			expect(result).toEqual({ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: true });
+		});
+	});
 });
