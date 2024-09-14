@@ -1,11 +1,22 @@
-import { GAME_CONFIG } from '@/lib/config';
 import type { GuessResponse } from '@/types/server';
 
-type FormatConfig = {
+export type FormatConfig = {
 	/**
 	 * What guesses a player made
 	 */
 	guesses: GuessResponse[];
+	/**
+	 * Maximum allowed guesses before game is over
+	 */
+	maxGuesses: number;
+	/**
+	 * Shorthand for footer (should be passed from game config value)
+	 */
+	siteUrlShorthand: string;
+	/**
+	 * Game name for footer (should be passed from game config value)
+	 */
+	gameName: string;
 	/**
 	 *  The number of the current iteration of the game (e.g. 3 on the third day)
 	 */
@@ -17,22 +28,25 @@ type FormatConfig = {
  * @param config The config to ge for formatting (more info can be found in FormatConfig type)
  * @returns a string formatted using emojis (🟥 🟩) + stats
  */
-export function formatResult({ guesses, gameIteration }: FormatConfig): string {
+export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrlShorthand }: FormatConfig): string {
 	// TODO: add X to header if game was not completed successfully
 	// Add header
-	let result = `${GAME_CONFIG.gameName} ${gameIteration} ${guesses}/${GAME_CONFIG.maxGuesses}`;
+	let result = `${gameName} ${gameIteration} ${guesses.length}/${maxGuesses}\n`;
 
 	// Format every guess to emoji row
-	for (const guess of guesses) {
-		result += `${getEmojRow(guess)}\n`;
-	}
+	guesses.forEach((guess, index) => {
+		result += getEmojRow(guess);
+		if (index !== guesses.length - 1) {
+			result += '\n';
+		}
+	});
 
 	// Add ❌ to last row if game was not completed successfully
-	const hasFailed = guesses[GAME_CONFIG.maxGuesses - 1].isNameCorrect;
-	if (hasFailed) result += '❌';
+	const hasFailed = !guesses[guesses.length - 1].isNameCorrect;
+	if (hasFailed === true) result += '❌';
 
 	// Add footer (with site url)
-	result += `\n${GAME_CONFIG.siteUrlShorthand}`;
+	result += `\n${siteUrlShorthand}`;
 	return result;
 }
 
