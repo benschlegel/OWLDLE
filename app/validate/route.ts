@@ -3,6 +3,7 @@ import { type Player, playerSchema } from '@/types/players';
 
 export const dynamic = 'force-static';
 
+// TODO: reset current round if server curr player resets
 const CURR_PLAYER: Player = { country: 'US', team: 'DallasFuel', role: 'Damage', name: 'Seagull', isEastern: true, id: 9 };
 
 /**

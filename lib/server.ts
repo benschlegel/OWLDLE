@@ -23,7 +23,7 @@ export function validateGuess(guess: Player, correct: Player): GuessResponse {
 	if (guess.team === correct.team) {
 		response.isTeamCorrect = true;
 	}
-	if (guess.isEastern === correct.isEastern) {
+	if (guess.isEastern !== undefined && guess.isEastern === correct.isEastern) {
 		response.isRegionCorrect = true;
 	}
 
