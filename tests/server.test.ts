@@ -1,6 +1,6 @@
 import { validateGuess } from '@/lib/server';
 import type { Player } from '@/types/players';
-import { test, expect, describe } from 'bun:test';
+import { test, expect, describe } from 'vitest';
 
 // JJoNak (KR Support, NYXL, East)
 const CORRECT_PLAYER_1: Player = { name: 'JJoNak', country: 'KR', role: 'Support', team: 'NewYorkExcelsior', isEastern: true };
