@@ -2,11 +2,12 @@
 import GameContainer, { type RowData } from '@/components/game-container/GameContainer';
 import PlayerSearch from '@/components/game-container/search';
 import { GuessContext } from '@/context/GuessContext';
+import { PLAYERS } from '@/data/players/formattedPlayers';
 import { useContext, useEffect } from 'react';
 
 const DEFAULT_GUESSES: RowData[] = [
 	{
-		player: { name: 'JJoNak', country: 'KR', role: 'Support', team: 'NewYorkExcelsior', isEastern: true },
+		player: PLAYERS[32],
 		guessResult: { isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false },
 	},
 ];

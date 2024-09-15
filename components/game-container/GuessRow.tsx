@@ -1,3 +1,4 @@
+import CountryCell from '@/components/game-container/CountryCell';
 import GameCell from '@/components/game-container/GameCell';
 import type { RowData } from '@/components/game-container/GameContainer';
 import RoleCell from '@/components/game-container/RoleCell';
@@ -13,8 +14,9 @@ export default function GuessRow({ data }: Props) {
 			{/* Player name */}
 			<GameCell isLarge cellSize={cellSize} isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player name" />
 			{/* Country */}
-			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isCountryCorrect} tooltipDescription="Country" />
-			{/* Role */}
+			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isCountryCorrect} tooltipDescription="Country">
+				<CountryCell imgSrc={data?.player.countryImg} />
+			</GameCell>
 			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isRoleCorrect} tooltipDescription="Role">
 				<RoleCell role={data?.player.role} />
 			</GameCell>
