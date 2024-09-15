@@ -1,6 +1,6 @@
 'use client';
-import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
-import PlayerSearch from '@/components/wordle/search';
+import GameContainer, { type RowData } from '@/components/game-container/GameContainer';
+import PlayerSearch from '@/components/game-container/search';
 import { GuessContext } from '@/context/GuessContext';
 import { useContext, useEffect } from 'react';
 

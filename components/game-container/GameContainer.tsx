@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import GuessRow from '@/components/wordle/GuessRow';
+import GuessRow from '@/components/game-container/GuessRow';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';

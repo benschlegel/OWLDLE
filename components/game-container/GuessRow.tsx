@@ -1,7 +1,7 @@
-import GameCell from '@/components/wordle/GameCell';
-import type { RowData } from '@/components/wordle/GameContainer';
-import RoleCell from '@/components/wordle/RoleCell';
-import TeamLogo from '@/components/wordle/TeamLogo';
+import GameCell from '@/components/game-container/GameCell';
+import type { RowData } from '@/components/game-container/GameContainer';
+import RoleCell from '@/components/game-container/RoleCell';
+import TeamLogo from '@/components/game-container/TeamLogo';
 type Props = {
 	data?: RowData;
 };
