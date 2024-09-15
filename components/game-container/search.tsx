@@ -35,7 +35,7 @@ export default function PlayerSearch({ className }: Props) {
 					<CommandGroup heading="Players">
 						{PLAYERS.map((player) => {
 							return (
-								<CommandItem key={`${player.team}-${player.team}`} onSelect={(e) => console.log(`Selected ${e}`)}>
+								<CommandItem key={`${player.name}-${player.team}`} onSelect={(e) => console.log(`Selected ${e}`)}>
 									<UserIcon className="mr-2 h-4 w-4" />
 									<span>{player.name}</span>
 								</CommandItem>
