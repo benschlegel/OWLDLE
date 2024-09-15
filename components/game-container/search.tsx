@@ -17,7 +17,7 @@ export default function PlayerSearch({ className }: Props) {
 	const [search, setSearch] = useState('');
 
 	return (
-		<div className={cn('relative mx-4', className)}>
+		<div className={cn('relative', className)}>
 			<Input type="search" placeholder="Search for player..." className="pr-10" value={search} onChange={(e) => setSearch(e.target.value)} />
 			<Button
 				type="submit"
