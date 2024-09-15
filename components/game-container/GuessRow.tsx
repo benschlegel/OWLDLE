@@ -9,6 +9,10 @@ type Props = {
 
 const cellSize = '3.75rem';
 export default function GuessRow({ data }: Props) {
+	let regionAbbreviation: string | undefined = undefined;
+
+	if (data?.player.isEastern === true) regionAbbreviation = 'E';
+	if (data?.player.isEastern === false) regionAbbreviation = 'W';
 	return (
 		<div className={`flex flex-row gap-2 w-full h-[3.7rem] transition-colors`}>
 			{/* Player name */}
@@ -25,7 +29,11 @@ export default function GuessRow({ data }: Props) {
 				<RoleCell role={data?.player.role} />
 			</GameCell>
 			{/* Region */}
-			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" />
+			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region">
+				<div className="h-full w-full flex justify-center px-4 items-center">
+					<p className="text-white opacity-90 font-extrabold tracking-tight text-3xl lg:text-4xl">{regionAbbreviation}</p>
+				</div>
+			</GameCell>
 			{/* Team */}
 			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team">
 				<TeamLogo teamName={data?.player.team} />
