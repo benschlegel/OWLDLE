@@ -1,12 +1,13 @@
 'use client';
+import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import type { Player } from '@/types/players';
 import { createContext, type Dispatch, type SetStateAction, useState, type PropsWithChildren } from 'react';
 
-type GuessContextType = [Player[], Dispatch<SetStateAction<Player[]>>];
+type GuessContextType = [FormattedPlayer[], Dispatch<SetStateAction<FormattedPlayer[]>>];
 
 export const GuessContext = createContext<GuessContextType>([[], () => {}] as unknown as GuessContextType);
 
 export default function GuessContextProvider({ children }: PropsWithChildren) {
-	const playerState = useState<Player[]>([]);
+	const playerState = useState<FormattedPlayer[]>([]);
 	return <GuessContext.Provider value={playerState}>{children}</GuessContext.Provider>;
 }
