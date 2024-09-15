@@ -19,7 +19,7 @@ export default function GameContainer({ guesses }: Props) {
 
 	return (
 		<Card className="transition-colors">
-			<CardContent className="flex flex-col md:gap-2 gap-1 p-4 transition-colors">
+			<CardContent className="flex flex-col sm:gap-2 gap-1 p-4 transition-colors">
 				{filledGuesses.map((guess, index) => {
 					return (
 						<GuessRow
