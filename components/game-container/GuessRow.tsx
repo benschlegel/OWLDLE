@@ -14,7 +14,7 @@ export default function GuessRow({ data }: Props) {
 	if (data?.player.isEastern === true) regionAbbreviation = 'E';
 	if (data?.player.isEastern === false) regionAbbreviation = 'W';
 	return (
-		<div className={`flex flex-row md:gap-2 gap-[0.35rem] w-full md:h-[3.7rem] h-[2.6rem] transition-colors`}>
+		<div className={`flex flex-row md:gap-2 gap-1 w-full md:h-[3.7rem] h-[3rem] transition-colors`}>
 			{/* Player name */}
 			<GameCell isLarge cellSize={cellSize} isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player name">
 				<div className="h-full flex justify-center md:px-4 px-2 items-center">
