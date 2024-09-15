@@ -7,7 +7,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
 }
 
-export default function Search({ className }: Props) {
+export default function PlayerSearch({ className }: Props) {
 	return (
 		<div className={cn('relative', className)}>
 			<Input type="search" placeholder="Search..." className="pr-10" />
