@@ -1,5 +1,6 @@
 import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
 import PlayerSearch from '@/components/wordle/search';
+import GuessContextProvider from '@/context/GuessContext';
 
 const guesses: RowData[] = [
 	{
@@ -10,9 +11,9 @@ const guesses: RowData[] = [
 
 export default function Game() {
 	return (
-		<>
+		<GuessContextProvider>
 			<GameContainer guesses={guesses} />
 			<PlayerSearch className="mt-8" />
-		</>
+		</GuessContextProvider>
 	);
 }
