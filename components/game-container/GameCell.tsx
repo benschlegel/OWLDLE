@@ -37,7 +37,7 @@ export default function GameCell({ isLarge = false, isCorrect, cellSize, classNa
 			<TooltipProvider>
 				<Tooltip>
 					<TooltipTrigger asChild tabIndex={0}>
-						<div className={`w-[3.7rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`}>{children}</div>
+						<div className={`md:w-[3.7rem] w-[2.6rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`}>{children}</div>
 					</TooltipTrigger>
 					<TooltipContent className={className}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
 				</Tooltip>
