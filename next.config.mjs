@@ -7,6 +7,7 @@ const nextConfig = {
 		removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error'] } : false,
 	},
 	experimental: {
+		reactCompiler: true,
 		instrumentationHook: true,
 	},
 };
