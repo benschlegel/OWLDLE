@@ -23,6 +23,7 @@ export default function PlayerSearch({ className }: Props) {
 
 	return (
 		<Command
+			loop
 			className="mt-6 rounded-lg border shadow-md md:min-w-[450px]"
 			filter={(value, search) => {
 				// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
@@ -33,7 +34,12 @@ export default function PlayerSearch({ className }: Props) {
 				placeholder="Search for player..."
 				onFocus={() => setIsSearchActive(true)}
 				onClick={() => setIsSearchActive(true)}
-				onBlur={() => setIsSearchActive(false)}
+				onBlur={() =>
+					setTimeout(() => {
+						// TODO: find better workaround
+						setIsSearchActive(false);
+					}, 100)
+				}
 			/>
 			<CommandList className={`${isSearchActive ? '' : 'hidden'}`}>
 				<ScrollArea className="h-[200px]">
