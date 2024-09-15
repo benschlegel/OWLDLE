@@ -25,6 +25,7 @@ const nextConfig = {
 		instrumentationHook: true,
 	},
 };
-export default MillionLint.next({
-	rsc: true,
-})(nextConfig);
+// export default MillionLint.next({
+// 	rsc: true,
+// })(nextConfig);
+export default nextConfig;
