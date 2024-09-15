@@ -6,8 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { GuessContext } from '@/context/GuessContext';
+import { PLAYERS } from '@/data/players/formattedPlayers';
 import { cn } from '@/lib/utils';
-import { Calculator, Calendar, Check, Dices, Smile } from 'lucide-react';
+import { Calculator, Calendar, Check, Dices, Smile, UserIcon } from 'lucide-react';
 import { useContext, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -29,69 +30,17 @@ export default function PlayerSearch({ className }: Props) {
 				onBlur={() => setIsSearchActive(false)}
 			/>
 			<CommandList className={`${isSearchActive ? '' : 'hidden'}`}>
-				<CommandEmpty>No results found.</CommandEmpty>
-				<ScrollArea className="max-h-[200px]">
-					<CommandGroup heading="Suggestions">
-						<CommandItem>
-							<Calendar className="mr-2 h-4 w-4" />
-							<span>Calendar</span>
-						</CommandItem>
-						<CommandItem>
-							<Smile className="mr-2 h-4 w-4" />
-							<span>Search Emoji</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
-						<CommandItem disabled>
-							<Calculator className="mr-2 h-4 w-4" />
-							<span>Calculator</span>
-						</CommandItem>
+				<ScrollArea className="h-[200px]">
+					<CommandEmpty>No results found.</CommandEmpty>
+					<CommandGroup heading="Players">
+						{PLAYERS.map((player) => {
+							return (
+								<CommandItem key={`${player.team}-${player.team}`} onSelect={(e) => console.log(`Selected ${e}`)}>
+									<UserIcon className="mr-2 h-4 w-4" />
+									<span>{player.name}</span>
+								</CommandItem>
+							);
+						})}
 					</CommandGroup>
 				</ScrollArea>
 			</CommandList>
