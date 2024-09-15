@@ -1,10 +1,13 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { GuessContext } from '@/context/GuessContext';
 import { cn } from '@/lib/utils';
-import { Dices } from 'lucide-react';
+import { Calculator, Calendar, Check, Dices, Smile } from 'lucide-react';
 import { useContext, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -15,26 +18,78 @@ const tempValues = ['abc', 'def', 'ghi', 'jkl', 'mno'];
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [search, setSearch] = useState('');
+	const [isSearchActive, setIsSearchActive] = useState(false);
 
 	return (
-		<div className={cn('relative', className)}>
-			<Input type="search" placeholder="Search for player..." className="pr-10" value={search} onChange={(e) => setSearch(e.target.value)} />
-			<Button
-				type="submit"
-				variant="secondary"
-				size="icon"
-				className="absolute right-0 top-0 h-full w-auto rounded-l-none p-2 bg-primary-foreground/80 dark:text-secondary-foreground text-white hover:bg-primary-foreground"
-				onClick={() =>
-					setGuesses([...guesses, { country: 'AD', name: search, role: 'Damage', team: 'LosAngelesGladiators', isEastern: true, countryImg: 'sad', id: 28 }])
-				}>
-				<div className="flex flex-row gap-2">
-					<p className="text-lg tracking-tight">Guess</p>
-					<div className="flex items-center justify-center">
-						<Dices className="h-4 w-4" />
-						<span className="sr-only">Search</span>
-					</div>
-				</div>
-			</Button>
-		</div>
+		<Command className="mt-6 rounded-lg border shadow-md md:min-w-[450px]">
+			<CommandInput placeholder="Type a command or search..." onClick={() => setIsSearchActive(true)} onBlur={() => setIsSearchActive(false)} />
+			<CommandList className={`${isSearchActive ? '' : 'hidden'}`}>
+				<CommandEmpty>No results found.</CommandEmpty>
+				<ScrollArea className="h-[200px]">
+					<CommandGroup heading="Suggestions">
+						<CommandItem>
+							<Calendar className="mr-2 h-4 w-4" />
+							<span>Calendar</span>
+						</CommandItem>
+						<CommandItem>
+							<Smile className="mr-2 h-4 w-4" />
+							<span>Search Emoji</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+						<CommandItem disabled>
+							<Calculator className="mr-2 h-4 w-4" />
+							<span>Calculator</span>
+						</CommandItem>
+					</CommandGroup>
+				</ScrollArea>
+			</CommandList>
+		</Command>
 	);
 }
