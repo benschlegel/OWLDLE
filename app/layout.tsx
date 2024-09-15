@@ -4,6 +4,8 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import GuessContextProvider from '@/context/GuessContext';
 
+// Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
+
 const geistSans = localFont({
 	src: './fonts/GeistVF.woff',
 	variable: '--font-geist-sans',

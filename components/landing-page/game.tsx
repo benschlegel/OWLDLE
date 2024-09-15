@@ -1,7 +1,7 @@
 'use client';
 import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
 import PlayerSearch from '@/components/wordle/search';
-import GuessContextProvider, { GuessContext } from '@/context/GuessContext';
+import { GuessContext } from '@/context/GuessContext';
 import { useContext, useEffect } from 'react';
 
 const DEFAULT_GUESSES: RowData[] = [
