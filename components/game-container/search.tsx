@@ -21,6 +21,7 @@ export default function PlayerSearch({ className }: Props) {
 	const [search, setSearch] = useState('');
 	const [isSearchActive, setIsSearchActive] = useState(false);
 
+	// TODO: pass button state to enable/disable
 	return (
 		<Command
 			loop
