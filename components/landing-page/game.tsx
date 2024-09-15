@@ -13,11 +13,11 @@ const DEFAULT_GUESSES: RowData[] = [
 ];
 
 export default function Game() {
-	const [guesses, setGuesses] = useContext(GuessContext);
+	const [playerGuesses, setPlayerGuesses] = useContext(GuessContext);
 
 	useEffect(() => {
-		console.log('Guesses: ', guesses);
-	}, [guesses]);
+		console.log('Guesses: ', playerGuesses);
+	}, [playerGuesses]);
 	return (
 		<>
 			<GameContainer guesses={DEFAULT_GUESSES} />
