@@ -23,7 +23,7 @@ export default function PlayerSearch({ className }: Props) {
 				type="submit"
 				variant="secondary"
 				size="icon"
-				className="absolute right-0 top-0 h-full w-auto rounded-l-none p-2 bg-primary-foreground/90"
+				className="absolute right-0 top-0 h-full w-auto rounded-l-none p-2 bg-primary-foreground/80 dark:text-secondary-foreground text-white"
 				onClick={() =>
 					setGuesses([...guesses, { country: 'AD', name: search, role: 'Damage', team: 'LosAngelesGladiators', isEastern: true, countryImg: 'sad', id: 28 }])
 				}>
