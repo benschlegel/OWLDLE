@@ -1,7 +1,8 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import React, { type PropsWithChildren } from 'react';
+import type React from 'react';
+import type { PropsWithChildren } from 'react';
 
-type Props = {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	isLarge?: boolean;
 	isCorrect?: boolean;
 	cellSize?: string;
@@ -13,9 +14,9 @@ type Props = {
 	 * Tooltip that will show after guess was made (e.g. "Playername")
 	 */
 	tooltipGuess?: string;
-};
+}
 
-export default function GameCell({ isLarge = false, isCorrect, cellSize, children, tooltipDescription, tooltipGuess }: PropsWithChildren<Props>) {
+export default function GameCell({ isLarge = false, isCorrect, cellSize, className, children, tooltipDescription, tooltipGuess }: PropsWithChildren<Props>) {
 	// Set background color based on correct value (gray if undefined, green if correct, red if incorrect)
 	let bgColor = 'bg-secondary';
 	if (isCorrect === true) {
@@ -38,7 +39,7 @@ export default function GameCell({ isLarge = false, isCorrect, cellSize, childre
 					<TooltipTrigger asChild tabIndex={0}>
 						<div className={`w-[3.7rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`}>{children}</div>
 					</TooltipTrigger>
-					<TooltipContent>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
+					<TooltipContent className={className}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		</>

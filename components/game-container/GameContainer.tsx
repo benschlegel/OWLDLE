@@ -20,8 +20,16 @@ export default function GameContainer({ guesses }: Props) {
 	return (
 		<Card className="transition-colors">
 			<CardContent className="flex flex-col gap-2 p-4 transition-colors">
-				{filledGuesses.map((guess) => {
-					return <GuessRow data={guess} key={`${guess.player.id}`} />;
+				{filledGuesses.map((guess, index) => {
+					return (
+						<GuessRow
+							data={guess}
+							key={`${
+								// biome-ignore lint/suspicious/noArrayIndexKey: some rows will be undefined so can't use other key
+								index
+							}`}
+						/>
+					);
 				})}
 			</CardContent>
 		</Card>
