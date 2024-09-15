@@ -7,7 +7,7 @@ import { useContext, useEffect } from 'react';
 
 const DEFAULT_GUESSES: RowData[] = [
 	{
-		player: PLAYERS[32],
+		player: PLAYERS[58],
 		guessResult: { isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false },
 	},
 ];
