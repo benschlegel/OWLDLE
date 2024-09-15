@@ -18,7 +18,7 @@ export default function RoleCell({ role, className }: Props) {
 	return (
 		<div className={cn('p-2 flex justify-center items-center', className)}>
 			{/* Apply same styling to all icons */}
-			<RoleIcon className="text-purple-200 fill-foreground h-full w-full" />
+			<RoleIcon className="fill-[#dfdfd7] opacity-95 h-full w-full" />
 		</div>
 	);
 }
