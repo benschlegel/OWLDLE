@@ -22,7 +22,12 @@ export default function PlayerSearch({ className }: Props) {
 	const [isSearchActive, setIsSearchActive] = useState(false);
 
 	return (
-		<Command className="mt-6 rounded-lg border shadow-md md:min-w-[450px]">
+		<Command
+			className="mt-6 rounded-lg border shadow-md md:min-w-[450px]"
+			filter={(value, search, keywords) => {
+				if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+				return 0;
+			}}>
 			<CustomCommandInput
 				placeholder="Search for player..."
 				onFocus={() => setIsSearchActive(true)}
@@ -37,6 +42,7 @@ export default function PlayerSearch({ className }: Props) {
 							return (
 								<CommandItem key={`${player.name}-${player.team}`} onSelect={(e) => console.log(`Selected ${e}`)}>
 									<UserIcon className="mr-2 h-4 w-4" />
+									{/* <span className="sr-only">{JSON.stringify(player)}</span> */}
 									<span>{player.name}</span>
 								</CommandItem>
 							);
