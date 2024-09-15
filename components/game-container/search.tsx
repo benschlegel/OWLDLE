@@ -30,7 +30,7 @@ export default function PlayerSearch({ className }: Props) {
 			/>
 			<CommandList className={`${isSearchActive ? '' : 'hidden'}`}>
 				<CommandEmpty>No results found.</CommandEmpty>
-				<ScrollArea className="h-[200px]">
+				<ScrollArea className="max-h-[200px]">
 					<CommandGroup heading="Suggestions">
 						<CommandItem>
 							<Calendar className="mr-2 h-4 w-4" />
