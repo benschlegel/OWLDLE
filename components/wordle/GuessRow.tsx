@@ -1,5 +1,6 @@
 import GameCell from '@/components/wordle/GameCell';
 import type { RowData } from '@/components/wordle/GameContainer';
+import RoleCell from '@/components/wordle/RoleCell';
 import TeamLogo from '@/components/wordle/TeamLogo';
 type Props = {
 	data?: RowData;
@@ -14,7 +15,9 @@ export default function GuessRow({ data }: Props) {
 			{/* Country */}
 			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isCountryCorrect} tooltipDescription="Country" />
 			{/* Role */}
-			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isRoleCorrect} tooltipDescription="Role" />
+			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isRoleCorrect} tooltipDescription="Role">
+				<RoleCell role={data?.player.role} />
+			</GameCell>
 			{/* Region */}
 			<GameCell cellSize={cellSize} isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" />
 			{/* Team */}
