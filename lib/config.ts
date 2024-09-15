@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import config from '../game.config.json' assert { type: 'json' };
+import config from '../game.config.json';
 
 const configSchema = z.object({
 	/**
