@@ -22,7 +22,9 @@ export default function PlayerSearch({ className }: Props) {
 				type="submit"
 				size="icon"
 				className="absolute right-0 top-0 h-full rounded-l-none"
-				onClick={() => setGuesses([...guesses, { country: 'AD', name: search, role: 'Damage', team: 'LosAngelesGladiators', isEastern: true }])}>
+				onClick={() =>
+					setGuesses([...guesses, { country: 'AD', name: search, role: 'Damage', team: 'LosAngelesGladiators', isEastern: true, countryImg: 'sad', id: 28 }])
+				}>
 				<Dices className="h-4 w-4" />
 				<span className="sr-only">Search</span>
 			</Button>
