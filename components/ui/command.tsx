@@ -1,12 +1,13 @@
 'use client';
 
 import * as React from 'react';
-import { type DialogProps } from '@radix-ui/react-dialog';
+import type { DialogProps } from '@radix-ui/react-dialog';
 import { Command as CommandPrimitive } from 'cmdk';
-import { Search } from 'lucide-react';
+import { Dices, Search } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 const Command = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, React.ComponentPropsWithoutRef<typeof CommandPrimitive>>(
 	({ className, ...props }, ref) => (
@@ -50,6 +51,37 @@ const CommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.I
 );
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
+
+const CustomCommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.Input>, React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>>(
+	({ className, ...props }, ref) => (
+		<div className="relative flex items-center border-b px-3" cmdk-input-wrapper="">
+			<Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+			<CommandPrimitive.Input
+				ref={ref}
+				className={cn(
+					'flex h-11 w-full rounded-md bg-transparent py-3 text-sm outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50',
+					className
+				)}
+				{...props}
+			/>
+			<Button
+				type="submit"
+				variant="secondary"
+				size="icon"
+				className="absolute right-0 top-0 h-full w-auto rounded-l-none p-2 bg-primary-foreground/80 dark:text-secondary-foreground text-white hover:bg-primary-foreground">
+				<div className="flex flex-row gap-2">
+					<p className="text-lg tracking-tight">Guess</p>
+					<div className="flex items-center justify-center">
+						<Dices className="h-4 w-4" />
+						<span className="sr-only">Search</span>
+					</div>
+				</div>
+			</Button>
+		</div>
+	)
+);
+
+CustomCommandInput.displayName = CommandPrimitive.Input.displayName;
 
 const CommandList = React.forwardRef<React.ElementRef<typeof CommandPrimitive.List>, React.ComponentPropsWithoutRef<typeof CommandPrimitive.List>>(
 	({ className, ...props }, ref) => <CommandPrimitive.List ref={ref} className={cn('max-h-[300px] overflow-y-auto overflow-x-hidden', className)} {...props} />
@@ -104,4 +136,4 @@ const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanE
 };
 CommandShortcut.displayName = 'CommandShortcut';
 
-export { Command, CommandDialog, CommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator };
+export { Command, CommandDialog, CommandInput, CustomCommandInput, CommandList, CommandEmpty, CommandGroup, CommandItem, CommandShortcut, CommandSeparator };

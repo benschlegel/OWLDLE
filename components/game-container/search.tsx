@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -22,7 +22,12 @@ export default function PlayerSearch({ className }: Props) {
 
 	return (
 		<Command className="mt-6 rounded-lg border shadow-md md:min-w-[450px]">
-			<CommandInput placeholder="Type a command or search..." onClick={() => setIsSearchActive(true)} onBlur={() => setIsSearchActive(false)} />
+			<CustomCommandInput
+				placeholder="Search for player..."
+				onFocus={() => setIsSearchActive(true)}
+				onClick={() => setIsSearchActive(true)}
+				onBlur={() => setIsSearchActive(false)}
+			/>
 			<CommandList className={`${isSearchActive ? '' : 'hidden'}`}>
 				<CommandEmpty>No results found.</CommandEmpty>
 				<ScrollArea className="h-[200px]">
