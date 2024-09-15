@@ -29,3 +29,15 @@ export function validateGuess(guess: Player, correct: Player): GuessResponse {
 
 	return response;
 }
+
+/**
+ * Adds full days to a Date
+ * @param date Date to add time to
+ * @param days How many days to add
+ * @returns New date with 'days' more days
+ */
+export function addDays(date: Date, days: number) {
+	const newDate = new Date(date.valueOf());
+	newDate.setDate(newDate.getDate() + days);
+	return newDate;
+}
