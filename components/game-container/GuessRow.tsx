@@ -14,7 +14,7 @@ export default function GuessRow({ data }: Props) {
 			{/* Player name */}
 			<GameCell isLarge cellSize={cellSize} isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player name">
 				<div className="h-full flex justify-start px-4 items-center">
-					<p className="text-xl font-extrabold tracking-tight lg:text-2xl">{data?.player.name}</p>
+					<p className="text-white opacity-90 text-xl font-extrabold tracking-tight lg:text-2xl">{data?.player.name}</p>
 				</div>
 			</GameCell>
 			{/* Country */}
