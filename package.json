@@ -8,6 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest local",
+    "test-write": "vitest --reporter=json --outputFile=./tests/report.json",
     "test-full": "vitest"
   },
   "dependencies": {
