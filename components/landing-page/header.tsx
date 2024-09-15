@@ -4,6 +4,7 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
+import Search from '@/components/wordle/search';
 import TeamLogo from '@/components/wordle/TeamLogo';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import { formatResult } from '@/lib/client';
@@ -43,6 +44,7 @@ export default function Header() {
 			</div>
 			<Separator className="mb-6 mt-1" />
 			<GameContainer guesses={guesses} />
+			<Search className="mt-8" />
 		</>
 	);
 }
