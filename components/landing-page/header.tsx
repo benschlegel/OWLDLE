@@ -1,33 +1,10 @@
-'use client';
-
+import Game from '@/components/landing-page/game';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
-import Search from '@/components/wordle/search';
-import TeamLogo from '@/components/wordle/TeamLogo';
-import { PLAYERS } from '@/data/players/formattedPlayers';
-import { formatResult } from '@/lib/client';
-import type { Player } from '@/types/players';
-import type { GuessResponse } from '@/types/server';
-import { CircleHelpIcon, InfoIcon } from 'lucide-react';
-import { useEffect } from 'react';
-
-const guesses: RowData[] = [
-	{
-		player: { name: 'JJoNak', country: 'KR', role: 'Support', team: 'NewYorkExcelsior', isEastern: true },
-		guessResult: { isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false },
-	},
-];
+import { CircleHelpIcon } from 'lucide-react';
 
 export default function Header() {
-	useEffect(() => {
-		console.log('Players: ', PLAYERS);
-		const guesses: GuessResponse[] = [{ isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: false, isRoleCorrect: false, isTeamCorrect: false }];
-		// const formattedResult = formatResult({ guesses: guesses, gameIteration: 1, });
-		// console.log('Result: ', formattedResult);
-	}, []);
-
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
@@ -43,8 +20,7 @@ export default function Header() {
 				<ModeToggle />
 			</div>
 			<Separator className="mb-6 mt-1" />
-			<GameContainer guesses={guesses} />
-			<Search className="mt-8" />
+			<Game />
 		</>
 	);
 }
