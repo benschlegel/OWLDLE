@@ -24,7 +24,8 @@ export default function PlayerSearch({ className }: Props) {
 	return (
 		<Command
 			className="mt-6 rounded-lg border shadow-md md:min-w-[450px]"
-			filter={(value, search, keywords) => {
+			filter={(value, search) => {
+				// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
 				if (value.toLowerCase().includes(search.toLowerCase())) return 1;
 				return 0;
 			}}>
@@ -40,9 +41,8 @@ export default function PlayerSearch({ className }: Props) {
 					<CommandGroup heading="Players">
 						{PLAYERS.map((player) => {
 							return (
-								<CommandItem key={`${player.name}-${player.team}`} onSelect={(e) => console.log(`Selected ${e}`)}>
+								<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={(e) => console.log(`Selected ${e}`)}>
 									<UserIcon className="mr-2 h-4 w-4" />
-									{/* <span className="sr-only">{JSON.stringify(player)}</span> */}
 									<span>{player.name}</span>
 								</CommandItem>
 							);
