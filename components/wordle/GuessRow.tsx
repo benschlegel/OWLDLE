@@ -1,5 +1,6 @@
 import GameCell from '@/components/wordle/GameCell';
 import type { RowData } from '@/components/wordle/GameContainer';
+import TeamLogo from '@/components/wordle/TeamLogo';
 import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';
 
@@ -21,7 +22,7 @@ export default function GuessRow({ data }: Props) {
 			{/* Region */}
 			<GameCell cellSize={cellSize} />
 			{/* Team */}
-			<GameCell cellSize={cellSize} />
+			<GameCell cellSize={cellSize}>{/* <TeamLogo teamName="LondonSpitfire" /> */}</GameCell>
 		</div>
 	);
 }

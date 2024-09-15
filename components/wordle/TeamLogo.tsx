@@ -13,8 +13,8 @@ export default function TeamLogo({ teamName }: Props) {
 	if (!team) return <div className={'rounded-md h-32 w-32 bg-black'} />;
 
 	return (
-		<div className="rounded-md h-32 w-32 flex justify-center items-center" style={{ backgroundColor: team.backgroundColor }}>
-			<Image src={team.imgUrl} alt={`Logo for ${team.displayName}`} width={84} height={84} />
+		<div className="rounded-md flex justify-center items-center m-1 aspect-square" style={{ backgroundColor: team.backgroundColor }}>
+			<Image src={team.imgUrl} alt={`Logo for ${team.displayName}`} width={64} height={64} className="p-[0.35rem] h-auto w-auto max-h-full max-w-full" />
 		</div>
 	);
 }
