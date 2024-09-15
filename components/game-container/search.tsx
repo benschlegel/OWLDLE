@@ -11,13 +11,14 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
 }
 
+const tempValues = ['abc', 'def', 'ghi', 'jkl', 'mno'];
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [search, setSearch] = useState('');
 
 	return (
-		<div className={cn('relative', className)}>
-			<Input type="search" placeholder="Search..." className="pr-10" value={search} onChange={(e) => setSearch(e.target.value)} />
+		<div className={cn('relative mx-4', className)}>
+			<Input type="search" placeholder="Search for player..." className="pr-10" value={search} onChange={(e) => setSearch(e.target.value)} />
 			<Button
 				type="submit"
 				size="icon"
