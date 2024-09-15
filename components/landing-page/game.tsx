@@ -1,8 +1,10 @@
+'use client';
 import GameContainer, { type RowData } from '@/components/wordle/GameContainer';
 import PlayerSearch from '@/components/wordle/search';
-import GuessContextProvider from '@/context/GuessContext';
+import GuessContextProvider, { GuessContext } from '@/context/GuessContext';
+import { useContext, useEffect } from 'react';
 
-const guesses: RowData[] = [
+const DEFAULT_GUESSES: RowData[] = [
 	{
 		player: { name: 'JJoNak', country: 'KR', role: 'Support', team: 'NewYorkExcelsior', isEastern: true },
 		guessResult: { isCountryCorrect: true, isNameCorrect: false, isRegionCorrect: true, isRoleCorrect: false, isTeamCorrect: false },
@@ -10,10 +12,15 @@ const guesses: RowData[] = [
 ];
 
 export default function Game() {
+	const [guesses, setGuesses] = useContext(GuessContext);
+
+	useEffect(() => {
+		console.log('Guesses: ', guesses);
+	}, [guesses]);
 	return (
-		<GuessContextProvider>
-			<GameContainer guesses={guesses} />
+		<>
+			<GameContainer guesses={DEFAULT_GUESSES} />
 			<PlayerSearch className="mt-8" />
-		</GuessContextProvider>
+		</>
 	);
 }

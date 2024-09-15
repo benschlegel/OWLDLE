@@ -20,6 +20,7 @@ export default function Header() {
 				<ModeToggle />
 			</div>
 			<Separator className="mb-6 mt-1" />
+
 			<Game />
 		</>
 	);
