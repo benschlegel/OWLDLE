@@ -11,8 +11,8 @@ export default function Header() {
 				<Button variant="ghost" size="icon" className="p-0">
 					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 				</Button>
-				<div className="mb-3">
-					<h1 className="text-4xl font-bold text-center">
+				<div className="mb-1 flex items-center">
+					<h1 className="md:text-4xl text-3xl font-bold text-center">
 						<span className="text-primary-foreground">OWL</span>
 						<span className="text-primary-foreground/70">S1</span>LE
 					</h1>
