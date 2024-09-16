@@ -39,9 +39,9 @@ export async function POST(req: NextRequest) {
 	return Response.json(resResponse);
 }
 
-export function GET(request: NextRequest) {
-	const searchParams = request.nextUrl.searchParams;
-	const getPlayer = searchParams.get('getplayer');
+export function GET(request: NextRequest | undefined) {
+	const searchParams = request?.nextUrl.searchParams;
+	const getPlayer = searchParams?.get('getplayer');
 
 	if (new Date() >= nextReset) {
 		// fetch from backend
