@@ -1,6 +1,5 @@
 'use client';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
-import type { Player } from '@/types/players';
 import { createContext, type Dispatch, type SetStateAction, useState, type PropsWithChildren } from 'react';
 
 type GuessContextType = [FormattedPlayer[], Dispatch<SetStateAction<FormattedPlayer[]>>];

@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import GuessContextProvider from '@/context/GuessContext';
+import GameStateContextProvider from '@/context/GameStateContext';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -31,7 +32,9 @@ export default function RootLayout({
 		<html lang="en">
 			<body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<GuessContextProvider>{children}</GuessContextProvider>
+					<GuessContextProvider>
+						<GameStateContextProvider>{children}</GameStateContextProvider>
+					</GuessContextProvider>
 				</ThemeProvider>
 			</body>
 		</html>
