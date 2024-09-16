@@ -34,7 +34,7 @@ export default function Game() {
 	// Handle new guess
 	useEffect(() => {
 		if (currentGuess !== undefined && gameState === 'in-progress') {
-			console.log('Handle guess called');
+			console.time('validate');
 			fetch('/api/validate', {
 				method: 'POST',
 				body: JSON.stringify(currentGuess),
@@ -42,6 +42,7 @@ export default function Game() {
 				.then(async (res) => {
 					// Get response from server
 					const guessResponse: GuessResponse = await res.json();
+					console.timeEnd('validate');
 
 					// Add guess response to row
 					const newRow: RowData = { guessResult: guessResponse, player: currentGuess };
@@ -50,6 +51,7 @@ export default function Game() {
 					// update game state
 					if (guessResponse.isNameCorrect === true) {
 						setGameState('won');
+						// TODO: send anonymous game report
 					} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
 						setGameState('lost');
 					}
