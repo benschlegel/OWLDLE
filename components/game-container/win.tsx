@@ -63,7 +63,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 				<DefaultButtonContent />
 			</SwitchableButton>
 
-			<Confetti width={width as number | undefined} height={height as number | undefined} run className="z-10" />
+			<Confetti width={width ? width - 2 : 0} height={height ? height - 2 : 0} className="overflow-none" />
 		</div>
 	);
 }
