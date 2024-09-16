@@ -88,6 +88,7 @@
   * {
     @apply border-border;
 
+    /* Text select color */
     ::selection {
       @apply bg-primary-foreground/70 text-foreground;
     }

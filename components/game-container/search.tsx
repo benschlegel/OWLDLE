@@ -98,7 +98,7 @@ export default function PlayerSearch({ className }: Props) {
 				isButtonDisabled={selectedPlayer === undefined}
 			/>
 			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'}`}>
-				<ScrollArea className="sm:h-[11rem] h-[15rem]">
+				<ScrollArea className="sm:h-[10rem] h-[15rem]">
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="">
 						{PLAYERS.map((player) => {
