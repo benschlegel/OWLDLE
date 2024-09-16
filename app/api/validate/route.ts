@@ -4,7 +4,7 @@ import { type Player, playerSchema } from '@/types/players';
 export const dynamic = 'force-static';
 
 // TODO: reset current round if server curr player resets
-const DEFAULT_PLAYER: Player = { country: 'US', team: 'DallasFuel', role: 'Damage', name: 'DEFAULT_PLAYER', isEastern: true, id: 9 };
+const DEFAULT_PLAYER: Player = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', isEastern: true, id: 0 };
 const DEFAULT_DATE = new Date('2024-09-15T11:40:00.000+02:00');
 
 let currPlayer: Player = DEFAULT_PLAYER;
