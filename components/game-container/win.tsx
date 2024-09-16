@@ -15,7 +15,7 @@ function renderer({ days, hours, minutes, seconds, completed }: CountdownRenderP
 	}
 	// Render a countdown
 	return (
-		<p className="gap-2 font-mono font-bold">
+		<p className="gap-2 font-mono font-bold mt-1">
 			<span>{zeroPad(hours)}</span>:<span>{zeroPad(minutes)}</span>:<span>{zeroPad(seconds)}</span>
 		</p>
 	);
@@ -33,9 +33,9 @@ export default function WinScreen({ nextReset }: Partial<Props>) {
 
 	if (nextReset === undefined) return <></>;
 	return (
-		<div className="flex p-8 mt-4 w-full flex-col">
-			<h1>You won!</h1>
-			<div className="flex gap-2">
+		<div className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">You won!</h1>
+			<div className="flex gap-2 items-center justify-center opacity-80">
 				<p>Time until next reset:</p>
 				{showTimer && (
 					<Countdown
