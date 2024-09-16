@@ -1,7 +1,9 @@
 import { addDays, validateGuess } from '@/lib/server';
 import { type Player, playerSchema } from '@/types/players';
+import type { NextRequest } from 'next/server';
 
-export const dynamic = 'force-static';
+// export const dynamic = 'force-static';
+export const dynamicParams = true;
 
 // TODO: reset current round if server curr player resets
 const DEFAULT_PLAYER: Player = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', isEastern: true, id: 0 };
@@ -18,7 +20,7 @@ const DAY_INCREMENT = 1;
  * @param req a valid player id
  * @returns what fields are correct and what fields are incorrect
  */
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
 	// Try to parse request
 	const parsedBody = await req.json();
 	const playerRes = playerSchema.safeParse(parsedBody);
@@ -36,7 +38,12 @@ export async function POST(req: Request) {
 	return Response.json(resResponse);
 }
 
-export async function GET() {
+export function GET(request: NextRequest) {
+	const searchParams = request.nextUrl.searchParams;
+	const query = searchParams.get('query');
+	// const { searchParams } = new URL(request.url);
+	// const query = searchParams.get('query');
+
 	if (new Date() >= nextReset) {
 		// fetch from backend
 		nextReset = addDays(nextReset, DAY_INCREMENT);
@@ -45,5 +52,5 @@ export async function GET() {
 		// add day
 		// set back to backend
 	}
-	return Response.json({ nextReset: nextReset });
+	return Response.json({ nextReset: nextReset, params: query });
 }
