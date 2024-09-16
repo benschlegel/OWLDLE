@@ -6,7 +6,7 @@ import { GuessContext } from '@/context/GuessContext';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
@@ -16,13 +16,26 @@ export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
 	const [isSearchActive, setIsSearchActive] = useState(false);
+	const [searchValue, setSearchValue] = useState('');
 
 	const closeSearch = useCallback(() => {
 		setTimeout(() => {
 			setIsSearchActive(false);
-		}, 100);
+			setSelectedPlayer(undefined);
+		}, 150);
 	}, []);
-	// TODO: pass button state to enable/disable
+
+	const handleSubmit = useCallback(() => {
+		if (selectedPlayer !== undefined) {
+			// console.log('Player: ', selectedPlayer);
+		}
+	}, [selectedPlayer]);
+
+	const handleItemSubmit = (e: string) => {
+		const player: Player = JSON.parse(e);
+		setSearchValue(player.name);
+		setSelectedPlayer(JSON.parse(e));
+	};
 	return (
 		<Command
 			loop
@@ -35,14 +48,17 @@ export default function PlayerSearch({ className }: Props) {
 			<CustomCommandInput
 				onButtonClick={() => console.log('Test')}
 				placeholder="Search for player..."
+				value={searchValue}
+				onChangeCapture={(e) => setSearchValue(e.currentTarget.value)}
 				onFocus={() => setIsSearchActive(true)}
 				onClick={() => setIsSearchActive(true)}
 				onBlur={closeSearch}
 				onKeyUp={(event) => {
-					if (event.key === 'Enter' && selectedPlayer !== undefined && !isSearchActive) {
-						console.log('Player: ', selectedPlayer);
+					if (event.key === 'Enter') {
+						handleSubmit();
 					}
 				}}
+				isButtonDisabled={selectedPlayer === undefined}
 			/>
 			<CommandList className={`${isSearchActive ? '' : 'sr-only'}`}>
 				<ScrollArea className="sm:h-[11rem] h-[15rem]">
@@ -50,7 +66,7 @@ export default function PlayerSearch({ className }: Props) {
 					<CommandGroup heading="">
 						{PLAYERS.map((player) => {
 							return (
-								<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={(e) => setSelectedPlayer(JSON.parse(e))}>
+								<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
 									<UserIcon className="mr-2 h-4 w-4" />
 									<span>{player.name}</span>
 								</CommandItem>
