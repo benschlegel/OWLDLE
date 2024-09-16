@@ -29,6 +29,7 @@
     "next": "rc",
     "next-themes": "^0.3.0",
     "react": "rc",
+    "react-countdown": "^2.3.6",
     "react-dom": "rc",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
