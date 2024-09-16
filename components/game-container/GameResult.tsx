@@ -24,6 +24,8 @@ export default function GameResult() {
 			.then((data) => setValidatedData(data));
 	}, [toast]);
 
+	// Win/LossScreen automatically reset game state if timer hits 0/next game starts
+
 	switch (gameState) {
 		case 'in-progress':
 			return <></>;
