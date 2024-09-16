@@ -1,5 +1,6 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { PressableButton } from '@/components/ui/pressable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import { CopyIcon } from 'lucide-react';
@@ -53,12 +54,13 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 					/>
 				)}
 			</div>
-			<Button
-				className="mt-2 dark:bg-primary-foreground/80 bg-primary-foreground/90 hover:bg-primary-foreground flex gap-2 w-fit px-4 py-6 ransform active:scale-95 transition-transform"
+
+			<PressableButton
+				className="w-fit mt-2"
+				icon={<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />}
 				onClick={() => navigator.clipboard.writeText(formattedResult ?? '')}>
 				<p className="dark:text-[#dfdfd7] text-white scroll-m-20 text-lg font-mono tracking-tight">Copy result to clipboard</p>
-				<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />
-			</Button>
+			</PressableButton>
 		</div>
 	);
 }
