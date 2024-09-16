@@ -84,14 +84,15 @@
   }
 }
 
+/* Text select color, moved out of base layer to fix bug where it's not applied */
+::selection {
+  @apply bg-primary-foreground/70 text-foreground;
+}
+
 @layer base {
   * {
     @apply border-border;
 
-    /* Text select color */
-    ::selection {
-      @apply bg-primary-foreground/70 text-foreground;
-    }
 
     scrollbar-width: thin; /* Scrollbar width */
     scrollbar-color: hsl(var(--chart-secondary)) hsl(var(--card)); /* Thumb and track color */
