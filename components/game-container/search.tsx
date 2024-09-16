@@ -3,7 +3,8 @@
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { GuessContext } from '@/context/GuessContext';
-import { PLAYERS } from '@/data/players/formattedPlayers';
+import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
 import { useCallback, useContext, useState } from 'react';
@@ -26,15 +27,22 @@ export default function PlayerSearch({ className }: Props) {
 		}, 150);
 	}, []);
 
+	// Called when player is selected
 	const handleSubmit = useCallback(() => {
 		if (selectedPlayer !== undefined) {
-			console.log('Submitted: ', selectedPlayer);
+			// Reset search state
 			setSearchState('unfocused');
 			setSearchValue('');
 			setSelectedPlayer(undefined);
-		}
-	}, [selectedPlayer]);
 
+			// Submit guess (if guesses remain)
+			if (guesses.length < GAME_CONFIG.maxGuesses) {
+				setGuesses([...guesses, selectedPlayer as FormattedPlayer]);
+			}
+		}
+	}, [selectedPlayer, setGuesses, guesses]);
+
+	// Called when item is selected from dropdown (through click or enter)
 	const handleItemSubmit = (e: string) => {
 		if (searchState !== 'unfocused') {
 			const player: Player = JSON.parse(e);
