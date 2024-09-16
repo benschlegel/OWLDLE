@@ -6,13 +6,13 @@ import { GuessContext } from '@/context/GuessContext';
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
 }
 
-type SearchState = 'unfocused' | 'typing' | 'ready' | 'submitting';
+type SearchState = 'unfocused' | 'typing' | 'submitting';
 
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
@@ -28,14 +28,12 @@ export default function PlayerSearch({ className }: Props) {
 
 	const handleSubmit = useCallback(() => {
 		if (selectedPlayer !== undefined) {
-			if (searchState === 'submitting') {
-				console.log('Submitted: ', selectedPlayer);
-				setSearchState('unfocused');
-				setSearchValue('');
-				setSelectedPlayer(undefined);
-			}
+			console.log('Submitted: ', selectedPlayer);
+			setSearchState('unfocused');
+			setSearchValue('');
+			setSelectedPlayer(undefined);
 		}
-	}, [selectedPlayer, searchState]);
+	}, [selectedPlayer]);
 
 	const handleItemSubmit = (e: string) => {
 		if (searchState !== 'unfocused') {
@@ -52,9 +50,6 @@ export default function PlayerSearch({ className }: Props) {
 		setSelectedPlayer(undefined);
 	};
 
-	useEffect(() => {
-		console.log('State: ', searchState);
-	}, [searchState]);
 	return (
 		<Command
 			loop
