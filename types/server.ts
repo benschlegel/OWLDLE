@@ -5,3 +5,8 @@ export type GuessResponse = {
 	isNameCorrect: boolean;
 	isRegionCorrect: boolean;
 };
+
+export type ValidateResponse = {
+	nextReset: Date;
+	correctPlayer?: string;
+};

@@ -1,5 +1,6 @@
 import { addDays, validateGuess } from '@/lib/server';
 import { type Player, playerSchema } from '@/types/players';
+import type { ValidateResponse } from '@/types/server';
 import type { NextRequest } from 'next/server';
 
 // export const dynamic = 'force-static';
@@ -40,9 +41,7 @@ export async function POST(req: NextRequest) {
 
 export function GET(request: NextRequest) {
 	const searchParams = request.nextUrl.searchParams;
-	const query = searchParams.get('query');
-	// const { searchParams } = new URL(request.url);
-	// const query = searchParams.get('query');
+	const getPlayer = searchParams.get('getplayer');
 
 	if (new Date() >= nextReset) {
 		// fetch from backend
@@ -52,5 +51,11 @@ export function GET(request: NextRequest) {
 		// add day
 		// set back to backend
 	}
-	return Response.json({ nextReset: nextReset, params: query });
+
+	const res: ValidateResponse = { nextReset: nextReset };
+	if (getPlayer !== null) {
+		res.correctPlayer = currPlayer.name;
+	}
+
+	return Response.json(res);
 }
