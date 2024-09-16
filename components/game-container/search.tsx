@@ -4,6 +4,7 @@ import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, Command
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { GuessContext } from '@/context/GuessContext';
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
@@ -20,6 +21,7 @@ export default function PlayerSearch({ className }: Props) {
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
 	const [searchState, setSearchState] = useState<SearchState>('unfocused');
 	const [searchValue, setSearchValue] = useState('');
+	const { toast } = useToast();
 
 	const closeSearch = useCallback(() => {
 		setTimeout(() => {
@@ -37,10 +39,19 @@ export default function PlayerSearch({ className }: Props) {
 
 			// Submit guess (if guesses remain)
 			if (guesses.length < GAME_CONFIG.maxGuesses) {
-				setGuesses([...guesses, selectedPlayer as FormattedPlayer]);
+				if (!guesses.some((g) => g.name === selectedPlayer.name)) {
+					// Send guess (if player wasnt already guessed)
+					setGuesses([...guesses, selectedPlayer as FormattedPlayer]);
+				} else {
+					// Show toast if player was already guessed
+					toast({
+						title: 'Duplicate guess',
+						description: 'You already guessed that player.',
+					});
+				}
 			}
 		}
-	}, [selectedPlayer, setGuesses, guesses]);
+	}, [selectedPlayer, setGuesses, guesses, toast]);
 
 	// Called when item is selected from dropdown (through click or enter)
 	const handleItemSubmit = (e: string) => {
