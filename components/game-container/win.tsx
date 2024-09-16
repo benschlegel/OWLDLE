@@ -5,6 +5,8 @@ import { GuessContext } from '@/context/GuessContext';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { useContext, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
+import { useWindowSize } from '@uidotdev/usehooks';
+import Confetti from 'react-confetti';
 
 type Props = {
 	nextReset: Date;
@@ -28,6 +30,10 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	const [_, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
+
+	const { height, width } = useWindowSize();
+	console.log('height: ', height);
+	console.log('height: ', width);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
@@ -56,6 +62,8 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 			<SwitchableButton className="w-72 mt-3" onClick={() => navigator.clipboard.writeText(formattedResult ?? '')} switchedContent={<SwitchedButtonContent />}>
 				<DefaultButtonContent />
 			</SwitchableButton>
+
+			<Confetti width={width as number | undefined} height={height as number | undefined} run className="z-10" />
 		</div>
 	);
 }
