@@ -81,7 +81,7 @@ export default function Game() {
 					<SearchDialog />
 				</>
 			) : (
-				<GameResult />
+				<GameResult results={evaluatedGuesses} />
 			)}
 		</>
 	);
