@@ -87,7 +87,7 @@ export default function SearchDialog({ className }: Props) {
 	}, []);
 
 	return (
-		<CommandDialog open={open} onOpenChange={setOpen}>
+		<CommandDialog open={open} onOpenChange={setOpen} srDialogTitle="Search for player">
 			<CustomCommandInput
 				onButtonClick={handleSubmit}
 				placeholder="Search for player..."
@@ -108,8 +108,8 @@ export default function SearchDialog({ className }: Props) {
 				}}
 				isButtonDisabled={selectedPlayer === undefined}
 			/>
-			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'}`}>
-				<ScrollArea className="sm:h-[10rem] h-[15rem]">
+			<CommandList>
+				<ScrollArea className="sm:h-[17rem] h-[15rem]">
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="">
 						{PLAYERS.map((player) => {

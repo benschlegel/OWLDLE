@@ -6,7 +6,7 @@ import { Command as CommandPrimitive } from 'cmdk';
 import { Dices, Search } from 'lucide-react';
 
 import { cn } from '@/lib/utils';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 const Command = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, React.ComponentPropsWithoutRef<typeof CommandPrimitive>>(
@@ -20,15 +20,27 @@ const Command = React.forwardRef<React.ElementRef<typeof CommandPrimitive>, Reac
 );
 Command.displayName = CommandPrimitive.displayName;
 
-interface CommandDialogProps extends DialogProps {}
+interface CommandDialogProps extends DialogProps {
+	srDialogTitle?: string;
+	srDialogDescription?: string;
+}
 
-const CommandDialog = ({ children, ...props }: CommandDialogProps) => {
+const CommandDialog = ({ children, srDialogTitle = 'Command Dialog', srDialogDescription = 'Command opened in Dialog', ...props }: CommandDialogProps) => {
 	return (
 		<Dialog {...props}>
 			<DialogContent className="overflow-hidden p-0 shadow-lg" disableCloseButton>
-				<Command className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3">
+				<Command
+					className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3"
+					loop
+					filter={(value, search) => {
+						// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
+						if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+						return 0;
+					}}>
 					{children}
 				</Command>
+				<DialogTitle className="sr-only">{srDialogTitle}</DialogTitle>
+				<DialogDescription className="sr-only">{srDialogDescription}</DialogDescription>
 			</DialogContent>
 		</Dialog>
 	);
