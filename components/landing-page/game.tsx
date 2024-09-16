@@ -1,5 +1,6 @@
 'use client';
 import GameContainer, { type RowData } from '@/components/game-container/GameContainer';
+import GameResult from '@/components/game-container/GameResult';
 import PlayerSearch from '@/components/game-container/search';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
@@ -71,6 +72,7 @@ export default function Game() {
 		<>
 			<GameContainer guesses={evaluatedGuesses} />
 			<PlayerSearch className="mt-8" />
+			<GameResult />
 		</>
 	);
 }
