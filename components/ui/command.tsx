@@ -52,8 +52,12 @@ const CommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.I
 
 CommandInput.displayName = CommandPrimitive.Input.displayName;
 
-const CustomCommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.Input>, React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>>(
-	({ className, ...props }, ref) => (
+interface CustomCommandInputProps extends React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input> {
+	onButtonClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+}
+
+const CustomCommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimitive.Input>, CustomCommandInputProps>(
+	({ className, onButtonClick, ...props }, ref) => (
 		<div className="relative flex items-center border-b px-3" cmdk-input-wrapper="">
 			<Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
 			<CommandPrimitive.Input
@@ -68,6 +72,7 @@ const CustomCommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimi
 				type="submit"
 				variant="secondary"
 				size="icon"
+				onClick={onButtonClick}
 				className="absolute right-0 top-0 h-full w-auto rounded-l-none p-2 bg-primary-foreground/80 dark:text-secondary-foreground text-white hover:bg-primary-foreground">
 				<div className="flex flex-row gap-2">
 					<p className="text-lg tracking-tight">Guess</p>

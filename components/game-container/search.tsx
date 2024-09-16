@@ -32,6 +32,7 @@ export default function PlayerSearch({ className }: Props) {
 				return 0;
 			}}>
 			<CustomCommandInput
+				onButtonClick={() => console.log('Test')}
 				placeholder="Search for player..."
 				onFocus={() => setIsSearchActive(true)}
 				onClick={() => setIsSearchActive(true)}
