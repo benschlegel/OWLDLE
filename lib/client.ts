@@ -13,7 +13,7 @@ export type FormatConfig = {
 	/**
 	 * Shorthand for footer (should be passed from game config value)
 	 */
-	siteUrlShorthand: string;
+	siteUrlShorthand?: string;
 	/**
 	 * Game name for footer (should be passed from game config value)
 	 */
@@ -47,7 +47,7 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (hasFailed === true) result += '❌';
 
 	// Add footer (with site url)
-	result += `\n${siteUrlShorthand}`;
+	result += `\n<${siteUrlShorthand ?? getSiteName()}>`;
 	return result;
 }
 
@@ -82,4 +82,11 @@ function getEmojRow(guess: GuessResponse) {
  */
 function getEmojiCell(isCorrect: boolean) {
 	return isCorrect ? '🟩' : '🟥';
+}
+
+/**
+ * Dynamically get the site base name (e.g. https://www.test.com)
+ */
+export function getSiteName() {
+	return `${window.location.protocol}//${window.location.host}`;
 }

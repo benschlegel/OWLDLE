@@ -29,7 +29,6 @@ export default function GameResult({ results }: Props) {
 			gameIteration: 1,
 			guesses: guesses,
 			maxGuesses: GAME_CONFIG.maxGuesses,
-			siteUrlShorthand: GAME_CONFIG.siteUrlShorthand,
 		});
 		return formatted;
 	}, [results]);
