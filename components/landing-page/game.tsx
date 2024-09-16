@@ -75,7 +75,7 @@ export default function Game() {
 			{/* Render search bar while in progress, render result when done */}
 			{gameState === 'in-progress' ? (
 				<>
-					<PlayerSearch className="mt-8" />
+					<PlayerSearch className="mt-6" />
 					<SearchDialog />
 				</>
 			) : (

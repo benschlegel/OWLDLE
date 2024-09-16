@@ -6,13 +6,12 @@ import { GuessContext } from '@/context/GuessContext';
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
+import { cn } from '@/lib/utils';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-interface Props extends React.HTMLAttributes<HTMLDivElement> {
-	placeholder?: string;
-}
+interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 type SearchState = 'unfocused' | 'typing' | 'submitting';
 
@@ -25,6 +24,7 @@ export default function PlayerSearch({ className }: Props) {
 	const { toast } = useToast();
 
 	const closeSearch = useCallback(() => {
+		// TODO: find better workaround
 		setTimeout(() => {
 			setSearchState('unfocused');
 		}, 150);
@@ -86,7 +86,7 @@ export default function PlayerSearch({ className }: Props) {
 	return (
 		<Command
 			loop
-			className="mt-6 rounded-lg border border-secondary shadow-sm md:min-w-[450px]"
+			className={cn('rounded-lg border border-secondary shadow-sm md:min-w-[450px]', className)}
 			filter={(value, search) => {
 				// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
 				if (value.toLowerCase().includes(search.toLowerCase())) return 1;
