@@ -27,6 +27,9 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult }:
 	return (
 		<div className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
 			<h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">❌ You lost... ❌</h1>
+			<h3 className="text-xl tracking-tight mt-1">
+				The correct answer was: <span className="font-semibold ">{correctPlayer}</span>
+			</h3>
 			<div className="flex gap-2 items-center justify-center opacity-80">
 				<p>Time until next reset:</p>
 				{showTimer && (
