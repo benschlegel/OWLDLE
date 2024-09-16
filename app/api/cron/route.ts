@@ -1,5 +1,4 @@
 import { GET as RouteGet } from '@/app/api/validate/route';
-
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
@@ -9,6 +8,6 @@ export async function GET(request: Request) {
 	}
 
 	// TODO: Do db stuff
-	const reset = (await (await RouteGet()).json()) as Date;
+	const reset = (await RouteGet(undefined).json()) as Date;
 	return new Response(`Next reset: ${JSON.stringify(reset)}`);
 }
