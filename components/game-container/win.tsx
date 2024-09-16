@@ -13,27 +13,12 @@ type Props = {
 	formattedResult: string;
 };
 
-function renderer({ days, hours, minutes, seconds, milliseconds, completed }: CountdownRenderProps) {
-	if (completed) {
-		// Render a completed state
-		return <></>;
-	}
-	// Render a countdown
-	return (
-		<p className="gap-2 font-mono font-bold mt-[2px]">
-			<span>{zeroPad(hours)}</span>:<span>{zeroPad(minutes)}</span>:<span>{zeroPad(seconds)}</span>
-		</p>
-	);
-}
-
 export default function WinScreen({ nextReset, formattedResult }: Partial<Props>) {
 	const [_, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
 
 	const { height, width } = useWindowSize();
-	console.log('height: ', height);
-	console.log('height: ', width);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
@@ -65,6 +50,19 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 
 			<Confetti width={width ? width - 2 : 0} height={height ? height - 2 : 0} className="overflow-none" />
 		</div>
+	);
+}
+
+function renderer({ days, hours, minutes, seconds, milliseconds, completed }: CountdownRenderProps) {
+	if (completed) {
+		// Render a completed state
+		return <></>;
+	}
+	// Render a countdown
+	return (
+		<p className="gap-2 font-mono font-bold mt-[2px]">
+			<span>{zeroPad(hours)}</span>:<span>{zeroPad(minutes)}</span>:<span>{zeroPad(seconds)}</span>
+		</p>
 	);
 }
 

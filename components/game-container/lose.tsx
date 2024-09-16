@@ -3,7 +3,7 @@ import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import { CheckIcon, CopyIcon } from 'lucide-react';
-import { useContext, useLayoutEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
@@ -12,10 +12,22 @@ type Props = {
 	correctPlayer: string;
 };
 
+const confettiDuration = 2000;
+
 export default function WinScreen({ nextReset, correctPlayer, formattedResult }: Partial<Props>) {
 	const [_, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
+
+	// TODO: fix
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			console.log('Delayed!');
+		}, 2000);
+
+		// Cleanup timeout on unmount
+		return () => clearTimeout(timer);
+	}, []);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
