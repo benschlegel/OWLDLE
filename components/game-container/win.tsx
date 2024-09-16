@@ -35,6 +35,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	}, []);
 
 	if (nextReset === undefined) return <></>;
+
 	return (
 		<div className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">🎉 You won! 🎉</h1>
