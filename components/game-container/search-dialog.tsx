@@ -50,7 +50,6 @@ export default function SearchDialog({ className }: Props) {
 			// Focus search on ctrl + y
 			if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
-				console.log('Dialog hotkey found');
 				setOpen((open) => !open);
 			}
 		};
