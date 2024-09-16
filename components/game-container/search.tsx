@@ -8,7 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
@@ -21,6 +21,7 @@ export default function PlayerSearch({ className }: Props) {
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
 	const [searchState, setSearchState] = useState<SearchState>('unfocused');
 	const [searchValue, setSearchValue] = useState('');
+	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
 
 	const closeSearch = useCallback(() => {
@@ -69,6 +70,19 @@ export default function PlayerSearch({ className }: Props) {
 		setSelectedPlayer(undefined);
 	};
 
+	useEffect(() => {
+		const down = (e: KeyboardEvent) => {
+			// Focus search on ctrl + y
+			if (e.key === 'y' && (e.metaKey || e.ctrlKey)) {
+				e.preventDefault();
+				inputRef.current?.focus();
+			}
+		};
+
+		document.addEventListener('keydown', down);
+		return () => document.removeEventListener('keydown', down);
+	}, []);
+
 	return (
 		<Command
 			loop
@@ -85,6 +99,7 @@ export default function PlayerSearch({ className }: Props) {
 				onChangeCapture={handleTyping}
 				onFocus={() => setSearchState('typing')}
 				onClick={() => setSearchState('typing')}
+				ref={inputRef}
 				onBlur={closeSearch}
 				onKeyDownCapture={(event) => {
 					if (event.key === 'Enter') {
