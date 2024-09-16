@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, type CountdownRendererFn } from 'react-countdown';
 
 type Props = {
@@ -20,16 +20,18 @@ function renderer({ days, hours, minutes, seconds, completed, milliseconds }: Co
 }
 
 export default function WinScreen({ nextReset }: Partial<Props>) {
-	if (nextReset === undefined) return <p />;
-	const [showTimer, setShowTimer] = useState(false);
+	const [showTimer, setShowTimer] = useState(true);
 
-	useEffect(() => {
+	// Fix hydration warning for mismatching countdown time
+	useLayoutEffect(() => {
 		setShowTimer(true);
 	}, []);
+
+	if (nextReset === undefined) return <></>;
 	return (
 		<div className="flex p-8 mt-4 w-full">
 			<p>Test</p>
-			{showTimer && <Countdown date={nextReset} renderer={renderer} />}
+			{showTimer && <Countdown date={nextReset} renderer={renderer} autoStart />}
 		</div>
 	);
 }
