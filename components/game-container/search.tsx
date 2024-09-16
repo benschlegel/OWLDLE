@@ -12,30 +12,44 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
 }
 
+type SearchState = 'unfocused' | 'typing' | 'ready' | 'submitting';
+
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
-	const [isSearchActive, setIsSearchActive] = useState(false);
+	const [searchState, setSearchState] = useState<SearchState>('unfocused');
 	const [searchValue, setSearchValue] = useState('');
 
 	const closeSearch = useCallback(() => {
 		setTimeout(() => {
-			setIsSearchActive(false);
-			setSelectedPlayer(undefined);
+			setSearchState('unfocused');
 		}, 150);
 	}, []);
 
 	const handleSubmit = useCallback(() => {
 		if (selectedPlayer !== undefined) {
-			// console.log('Player: ', selectedPlayer);
+			if (searchState === 'submitting') {
+				console.log('Submitted: ', selectedPlayer);
+			}
 		}
-	}, [selectedPlayer]);
+	}, [selectedPlayer, searchState]);
 
 	const handleItemSubmit = (e: string) => {
 		const player: Player = JSON.parse(e);
 		setSearchValue(player.name);
 		setSelectedPlayer(JSON.parse(e));
+		setSearchState('submitting');
 	};
+
+	const handleTyping = (e: React.FormEvent<HTMLInputElement>) => {
+		setSearchValue(e.currentTarget.value);
+		setSearchState('typing');
+		setSelectedPlayer(undefined);
+	};
+
+	useEffect(() => {
+		console.log('State: ', searchState);
+	}, [searchState]);
 	return (
 		<Command
 			loop
@@ -46,21 +60,24 @@ export default function PlayerSearch({ className }: Props) {
 				return 0;
 			}}>
 			<CustomCommandInput
-				onButtonClick={() => console.log('Test')}
+				onButtonClick={() => console.log('Player: ', selectedPlayer)}
 				placeholder="Search for player..."
 				value={searchValue}
-				onChangeCapture={(e) => setSearchValue(e.currentTarget.value)}
-				onFocus={() => setIsSearchActive(true)}
-				onClick={() => setIsSearchActive(true)}
+				onChangeCapture={handleTyping}
+				onFocus={() => setSearchState('typing')}
 				onBlur={closeSearch}
-				onKeyUp={(event) => {
+				onKeyDownCapture={(event) => {
 					if (event.key === 'Enter') {
-						handleSubmit();
+						if (searchState === 'ready') {
+							setSearchState('submitting');
+						} else if (searchState === 'submitting') {
+							handleSubmit();
+						}
 					}
 				}}
 				isButtonDisabled={selectedPlayer === undefined}
 			/>
-			<CommandList className={`${isSearchActive ? '' : 'sr-only'}`}>
+			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'}`}>
 				<ScrollArea className="sm:h-[11rem] h-[15rem]">
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="">
