@@ -1,6 +1,7 @@
 'use client';
 import { Button } from '@/components/ui/button';
 import { PressableButton } from '@/components/ui/pressable-button';
+import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import { CopyIcon } from 'lucide-react';
@@ -61,6 +62,15 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 				onClick={() => navigator.clipboard.writeText(formattedResult ?? '')}>
 				<p className="dark:text-[#dfdfd7] text-white scroll-m-20 text-lg font-mono tracking-tight">Copy result to clipboard</p>
 			</PressableButton>
+			<SwitchableButton
+				className="w-conent mt-2"
+				onClick={() => console.log('clicked')}
+				switchedContent={<p className="dark:text-[#dfdfd7] text-white scroll-m-20 text-lg font-mono tracking-tight">Switched</p>}>
+				<div className="flex flex-row justify-center items-center  gap-2 ">
+					<p className="dark:text-[#dfdfd7] text-white w-auto text-lg font-mono tracking-tight">Copy abc to clipboard</p>
+					<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />
+				</div>
+			</SwitchableButton>
 		</div>
 	);
 }
