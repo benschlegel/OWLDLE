@@ -91,8 +91,34 @@
     ::selection {
       @apply bg-primary-foreground/70 text-foreground;
     }
+
+    scrollbar-width: thin; /* Scrollbar width */
+    scrollbar-color: hsl(var(--chart-secondary)) hsl(var(--card)); /* Thumb and track color */
+
+    ::-webkit-scrollbar-button {
+      display: none;
+    }
+
+    /* Scrollbar thumb (the draggable part) */
+    ::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--secondary));
+    }
+
+    /* Scrollbar track (the area the thumb slides over) */
+    ::-webkit-scrollbar-track {
+      background-color: hsl(var(--primary));
+    }
+
+    /* Text selection colors */
+    ::selection {
+      @apply bg-primary text-foreground;
+    }
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
+  }
+  html {
+    /* Prevents layout shifts from scroll bar */
+    scrollbar-gutter: stable;
   }
 }
