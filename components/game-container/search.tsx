@@ -30,15 +30,20 @@ export default function PlayerSearch({ className }: Props) {
 		if (selectedPlayer !== undefined) {
 			if (searchState === 'submitting') {
 				console.log('Submitted: ', selectedPlayer);
+				setSearchState('unfocused');
+				setSearchValue('');
+				setSelectedPlayer(undefined);
 			}
 		}
 	}, [selectedPlayer, searchState]);
 
 	const handleItemSubmit = (e: string) => {
-		const player: Player = JSON.parse(e);
-		setSearchValue(player.name);
-		setSelectedPlayer(JSON.parse(e));
-		setSearchState('submitting');
+		if (searchState !== 'unfocused') {
+			const player: Player = JSON.parse(e);
+			setSearchValue(player.name);
+			setSelectedPlayer(JSON.parse(e));
+			setSearchState('submitting');
+		}
 	};
 
 	const handleTyping = (e: React.FormEvent<HTMLInputElement>) => {
@@ -60,7 +65,7 @@ export default function PlayerSearch({ className }: Props) {
 				return 0;
 			}}>
 			<CustomCommandInput
-				onButtonClick={() => console.log('Player: ', selectedPlayer)}
+				onButtonClick={handleSubmit}
 				placeholder="Search for player..."
 				value={searchValue}
 				onChangeCapture={handleTyping}
@@ -68,9 +73,7 @@ export default function PlayerSearch({ className }: Props) {
 				onBlur={closeSearch}
 				onKeyDownCapture={(event) => {
 					if (event.key === 'Enter') {
-						if (searchState === 'ready') {
-							setSearchState('submitting');
-						} else if (searchState === 'submitting') {
+						if (searchState === 'submitting') {
 							handleSubmit();
 						}
 					}
