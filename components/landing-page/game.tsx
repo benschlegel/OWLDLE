@@ -48,6 +48,8 @@ export default function Game() {
 					// update game state
 					if (guessResponse.isNameCorrect === true) {
 						setGameState('won');
+					} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
+						setGameState('lost');
 					}
 
 					// Reset player
@@ -64,7 +66,7 @@ export default function Game() {
 					setCurrentGuess(undefined);
 				});
 		}
-	}, [currentGuess, setGameState, toast, gameState]);
+	}, [currentGuess, setGameState, toast, gameState, playerGuesses.length]);
 	return (
 		<>
 			<GameContainer guesses={evaluatedGuesses} />
