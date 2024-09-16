@@ -9,7 +9,7 @@ import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { GuessResponse } from '@/types/server';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 export default function Game() {
 	const [playerGuesses, _] = useContext(GuessContext);
@@ -17,11 +17,6 @@ export default function Game() {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [currentGuess, setCurrentGuess] = useState<FormattedPlayer | undefined>(undefined);
 	const { toast } = useToast();
-
-	useEffect(() => {
-		console.log('State: ', gameState);
-	}, [gameState]);
-
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
 		// Ensure that the max guesses are respected
