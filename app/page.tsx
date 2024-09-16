@@ -1,4 +1,5 @@
 import Header from '@/components/landing-page/header';
+import { Toaster } from '@/components/ui/toaster';
 
 export default function Home() {
 	return (
@@ -6,6 +7,7 @@ export default function Home() {
 			<main className="w-[32rem]">
 				<Header />
 			</main>
+			<Toaster />
 		</div>
 	);
 }
