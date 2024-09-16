@@ -73,12 +73,15 @@ export default function PlayerSearch({ className }: Props) {
 				value={searchValue}
 				onChangeCapture={handleTyping}
 				onFocus={() => setSearchState('typing')}
+				onClick={() => setSearchState('typing')}
 				onBlur={closeSearch}
 				onKeyDownCapture={(event) => {
 					if (event.key === 'Enter') {
 						if (searchState === 'submitting') {
 							handleSubmit();
 						}
+					} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+						setSearchState('typing');
 					}
 				}}
 				isButtonDisabled={selectedPlayer === undefined}
