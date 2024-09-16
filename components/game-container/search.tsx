@@ -21,7 +21,7 @@ export default function PlayerSearch({ className }: Props) {
 	return (
 		<Command
 			loop
-			className="mt-6 rounded-lg border shadow-md md:min-w-[450px]"
+			className="mt-6 rounded-lg border border-secondary shadow-md md:min-w-[450px]"
 			filter={(value, search) => {
 				// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
 				if (value.toLowerCase().includes(search.toLowerCase())) return 1;
