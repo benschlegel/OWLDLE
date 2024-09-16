@@ -87,6 +87,10 @@
 @layer base {
   * {
     @apply border-border;
+
+    ::selection {
+      @apply bg-primary-foreground/70 text-foreground;
+    }
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
