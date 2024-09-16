@@ -71,8 +71,8 @@ export default function Game() {
 	return (
 		<>
 			<GameContainer guesses={evaluatedGuesses} />
-			<PlayerSearch className="mt-8" />
-			<GameResult />
+			{/* Render search bar while in progress, render result when done */}
+			{gameState === 'in-progress' ? <PlayerSearch className="mt-8" /> : <GameResult />}
 		</>
 	);
 }
