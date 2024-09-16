@@ -9,7 +9,7 @@ import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { GuessResponse } from '@/types/server';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 export default function Game() {
 	const [playerGuesses, _] = useContext(GuessContext);
@@ -27,9 +27,15 @@ export default function Game() {
 
 		// Clean up state if guesses are reset
 		if (playerGuesses.length === 0) {
-			setEvaluatedGuesses([]);
+			resetGameState();
 		}
 	}, [playerGuesses]);
+
+	const resetGameState = useCallback(() => {
+		if (gameState !== 'in-progress') {
+			setEvaluatedGuesses([]);
+		}
+	}, [gameState]);
 
 	// Handle new guess
 	useEffect(() => {
