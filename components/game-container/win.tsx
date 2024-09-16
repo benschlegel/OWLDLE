@@ -4,7 +4,7 @@ import { PressableButton } from '@/components/ui/pressable-button';
 import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
-import { CopyIcon } from 'lucide-react';
+import { CheckIcon, CopyIcon } from 'lucide-react';
 import { useContext, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
@@ -55,22 +55,27 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 					/>
 				)}
 			</div>
-
-			<PressableButton
-				className="w-fit mt-2"
-				icon={<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />}
-				onClick={() => navigator.clipboard.writeText(formattedResult ?? '')}>
-				<p className="dark:text-[#dfdfd7] text-white scroll-m-20 text-lg font-mono tracking-tight">Copy result to clipboard</p>
-			</PressableButton>
-			<SwitchableButton
-				className="w-conent mt-2"
-				onClick={() => console.log('clicked')}
-				switchedContent={<p className="dark:text-[#dfdfd7] text-white scroll-m-20 text-lg font-mono tracking-tight">Switched</p>}>
-				<div className="flex flex-row justify-center items-center  gap-2 ">
-					<p className="dark:text-[#dfdfd7] text-white w-auto text-lg font-mono tracking-tight">Copy abc to clipboard</p>
-					<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />
-				</div>
+			<SwitchableButton className="w-72 mt-3" onClick={() => navigator.clipboard.writeText(formattedResult ?? '')} switchedContent={<SwitchedButtonContent />}>
+				<DefaultButtonContent />
 			</SwitchableButton>
+		</div>
+	);
+}
+
+function DefaultButtonContent() {
+	return (
+		<div className="flex flex-row justify-center items-center  gap-2 ">
+			<p className="dark:text-[#dfdfd7] text-white w-auto text-lg font-mono tracking-tight">Copy result to clipboard</p>
+			<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />
+		</div>
+	);
+}
+
+function SwitchedButtonContent() {
+	return (
+		<div className="flex flex-row justify-center items-center gap-1">
+			<p className="dark:text-[#dfdfd7] text-white w-auto text-lg font-mono tracking-tight">Copied!</p>
+			<CheckIcon className="h-5 w-5 dark:text-[#dfdfd7] text-white" />
 		</div>
 	);
 }
