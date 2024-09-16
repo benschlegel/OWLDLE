@@ -24,6 +24,11 @@ export default function Game() {
 			const latestGuess: FormattedPlayer = playerGuesses[playerGuesses.length - 1];
 			setCurrentGuess(latestGuess);
 		}
+
+		// Clean up state if guesses are reset
+		if (playerGuesses.length === 0) {
+			setEvaluatedGuesses([]);
+		}
 	}, [playerGuesses]);
 
 	// Handle new guess
