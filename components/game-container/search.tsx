@@ -1,14 +1,10 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
-import { Input } from '@/components/ui/input';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { GuessContext } from '@/context/GuessContext';
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import { cn } from '@/lib/utils';
-import { Calculator, Calendar, Check, Dices, Smile, UserIcon } from 'lucide-react';
+import { UserIcon } from 'lucide-react';
 import { useContext, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
@@ -37,14 +33,14 @@ export default function PlayerSearch({ className }: Props) {
 				onFocus={() => setIsSearchActive(true)}
 				onClick={() => setIsSearchActive(true)}
 				onBlur={() =>
+					// TODO: find better workaround
 					setTimeout(() => {
-						// TODO: find better workaround
 						setIsSearchActive(false);
 					}, 100)
 				}
 			/>
-			<CommandList className={`${isSearchActive ? '' : 'hidden'}`}>
-				<ScrollArea className="h-[200px]">
+			<CommandList className={`${isSearchActive ? '' : 'sr-only'}`}>
+				<ScrollArea className="sm:h-[11rem] h-[15rem]">
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="Players">
 						{PLAYERS.map((player) => {
