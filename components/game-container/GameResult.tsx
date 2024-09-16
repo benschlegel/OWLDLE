@@ -2,6 +2,8 @@
 
 import { useContext } from 'react';
 import { GameStateContext } from '@/context/GameStateContext';
+import WinScreen from '@/components/game-container/win';
+import LossScreen from '@/components/game-container/lose';
 
 export default function GameResult() {
 	const [gameState, setGameState] = useContext(GameStateContext);
@@ -10,8 +12,8 @@ export default function GameResult() {
 		case 'in-progress':
 			return <></>;
 		case 'won':
-			return <p>You won!</p>;
+			return <WinScreen />;
 		case 'lost':
-			return <p>You lost...</p>;
+			return <LossScreen />;
 	}
 }
