@@ -1,5 +1,5 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import type { DbAnswer, DbFormattedPlayers } from '@/types/database';
+import type { DbAnswer, DbAnswerFull, DbFormattedPlayers } from '@/types/database';
 import { MongoClient, WithId } from 'mongodb';
 
 let useDevDatabase = false;
@@ -16,8 +16,7 @@ if (!uri) {
 const PROD_NAME = 'OWLEL';
 const DEV_NAME = 'OWLEL-dev';
 export const dbName = !useDevDatabase ? PROD_NAME : DEV_NAME;
-export const currentAnswerCollectionName = 'currentAnswer';
-export const nextAnswerCollectionName = 'nextAnswer';
+export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
 const season1ID = 'season1';
 const currentAnswerID = 'current';
@@ -30,8 +29,7 @@ const database = dbClient.db(dbName);
 // Define collections
 
 const playerCollection = database.collection<DbFormattedPlayers>(playerCollectionName);
-const currentAnswerCollection = database.collection<DbFormattedPlayers>(currentAnswerCollectionName);
-const nextCollection = database.collection<DbFormattedPlayers>(nextAnswerCollectionName);
+const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
 
 export async function insertPlayer(): Promise<void> {
 	// const result = await playerCollection.insertMany(PLAYERS).then(() => console.log('Saved to db!'));
@@ -56,5 +54,13 @@ export async function insertAllPlayers() {
  * @param answer the answer that's currently correct
  */
 export async function setCurrentAnswer(answer: DbAnswer) {
-	return currentAnswerCollection.updateOne({ _id: currentAnswerID }, { $set: { ...answer, _id: currentAnswerID } }, { upsert: true });
+	return answersCollection.updateOne({ _id: currentAnswerID }, { $set: { ...answer, _id: currentAnswerID } }, { upsert: true });
+}
+
+/**
+ * Sets the next game answer (e.g. for tomorrow)
+ * @param answer the correct answer for the next iteration
+ */
+export async function setNextAnswer(answer: DbAnswer) {
+	return answersCollection.updateOne({ _id: nextAnswerID }, { $set: { ...answer, _id: nextAnswerID } }, { upsert: true });
 }
