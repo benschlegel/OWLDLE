@@ -19,6 +19,12 @@ const geistMono = localFont({
 	weight: '100 900',
 });
 
+const owlHeader = localFont({
+	src: './fonts/OWLFontBold.woff',
+	variable: '--font-owl-bold',
+	weight: '700',
+});
+
 const title = 'OWLDLE - Guess the OWL player';
 const description = 'OWLDLE - Guess the OWL player';
 const ogImagePath = '';
@@ -56,7 +62,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={`${geistSans.className}  ${geistSans.variable} ${geistMono.variable} antialiased`}>
+			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<GuessContextProvider>
 						<GameStateContextProvider>{children}</GameStateContextProvider>
