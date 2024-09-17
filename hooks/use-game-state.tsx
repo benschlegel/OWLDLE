@@ -2,16 +2,16 @@ import type { RowData } from '@/components/game-container/GameContainer';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
-import { toast, useToast } from '@/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
+import { validateGuess } from '@/lib/server';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 export default function useGameState() {
 	const [playerGuesses, _] = useContext(GuessContext);
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
-	const [currentGuess, setCurrentGuess] = useState<FormattedPlayer | undefined>(undefined);
 	const [validatedData, setValidatedData] = useState<ValidateResponse>();
 	const { toast } = useToast();
 
@@ -20,8 +20,9 @@ export default function useGameState() {
 			.then((response) => response.json())
 			.catch(() => {
 				toast({
-					title: "Can't reach server",
-					description: "Couldn't reach server",
+					title: 'Server error',
+					description: "Can't reach server or invalid data.",
+					variant: 'destructive',
 				});
 			})
 			.then((data) => setValidatedData(data));
@@ -31,8 +32,7 @@ export default function useGameState() {
 	useEffect(() => {
 		// Ensure that the max guesses are respected
 		if (playerGuesses.length <= GAME_CONFIG.maxGuesses) {
-			const latestGuess: FormattedPlayer = playerGuesses[playerGuesses.length - 1];
-			setCurrentGuess(latestGuess);
+			handleGuess();
 		}
 
 		// Clean up state if guesses are reset
@@ -41,45 +41,30 @@ export default function useGameState() {
 		// }
 	}, [playerGuesses]);
 
-	// Handle new guess
-	useEffect(() => {
-		if (currentGuess !== undefined && gameState === 'in-progress') {
-			console.time('validate');
-			fetch('/api/validate', {
-				method: 'POST',
-				body: JSON.stringify(currentGuess),
-			})
-				.then(async (res) => {
-					// Get response from server
-					const guessResponse: GuessResponse = await res.json();
-					console.timeEnd('validate');
+	const handleGuess = useCallback(() => {
+		// Get current guess
+		const currentGuess: FormattedPlayer = playerGuesses[playerGuesses.length - 1];
 
-					// Add guess response to row
-					const newRow: RowData = { guessResult: guessResponse, player: currentGuess };
-					setEvaluatedGuesses((prevEvaluatedGuesses) => [...prevEvaluatedGuesses, newRow]);
+		// Double-check that conditions are valid (should always be the case already)
+		if (validatedData !== undefined && gameState === 'in-progress') {
+			// Validate data
+			const correctPlayer = validatedData.correctPlayer;
+			const guessResult: GuessResponse = validateGuess(currentGuess, correctPlayer);
 
-					// update game state
-					if (guessResponse.isNameCorrect === true) {
-						setGameState('won');
-						// TODO: send anonymous game report
-					} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
-						setGameState('lost');
-					}
+			// Add guess response to row
+			const newRow: RowData = { guessResult: guessResult, player: currentGuess };
+			const newGuesses = [...evaluatedGuesses, newRow];
+			setEvaluatedGuesses(newGuesses);
 
-					// Reset player
-					setCurrentGuess(undefined);
-				})
-				.catch(() => {
-					toast({
-						title: 'Server error',
-						description: "Can't reach server or invalid data.",
-						variant: 'destructive',
-					});
-
-					// Reset player
-					setCurrentGuess(undefined);
-				});
+			// update game state
+			if (guessResult.isNameCorrect === true) {
+				setGameState('won');
+				// TODO: send anonymous game report
+			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
+				setGameState('lost');
+			}
 		}
-	}, [currentGuess, setGameState, toast, gameState, playerGuesses.length]);
+	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses]);
+
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
