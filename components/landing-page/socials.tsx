@@ -35,7 +35,7 @@ export default function Socials() {
 				Made with ❤️ by{' '}
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant="link" className="p-0 h-auto">
+						<Button variant="link" className="p-0 h-auto transition-colors duration-200">
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								@scorer5
 							</code>
