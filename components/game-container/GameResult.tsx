@@ -14,9 +14,11 @@ import { GAME_CONFIG } from '@/lib/config';
 
 type Props = {
 	results: RowData[];
+	iteration?: number;
+	validatedResponse?: ValidateResponse;
 };
 
-export default function GameResult({ results }: Props) {
+export default function GameResult({ results, iteration, validatedResponse }: Props) {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [validatedData, setValidatedData] = useState<ValidateResponse>();
 	const { toast } = useToast();
@@ -26,12 +28,12 @@ export default function GameResult({ results }: Props) {
 		const guesses = results.map((row) => row.guessResult);
 		const formatted = formatResult({
 			gameName: GAME_CONFIG.gameName,
-			gameIteration: 1,
+			gameIteration: iteration ?? 1,
 			guesses: guesses,
 			maxGuesses: GAME_CONFIG.maxGuesses,
 		});
 		return formatted;
-	}, [results]);
+	}, [results, iteration]);
 
 	useEffect(() => {
 		fetch('/api/validate?getplayer=true')
