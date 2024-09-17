@@ -3,6 +3,7 @@ import { addDays, validateGuess } from '@/lib/server';
 import { type Player, playerSchema } from '@/types/players';
 import type { PlayerWithRegion, ValidateResponse } from '@/types/server';
 import type { NextRequest } from 'next/server';
+import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 // export const dynamic = 'force-static';
 export const dynamicParams = true;
@@ -16,6 +17,17 @@ let nextReset: Date = DEFAULT_DATE;
 
 // How many days per "round" of the game (e.g. 1 means the game resets once per day, 2 every two days, etc)
 const DAY_INCREMENT = 1;
+
+// Configure rate limiter
+const postLimiter = new RateLimiterMemory({
+	points: 5, // Number of requests
+	duration: 60, // Per 60 seconds
+});
+
+const getLimiter = new RateLimiterMemory({
+	points: 1, // Number of requests
+	duration: 1, // Per second
+});
 
 /**
  * Verifies a guess
