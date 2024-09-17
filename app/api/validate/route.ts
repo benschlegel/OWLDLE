@@ -1,16 +1,17 @@
+import { PLAYERS } from '@/data/players/formattedPlayers';
 import { addDays, validateGuess } from '@/lib/server';
 import { type Player, playerSchema } from '@/types/players';
-import type { ValidateResponse } from '@/types/server';
+import type { PlayerWithRegion, ValidateResponse } from '@/types/server';
 import type { NextRequest } from 'next/server';
 
 // export const dynamic = 'force-static';
 export const dynamicParams = true;
 
 // TODO: reset current round if server curr player resets
-const DEFAULT_PLAYER: Player = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', isEastern: true, id: 0 };
-const DEFAULT_DATE = new Date('2024-09-15T11:40:00.000+02:00');
+const DEFAULT_PLAYER: PlayerWithRegion = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', isEastern: true, id: 0 };
+const DEFAULT_DATE = new Date('2024-09-17T02:00:00.000+02:00');
 
-let currPlayer: Player = DEFAULT_PLAYER;
+let currPlayer: PlayerWithRegion = DEFAULT_PLAYER;
 let nextReset: Date = DEFAULT_DATE;
 
 // How many days per "round" of the game (e.g. 1 means the game resets once per day, 2 every two days, etc)
@@ -39,10 +40,7 @@ export async function POST(req: NextRequest) {
 	return Response.json(resResponse);
 }
 
-export function GET(request: NextRequest) {
-	const searchParams = request?.nextUrl.searchParams;
-	const getPlayer = searchParams?.get('getplayer');
-
+export function GET() {
 	if (new Date() >= nextReset) {
 		// fetch from backend
 		nextReset = addDays(nextReset, DAY_INCREMENT);
@@ -52,10 +50,6 @@ export function GET(request: NextRequest) {
 		// set back to backend
 	}
 
-	const res: ValidateResponse = { nextReset: nextReset };
-	if (getPlayer !== null) {
-		res.correctPlayer = currPlayer.name;
-	}
-
+	const res: ValidateResponse = { nextReset: nextReset, correctPlayer: currPlayer, iteration: 1 };
 	return Response.json(res);
 }
