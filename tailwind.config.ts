@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss';
+import type { PluginAPI } from 'tailwindcss/types/config';
 
 const config: Config = {
 	darkMode: ['class'],
@@ -60,7 +61,7 @@ const config: Config = {
 	},
 	plugins: [
 		require('tailwindcss-animate'),
-		({ matchUtilities, theme /* … */ }) => {
+		({ matchUtilities, theme /* … */ }: PluginAPI) => {
 			// …
 			matchUtilities(
 				// https://gist.github.com/olets/9b833a33d01384eed1e9f1e106003a3b
