@@ -9,6 +9,6 @@ export async function GET(request: Request) {
 	}
 
 	// TODO: Do db stuff
-	const reset = (await RouteGet({} as unknown as NextRequest).json()) as Date;
+	const reset = (await RouteGet().json()) as Date;
 	return new Response(`Next reset: ${JSON.stringify(reset)}`);
 }
