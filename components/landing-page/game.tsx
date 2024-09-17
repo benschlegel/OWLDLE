@@ -18,7 +18,9 @@ export default function Game() {
 	// const [gameState, setGameState] = useContext(GameStateContext);
 	// const [currentGuess, setCurrentGuess] = useState<FormattedPlayer | undefined>(undefined);
 	// const { toast } = useToast();
-	const [evaluatedGuesses, gameState] = useGameState();
+	const [evaluatedGuesses, gameState, validatedData] = useGameState();
+
+	console.log('validatedData: ', validatedData);
 
 	return (
 		<>

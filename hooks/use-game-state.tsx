@@ -4,7 +4,7 @@ import { GuessContext } from '@/context/GuessContext';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { toast, useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
-import type { GuessResponse } from '@/types/server';
+import type { GuessResponse, ValidateResponse } from '@/types/server';
 import { useContext, useEffect, useState } from 'react';
 
 export default function useGameState() {
@@ -12,7 +12,20 @@ export default function useGameState() {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
 	const [currentGuess, setCurrentGuess] = useState<FormattedPlayer | undefined>(undefined);
+	const [validatedData, setValidatedData] = useState<ValidateResponse>();
 	const { toast } = useToast();
+
+	useEffect(() => {
+		fetch('/api/validate')
+			.then((response) => response.json())
+			.catch(() => {
+				toast({
+					title: "Can't reach server",
+					description: "Couldn't reach server",
+				});
+			})
+			.then((data) => setValidatedData(data));
+	}, [toast]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
@@ -68,5 +81,5 @@ export default function useGameState() {
 				});
 		}
 	}, [currentGuess, setGameState, toast, gameState, playerGuesses.length]);
-	return [evaluatedGuesses, gameState] as const;
+	return [evaluatedGuesses, gameState, validatedData] as const;
 }
