@@ -3,7 +3,7 @@ import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import { CheckIcon, CopyIcon } from 'lucide-react';
-import { useContext, useLayoutEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 import { useWindowSize } from '@uidotdev/usehooks';
 import Confetti from 'react-confetti';
@@ -13,16 +13,28 @@ type Props = {
 	formattedResult: string;
 };
 
+const confettiDuration = 7500;
+
 export default function WinScreen({ nextReset, formattedResult }: Partial<Props>) {
 	const [_, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
+	const [showConfetti, setShowConfetti] = useState(true);
 
 	const { height, width } = useWindowSize();
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
 		setShowTimer(true);
+	}, []);
+
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			setShowConfetti(false);
+		}, confettiDuration);
+
+		// Cleanup timeout on unmount
+		return () => clearTimeout(timer);
 	}, []);
 
 	if (nextReset === undefined) return <></>;
@@ -38,8 +50,8 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 						renderer={renderer}
 						autoStart
 						onComplete={() => {
-							setGameState('in-progress');
 							setGuesses([]);
+							setGameState('in-progress');
 						}}
 					/>
 				)}
@@ -48,7 +60,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 				<DefaultButtonContent />
 			</SwitchableButton>
 
-			<Confetti width={width ? width - 2 : 0} height={height ? height - 2 : 0} className="overflow-none" />
+			<Confetti width={width ? width - 2 : 0} height={height ? height - 2 : 0} numberOfPieces={showConfetti ? 200 : 0} className="overflow-none" />
 		</div>
 	);
 }
