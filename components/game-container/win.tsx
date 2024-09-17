@@ -28,6 +28,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 		setShowTimer(true);
 	}, []);
 
+	// Stops running confetti after 'confettiDuration' amount of ms
 	useEffect(() => {
 		const timer = setTimeout(() => {
 			setShowConfetti(false);
@@ -60,7 +61,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 				<DefaultButtonContent />
 			</SwitchableButton>
 
-			<Confetti width={width ? width - 2 : 0} height={height ? height - 2 : 0} numberOfPieces={showConfetti ? 200 : 0} className="overflow-none" />
+			<Confetti numberOfPieces={showConfetti ? 200 : 0} className="overflow-none" />
 		</div>
 	);
 }
