@@ -25,7 +25,7 @@ const postLimiter = new RateLimiterMemory({
 });
 
 const getLimiter = new RateLimiterMemory({
-	points: 1, // Number of requests
+	points: 2, // Number of requests
 	duration: 1, // Per second
 });
 
@@ -35,33 +35,45 @@ const getLimiter = new RateLimiterMemory({
  * @returns what fields are correct and what fields are incorrect
  */
 export async function POST(req: NextRequest) {
-	// Try to parse request
-	const parsedBody = await req.json();
-	const playerRes = playerSchema.safeParse(parsedBody);
+	try {
+		await postLimiter.consume(req.ip ?? 'anonymous');
 
-	// Error handling
-	if (!playerRes.success) {
-		const errMessage = playerRes.error.errors.map((err) => `${err.path}: ${err.message},`);
-		return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
+		// Try to parse request
+		const parsedBody = await req.json();
+		const playerRes = playerSchema.safeParse(parsedBody);
+
+		// Error handling
+		if (!playerRes.success) {
+			const errMessage = playerRes.error.errors.map((err) => `${err.path}: ${err.message},`);
+			return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
+		}
+
+		// Raw data
+		const player = playerRes.data as Player;
+		const resResponse = validateGuess(player, currPlayer);
+
+		return Response.json(resResponse);
+	} catch (error) {
+		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
 	}
-
-	// Raw data
-	const player = playerRes.data as Player;
-	const resResponse = validateGuess(player, currPlayer);
-
-	return Response.json(resResponse);
 }
 
-export function GET() {
-	if (new Date() >= nextReset) {
-		// fetch from backend
-		nextReset = addDays(nextReset, DAY_INCREMENT);
-		// get new player from backend
-		currPlayer = DEFAULT_PLAYER;
-		// add day
-		// set back to backend
-	}
+export async function GET(req: NextRequest) {
+	try {
+		await getLimiter.consume(req.ip ?? 'anonymous');
 
-	const res: ValidateResponse = { nextReset: nextReset, correctPlayer: currPlayer, iteration: 1 };
-	return Response.json(res);
+		if (new Date() >= nextReset) {
+			// fetch from backend
+			nextReset = addDays(nextReset, DAY_INCREMENT);
+			// get new player from backend
+			currPlayer = DEFAULT_PLAYER;
+			// add day
+			// set back to backend
+		}
+
+		const res: ValidateResponse = { nextReset: nextReset, correctPlayer: currPlayer, iteration: 1 };
+		return Response.json(res);
+	} catch (error) {
+		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
+	}
 }
