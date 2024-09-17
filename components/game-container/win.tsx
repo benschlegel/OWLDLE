@@ -21,6 +21,8 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	const [showTimer, setShowTimer] = useState(true);
 	const [showConfetti, setShowConfetti] = useState(true);
 
+	const [showButtonConfetti, setShowButtonConfetti] = useState(false);
+
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
 		setShowTimer(true);
@@ -65,11 +67,26 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 					/>
 				)}
 			</div>
-			<SwitchableButton className="w-72 mt-3" onClick={() => navigator.clipboard.writeText(formattedResult ?? '')} switchedContent={<SwitchedButtonContent />}>
+			<SwitchableButton
+				className="w-72 mt-3"
+				onClick={() => {
+					navigator.clipboard.writeText(formattedResult ?? '');
+					setShowButtonConfetti(true);
+				}}
+				switchedContent={<SwitchedButtonContent />}>
 				<DefaultButtonContent />
 			</SwitchableButton>
 
 			<Confetti numberOfPieces={showConfetti ? 200 : 0} className="overflow-none w-full h-full" />
+			<Confetti
+				numberOfPieces={showButtonConfetti ? 20 : 0}
+				className="overflow-none w-full h-full"
+				onConfettiComplete={(confetti) => {
+					setShowButtonConfetti(false);
+					confetti?.reset();
+				}}
+				recycle={false}
+			/>
 		</div>
 	);
 }
