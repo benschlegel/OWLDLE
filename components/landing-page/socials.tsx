@@ -2,7 +2,27 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import SocialsRow, { type SocialProps } from '@/components/ui/socials-row';
+import SocialsRowCopy from '@/components/ui/socials-row-copy';
 import { BotMessageSquareIcon, Github, Swords, TwitterIcon } from 'lucide-react';
+
+const socials: SocialProps[] = [
+	{ socialName: 'Twitter', socialLink: 'https://x.com/scorer5_', socialValue: '@scorer5_', children: <TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-1" /> },
+	{
+		socialName: 'Discord',
+		socialLink: '',
+		socialValue: 'scorer5',
+		isCopyable: true,
+		children: <BotMessageSquareIcon className="w-[1.1rem] h-[1.1rem] mb-1" />,
+	},
+	{ socialName: 'Battle.net', socialLink: '', socialValue: 'scorer5#21277', isCopyable: true, children: <Swords className="w-[1.1rem] h-[1.1rem] mb-1" /> },
+	{
+		socialName: 'Github',
+		socialLink: 'https://github.com/benschlegel',
+		socialValue: '@benschlegel',
+		children: <Github className="w-[1.1rem] h-[1.1rem] mb-1" />,
+	},
+];
 
 export default function Socials() {
 	return (
@@ -24,34 +44,22 @@ export default function Socials() {
 								<p className="text-sm text-muted-foreground">Check me out here</p>
 							</div>
 							<div className="grid gap-2">
-								<div className="grid grid-cols-3 items-center gap-4">
-									<div className="flex flex-row gap-1 justify-start items-center">
-										<TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-1" />
-										<Label htmlFor="width">Twitter</Label>
-									</div>
-									<div className="col-span-2 h-8 rounded-md border border-input bg-background" />
-								</div>
-								<div className="grid grid-cols-3 items-center gap-4">
-									<div className="flex flex-row gap-1 justify-start items-center">
-										<BotMessageSquareIcon className="w-[1.1rem] h-[1.1rem] mb-1" />
-										<Label htmlFor="width">Discord</Label>
-									</div>
-									<Input id="maxWidth" defaultValue="300px" className="col-span-2 h-8" />
-								</div>
-								<div className="grid grid-cols-3 items-center gap-4">
-									<div className="flex flex-row gap-1 justify-start items-center">
-										<Swords className="w-[1.1rem] h-[1.1rem] mb-1" />
-										<Label htmlFor="width">Battle.net</Label>
-									</div>
-									<Input id="height" defaultValue="25px" className="col-span-2 h-8" />
-								</div>
-								<div className="grid grid-cols-3 items-center gap-4">
-									<div className="flex flex-row gap-1 justify-start items-center">
-										<Github className="w-[1.1rem] h-[1.1rem] mb-1" />
-										<Label htmlFor="width">Github</Label>
-									</div>
-									<Input id="maxHeight" defaultValue="none" className="col-span-2 h-8" />
-								</div>
+								{socials.map((socialEntry) =>
+									socialEntry.isCopyable ? (
+										<SocialsRowCopy key={socialEntry.socialName} socialValue={socialEntry.socialValue} socialName={socialEntry.socialName}>
+											{socialEntry.children}
+										</SocialsRowCopy>
+									) : (
+										<SocialsRow
+											key={socialEntry.socialName}
+											socialLink={socialEntry.socialLink}
+											socialName={socialEntry.socialName}
+											socialValue={socialEntry.socialValue}
+											isCopyable={socialEntry.isCopyable}>
+											{socialEntry.children}
+										</SocialsRow>
+									)
+								)}
 							</div>
 						</div>
 					</PopoverContent>
