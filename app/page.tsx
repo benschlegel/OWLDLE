@@ -7,11 +7,9 @@ export default function Home() {
 	return (
 		<div className="px-4 pt-8 sm:px-8 w-full h-full flex justify-center items-center">
 			<main className="w-[32rem]">
-				<div className="overflow-y-auto flex-1">
-					<Socials />
-					<Header />
-					<Game />
-				</div>
+				<Socials />
+				<Header />
+				<Game />
 			</main>
 			<Toaster />
 		</div>
