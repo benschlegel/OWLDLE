@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import GuessContextProvider from '@/context/GuessContext';
 import GameStateContextProvider from '@/context/GameStateContext';
 import { GAME_CONFIG } from '@/lib/config';
+import PlausibleProvider from 'next-plausible';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -62,6 +63,10 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
+			<head>
+				{/* Add your own plausible config (if you want to set up analytics) */}
+				<PlausibleProvider domain="map.bschlegel.com" customDomain="https://analytics.global.rwutscher.com" selfHosted={true} />
+			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<GuessContextProvider>

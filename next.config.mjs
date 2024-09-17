@@ -1,6 +1,7 @@
-import MillionLint from '@million/lint';
+// import MillionLint from '@million/lint';
+import { withPlausibleProxy } from 'next-plausible';
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig = withPlausibleProxy()({
 	images: {
 		remotePatterns: [
 			{
@@ -24,7 +25,7 @@ const nextConfig = {
 		reactCompiler: true,
 		instrumentationHook: true,
 	},
-};
+});
 // export default MillionLint.next({
 // 	rsc: true,
 // })(nextConfig);
