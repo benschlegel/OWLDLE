@@ -9,18 +9,21 @@ export async function GET() {
 	return new ImageResponse(
 		<div
 			style={{
-				fontSize: 140,
+				height: '100%',
+				fontSize: 200,
 				color: '#f06216',
 				background: '#1a1a1e',
 				width: '100%',
-				height: '100%',
-				padding: '50px 200px',
-				textAlign: 'center',
-				justifyContent: 'center',
-				fontFamily: 'OWLFontBold',
+				display: 'flex',
+				flexDirection: 'column',
 				alignItems: 'center',
+				justifyContent: 'center',
 			}}>
-			OWLDLE
+			<div style={{ display: 'flex', marginTop: -40 }}>
+				<div style={{ display: 'flex' }}>OWL</div>
+				<div style={{ display: 'flex', color: '#dfdfd6' }}>DLE</div>
+			</div>
+			<div style={{ display: 'flex', fontSize: 38, marginTop: 20, color: '#dfdfd6' }}>Guess the overwatch league player (season 1)</div>
 		</div>,
 		{
 			width: 1200,
