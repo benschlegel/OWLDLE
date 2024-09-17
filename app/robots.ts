@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
 		rules: {
 			userAgent: '*',
 			allow: '/',
-			disallow: '/public/teams/',
+			disallow: '/teams/',
 		},
 		sitemap: 'https://owls1le.bschlegel.com/sitemap.xml',
 	};
