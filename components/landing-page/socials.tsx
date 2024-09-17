@@ -41,7 +41,7 @@ export default function Socials() {
 							</code>
 						</Button>
 					</PopoverTrigger>
-					<PopoverContent className="w-80 mr-9 sm:mr-0">
+					<PopoverContent className="w-80 mr-4 sm:mr-0">
 						<div className="grid gap-4">
 							<div className="space-y-2">
 								<h4 className="font-medium leading-none">My Socials</h4>
