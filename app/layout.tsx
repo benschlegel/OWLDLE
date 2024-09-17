@@ -65,7 +65,7 @@ export default function RootLayout({
 		<html lang="en">
 			<head>
 				{/* Add your own plausible config (if you want to set up analytics) */}
-				<PlausibleProvider domain="map.bschlegel.com" customDomain="https://analytics.global.rwutscher.com" selfHosted={true} />
+				<PlausibleProvider domain="owldle.bschlegel.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} />
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
