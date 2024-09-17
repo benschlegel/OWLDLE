@@ -5,8 +5,8 @@ import { GuessContext } from '@/context/GuessContext';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
-import { useWindowSize } from '@uidotdev/usehooks';
 import Confetti from 'react-confetti';
+import { Button } from '@/components/ui/button';
 
 type Props = {
 	nextReset: Date;
@@ -21,8 +21,6 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	const [showTimer, setShowTimer] = useState(true);
 	const [showConfetti, setShowConfetti] = useState(true);
 
-	const { height, width } = useWindowSize();
-
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
 		setShowTimer(true);
@@ -31,18 +29,28 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	// Stops running confetti after 'confettiDuration' amount of ms
 	useEffect(() => {
 		const timer = setTimeout(() => {
-			setShowConfetti(false);
+			if (showConfetti) {
+				setShowConfetti(false);
+			}
 		}, confettiDuration);
 
 		// Cleanup timeout on unmount
 		return () => clearTimeout(timer);
-	}, []);
+	}, [showConfetti]);
 
 	if (nextReset === undefined) return <></>;
 
 	return (
 		<div className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
-			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">🎉 You won! 🎉</h1>
+			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
+				<Button className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl" variant="ghost" onClick={() => setShowConfetti(true)}>
+					🎉
+				</Button>{' '}
+				You won!{' '}
+				<Button className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl" variant="ghost" onClick={() => setShowConfetti(true)}>
+					🎉
+				</Button>
+			</h1>
 			<div className="flex gap-2 items-center justify-center opacity-80">
 				<p>Time until next reset:</p>
 				{showTimer && (
