@@ -13,12 +13,16 @@ export default function GuessRow({ data }: Props) {
 
 	if (data?.player.isEastern === true) regionAbbreviation = 'E';
 	if (data?.player.isEastern === false) regionAbbreviation = 'W';
+
+	const useSmallerFont = data && data.player.name.length > 7;
 	return (
 		<div className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] h-[3rem] transition-colors`}>
 			{/* Player name */}
 			<GameCell isLarge cellSize={cellSize} isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player name">
 				<div className="h-full flex justify-center sm:px-4 px-2 items-center">
-					<p className="text-white opacity-90 text-md font-extrabold text-center tracking-tight lg:text-2xl">{data?.player.name}</p>
+					<p className={`text-white opacity-90 font-extrabold text-center tracking-tight ${useSmallerFont ? 'text-sm' : 'text-xl'} md:text-2xl`}>
+						{data?.player.name}
+					</p>
 				</div>
 			</GameCell>
 			{/* Country */}
