@@ -19,7 +19,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-	title: 'OWLS1LE - Guess the OWL player',
+	title: 'OWLDLE - Guess the OWL player',
 	description: 'Guess the Overwatch League player (from season 1)',
 };
 

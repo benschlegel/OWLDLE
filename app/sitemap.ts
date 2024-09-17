@@ -8,7 +8,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 	yesterday.setSeconds(0);
 	return [
 		{
-			url: 'https://owls1le.bschlegel.com',
+			url: 'https://owldle.bschlegel.com',
 			lastModified: yesterday,
 			changeFrequency: 'daily',
 			priority: 1,
