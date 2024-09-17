@@ -61,7 +61,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 				<DefaultButtonContent />
 			</SwitchableButton>
 
-			<Confetti numberOfPieces={showConfetti ? 200 : 0} className="overflow-none" />
+			<Confetti numberOfPieces={showConfetti ? 200 : 0} className="overflow-none w-full h-full" />
 		</div>
 	);
 }
