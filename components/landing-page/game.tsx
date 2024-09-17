@@ -26,16 +26,10 @@ export default function Game() {
 		}
 
 		// Clean up state if guesses are reset
-		if (playerGuesses.length === 0) {
-			resetGameState();
-		}
+		// if (playerGuesses.length === 0) {
+		// 	resetGameState();
+		// }
 	}, [playerGuesses]);
-
-	const resetGameState = useCallback(() => {
-		if (gameState !== 'in-progress') {
-			setEvaluatedGuesses([]);
-		}
-	}, [gameState]);
 
 	// Handle new guess
 	useEffect(() => {
