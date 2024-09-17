@@ -14,7 +14,8 @@ export default function Header() {
 				<div className="mb-1 flex items-center">
 					<h1 className="sm:text-4xl text-3xl font-bold text-center">
 						<span className="text-primary-foreground">OWL</span>
-						<span className="text-primary-foreground/70">S1</span>LE
+						{/* <span className="text-primary-foreground/70">S1</span>LE */}
+						DLE
 					</h1>
 				</div>
 				<ModeToggle />
