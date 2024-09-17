@@ -8,7 +8,7 @@ export interface DbFormattedPlayers {
 	players: FormattedPlayer[];
 }
 
-export interface DbAnswer {
+export interface DbAnswerFull {
 	/**
 	 * Should always be hard coded
 	 */
@@ -26,3 +26,5 @@ export interface DbAnswer {
 	 */
 	iteration: number;
 }
+
+export type DbAnswer = Omit<DbAnswerFull, '_id'>;
