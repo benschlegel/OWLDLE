@@ -7,9 +7,9 @@ const configSchema = z.object({
 	 */
 	maxGuesses: z.number().min(1),
 	/**
-	 * Shorthand of url (for footer in game result), e.g.  OWLS1le.bschlegel.com
+	 * Site url, e.g.  https://owldle.bschlegel.com
 	 */
-	siteUrlShorthand: z.string(),
+	siteUrl: z.string(),
 	/**
 	 * Name of the game (used in header of game result), e.g. OWLS1LE
 	 */

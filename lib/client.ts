@@ -13,7 +13,7 @@ export type FormatConfig = {
 	/**
 	 * Shorthand for footer (should be passed from game config value)
 	 */
-	siteUrlShorthand?: string;
+	siteUrl?: string;
 	/**
 	 * Game name for footer (should be passed from game config value)
 	 */
@@ -29,7 +29,7 @@ export type FormatConfig = {
  * @param config The config to ge for formatting (more info can be found in FormatConfig type)
  * @returns a string formatted using emojis (🟥 🟩) + stats
  */
-export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrlShorthand }: FormatConfig): string {
+export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl }: FormatConfig): string {
 	// TODO: add X to header if game was not completed successfully
 	// Add header
 	let result = `${gameName} ${gameIteration} ${guesses.length}/${maxGuesses}\n`;
@@ -47,7 +47,7 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (hasFailed === true) result += '❌';
 
 	// Add footer (with site url)
-	result += `\n<${siteUrlShorthand ?? getSiteName()}>`;
+	result += `\n<${siteUrl ?? getSiteName()}>`;
 	return result;
 }
 

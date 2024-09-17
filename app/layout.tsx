@@ -4,6 +4,7 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import GuessContextProvider from '@/context/GuessContext';
 import GameStateContextProvider from '@/context/GameStateContext';
+import { GAME_CONFIG } from '@/lib/config';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -18,9 +19,34 @@ const geistMono = localFont({
 	weight: '100 900',
 });
 
+const title = 'OWLDLE - Guess the OWL player';
+const description = 'OWLDLE - Guess the OWL player';
+const ogImagePath = '';
+const ogImageWidth = 1200;
+const ogImageHeight = 630;
+
 export const metadata: Metadata = {
-	title: 'OWLDLE - Guess the OWL player',
-	description: 'Guess the Overwatch League player (from season 1)',
+	title: title,
+	description: description,
+	metadataBase: new URL(GAME_CONFIG.siteUrl),
+	openGraph: {
+		title: title,
+		description: description,
+		url: GAME_CONFIG.siteUrl,
+		images: [
+			{
+				url: ogImagePath,
+				width: ogImageWidth,
+				height: ogImageHeight,
+			},
+		],
+		type: 'website',
+	},
+	twitter: {
+		title: title,
+		description: description,
+		images: [ogImagePath],
+	},
 };
 
 export default function RootLayout({
