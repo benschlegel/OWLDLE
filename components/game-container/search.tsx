@@ -112,7 +112,8 @@ export default function PlayerSearch({ className }: Props) {
 				}}
 				isButtonDisabled={selectedPlayer === undefined}
 			/>
-			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'} max-h-[200px] overflow-y-scroll`}>
+			<CommandList
+				className={`${searchState === 'typing' ? '' : 'sr-only'} max-h-[200px] h-[--cmdk-list-height] transition-[height] duration-200 overflow-y-scroll`}>
 				{/* <ScrollArea className="sm:h-[10rem] h-[15rem]"> */}
 				<CommandEmpty>No results found.</CommandEmpty>
 				<CommandGroup heading="">
