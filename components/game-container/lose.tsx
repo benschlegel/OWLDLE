@@ -12,22 +12,10 @@ type Props = {
 	correctPlayer: string;
 };
 
-const confettiDuration = 2000;
-
 export default function WinScreen({ nextReset, correctPlayer, formattedResult }: Partial<Props>) {
 	const [_, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
-
-	// TODO: fix
-	useEffect(() => {
-		const timer = setTimeout(() => {
-			console.log('Delayed!');
-		}, 2000);
-
-		// Cleanup timeout on unmount
-		return () => clearTimeout(timer);
-	}, []);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
