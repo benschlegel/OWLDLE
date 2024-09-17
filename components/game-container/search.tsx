@@ -100,7 +100,6 @@ export default function PlayerSearch({ className }: Props) {
 				onFocus={() => setSearchState('typing')}
 				onClick={() => setSearchState('typing')}
 				ref={inputRef}
-				onBlur={closeSearch}
 				onKeyDownCapture={(event) => {
 					if (event.key === 'Enter') {
 						if (searchState === 'submitting') {

@@ -62,19 +62,17 @@ export default function SearchDialog({ className }: Props) {
 		<CommandDialog open={open} onOpenChange={setOpen} srDialogTitle="Search for player">
 			<CommandInput placeholder="Search for player..." value={searchValue} onChangeCapture={handleTyping} ref={inputRef} />
 			<CommandList>
-				<ScrollArea className="sm:h-[17rem] h-[15rem]">
-					<CommandEmpty>No results found.</CommandEmpty>
-					<CommandGroup heading="">
-						{PLAYERS.map((player) => {
-							return (
-								<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
-									<UserIcon className="mr-2 h-4 w-4" />
-									<span>{player.name}</span>
-								</CommandItem>
-							);
-						})}
-					</CommandGroup>
-				</ScrollArea>
+				<CommandEmpty>No results found.</CommandEmpty>
+				<CommandGroup heading="">
+					{PLAYERS.map((player) => {
+						return (
+							<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
+								<UserIcon className="mr-2 h-4 w-4" />
+								<span>{player.name}</span>
+							</CommandItem>
+						);
+					})}
+				</CommandGroup>
 			</CommandList>
 		</CommandDialog>
 	);
