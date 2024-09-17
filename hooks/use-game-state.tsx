@@ -63,8 +63,13 @@ export default function useGameState() {
 			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
 				setGameState('lost');
 			}
+		} else {
+			toast({
+				title: 'Please try again',
+				description: 'Something went wrong, please try again',
+			});
 		}
-	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses]);
+	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses]);
 
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
