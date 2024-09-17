@@ -52,6 +52,6 @@ export default function GameResult({ results }: Props) {
 		case 'won':
 			return <WinScreen nextReset={validatedData?.nextReset} formattedResult={formattedResult} />;
 		case 'lost':
-			return <LossScreen correctPlayer={validatedData?.correctPlayer} formattedResult={formattedResult} nextReset={validatedData?.nextReset} />;
+			return <LossScreen correctPlayer={validatedData?.correctPlayer.name} formattedResult={formattedResult} nextReset={validatedData?.nextReset} />;
 	}
 }
