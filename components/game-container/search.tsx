@@ -112,20 +112,20 @@ export default function PlayerSearch({ className }: Props) {
 				}}
 				isButtonDisabled={selectedPlayer === undefined}
 			/>
-			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'}`}>
-				<ScrollArea className="sm:h-[10rem] h-[15rem]">
-					<CommandEmpty>No results found.</CommandEmpty>
-					<CommandGroup heading="">
-						{PLAYERS.map((player) => {
-							return (
-								<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
-									<UserIcon className="mr-2 h-4 w-4" />
-									<span>{player.name}</span>
-								</CommandItem>
-							);
-						})}
-					</CommandGroup>
-				</ScrollArea>
+			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'} max-h-[200px]`}>
+				{/* <ScrollArea className="sm:h-[10rem] h-[15rem]"> */}
+				<CommandEmpty>No results found.</CommandEmpty>
+				<CommandGroup heading="">
+					{PLAYERS.map((player) => {
+						return (
+							<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
+								<UserIcon className="mr-2 h-4 w-4" />
+								<span>{player.name}</span>
+							</CommandItem>
+						);
+					})}
+				</CommandGroup>
+				{/* </ScrollArea> */}
 			</CommandList>
 		</Command>
 	);
