@@ -86,7 +86,7 @@ export default function PlayerSearch({ className }: Props) {
 	return (
 		<Command
 			loop
-			className={cn('rounded-lg border border-secondary shadow-sm md:min-w-[450px] mb-4 overflow-y-auto', className)}
+			className={cn('rounded-lg border border-secondary shadow-sm md:min-w-[450px] mb-4', className)}
 			filter={(value, search) => {
 				// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
 				if (value.toLowerCase().includes(search.toLowerCase())) return 1;
@@ -112,7 +112,7 @@ export default function PlayerSearch({ className }: Props) {
 				}}
 				isButtonDisabled={selectedPlayer === undefined}
 			/>
-			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'} max-h-[200px]`}>
+			<CommandList className={`${searchState === 'typing' ? '' : 'sr-only'} max-h-[200px] overflow-y-scroll`}>
 				{/* <ScrollArea className="sm:h-[10rem] h-[15rem]"> */}
 				<CommandEmpty>No results found.</CommandEmpty>
 				<CommandGroup heading="">
