@@ -118,7 +118,11 @@ export default function PlayerSearch({ className }: Props) {
 				<CommandGroup heading="">
 					{PLAYERS.map((player) => {
 						return (
-							<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
+							<CommandItem
+								value={JSON.stringify(player)}
+								key={`${player.name}-${player.team}`}
+								onSelect={handleItemSubmit}
+								className="text-[16px] sm:text-[16px] sm:py-[0.43rem]">
 								<UserIcon className="mr-2 h-4 w-4" />
 								<span>{player.name}</span>
 							</CommandItem>
