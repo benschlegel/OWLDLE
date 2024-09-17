@@ -5,9 +5,9 @@ import { Toaster } from '@/components/ui/toaster';
 
 export default function Home() {
 	return (
-		<div className="px-4 pt-8 sm:px-8 w-full h-full flex flex-col justify-center items-center">
+		<div className="px-4 pt-8 sm:px-8 w-full h-full flex justify-center items-center">
 			<main className="w-[32rem]">
-				{/* <Socials /> */}
+				<Socials />
 				<Header />
 				<Game />
 			</main>
