@@ -27,7 +27,7 @@ const owlHeader = localFont({
 
 const title = 'OWLDLE - Guess the OWL player';
 const description = 'OWLDLE - Guess the OWL player';
-const ogImagePath = '';
+const ogImagePath = '/open-graph.png';
 const ogImageWidth = 1200;
 const ogImageHeight = 630;
 
