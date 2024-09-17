@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
 	const yesterday = new Date();
 	yesterday.setDate(yesterday.getDate() - 1);
-	yesterday.setHours(0);
+	yesterday.setHours(2);
 	yesterday.setMinutes(0);
 	yesterday.setSeconds(0);
 	return [
