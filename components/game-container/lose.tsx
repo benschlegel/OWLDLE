@@ -38,8 +38,10 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult }:
 						renderer={renderer}
 						autoStart
 						onComplete={() => {
-							setGameState('in-progress');
-							setGuesses([]);
+							if (nextReset !== undefined && nextReset > new Date()) {
+								setGameState('in-progress');
+								setGuesses([]);
+							}
 						}}
 					/>
 				)}
