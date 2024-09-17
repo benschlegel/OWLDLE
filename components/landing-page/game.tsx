@@ -20,8 +20,6 @@ export default function Game() {
 	// const { toast } = useToast();
 	const [evaluatedGuesses, gameState, validatedData] = useGameState();
 
-	console.log('validatedData: ', validatedData);
-
 	return (
 		<>
 			<GameContainer guesses={evaluatedGuesses} />
