@@ -17,8 +17,8 @@ export default function SocialsRow({ socialName, socialValue, socialLink, isCopy
 				<Label htmlFor={`social-${socialName}`}>{socialName}</Label>
 			</div>
 			<div id={`social-${socialName}`} className="col-span-2 h-8 px-2 rounded-md border border-input bg-background flex items-center">
-				<Link target="_blank" href={socialLink} rel="noopener noreferrer">
-					<Button variant="link" className="p-0">
+				<Link target="_blank" href={socialLink} rel="noopener noreferrer" className="border-md">
+					<Button variant="link" className="p-0 h-auto" tabIndex={-1}>
 						<code className="relative rounded  px-[0.3rem] py-[0.1rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 							{socialValue}
 						</code>
