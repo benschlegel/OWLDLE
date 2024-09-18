@@ -89,12 +89,12 @@
   @apply bg-primary-foreground/70 text-foreground;
 }
 
-.aspect-1 {
+/* .aspect-1 {
   @apply relative before:block before:content-[""] before:w-full before:pt-[(1_/_1)_*_100%];
 }
 .aspect-1 > .inner {
   @apply absolute inset-0;
-}
+} */
 
 .outer {
   position: relative;
