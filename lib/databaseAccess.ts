@@ -1,6 +1,7 @@
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
+import { trimAndAddHours } from '@/lib/utils';
 import type {
 	AnswerKey,
 	DbAnswer,
@@ -15,7 +16,7 @@ import type {
 	DbLoggedGame,
 	DbGuess,
 } from '@/types/database';
-import { MongoClient } from 'mongodb';
+import { type ClientSession, MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
 if (process.env.NODE_ENV !== 'production') {
@@ -80,9 +81,9 @@ export async function insertAllPlayers(dataset: DbDatasetID = season1ID) {
  * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the answer that's currently correct
  */
-export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID) {
+export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID, session?: ClientSession) {
 	const answerKey: AnswerKey = `current_${dataset}`;
-	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true, session });
 }
 
 /**
@@ -201,5 +202,60 @@ export async function addIteration(it: DbIteration) {
 	return iterationCollection.insertOne(it);
 }
 
-// TODO: add game statistics collection (with date as key)
-// TODO: reset: -add new iteration to iterations immediatly, -set next/current, -check if backlog needs regen
+/**
+ * Wrapper that handles going to the next iteration (if resetDate was reached)
+ * Works as a transaction, either everything gets rolled over to next iteration or everything fails
+ * @param nextReset hours until next reset
+ */
+export async function goNextIteration(nextReset: number = GAME_CONFIG.nextResetHours, dataset: DbDatasetID = 'OWL_season1') {
+	// * Step 1: get current answer from db, error out if not working
+	const currentAnswer = await getCurrentAnswer();
+	const nextAnswer = await getNextAnswer();
+	if (!currentAnswer || !nextAnswer) {
+		return Promise.reject(new Error('Could not get current answers from database.'));
+	}
+
+	// Prepare data
+	const nextIterationId = currentAnswer.iteration + 1;
+	const nextResetDate = trimAndAddHours(new Date(), GAME_CONFIG.nextResetHours);
+
+	// Prepare transaction
+	const session = dbClient.startSession();
+	const transactionOptions = {
+		readPreference: 'primary',
+		readConcern: { level: 'local' },
+		writeConcern: { w: 'majority' },
+	};
+
+	// * Start Transaction
+	try {
+		await session.withTransaction(
+			async () => {
+				// * Set next answer to current answer
+				// * Also resets iteration id + resetDate
+				try {
+					await setCurrentAnswer({ iteration: nextIterationId, nextReset: nextResetDate, player: nextAnswer.player }, dataset, session);
+				} catch (e) {
+					session.abortTransaction();
+					return Promise.reject(new Error('error while setting next iteration: could not set new current answer'));
+				}
+
+				// * Log new iteration to db
+			},
+			{ readPreference: 'primary' }
+		);
+	} finally {
+		await session.endSession();
+	}
+	// const nextIterationData: DbIteration = {dataset: dataset, }
+	// step 1: get current answer
+	// step 2: increment iteration
+	// step 3: set new current to old next
+	// step 4: log new current
+	// step 5: pop from backlog
+	// step 5.5: regenerate backlog, if necessary
+	// step 6: set new next
+}
+
+// TODO: also handle get client
+// TODO: call get client on startup to fetch
