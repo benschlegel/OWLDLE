@@ -5,8 +5,9 @@ import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
+import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
-// import { usePlausible } from 'next-plausible';
+import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
 export default function useGameState() {
@@ -15,7 +16,7 @@ export default function useGameState() {
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
 	const [validatedData, setValidatedData] = useState<ValidateResponse>();
 	const { toast } = useToast();
-	// const plausible = usePlausible();
+	const plausible = usePlausible<PlausibleEvents>();
 
 	useEffect(() => {
 		fetch('/api/validate')
@@ -58,20 +59,33 @@ export default function useGameState() {
 			const newGuesses = [...evaluatedGuesses, newRow];
 			setEvaluatedGuesses(newGuesses);
 
-			// update game state
+			// * Game is won
 			if (guessResult.isNameCorrect === true) {
 				setGameState('won');
+				// TODO: extract duplicate code
+				const start = performance.now();
 				fetch('/api/save', { method: 'POST', body: JSON.stringify(newGuesses) })
 					.then((r) => {
+						const end = performance.now();
 						if (r.status === 200) {
+							plausible('logGame', { props: { duration: (end - start).toFixed(2), didSucceed: true, state: 'won' } });
 							console.log('saved successfully!');
-						} else {
-							console.log('could not save: ', r.body);
 						}
 					})
-					.catch((e) => console.error('Error saving game: ', e));
+					.catch((e) => plausible('logGame', { props: { duration: undefined, didSucceed: false, state: 'won' } }));
 			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
+				// * Game is lost
 				setGameState('lost');
+				const start = performance.now();
+				fetch('/api/save', { method: 'POST', body: JSON.stringify(newGuesses) })
+					.then((r) => {
+						const end = performance.now();
+						if (r.status === 200) {
+							plausible('logGame', { props: { duration: (end - start).toFixed(2), didSucceed: true, state: 'lost' } });
+							console.log('saved successfully!');
+						}
+					})
+					.catch((e) => plausible('logGame', { props: { duration: undefined, didSucceed: false, state: 'lost' } }));
 			}
 		} else {
 			toast({
@@ -79,12 +93,7 @@ export default function useGameState() {
 				description: 'Something went wrong, please try again',
 			});
 		}
-	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses]);
-
-	// const saveGame = useCallback(() => {
-	// 	fetch('/api/save', {method: "POST",
-	// 		body: JSON.stringify({ username: "example" }),}).then(() => console.log("Saved game.")).catch((e) => console.error("Error saving game: ", e))
-	// }, [])
+	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, plausible]);
 
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
