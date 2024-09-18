@@ -1,6 +1,7 @@
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
-import type { DbAnswer, DbAnswerFull, DbFormattedPlayers, DbSeasons } from '@/types/database';
+import { formattedToDbPlayer } from '@/lib/databaseHelpers';
+import type { DbAnswer, DbAnswerFull, DbFormattedPlayers, DbPlayer, DbSeasons } from '@/types/database';
 import { MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
@@ -49,11 +50,13 @@ export async function deleteAllPlayers(season: DbSeasons = season1ID) {
  * Insert all players from a season to the database backlog (if no object with the current season id exists, create it, otherwise, update)
  */
 export async function insertAllPlayers(season: DbSeasons = season1ID) {
-	return playerCollection.updateOne({ _id: season }, { $set: { _id: season, players: PLAYERS } }, { upsert: true });
+	const dbPlayers = PLAYERS.map((player) => formattedToDbPlayer(player));
+	return playerCollection.updateOne({ _id: season }, { $set: { _id: season, players: dbPlayers } }, { upsert: true });
 }
 
 /**
  * Sets the current game answer
+ * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the answer that's currently correct
  */
 export async function setCurrentAnswer(answer: DbAnswer) {
@@ -62,6 +65,7 @@ export async function setCurrentAnswer(answer: DbAnswer) {
 
 /**
  * Sets the next game answer (e.g. for tomorrow)
+ * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the correct answer for the next iteration
  */
 export async function setNextAnswer(answer: DbAnswer) {
@@ -93,7 +97,7 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 	}
 
 	// Get slice with specified size
-	const slicedPlayers: FormattedPlayer[] = players.slice(0, size);
+	const slicedPlayers: DbPlayer[] = players.slice(0, size);
 
 	return backlogCollection.updateOne({ _id: season }, { $set: { _id: season, players: slicedPlayers } }, { upsert: true });
 }
