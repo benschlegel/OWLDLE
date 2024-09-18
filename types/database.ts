@@ -5,6 +5,11 @@ export type DbAnswerPrefix = 'current' | 'next';
 
 export type AnswerKey = `${DbAnswerPrefix}_${DbDatasetID}`;
 
+export type DbAnswer = Omit<DbAnswerFull, '_id'>;
+export type DbPlayer = Omit<FormattedPlayer, 'countryImg'>;
+
+export type DbLogEntryKey = `games_${DbDatasetID}`;
+
 export interface DbFormattedPlayers {
 	/**
 	 * which season players are from
@@ -32,5 +37,21 @@ export interface DbAnswerFull {
 	iteration: number;
 }
 
-export type DbAnswer = Omit<DbAnswerFull, '_id'>;
-export type DbPlayer = Omit<FormattedPlayer, 'countryImg'>;
+export interface DbIteration {
+	/**
+	 * What dataset this iteration is for
+	 */
+	_id: DbDatasetID;
+	/**
+	 * The game iteration number
+	 */
+	iteration: DbAnswerFull['iteration'];
+	/**
+	 * What time this iteration was reset
+	 */
+	resetAt: Date;
+	/**
+	 * The correct player for this iteration
+	 */
+	player: DbPlayer;
+}
