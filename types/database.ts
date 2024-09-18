@@ -41,7 +41,7 @@ export interface DbIteration {
 	/**
 	 * What dataset this iteration is for
 	 */
-	_id: DbDatasetID;
+	dataset: DbDatasetID;
 	/**
 	 * The game iteration number
 	 */

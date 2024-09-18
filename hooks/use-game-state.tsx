@@ -54,6 +54,7 @@ export default function useGameState() {
 			// Add guess response to row
 			const newRow: RowData = { guessResult: guessResult, player: currentGuess };
 			const newGuesses = [...evaluatedGuesses, newRow];
+			console.log('Guesses: ', newGuesses);
 			setEvaluatedGuesses(newGuesses);
 
 			// update game state
