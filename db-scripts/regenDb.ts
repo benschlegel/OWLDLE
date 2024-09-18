@@ -1,5 +1,5 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import { generateBacklog, insertAllPlayers, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
+import { dropAll, generateBacklog, insertAllPlayers, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { exit } from 'node:process';
 
@@ -7,6 +7,9 @@ import { exit } from 'node:process';
 const env = process.env.NODE_ENV;
 if (env !== 'production') {
 	console.time('regen');
+
+	// Delete old data
+	await dropAll();
 
 	// Set players
 	await insertAllPlayers();

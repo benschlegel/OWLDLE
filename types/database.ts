@@ -1,15 +1,15 @@
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 
-export type DbSeasons = 'season1' | 'season2' | 'season3';
+export type DbDatasetID = 'OWL_season1' | 'OWL_season2';
 export type DbAnswerPrefix = 'current' | 'next';
 
-export type AnswerKey = `${DbAnswerPrefix}_${DbSeasons}`;
+export type AnswerKey = `${DbAnswerPrefix}_${DbDatasetID}`;
 
 export interface DbFormattedPlayers {
 	/**
 	 * which season players are from
 	 */
-	_id: DbSeasons;
+	_id: DbDatasetID;
 	players: DbPlayer[];
 }
 
