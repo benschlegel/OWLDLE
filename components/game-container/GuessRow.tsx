@@ -8,6 +8,9 @@ type Props = {
 };
 
 const cellSize = '3.75rem';
+
+// How many characters until smaller font gets used
+const fontBreakpoint = 7;
 export default function GuessRow({ data }: Props) {
 	let regionAbbreviation: string | undefined = undefined;
 

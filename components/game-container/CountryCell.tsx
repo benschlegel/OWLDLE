@@ -16,6 +16,7 @@ export default function CountryCell({ imgSrc }: Props) {
 				height={64}
 				className="rounded-md h-auto w-auto max-h-full max-w-full"
 				fetchPriority="high"
+				// unoptimized
 				priority
 			/>
 		</div>

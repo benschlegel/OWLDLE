@@ -31,7 +31,7 @@ export default function useGameState() {
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
 		// Ensure that the max guesses are respected
-		if (playerGuesses.length <= GAME_CONFIG.maxGuesses) {
+		if (playerGuesses && playerGuesses.length > 0 && playerGuesses.length <= GAME_CONFIG.maxGuesses) {
 			handleGuess();
 		}
 
@@ -60,7 +60,6 @@ export default function useGameState() {
 			// update game state
 			if (guessResult.isNameCorrect === true) {
 				setGameState('won');
-				// TODO: send anonymous game report
 			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
 				setGameState('lost');
 			}
