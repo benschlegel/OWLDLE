@@ -41,7 +41,7 @@ const iterationsId = 'iterations';
 const feedbackID = 'feedback';
 
 // Use connect method to connect to the server
-const dbClient = new MongoClient(uri, { replicaSet: 'rs0' });
+const dbClient = new MongoClient(uri);
 const database = dbClient.db(dbName);
 // TODO: dbClient.connect needed?
 
@@ -270,52 +270,40 @@ export async function goNextIteration(
 	const nextResetDate = trimAndAddHours(now, nextResetHours);
 	const nextAnswerData: DbAnswer = { iteration: nextIterationId, nextReset: nextResetDate, player: nextAnswer.player };
 
-	// Prepare transaction
-	const session = dbClient.startSession();
-	const transactionOptions = {
-		readPreference: 'primary',
-		readConcern: { level: 'local' },
-		writeConcern: { w: 'majority' },
-	};
-
 	try {
-		await session.withTransaction(async () => {
-			// * Set next answer to current answer
-			await setCurrentAnswer(nextAnswerData, dataset, session);
+		// * Set next answer to current answer
+		await setCurrentAnswer(nextAnswerData, dataset);
 
-			// * Log new iteration to db
-			await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now }, session);
+		// * Log new iteration to db
+		await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now });
 
-			// * Get next player from backlog
-			const poppedData = await popBacklog(dataset, session);
-			if (!poppedData || poppedData.poppedPlayer === undefined) {
-				throw new Error('Could not get player from backlog');
+		// * Get next player from backlog
+		const poppedData = await popBacklog(dataset);
+		if (!poppedData || poppedData.poppedPlayer === undefined) {
+			throw new Error('Could not get player from backlog');
+		}
+
+		const newPlayer = poppedData.poppedPlayer;
+		const newLength = poppedData.newLength;
+
+		// * Generate and set new nextAnswer
+		const nextAnswerIteration = nextIterationId + 1;
+		const nextAnswerReset = trimAndAddHours(nextResetDate, nextResetHours);
+		const answerRes = await setNextAnswer({ iteration: nextAnswerIteration, nextReset: nextAnswerReset, player: newPlayer }, dataset);
+		if (!answerRes.acknowledged) {
+			throw new Error('Failed to set new answer');
+		}
+
+		// * If new backlog is empty, regenerate it
+		if (newLength === 0) {
+			const backlogRes = await generateBacklog(backlogSize, dataset);
+			if (!backlogRes.acknowledged) {
+				throw new Error('Failed to regenerate backlog');
 			}
-
-			const newPlayer = poppedData.poppedPlayer;
-			const newLength = poppedData.newLength;
-
-			// * Generate and set new nextAnswer
-			const nextAnswerIteration = nextIterationId + 1;
-			const nextAnswerReset = trimAndAddHours(nextResetDate, nextResetHours);
-			const answerRes = await setNextAnswer({ iteration: nextAnswerIteration, nextReset: nextAnswerReset, player: newPlayer }, dataset, session);
-			if (!answerRes.acknowledged) {
-				throw new Error('Failed to set new answer');
-			}
-
-			// * If new backlog is empty, regenerate it
-			if (newLength === 0) {
-				const backlogRes = await generateBacklog(backlogSize, dataset, session);
-				if (!backlogRes.acknowledged) {
-					throw new Error('Failed to regenerate backlog');
-				}
-			}
-		}, {});
+		}
 	} catch (error) {
-		console.error('Transaction failed:', error);
+		console.error('Operation failed:', error);
 		throw error; // Re-throw the error to be handled by the caller
-	} finally {
-		await session.endSession();
 	}
 
 	// step 1: get current answer
