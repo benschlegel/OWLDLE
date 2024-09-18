@@ -10,10 +10,7 @@ export function cn(...inputs: ClassValue[]) {
  * @param date the date to trim
  * @returns new date with trimmed data
  */
-export function trimDate(date: Date, isProd = false) {
-	if (!isProd) {
-		date.setHours(date.getHours() + 2);
-	}
+export function trimDate(date: Date) {
 	date.setMinutes(0);
 	date.setSeconds(0);
 	date.setMilliseconds(0);
