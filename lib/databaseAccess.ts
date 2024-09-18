@@ -102,5 +102,23 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 	return backlogCollection.updateOne({ _id: season }, { $set: { _id: season, players: slicedPlayers } }, { upsert: true });
 }
 
+/**
+ * Insert one player to the start of the backlog
+ * @param player player to insert
+ * @param season what season to insert backlog (defaults to season1)
+ */
+export async function insertOneBacklog(player: DbPlayer, season: DbSeasons = season1ID) {
+	return backlogCollection.updateOne({ _id: season }, { $push: { players: { $each: [player], $position: 0 } } }, { upsert: true });
+}
+
+/**
+ * Insert many players to the start of the backlog
+ * @param player player to insert
+ * @param season what season to insert backlog (defaults to season1)
+ */
+export async function insertManyBacklog(players: DbPlayer[], season: DbSeasons = season1ID) {
+	return backlogCollection.updateOne({ _id: season }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
+}
+
 // TODO: add "playerPool" collection to pick next answers from
 // TODO: add game statistics collection (with date as key)
