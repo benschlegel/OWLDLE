@@ -71,21 +71,26 @@ export type DbLoggedGame = {
 	/**
 	 * The data for this game (containing all guesses)
 	 */
-	gameData: DbGuess[];
+	gameData: DbSaveData;
 };
 
 const trimmedPlayer = z.object({ name: z.string(), id: z.number().min(0) });
 export type DbTrimmedPlayer = z.infer<typeof trimmedPlayer>;
-export const gameSaveValidator = z
-	.array(
-		z.object({
-			guessResult: GuessSchema,
-			player: trimmedPlayer,
-		})
-	)
-	.min(1);
+export const gameSaveValidator = z.object({
+	gameData: z
+		.array(
+			z.object({
+				guessResult: GuessSchema,
+				player: trimmedPlayer,
+			})
+		)
+		.min(1),
+	gameResult: z.enum(['won', 'lost']),
+});
 
-export type DbGuess = z.infer<typeof gameSaveValidator>[number];
+export type DbSaveData = z.infer<typeof gameSaveValidator>;
+export type DbGuess = DbSaveData['gameData'][number];
+export type DbGameResult = DbSaveData['gameResult'];
 
 export type DbFeedback = {
 	feedbackContent: string;

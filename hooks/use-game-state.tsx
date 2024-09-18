@@ -5,6 +5,7 @@ import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
+import type { DbSaveData } from '@/types/database';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
@@ -64,7 +65,8 @@ export default function useGameState() {
 				setGameState('won');
 				// TODO: extract duplicate code
 				const start = performance.now();
-				fetch('/api/save', { method: 'POST', body: JSON.stringify(newGuesses) })
+				const saveData: DbSaveData = { gameData: newGuesses, gameResult: 'won' };
+				fetch('/api/save', { method: 'POST', body: JSON.stringify(saveData) })
 					.then((r) => {
 						const end = performance.now();
 						if (r.status === 200) {
@@ -77,7 +79,8 @@ export default function useGameState() {
 				// * Game is lost
 				setGameState('lost');
 				const start = performance.now();
-				fetch('/api/save', { method: 'POST', body: JSON.stringify(newGuesses) })
+				const saveData: DbSaveData = { gameData: newGuesses, gameResult: 'lost' };
+				fetch('/api/save', { method: 'POST', body: JSON.stringify(saveData) })
 					.then((r) => {
 						const end = performance.now();
 						if (r.status === 200) {

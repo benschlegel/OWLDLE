@@ -1,11 +1,11 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import type { NextRequest } from 'next/server';
 import { logGame } from '@/lib/databaseAccess';
-import { type DbGuess, gameSaveValidator } from '@/types/database';
+import { gameSaveValidator } from '@/types/database';
 export const dynamic = 'force-dynamic';
 
 const rateLimiter = new RateLimiterMemory({
-	points: 100, // Number of requests
+	points: 60, // Number of requests
 	duration: 60, // Per 1 second
 });
 
@@ -25,11 +25,11 @@ export async function POST(request: NextRequest) {
 		}
 
 		// Raw data
-		const playerGuesses = gameSaveRes.data as DbGuess[];
+		const playerGuesses = gameSaveRes.data.gameData;
 
 		try {
 			// Try to log game, return with success code if so
-			const res = await logGame(playerGuesses, 'OWL_season1');
+			const res = await logGame(playerGuesses, gameSaveRes.data.gameResult, 'OWL_season1');
 			if (res?.acknowledged) {
 				return new Response(undefined, { status: 200 });
 			}
