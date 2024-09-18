@@ -71,7 +71,11 @@ export type DbLoggedGame = {
 	/**
 	 * The data for this game (containing all guesses)
 	 */
-	gameData: DbSaveData;
+	gameData: DbGuess[];
+	/**
+	 * Result of this game (won or lost)
+	 */
+	gameResult: DbGameResult;
 };
 
 const trimmedPlayer = z.object({ name: z.string(), id: z.number().min(0) });

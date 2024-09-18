@@ -232,7 +232,7 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, dat
 		// Get current iteration
 		const currIteration = await getCurrentIteration();
 		if (currIteration && currIteration > 0) {
-			return gameLogCollection.insertOne({ iteration: currIteration, dataset: dataset, gameData: { gameData: gameData, gameResult: gameResult } });
+			return gameLogCollection.insertOne({ iteration: currIteration, dataset: dataset, gameData: gameData, gameResult: gameResult });
 		}
 		Promise.reject(new Error('Could not get current iteration from db.'));
 	}
