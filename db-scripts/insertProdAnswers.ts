@@ -5,8 +5,9 @@ import { exit } from 'node:process';
 
 console.time('setCurrent');
 const randomPlayer = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
-// await setCurrentAnswer({ player: randomPlayer, iteration: 1, nextReset: getFormattedMidnightTmrw() });
-await setNextAnswer({ player: randomPlayer, iteration: 2, nextReset: getFormattedMidnightDayAfter() });
+const randomPlayer2 = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
+await setCurrentAnswer({ player: randomPlayer, iteration: 1, nextReset: getFormattedMidnightTmrw() });
+await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: getFormattedMidnightDayAfter() });
 console.timeEnd('setCurrent');
 console.log('Finished.');
 exit(0);
