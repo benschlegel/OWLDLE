@@ -1,7 +1,7 @@
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
-import { trimAndAddHours } from '@/lib/utils';
+import { trimAndAddHours, trimDate } from '@/lib/utils';
 import type {
 	AnswerKey,
 	DbAnswer,
@@ -80,6 +80,8 @@ export async function insertAllPlayers(dataset: DbDatasetID = season1ID) {
  * Sets the current game answer
  * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the answer that's currently correct
+ * @param dataset what dataset to write answer for
+ * @param session (optional), pass transaction session if used during transaction
  */
 export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID, session?: ClientSession) {
 	const answerKey: AnswerKey = `current_${dataset}`;
@@ -99,10 +101,12 @@ export async function getCurrentAnswer(dataset: DbDatasetID = season1ID) {
  * Sets the next game answer (e.g. for tomorrow)
  * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the correct answer for the next iteration
+ * @param dataset what dataset to write answer for
+ * @param session (optional), pass transaction session if used during transaction
  */
-export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID) {
+export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID, session?: ClientSession) {
 	const answerKey: AnswerKey = `next_${dataset}`;
-	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true, session });
 }
 
 /**
@@ -198,8 +202,8 @@ export async function logGame(gameData: DbGuess[], dataset: DbDatasetID = season
  * Add new iteration to full iteration store
  * @param it which iteration to store
  */
-export async function addIteration(it: DbIteration) {
-	return iterationCollection.insertOne(it);
+export async function addIteration(it: DbIteration, session?: ClientSession) {
+	return iterationCollection.insertOne(it, { session });
 }
 
 /**
@@ -217,7 +221,9 @@ export async function goNextIteration(nextReset: number = GAME_CONFIG.nextResetH
 
 	// Prepare data
 	const nextIterationId = currentAnswer.iteration + 1;
-	const nextResetDate = trimAndAddHours(new Date(), GAME_CONFIG.nextResetHours);
+	const now = trimDate(new Date());
+	const nextResetDate = trimAndAddHours(now, GAME_CONFIG.nextResetHours);
+	const nextAnswerData: DbAnswer = { iteration: nextIterationId, nextReset: nextResetDate, player: nextAnswer.player };
 
 	// Prepare transaction
 	const session = dbClient.startSession();
@@ -234,13 +240,20 @@ export async function goNextIteration(nextReset: number = GAME_CONFIG.nextResetH
 				// * Set next answer to current answer
 				// * Also resets iteration id + resetDate
 				try {
-					await setCurrentAnswer({ iteration: nextIterationId, nextReset: nextResetDate, player: nextAnswer.player }, dataset, session);
+					await setCurrentAnswer(nextAnswerData, dataset, session);
 				} catch (e) {
 					session.abortTransaction();
 					return Promise.reject(new Error('error while setting next iteration: could not set new current answer'));
 				}
 
 				// * Log new iteration to db
+				// * Also add resetAt to now
+				try {
+					await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now });
+				} catch (e) {
+					session.abortTransaction();
+					return Promise.reject(new Error('error while setting next iteration: could not set new current answer'));
+				}
 			},
 			{ readPreference: 'primary' }
 		);
