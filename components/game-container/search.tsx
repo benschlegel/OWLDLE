@@ -87,7 +87,7 @@ export default function PlayerSearch({ className }: Props) {
 		<Command
 			loop
 			className={cn('rounded-lg border border-secondary shadow-sm md:min-w-[450px] mb-4 transition-colors duration-300 ', className)}
-			onBlur={() => setSearchState('unfocused')}
+			onBlur={closeSearch}
 			filter={(value, search) => {
 				// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
 				if (value.toLowerCase().includes(search.toLowerCase())) return 1;
