@@ -41,7 +41,7 @@ const iterationsId = 'iterations';
 const feedbackID = 'feedback';
 
 // Use connect method to connect to the server
-const dbClient = new MongoClient(uri);
+const dbClient = new MongoClient(uri, { replicaSet: 'rs0' });
 const database = dbClient.db(dbName);
 // TODO: dbClient.connect needed?
 
@@ -261,7 +261,7 @@ export async function goNextIteration(
 	const currentAnswer = await getCurrentAnswer();
 	const nextAnswer = await getNextAnswer();
 	if (!currentAnswer || !nextAnswer) {
-		return Promise.reject(new Error('Could not get current answers from database.'));
+		throw new Error('Could not get current answers from database.');
 	}
 
 	// Prepare data
@@ -278,78 +278,46 @@ export async function goNextIteration(
 		writeConcern: { w: 'majority' },
 	};
 
-	// * Start Transaction
 	try {
-		await session.withTransaction(
-			async () => {
-				// * Set next answer to current answer
-				// * Also resets iteration id + resetDate
-				try {
-					await setCurrentAnswer(nextAnswerData, dataset, session);
-				} catch (e) {
-					session.abortTransaction();
-					return Promise.reject(new Error('error while setting next iteration: could not set new current answer'));
-				}
+		await session.withTransaction(async () => {
+			// * Set next answer to current answer
+			await setCurrentAnswer(nextAnswerData, dataset, session);
 
-				// * Log new iteration to db
-				// * Also add resetAt to now
-				try {
-					await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now }, session);
-				} catch (e) {
-					session.abortTransaction();
-					return Promise.reject(new Error('error while setting next iteration: could not set new current answer'));
-				}
+			// * Log new iteration to db
+			await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now }, session);
 
-				// * Get next player from backlog
-				let newPlayer: DbPlayer;
-				let newLength = 0;
-				try {
-					const poppedData = await popBacklog(dataset, session);
-					if (poppedData && poppedData.poppedPlayer !== undefined) {
-						session.abortTransaction();
-						return Promise.reject(new Error('error while setting next iteration: could not get player from backlog'));
-					}
+			// * Get next player from backlog
+			const poppedData = await popBacklog(dataset, session);
+			if (!poppedData || poppedData.poppedPlayer === undefined) {
+				throw new Error('Could not get player from backlog');
+			}
 
-					newPlayer = poppedData.poppedPlayer;
-					newLength = poppedData.newLength;
-				} catch (e) {
-					session.abortTransaction();
-					return Promise.reject(new Error('error while setting next iteration: could not get player from backlog'));
-				}
+			const newPlayer = poppedData.poppedPlayer;
+			const newLength = poppedData.newLength;
 
-				// * Generate and set new nextAnswer
-				try {
-					const nextAnswerIteration = nextIterationId + 1;
-					const nextAnswerReset = trimAndAddHours(nextResetDate, nextResetHours);
-					const answerRes = await setNextAnswer({ iteration: nextAnswerIteration, nextReset: nextAnswerReset, player: newPlayer }, dataset, session);
-					if (!answerRes.acknowledged) {
-						session.abortTransaction();
-						return Promise.reject(new Error('error while setting next iteration: failed to set new answer'));
-					}
-				} catch (e) {
-					session.abortTransaction();
-					return Promise.reject(new Error('error while setting next iteration: failed to set new answer'));
-				}
+			// * Generate and set new nextAnswer
+			const nextAnswerIteration = nextIterationId + 1;
+			const nextAnswerReset = trimAndAddHours(nextResetDate, nextResetHours);
+			const answerRes = await setNextAnswer({ iteration: nextAnswerIteration, nextReset: nextAnswerReset, player: newPlayer }, dataset, session);
+			if (!answerRes.acknowledged) {
+				throw new Error('Failed to set new answer');
+			}
 
-				// * If new backlog is empty, regenerate it
-				if (newLength === 0) {
-					try {
-						const backlogRes = await generateBacklog(backlogSize, dataset, session);
-						if (!backlogRes.acknowledged) {
-							session.abortTransaction();
-							return Promise.reject(new Error('error while setting next iteration: failed to regenerate backlog'));
-						}
-					} catch (e) {
-						session.abortTransaction();
-						return Promise.reject(new Error('error while setting next iteration: failed to regenerate backlog'));
-					}
+			// * If new backlog is empty, regenerate it
+			if (newLength === 0) {
+				const backlogRes = await generateBacklog(backlogSize, dataset, session);
+				if (!backlogRes.acknowledged) {
+					throw new Error('Failed to regenerate backlog');
 				}
-			},
-			{ readPreference: 'primary' }
-		);
+			}
+		}, {});
+	} catch (error) {
+		console.error('Transaction failed:', error);
+		throw error; // Re-throw the error to be handled by the caller
 	} finally {
 		await session.endSession();
 	}
+
 	// step 1: get current answer
 	// step 2: increment iteration
 	// step 3: set new current to old next
