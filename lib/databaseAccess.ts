@@ -1,7 +1,7 @@
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
-import type { AnswerKey, DbAnswer, DbAnswerFull, DbAnswerPrefix, DbFormattedPlayers, DbPlayer, DbDatasetID } from '@/types/database';
+import type { AnswerKey, DbAnswer, DbAnswerFull, DbAnswerPrefix, DbFormattedPlayers, DbPlayer, DbDatasetID, DbLogEntryKey, DbFeedback } from '@/types/database';
 import { MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
@@ -22,16 +22,19 @@ export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
 export const backlogCollectionName = 'backlog';
 const season1ID: DbDatasetID = 'OWL_season1';
+const season1Logs: DbLogEntryKey = 'games_OWL_season1';
+const feedbackID = 'feedback';
 
 // Use connect method to connect to the server
 const dbClient = new MongoClient(uri);
 const database = dbClient.db(dbName);
 
 // Define collections
-
+// TODO: add array with dataset as key and collections as value, dynamically generate
 const playerCollection = database.collection<DbFormattedPlayers>(playerCollectionName);
 const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
 const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
+const feedbackCollection = database.collection<DbFeedback>(feedbackID);
 
 /**
  * CAREFUL: deletes the entire player backlog from database
@@ -122,4 +125,20 @@ export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetI
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
 }
 
+/**
+ * Add website feedback to db
+ */
+export async function addFeedback(feedback: DbFeedback) {
+	return feedbackCollection.insertOne(feedback);
+}
+
+/**
+ * Log game state to db
+ * @param dataset
+ */
+export async function logGame(dataset: DbDatasetID = season1ID) {
+	//
+}
+
 // TODO: add game statistics collection (with date as key)
+// TODO: reset: -add new iteration to iterations immediatly, -set next/current, -check if backlog needs regen
