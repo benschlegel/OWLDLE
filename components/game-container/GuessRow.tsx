@@ -11,8 +11,8 @@ const cellSize = '3.75rem';
 export default function GuessRow({ data }: Props) {
 	let regionAbbreviation: string | undefined = undefined;
 
-	if (data?.player.isEastern === true) regionAbbreviation = 'E';
-	if (data?.player.isEastern === false) regionAbbreviation = 'W';
+	if (data?.player.region === 'AtlanticDivison') regionAbbreviation = 'E';
+	if (data?.player.region === 'PacificDivision') regionAbbreviation = 'W';
 
 	const useSmallerFont = data && data.player.name.length > 7;
 	return (

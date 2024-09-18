@@ -9,7 +9,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 export const dynamicParams = true;
 
 // TODO: reset current round if server curr player resets
-const DEFAULT_PLAYER: PlayerWithRegion = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', isEastern: true, id: 0 };
+const DEFAULT_PLAYER: PlayerWithRegion = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', region: 'AtlanticDivison', id: 0 };
 const DEFAULT_DATE = new Date('2024-09-17T02:00:00.000+02:00');
 
 let currPlayer: PlayerWithRegion = DEFAULT_PLAYER;

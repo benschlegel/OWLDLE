@@ -13,8 +13,8 @@ export type PlayerWithRegion = {
 	role: Player['role'];
 	country: Player['country'];
 	team: Player['team'];
-	isEastern: boolean;
-	id?: number;
+	region: NonNullable<Player['region']>;
+	id: number;
 };
 
 export type ValidateResponse = {
