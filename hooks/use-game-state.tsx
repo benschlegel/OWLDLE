@@ -6,6 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
+// import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
 export default function useGameState() {
@@ -14,6 +15,7 @@ export default function useGameState() {
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
 	const [validatedData, setValidatedData] = useState<ValidateResponse>();
 	const { toast } = useToast();
+	// const plausible = usePlausible();
 
 	useEffect(() => {
 		fetch('/api/validate')
@@ -41,7 +43,7 @@ export default function useGameState() {
 		// }
 	}, [playerGuesses]);
 
-	const handleGuess = useCallback(() => {
+	const handleGuess = useCallback(async () => {
 		// Get current guess
 		const currentGuess: FormattedPlayer = playerGuesses[playerGuesses.length - 1];
 
@@ -54,12 +56,20 @@ export default function useGameState() {
 			// Add guess response to row
 			const newRow: RowData = { guessResult: guessResult, player: currentGuess };
 			const newGuesses = [...evaluatedGuesses, newRow];
-			console.log('Guesses: ', newGuesses);
 			setEvaluatedGuesses(newGuesses);
 
 			// update game state
 			if (guessResult.isNameCorrect === true) {
 				setGameState('won');
+				fetch('/api/save', { method: 'POST', body: JSON.stringify(newGuesses) })
+					.then((r) => {
+						if (r.status === 200) {
+							console.log('saved successfully!');
+						} else {
+							console.log('could not save: ', r.body);
+						}
+					})
+					.catch((e) => console.error('Error saving game: ', e));
 			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
 				setGameState('lost');
 			}
@@ -70,6 +80,11 @@ export default function useGameState() {
 			});
 		}
 	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses]);
+
+	// const saveGame = useCallback(() => {
+	// 	fetch('/api/save', {method: "POST",
+	// 		body: JSON.stringify({ username: "example" }),}).then(() => console.log("Saved game.")).catch((e) => console.error("Error saving game: ", e))
+	// }, [])
 
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
