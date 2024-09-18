@@ -177,6 +177,33 @@ export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetI
 }
 
 /**
+ * Pops backlog (removes and returns first element)
+ * @param dataset what dataset to pop backlog for
+ * @param session (optional), pass transaction session if used during transaction
+ */
+export async function popBacklog(dataset: DbDatasetID = season1ID, session?: ClientSession) {
+	const result = await backlogCollection.findOne(
+		{ _id: dataset },
+		{
+			projection: { players: { $slice: 1 } },
+		}
+	);
+	if (!result || !result.players.length) {
+		console.log('No items in the array or document not found');
+		return undefined;
+	}
+	const firstItem = result.players[0];
+
+	await backlogCollection.updateOne(
+		{ _id: dataset },
+		{
+			$pop: { players: -1 },
+		}
+	);
+
+	return firstItem;
+}
+/**
  * Add website feedback to db
  */
 export async function addFeedback(feedback: DbFeedback) {
