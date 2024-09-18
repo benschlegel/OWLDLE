@@ -1,6 +1,7 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
+import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { GAME_CONFIG } from '@/lib/config';
 import type { DbAnswer, DbAnswerFull, DbFormattedPlayers, DbSeasons } from '@/types/database';
-import { MongoClient, WithId } from 'mongodb';
+import { MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
 if (process.env.NODE_ENV !== 'production') {
@@ -18,6 +19,7 @@ const DEV_NAME = 'OWLEL-dev';
 export const dbName = !useDevDatabase ? PROD_NAME : DEV_NAME;
 export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
+export const backlogCollectionName = 'backlog';
 const season1ID: DbSeasons = 'season1';
 const currentAnswerID = 'current';
 const nextAnswerID = 'next';
@@ -30,6 +32,7 @@ const database = dbClient.db(dbName);
 
 const playerCollection = database.collection<DbFormattedPlayers>(playerCollectionName);
 const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
+const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
 
 export async function insertPlayer(): Promise<void> {
 	// const result = await playerCollection.insertMany(PLAYERS).then(() => console.log('Saved to db!'));
@@ -63,6 +66,36 @@ export async function setCurrentAnswer(answer: DbAnswer) {
  */
 export async function setNextAnswer(answer: DbAnswer) {
 	return answersCollection.updateOne({ _id: nextAnswerID }, { $set: { ...answer, _id: nextAnswerID } }, { upsert: true });
+}
+
+/**
+ * Generates and overwrites the existing backlog for a season.
+ * Defaults to use backlog size from game config.
+ *
+ * Calling it with (30, "season1") would override the entry with id "season1" in the "backlog" collection to use the newly generated backlog.
+ *
+ * @param size what size to generate the backlog (e.g. 30 overrides and generates 30 new entries)
+ */
+export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize, season: DbSeasons = season1ID) {
+	// Error if player collection is emtpy
+	const playerCount = await playerCollection.countDocuments();
+	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
+
+	// Get all players and pick random (unique) sample
+	const seasonPlayers = await playerCollection.findOne({ _id: season });
+	if (!seasonPlayers) throw new Error(`can't find players collection for ${season}`);
+
+	// Apply Fisher-Yates shuffle
+	const players = seasonPlayers.players;
+	for (let i = players.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[players[i], players[j]] = [players[j], players[i]];
+	}
+
+	// Get slice with specified size
+	const slicedPlayers: FormattedPlayer[] = players.slice(0, size);
+
+	return backlogCollection.updateOne({ _id: season }, { $set: { _id: season, players: slicedPlayers } }, { upsert: true });
 }
 
 // TODO: add "playerPool" collection to pick next answers from
