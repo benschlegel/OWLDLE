@@ -135,8 +135,10 @@ export async function getCurrentIteration(dataset: DbDatasetID = season1ID) {
  * Calling it with (30, "season1") would override the entry with id "season1" in the "backlog" collection to use the newly generated backlog.
  *
  * @param size what size to generate the backlog (e.g. 30 overrides and generates 30 new entries)
+ * @param dataset what dataset to generate backlog for
+ * @param session (optional), pass transaction session if used during transaction
  */
-export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize, dataset: DbDatasetID = season1ID) {
+export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize, dataset: DbDatasetID = season1ID, session?: ClientSession) {
 	// Error if player collection is emtpy
 	const playerCount = await playerCollection.countDocuments();
 	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
@@ -180,29 +182,40 @@ export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetI
  * Pops backlog (removes and returns first element)
  * @param dataset what dataset to pop backlog for
  * @param session (optional), pass transaction session if used during transaction
+ * @returns an object containing the popped item and the new length of the array
  */
 export async function popBacklog(dataset: DbDatasetID = season1ID, session?: ClientSession) {
-	const result = await backlogCollection.findOne(
-		{ _id: dataset },
-		{
-			projection: { players: { $slice: 1 } },
-		}
-	);
-	if (!result || !result.players.length) {
-		console.log('No items in the array or document not found');
-		return undefined;
+	// Use aggregation to get the first item and array length (combines .findOne and aggregate for length)
+	const aggregationResult = await backlogCollection
+		.aggregate(
+			[
+				{ $match: { _id: dataset } },
+				{
+					$project: {
+						firstPlayer: { $arrayElemAt: ['$players', 0] },
+						originalLength: { $size: '$players' },
+					},
+				},
+			],
+			{ session }
+		)
+		.toArray();
+
+	// Early return, if array could not be popped.
+	if (!aggregationResult.length || aggregationResult[0].originalLength === 0) {
+		return { poppedPlayer: undefined, newLength: 0 };
 	}
-	const firstItem = result.players[0];
 
-	await backlogCollection.updateOne(
-		{ _id: dataset },
-		{
-			$pop: { players: -1 },
-		}
-	);
+	const { firstPlayer, originalLength } = aggregationResult[0];
 
-	return firstItem;
+	// Remove the first item from the array
+	await backlogCollection.updateOne({ _id: dataset }, { $pop: { players: -1 } }, { session });
+
+	const newLength = originalLength - 1;
+
+	return { poppedPlayer: firstPlayer, newLength };
 }
+
 /**
  * Add website feedback to db
  */
@@ -238,7 +251,11 @@ export async function addIteration(it: DbIteration, session?: ClientSession) {
  * Works as a transaction, either everything gets rolled over to next iteration or everything fails
  * @param nextReset hours until next reset
  */
-export async function goNextIteration(nextReset: number = GAME_CONFIG.nextResetHours, dataset: DbDatasetID = 'OWL_season1') {
+export async function goNextIteration(
+	nextReset: number = GAME_CONFIG.nextResetHours,
+	dataset: DbDatasetID = 'OWL_season1',
+	backlogSize: number = GAME_CONFIG.backlogMaxSize
+) {
 	// * Step 1: get current answer from db, error out if not working
 	const currentAnswer = await getCurrentAnswer();
 	const nextAnswer = await getNextAnswer();
@@ -276,10 +293,41 @@ export async function goNextIteration(nextReset: number = GAME_CONFIG.nextResetH
 				// * Log new iteration to db
 				// * Also add resetAt to now
 				try {
-					await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now });
+					await addIteration({ dataset: dataset, iteration: nextIterationId, player: nextAnswerData.player, resetAt: now }, session);
 				} catch (e) {
 					session.abortTransaction();
 					return Promise.reject(new Error('error while setting next iteration: could not set new current answer'));
+				}
+
+				// * Get next player from backlog
+				let newPlayer: DbPlayer;
+				let newLength = 0;
+				try {
+					const poppedData = await popBacklog(dataset, session);
+					if (poppedData && poppedData.poppedPlayer !== undefined) {
+						session.abortTransaction();
+						return Promise.reject(new Error('error while setting next iteration: could not get player from backlog'));
+					}
+
+					newPlayer = poppedData.poppedPlayer;
+					newLength = poppedData.newLength;
+				} catch (e) {
+					session.abortTransaction();
+					return Promise.reject(new Error('error while setting next iteration: could not get player from backlog'));
+				}
+
+				// * If new backlog is empty, regenerate it
+				if (newLength === 0) {
+					try {
+						const backlogRes = await generateBacklog(backlogSize, dataset, session);
+						if (!backlogRes.acknowledged) {
+							session.abortTransaction();
+							return Promise.reject(new Error('error while setting next iteration: failed to regenerate backlog'));
+						}
+					} catch (e) {
+						session.abortTransaction();
+						return Promise.reject(new Error('error while setting next iteration: failed to regenerate backlog'));
+					}
 				}
 			},
 			{ readPreference: 'primary' }
