@@ -46,7 +46,7 @@ const database = dbClient.db(dbName);
 // Define collections
 // TODO: add array with dataset as key and collections as value, dynamically generate
 const playerCollection = database.collection<DbFormattedPlayers>(playerCollectionName);
-const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
+const answerCollection = database.collection<DbAnswerFull>(answerCollectionName);
 const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
 const feedbackCollection = database.collection<DbFeedback>(feedbackID);
 const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
@@ -82,7 +82,16 @@ export async function insertAllPlayers(dataset: DbDatasetID = season1ID) {
  */
 export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `current_${dataset}`;
-	return answersCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
+}
+
+/**
+ * Get current answer from db
+ * @param dataset which dataset to get current answer for
+ */
+export async function getCurrentAnswer(dataset: DbDatasetID = season1ID) {
+	const answerKey: AnswerKey = `current_${dataset}`;
+	return answerCollection.findOne({ _id: answerKey });
 }
 
 /**
@@ -92,7 +101,16 @@ export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = 
  */
 export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `next_${dataset}`;
-	return answersCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
+}
+
+/**
+ * Get current answer from db
+ * @param dataset which dataset to get current answer for
+ */
+export async function getNextAnswer(dataset: DbDatasetID = season1ID) {
+	const answerKey: AnswerKey = `next_${dataset}`;
+	return answerCollection.findOne({ _id: answerKey });
 }
 
 /**
@@ -155,6 +173,7 @@ export async function addFeedback(feedback: DbFeedback) {
  * @param dataset
  */
 export async function logGame(gameData: DbGuess[], iteration: number, dataset: DbDatasetID = season1ID) {
+	//TODO: get iteration from db
 	if (gameData.length > 0 && iteration > 0) {
 		return gameLogCollection.insertOne({ iteration: iteration, dataset: dataset, gameData: gameData });
 	}
