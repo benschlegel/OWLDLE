@@ -64,5 +64,6 @@ function getFormattedMidnightDayAfter(): Date {
 	return midnight;
 }
 
-// Before: curr: {id: 1, reset: 19., player: ArK}
-// Before: next: {id: 2, reset: 20., player: SoOn}
+// Before: curr: {id: 1, reset: 19., player: Clockwork}
+// Before: next: {id: 2, reset: 20., player: Linkzr}
+// Before: backlog: {length: 20, [...chips, dayfly]}
