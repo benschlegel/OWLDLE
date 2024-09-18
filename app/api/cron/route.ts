@@ -1,5 +1,7 @@
 import { GET as RouteGet } from '@/app/api/validate/route';
 import type { NextRequest } from 'next/server';
+
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
