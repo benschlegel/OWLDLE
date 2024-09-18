@@ -1,12 +1,15 @@
 import type { Player } from '@/types/players';
+import { z } from 'zod';
 
-export type GuessResponse = {
-	isRoleCorrect: boolean;
-	isCountryCorrect: boolean;
-	isTeamCorrect: boolean;
-	isNameCorrect: boolean;
-	isRegionCorrect: boolean;
-};
+export type GuessResponse = z.infer<typeof GuessSchema>;
+
+export const GuessSchema = z.object({
+	isRoleCorrect: z.boolean(),
+	isCountryCorrect: z.boolean(),
+	isTeamCorrect: z.boolean(),
+	isNameCorrect: z.boolean(),
+	isRegionCorrect: z.boolean(),
+});
 
 export type PlayerWithRegion = {
 	name: Player['name'];
