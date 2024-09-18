@@ -1,7 +1,18 @@
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
-import type { AnswerKey, DbAnswer, DbAnswerFull, DbAnswerPrefix, DbFormattedPlayers, DbPlayer, DbDatasetID, DbLogEntryKey, DbFeedback } from '@/types/database';
+import type {
+	AnswerKey,
+	DbAnswer,
+	DbAnswerFull,
+	DbAnswerPrefix,
+	DbFormattedPlayers,
+	DbPlayer,
+	DbDatasetID,
+	DbLogEntryKey,
+	DbFeedback,
+	DbIteration,
+} from '@/types/database';
 import { MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
@@ -23,6 +34,7 @@ export const playerCollectionName = 'players';
 export const backlogCollectionName = 'backlog';
 const season1ID: DbDatasetID = 'OWL_season1';
 const season1Logs: DbLogEntryKey = 'games_OWL_season1';
+const iterationsId = 'iterations';
 const feedbackID = 'feedback';
 
 // Use connect method to connect to the server
@@ -35,6 +47,9 @@ const playerCollection = database.collection<DbFormattedPlayers>(playerCollectio
 const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
 const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
 const feedbackCollection = database.collection<DbFeedback>(feedbackID);
+
+const iterationCollection = database.collection<DbIteration>(iterationsId);
+iterationCollection.createIndex({ iteration: 1 }, { unique: true });
 
 /**
  * CAREFUL: deletes the entire player backlog from database
@@ -138,6 +153,10 @@ export async function addFeedback(feedback: DbFeedback) {
  */
 export async function logGame(dataset: DbDatasetID = season1ID) {
 	//
+}
+
+export async function addIteration(it: DbIteration) {
+	return iterationCollection.insertOne(it);
 }
 
 // TODO: add game statistics collection (with date as key)
