@@ -1,3 +1,4 @@
+import type { DbPlayer } from '@/types/database';
 import type { Player } from '@/types/players';
 import { z } from 'zod';
 
@@ -28,7 +29,7 @@ export type ValidateResponse = {
 	/**
 	 * Today's correct player
 	 */
-	correctPlayer: PlayerWithRegion;
+	correctPlayer: DbPlayer;
 	/**
 	 * The current iteration of the game (e.g. "3" for the third day after launch)
 	 */
