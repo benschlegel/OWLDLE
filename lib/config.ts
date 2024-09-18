@@ -22,6 +22,11 @@ const configSchema = z.object({
 	 * What size to generate backlog (e.g. 10 would pick 10 random players, pop the first one each iteration and re-fill with 10 more once the backlog runs out)
 	 */
 	backlogMaxSize: z.number().min(1),
+	/**
+	 * How many hours to start next reset after current iteration runs out (e.g. 24 => reset once per day)
+	 * !Important: make sure you match your vercel cron job
+	 */
+	nextResetHours: z.number().min(1),
 });
 
 export const GAME_CONFIG = configSchema.parse(config);
