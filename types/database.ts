@@ -79,7 +79,7 @@ export type DbTrimmedPlayer = z.infer<typeof trimmedPlayer>;
 export const gameSaveValidator = z
 	.array(
 		z.object({
-			guessResponse: z.array(GuessSchema),
+			guessResult: GuessSchema,
 			player: trimmedPlayer,
 		})
 	)

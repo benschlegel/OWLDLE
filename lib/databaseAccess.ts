@@ -114,6 +114,16 @@ export async function getNextAnswer(dataset: DbDatasetID = season1ID) {
 }
 
 /**
+ * Get current iteration for dataset
+ * @param dataset which dataset to get current iteration for
+ */
+export async function getCurrentIteration(dataset: DbDatasetID = season1ID) {
+	const answerKey: AnswerKey = `current_${dataset}`;
+	const iterationRes = await answerCollection.findOne({ _id: answerKey }, { projection: { iteration: 1, _id: 0 } });
+	return iterationRes?.iteration;
+}
+
+/**
  * Generates and overwrites the existing backlog for a dataset.
  * Defaults to use backlog size from game config.
  *
@@ -172,10 +182,14 @@ export async function addFeedback(feedback: DbFeedback) {
  * Log game state to db
  * @param dataset
  */
-export async function logGame(gameData: DbGuess[], iteration: number, dataset: DbDatasetID = season1ID) {
-	//TODO: get iteration from db
-	if (gameData.length > 0 && iteration > 0) {
-		return gameLogCollection.insertOne({ iteration: iteration, dataset: dataset, gameData: gameData });
+export async function logGame(gameData: DbGuess[], dataset: DbDatasetID = season1ID) {
+	if (gameData.length > 0) {
+		// Get current iteration
+		const currIteration = await getCurrentIteration();
+		if (currIteration && currIteration > 0) {
+			return gameLogCollection.insertOne({ iteration: currIteration, dataset: dataset, gameData: gameData });
+		}
+		Promise.reject(new Error('Could not get current iteration from db.'));
 	}
 }
 

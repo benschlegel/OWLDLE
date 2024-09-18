@@ -6,8 +6,8 @@ import { type DbGuess, gameSaveValidator } from '@/types/database';
 export const dynamic = 'force-dynamic';
 
 const rateLimiter = new RateLimiterMemory({
-	points: 2, // Number of requests
-	duration: 1, // Per 1 second
+	points: 100, // Number of requests
+	duration: 60, // Per 1 second
 });
 
 export async function POST(request: NextRequest) {
@@ -15,7 +15,6 @@ export async function POST(request: NextRequest) {
 	try {
 		await rateLimiter.consume(request.ip ?? 'anonymous');
 
-		// TODO: get current iteration from db
 		// Try to parse request
 		const parsedBody = await request.json();
 		const gameSaveRes = gameSaveValidator.safeParse(parsedBody);
@@ -30,13 +29,16 @@ export async function POST(request: NextRequest) {
 		const playerGuesses = gameSaveRes.data as DbGuess[];
 
 		try {
-			await logGame([], 0);
+			// Try to log game, return with success code if so
+			const res = await logGame(playerGuesses, 'OWL_season1');
+			if (res?.acknowledged) {
+				return new Response(undefined, { status: 200 });
+			}
 		} catch (e) {
 			return new Response(JSON.stringify({ message: "Couldn't save game." }), { status: 500 });
 		}
-		// await deleteAllPlayers();
 
-		return new Response(undefined, { status: 200 });
+		return new Response(JSON.stringify({ message: "Couldn't save game." }), { status: 500 });
 	} catch (error) {
 		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
 	}
