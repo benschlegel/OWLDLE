@@ -1,4 +1,5 @@
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+import type { GuessResponse } from '@/types/server';
 
 export type DbDatasetID = 'OWL_season1' | 'OWL_season2';
 export type DbAnswerPrefix = 'current' | 'next';
@@ -10,15 +11,15 @@ export type DbPlayer = Omit<FormattedPlayer, 'countryImg'>;
 
 export type DbLogEntryKey = `games_${DbDatasetID}`;
 
-export interface DbFormattedPlayers {
+export type DbFormattedPlayers = {
 	/**
 	 * which season players are from
 	 */
 	_id: DbDatasetID;
 	players: DbPlayer[];
-}
+};
 
-export interface DbAnswerFull {
+export type DbAnswerFull = {
 	/**
 	 * Should always be hard coded
 	 */
@@ -35,9 +36,9 @@ export interface DbAnswerFull {
 	 * What iteration of the game this answer is for
 	 */
 	iteration: number;
-}
+};
 
-export interface DbIteration {
+export type DbIteration = {
 	/**
 	 * What dataset this iteration is for
 	 */
@@ -54,10 +55,27 @@ export interface DbIteration {
 	 * The correct player for this iteration
 	 */
 	player: DbPlayer;
-}
+};
 
-export interface DbFeedback {
+export type DbLoggedGame = {
+	/**
+	 * What dataset this iteration is for
+	 */
+	dataset: DbDatasetID;
+	/**
+	 * The game iteration number
+	 */
+	iteration: DbAnswerFull['iteration'];
+	/**
+	 * The data for this game (containing all guesses)
+	 */
+	gameData: DbGuess[];
+};
+
+export type DbGuess = { guessResult: GuessResponse; player: DbPlayer };
+
+export type DbFeedback = {
 	feedbackContent: string;
 	feedbackRating?: number;
 	feedbackName?: string;
-}
+};

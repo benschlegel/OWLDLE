@@ -12,6 +12,8 @@ import type {
 	DbLogEntryKey,
 	DbFeedback,
 	DbIteration,
+	DbLoggedGame,
+	DbGuess,
 } from '@/types/database';
 import { MongoClient } from 'mongodb';
 
@@ -33,7 +35,7 @@ export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
 export const backlogCollectionName = 'backlog';
 const season1ID: DbDatasetID = 'OWL_season1';
-const season1Logs: DbLogEntryKey = 'games_OWL_season1';
+const gameLogs = 'game_logs';
 const iterationsId = 'iterations';
 const feedbackID = 'feedback';
 
@@ -47,6 +49,7 @@ const playerCollection = database.collection<DbFormattedPlayers>(playerCollectio
 const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
 const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
 const feedbackCollection = database.collection<DbFeedback>(feedbackID);
+const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
 
 const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1 }, { unique: true });
@@ -151,10 +154,16 @@ export async function addFeedback(feedback: DbFeedback) {
  * Log game state to db
  * @param dataset
  */
-export async function logGame(dataset: DbDatasetID = season1ID) {
-	//
+export async function logGame(gameData: DbGuess[], iteration: number, dataset: DbDatasetID = season1ID) {
+	if (gameData.length > 0 && iteration > 0) {
+		return gameLogCollection.insertOne({ iteration: iteration, dataset: dataset, gameData: gameData });
+	}
 }
 
+/**
+ * Add new iteration to full iteration store
+ * @param it which iteration to store
+ */
 export async function addIteration(it: DbIteration) {
 	return iterationCollection.insertOne(it);
 }
