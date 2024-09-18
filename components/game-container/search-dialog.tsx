@@ -61,7 +61,7 @@ export default function SearchDialog({ className }: Props) {
 	return (
 		<CommandDialog open={open} onOpenChange={setOpen} srDialogTitle="Search for player">
 			<CommandInput placeholder="Search for player..." value={searchValue} onChangeCapture={handleTyping} ref={inputRef} />
-			<CommandList>
+			<CommandList className="py-2">
 				<CommandEmpty>No results found.</CommandEmpty>
 				<CommandGroup heading="">
 					{PLAYERS.map((player) => {
