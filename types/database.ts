@@ -1,5 +1,7 @@
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 
+export type DbSeasons = 'season1' | 'season2';
+
 export interface DbFormattedPlayers {
 	/**
 	 * which season players are from

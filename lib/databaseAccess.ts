@@ -1,5 +1,5 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import type { DbAnswer, DbAnswerFull, DbFormattedPlayers } from '@/types/database';
+import type { DbAnswer, DbAnswerFull, DbFormattedPlayers, DbSeasons } from '@/types/database';
 import { MongoClient, WithId } from 'mongodb';
 
 let useDevDatabase = false;
@@ -18,7 +18,7 @@ const DEV_NAME = 'OWLEL-dev';
 export const dbName = !useDevDatabase ? PROD_NAME : DEV_NAME;
 export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
-const season1ID = 'season1';
+const season1ID: DbSeasons = 'season1';
 const currentAnswerID = 'current';
 const nextAnswerID = 'next';
 
@@ -38,15 +38,15 @@ export async function insertPlayer(): Promise<void> {
 /**
  * CAREFUL: deletes the entire player backlog from database
  */
-export async function deleteAllPlayers() {
-	return playerCollection.deleteMany({ _id: season1ID });
+export async function deleteAllPlayers(season: DbSeasons = season1ID) {
+	return playerCollection.deleteMany({ _id: season });
 }
 
 /**
  * Insert all players from a season to the database backlog (if no object with the current season id exists, create it, otherwise, update)
  */
-export async function insertAllPlayers() {
-	return playerCollection.updateOne({ _id: season1ID }, { $set: { _id: season1ID, players: PLAYERS } }, { upsert: true });
+export async function insertAllPlayers(season: DbSeasons = season1ID) {
+	return playerCollection.updateOne({ _id: season }, { $set: { _id: season, players: PLAYERS } }, { upsert: true });
 }
 
 /**
@@ -64,3 +64,6 @@ export async function setCurrentAnswer(answer: DbAnswer) {
 export async function setNextAnswer(answer: DbAnswer) {
 	return answersCollection.updateOne({ _id: nextAnswerID }, { $set: { ...answer, _id: nextAnswerID } }, { upsert: true });
 }
+
+// TODO: add "playerPool" collection to pick next answers from
+// TODO: add game statistics collection (with date as key)
