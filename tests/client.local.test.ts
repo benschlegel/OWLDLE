@@ -71,5 +71,5 @@ describe('game result', () => {
 });
 
 function getExpectedString(config: FormatConfig, content: string) {
-	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses}\n${content}\n${config.siteUrl}`;
+	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses}\n${content}\n<${config.siteUrl}>`;
 }
