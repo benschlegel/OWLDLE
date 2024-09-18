@@ -1,7 +1,7 @@
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
-import type { DbAnswer, DbAnswerFull, DbFormattedPlayers, DbPlayer, DbSeasons } from '@/types/database';
+import type { AnswerKey, DbAnswer, DbAnswerFull, DbAnswerPrefix, DbFormattedPlayers, DbPlayer, DbSeasons } from '@/types/database';
 import { MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
@@ -22,8 +22,6 @@ export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
 export const backlogCollectionName = 'backlog';
 const season1ID: DbSeasons = 'season1';
-const currentAnswerID = 'current';
-const nextAnswerID = 'next';
 
 // Use connect method to connect to the server
 const dbClient = new MongoClient(uri);
@@ -34,10 +32,6 @@ const database = dbClient.db(dbName);
 const playerCollection = database.collection<DbFormattedPlayers>(playerCollectionName);
 const answersCollection = database.collection<DbAnswerFull>(answerCollectionName);
 const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
-
-export async function insertPlayer(): Promise<void> {
-	// const result = await playerCollection.insertMany(PLAYERS).then(() => console.log('Saved to db!'));
-}
 
 /**
  * CAREFUL: deletes the entire player backlog from database
@@ -59,8 +53,9 @@ export async function insertAllPlayers(season: DbSeasons = season1ID) {
  * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the answer that's currently correct
  */
-export async function setCurrentAnswer(answer: DbAnswer) {
-	return answersCollection.updateOne({ _id: currentAnswerID }, { $set: { ...answer, _id: currentAnswerID } }, { upsert: true });
+export async function setCurrentAnswer(answer: DbAnswer, season: DbSeasons = season1ID) {
+	const answerKey: AnswerKey = `current_${season}`;
+	return answersCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
 }
 
 /**
@@ -68,8 +63,9 @@ export async function setCurrentAnswer(answer: DbAnswer) {
  * IMPORTANT: make sure the player does not contain countryImg field
  * @param answer the correct answer for the next iteration
  */
-export async function setNextAnswer(answer: DbAnswer) {
-	return answersCollection.updateOne({ _id: nextAnswerID }, { $set: { ...answer, _id: nextAnswerID } }, { upsert: true });
+export async function setNextAnswer(answer: DbAnswer, season: DbSeasons = season1ID) {
+	const answerKey: AnswerKey = `current_${season}`;
+	return answersCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true });
 }
 
 /**
@@ -120,5 +116,4 @@ export async function insertManyBacklog(players: DbPlayer[], season: DbSeasons =
 	return backlogCollection.updateOne({ _id: season }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
 }
 
-// TODO: add "playerPool" collection to pick next answers from
 // TODO: add game statistics collection (with date as key)
