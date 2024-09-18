@@ -1,19 +1,15 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
-import { addDays, validateGuess } from '@/lib/server';
+import { getCurrentAnswer } from '@/lib/databaseAccess';
+import { validateGuess } from '@/lib/server';
+import type { DbAnswer } from '@/types/database';
 import { type Player, playerSchema } from '@/types/players';
-import type { PlayerWithRegion, ValidateResponse } from '@/types/server';
+import type { ValidateResponse } from '@/types/server';
 import type { NextRequest } from 'next/server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 // export const dynamic = 'force-static';
 export const dynamicParams = true;
 
-// TODO: reset current round if server curr player resets
-const DEFAULT_PLAYER: PlayerWithRegion = { country: 'RU', team: 'BostonUprising', role: 'Damage', name: 'Mistakes', region: 'AtlanticDivison', id: 0 };
-const DEFAULT_DATE = new Date('2024-09-17T02:00:00.000+02:00');
-
-let currPlayer: PlayerWithRegion = DEFAULT_PLAYER;
-let nextReset: Date = DEFAULT_DATE;
+let currentAnswer: DbAnswer;
 
 // How many days per "round" of the game (e.g. 1 means the game resets once per day, 2 every two days, etc)
 const DAY_INCREMENT = 1;
@@ -50,7 +46,7 @@ export async function POST(req: NextRequest) {
 
 		// Raw data
 		const player = playerRes.data as Player;
-		const resResponse = validateGuess(player, currPlayer);
+		const resResponse = validateGuess(player, currentAnswer.player);
 
 		return Response.json(resResponse);
 	} catch (error) {
@@ -62,16 +58,35 @@ export async function GET(req: NextRequest) {
 	try {
 		await getLimiter.consume(req.ip ?? 'anonymous');
 
-		if (new Date() >= nextReset) {
-			// fetch from backend
-			nextReset = addDays(nextReset, DAY_INCREMENT);
-			// get new player from backend
-			currPlayer = DEFAULT_PLAYER;
-			// add day
-			// set back to backend
+		if (!currentAnswer || currentAnswer === undefined) {
+			// fetch current data
+			try {
+				const answer = await getCurrentAnswer();
+				if (answer) {
+					currentAnswer = answer;
+				} else {
+					throw new Error('Could not get answer from database');
+				}
+			} catch (e) {
+				return new Response('Failed to set get initial answer', { status: 500, statusText: 'Unauthorized' });
+			}
 		}
 
-		const res: ValidateResponse = { nextReset: nextReset, correctPlayer: currPlayer, iteration: 1 };
+		if (new Date() >= currentAnswer.nextReset) {
+			// fetch updated data
+			try {
+				const answer = await getCurrentAnswer();
+				if (answer) {
+					currentAnswer = answer;
+				} else {
+					throw new Error('Could not get answer from database');
+				}
+			} catch (e) {
+				return new Response('Failed to set get initial answer', { status: 500, statusText: 'Unauthorized' });
+			}
+		}
+
+		const res: ValidateResponse = { nextReset: currentAnswer.nextReset, correctPlayer: currentAnswer.player, iteration: 1 };
 		return Response.json(res);
 	} catch (error) {
 		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
