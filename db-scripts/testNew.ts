@@ -16,3 +16,6 @@ try {
 console.timeEnd('test');
 console.log('Finished.');
 exit(0);
+
+// Expected: clockwork {curr: 2, linkzr}, {next: 3,chips }
+// Expected: libero, dayfly, altering
