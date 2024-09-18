@@ -1,5 +1,7 @@
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
-import type { GuessResponse } from '@/types/server';
+import { playerSchema } from '@/types/players';
+import { GuessSchema, type GuessResponse } from '@/types/server';
+import { z } from 'zod';
 
 export type DbDatasetID = 'OWL_season1' | 'OWL_season2';
 export type DbAnswerPrefix = 'current' | 'next';
@@ -72,7 +74,18 @@ export type DbLoggedGame = {
 	gameData: DbGuess[];
 };
 
-export type DbGuess = { guessResult: GuessResponse; player: DbPlayer };
+const trimmedPlayer = z.object({ name: z.string(), id: z.number().min(0) });
+export type DbTrimmedPlayer = z.infer<typeof trimmedPlayer>;
+export const gameSaveValidator = z
+	.array(
+		z.object({
+			guessResponse: z.array(GuessSchema),
+			player: trimmedPlayer,
+		})
+	)
+	.min(1);
+
+export type DbGuess = z.infer<typeof gameSaveValidator>[number];
 
 export type DbFeedback = {
 	feedbackContent: string;
