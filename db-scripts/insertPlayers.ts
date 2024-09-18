@@ -1,5 +1,7 @@
 import { insertAllPlayers } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
 
-await insertAllPlayers().then(() => console.log('finished.'));
+console.time('insertPlayers');
+await insertAllPlayers();
+console.timeEnd('insertPlayers');
 exit(0);

@@ -7,7 +7,7 @@ export interface DbFormattedPlayers {
 	 * which season players are from
 	 */
 	_id: string;
-	players: FormattedPlayer[];
+	players: DbPlayer[];
 }
 
 export interface DbAnswerFull {
@@ -18,7 +18,7 @@ export interface DbAnswerFull {
 	/**
 	 * The correct player
 	 */
-	player: FormattedPlayer;
+	player: DbPlayer;
 	/**
 	 * Time of next reset
 	 */
@@ -30,3 +30,4 @@ export interface DbAnswerFull {
 }
 
 export type DbAnswer = Omit<DbAnswerFull, '_id'>;
+export type DbPlayer = Omit<FormattedPlayer, 'countryImg'>;
