@@ -15,6 +15,7 @@ const WESTERN = ['DallasFuel', 'LosAngelesGladiators', 'LosAngelesValiant', 'San
 type EasternTeam = (typeof EASTERN)[number];
 type WesternTeam = (typeof WESTERN)[number];
 type OWLTeam = EasternTeam | WesternTeam;
+const REGIONS = ['AtlanticDivison', 'PacificDivision'] as const;
 
 export const playerSchema = z.object({
 	/**
@@ -36,7 +37,7 @@ export const playerSchema = z.object({
 	/**
 	 * Wether player is eastern (player is western if false)
 	 */
-	isEastern: z.boolean().optional(),
+	region: z.enum(REGIONS).optional(),
 	/**
 	 * Wether player is marked as flex by liquipedia
 	 */
@@ -55,4 +56,15 @@ export const playerSchema = z.object({
 export function isEastern(team: OWLTeam): boolean {
 	// Type casting to fix readonly behavior from array definition
 	return (EASTERN as ReadonlyArray<string>).includes(team);
+}
+
+/**
+ * Gets region from a team (e.g. "BostonUprising" -> "AtlanticDivision")
+ * @param team team name to check
+ * @returns the region a team is from (or undefined if team is invalid/in no region)
+ */
+export function getRegion(team: OWLTeam): Player['region'] {
+	if ((EASTERN as ReadonlyArray<string>).includes(team)) return 'AtlanticDivison';
+	if ((WESTERN as ReadonlyArray<string>).includes(team)) return 'PacificDivision';
+	return undefined;
 }

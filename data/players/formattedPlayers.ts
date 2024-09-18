@@ -1,5 +1,5 @@
 import { s1Players } from '@/data/players/players';
-import { isEastern, type Player } from '@/types/players';
+import { getRegion, type Player } from '@/types/players';
 
 type CustomFlag = { country: Player['country']; customImg: string };
 
@@ -17,10 +17,10 @@ const unsortedPlayers = s1Players.map((player: Player, index) => {
 	}
 
 	// Set player region
-	const isEasternTeam = isEastern(player.team);
+	const region = getRegion(player.team);
 
 	// Take original player data and add auto calculated fields
-	return { ...player, countryImg, id: index, isEastern: isEasternTeam };
+	return { ...player, countryImg, id: index, region: region };
 });
 
 // use sort instead of toSorted to fix webpack error
