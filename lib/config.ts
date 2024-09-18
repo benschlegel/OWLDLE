@@ -18,6 +18,10 @@ const configSchema = z.object({
 	 * What image extensions all images in /public/teams/s1 use (e.g. "png" or "avif")
 	 */
 	teamLogoImgExtension: z.string(),
+	/**
+	 * What size to generate backlog (e.g. 10 would pick 10 random players, pop the first one each iteration and re-fill with 10 more once the backlog runs out)
+	 */
+	backlogMaxSize: z.number().min(1),
 });
 
 export const GAME_CONFIG = configSchema.parse(config);

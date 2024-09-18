@@ -2,5 +2,6 @@
   "maxGuesses": 8,
   "siteUrl": "https://owldle.bschlegel.com",
   "gameName": "OWLDLE",
-  "teamLogoImgExtension": "avif"
+  "teamLogoImgExtension": "avif",
+  "backlogMaxSize": 20
 }
