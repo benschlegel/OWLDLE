@@ -1,5 +1,4 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
-import { trimDate } from '@/lib/utils';
 import type { NextRequest } from 'next/server';
 import { logGame } from '@/lib/databaseAccess';
 import { type DbGuess, gameSaveValidator } from '@/types/database';

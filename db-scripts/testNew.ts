@@ -1,9 +1,12 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
-import { addIteration, getCurrentAnswer, getCurrentIteration } from '@/lib/databaseAccess';
+import { getCurrentIteration } from '@/lib/databaseAccess';
+import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
 
-console.time('answer');
-const answer = await getCurrentIteration();
-console.timeEnd('answer');
-console.log('Finished: ', answer);
+console.time('test');
+
+const time = trimDate(new Date());
+console.log('Trimmed: ', time.toTimeString());
+
+console.timeEnd('test');
+console.log('Finished.');
 exit(0);
