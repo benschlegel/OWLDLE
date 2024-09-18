@@ -64,9 +64,7 @@ export async function deleteAllPlayers(dataset: DbDatasetID = season1ID) {
 }
 
 export async function dropAll() {
-	if (process.env.NODE_ENV !== 'production') {
-		await database.dropDatabase();
-	}
+	await database.dropDatabase();
 }
 
 /**
