@@ -19,3 +19,16 @@ export function trimDate(date: Date, isProd = false) {
 	date.setMilliseconds(0);
 	return new Date(date);
 }
+
+/**
+ * Trims a date to only contain year, day and hour information
+ * @param date the date to trim
+ * @returns new date with trimmed and added data
+ */
+export function trimAndAddHours(date: Date, hours: number) {
+	date.setMinutes(0);
+	date.setSeconds(0);
+	date.setMilliseconds(0);
+	date.setHours(date.getHours() + hours);
+	return new Date(date);
+}
