@@ -55,3 +55,9 @@ export interface DbIteration {
 	 */
 	player: DbPlayer;
 }
+
+export interface DbFeedback {
+	feedbackContent: string;
+	feedbackRating?: number;
+	feedbackName?: string;
+}
