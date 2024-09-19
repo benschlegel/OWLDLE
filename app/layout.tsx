@@ -6,6 +6,7 @@ import GuessContextProvider from '@/context/GuessContext';
 import GameStateContextProvider from '@/context/GameStateContext';
 import { GAME_CONFIG } from '@/lib/config';
 import PlausibleProvider from 'next-plausible';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -70,7 +71,10 @@ export default function RootLayout({
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<GuessContextProvider>
-						<GameStateContextProvider>{children}</GameStateContextProvider>
+						<GameStateContextProvider>
+							{children}
+							<SpeedInsights />
+						</GameStateContextProvider>
 					</GuessContextProvider>
 				</ThemeProvider>
 			</body>
