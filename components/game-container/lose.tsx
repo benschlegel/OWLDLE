@@ -2,8 +2,10 @@
 import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
+import type { PlausibleEvents } from '@/types/plausible';
 import { CheckIcon, CopyIcon } from 'lucide-react';
-import { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { usePlausible } from 'next-plausible';
+import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
@@ -16,6 +18,7 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult }:
 	const [_, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
+	const plausible = usePlausible<PlausibleEvents>();
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
@@ -46,7 +49,13 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult }:
 					/>
 				)}
 			</div>
-			<SwitchableButton className="w-72 mt-3" onClick={() => navigator.clipboard.writeText(formattedResult ?? '')} switchedContent={<SwitchedButtonContent />}>
+			<SwitchableButton
+				className="w-72 mt-3"
+				onClick={() => {
+					navigator.clipboard.writeText(formattedResult ?? '');
+					plausible('copyResult', { props: { state: 'lost' } });
+				}}
+				switchedContent={<SwitchedButtonContent />}>
 				<DefaultButtonContent />
 			</SwitchableButton>
 		</div>
