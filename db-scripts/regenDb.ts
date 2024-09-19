@@ -1,5 +1,5 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import { addIteration, dropAll, generateBacklog, insertAllPlayers, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
+import { addIteration, dropAll, generateBacklog, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
@@ -34,6 +34,10 @@ await addIteration({ iteration: curr.iteration, dataset: 'OWL_season1', player: 
 
 // Regen backlog
 await generateBacklog();
+
+// Hacky, ensure both answers are unique and not included in the backlog
+await rerollAnswer('current');
+await rerollAnswer('next');
 
 console.timeEnd('regen');
 console.log('Finished.');

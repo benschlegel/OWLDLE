@@ -152,7 +152,7 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
  * @param player new player to set for answer
  * @param dataset what dataset to set player for
  */
-export async function reshuffleAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
+export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	let randomPlayer = getRandomPlayer();
 	let isIncluded = true;
