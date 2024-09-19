@@ -314,5 +314,4 @@ export async function goNextIteration(
 	// step 6: set new next
 }
 
-// TODO: also handle get client
-// TODO: call get client on startup to fetch
+// TODO: add partial currentAnswer update + script

@@ -9,14 +9,15 @@ export default function CountryCell({ imgSrc }: Props) {
 
 	return (
 		<div className="rounded-md flex justify-center items-center m-[0.28rem] aspect-square border-[0.5px] border-secondary/50">
-			<img
+			<Image
 				src={imgSrc}
-				alt={'Square country flag'}
+				alt={`Country logo`}
+				priority
+				unoptimized={false}
+				quality={100}
 				width={64}
 				height={64}
 				className="rounded-md h-auto w-auto max-h-full max-w-full"
-				fetchPriority="high"
-				loading="eager"
 			/>
 		</div>
 	);
