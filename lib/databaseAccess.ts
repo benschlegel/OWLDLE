@@ -1,4 +1,4 @@
-import { type FormattedPlayer, getRandomPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { getRandomPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimAndAddHours, trimDate } from '@/lib/utils';
@@ -255,46 +255,24 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 	const seasonPlayers = await playerCollection.findOne({ _id: dataset });
 	if (!seasonPlayers) throw new Error(`can't find players collection for ${dataset}`);
 
+	// Check if any of the backlog players are in current answer
+	const currAnswer = await getCurrentAnswer(dataset);
+	const nextAnswer = await getNextAnswer(dataset);
+	if (!currAnswer || !nextAnswer) throw new Error('error while generating backlog');
+
+	// * Remove players from sampled players to make sure newly sampled backlog doesn't contain duplicates
+	const invalidPlayerNames = [currAnswer.player.name, nextAnswer.player.name];
+	const dedupedPlayers = seasonPlayers.players.filter((player) => !invalidPlayerNames.includes(player.name));
+	console.log('deduped size: ', dedupedPlayers.length);
+
 	// Apply Fisher-Yates shuffle
-	const players = seasonPlayers.players;
-	for (let i = players.length - 1; i > 0; i--) {
+	for (let i = dedupedPlayers.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
-		[players[i], players[j]] = [players[j], players[i]];
+		[dedupedPlayers[i], dedupedPlayers[j]] = [dedupedPlayers[j], dedupedPlayers[i]];
 	}
 
 	// Get slice with specified size
-	const slicedPlayers: DbPlayer[] = players.slice(0, size);
-	const unusedPool = players.slice(size);
-
-	// * Check if any of the backlog players are in current answer
-	const currAnswer = await getCurrentAnswer(dataset);
-	const nextAnswer = await getCurrentAnswer(dataset);
-
-	if (!currAnswer || !nextAnswer) throw new Error('error while generating backlog');
-
-	// Check if backlog contains duplicates in answers
-	for (let i = 0; i < slicedPlayers.length; i++) {
-		const player = slicedPlayers[i];
-
-		let unique = false;
-		while (!unique) {
-			if (currAnswer.player.name === player.name || nextAnswer.player.name === player.name) {
-				// Get random unused item and try replacing
-				const randomUnused = unusedPool[Math.floor(Math.random() * unusedPool.length)];
-
-				// If name is contained, item is still not unique (could skip this case but unique=false increases readability)
-				if (currAnswer.player.name === randomUnused.name || nextAnswer.player.name === randomUnused.name) {
-					unique = false;
-					console.info('Re-rolled player.');
-				} else {
-					// If unique re-shuffled item was found, insert it
-					slicedPlayers[i] = randomUnused;
-					unique = true;
-				}
-			}
-		}
-	}
-
+	const slicedPlayers: DbPlayer[] = dedupedPlayers.slice(0, size);
 	return backlogCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: slicedPlayers } }, { upsert: true });
 }
 
