@@ -8,8 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest local",
-    "test:write": "WRITE_TEST_REPORT=true vitest --outputFile=./tests/report.json",
-    "test:full": "vitest"
+    "test:all": "vitest",
+    "test:write": "WRITE_TEST_REPORT=true vitest --outputFile=./tests/report.json"
   },
   "dependencies": {
     "@million/lint": "^1.0.0-rc.84",
