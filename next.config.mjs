@@ -4,14 +4,14 @@ import { withPlausibleProxy } from 'next-plausible';
 const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
 	images: {
 		// TODO: remove to disable nextjs image optimizations/caching
-		remotePatterns: [
-			{
-				protocol: 'https',
-				hostname: 'vectorflags.s3.amazonaws.com',
-				port: '',
-				pathname: '/flags/**',
-			},
-		],
+		// remotePatterns: [
+		// 	{
+		// 		protocol: 'https',
+		// 		hostname: 'vectorflags.s3.amazonaws.com',
+		// 		port: '',
+		// 		pathname: '/flags/**',
+		// 	},
+		// ],
 		formats: ['image/avif'],
 	},
 	compiler: {
