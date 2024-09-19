@@ -143,8 +143,10 @@
   body {
     @apply bg-background text-foreground transition-colors duration-300;
   }
+  /*
   html {
-    /* Prevents layout shifts from scroll bar */
-    scrollbar-gutter: stable;
+    Prevents layout shifts from scroll bar */
+    /* scrollbar-gutter: stable;
   }
+    */
 }
