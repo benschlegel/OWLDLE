@@ -60,30 +60,19 @@ export async function GET(req: NextRequest) {
 
 		if (!currentAnswer || currentAnswer === undefined) {
 			// fetch current data
-			try {
-				const answer = await getCurrentAnswer();
-				// TODO: extract in function (passes response)
-				if (answer) {
-					currentAnswer = answer;
-				} else {
-					throw new Error('Could not get answer from database');
-				}
-			} catch (e) {
-				return new Response('Failed to set get initial answer', { status: 500, statusText: 'Unauthorized' });
+			const res = await updateLocalAnswer();
+			if (res) {
+				// Update failed, return error response
+				return res;
 			}
 		}
 
 		if (new Date() >= currentAnswer.nextReset) {
 			// fetch updated data
-			try {
-				const answer = await getCurrentAnswer();
-				if (answer) {
-					currentAnswer = answer;
-				} else {
-					throw new Error('Could not get answer from database');
-				}
-			} catch (e) {
-				return new Response('Failed to set get initial answer', { status: 500, statusText: 'Unauthorized' });
+			const res = await updateLocalAnswer();
+			if (res) {
+				// Update failed, return error response
+				return res;
 			}
 		}
 
@@ -100,19 +89,15 @@ export async function PATCH(req: NextRequest) {
 		return new Response('Unauthorized', { status: 401, statusText: 'Unauthorized' });
 	}
 
-	try {
-		const answer = await getCurrentAnswer();
-		if (answer) {
-			currentAnswer = answer;
-		} else {
-			throw new Error('Could not get answer from database');
-		}
-	} catch (e) {
-		return new Response('Failed to set get initial answer', { status: 500, statusText: 'Unauthorized' });
+	const res = await updateLocalAnswer();
+	if (!res) {
+		// Unintuitive, but this is the happy path (function only returns error response)
+		return new Response(JSON.stringify(currentAnswer), { status: 200 });
 	}
-	return new Response(JSON.stringify(currentAnswer), { status: 200 });
+	return res;
 }
 
+// TODO: throw error instead of response
 async function updateLocalAnswer() {
 	try {
 		const answer = await getCurrentAnswer();
@@ -122,6 +107,6 @@ async function updateLocalAnswer() {
 			throw new Error('Could not get answer from database');
 		}
 	} catch (e) {
-		return new Response('Failed to set get initial answer', { status: 500 });
+		return new Response('Failed to override local answer or failed to get answer from database.', { status: 500 });
 	}
 }
