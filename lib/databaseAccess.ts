@@ -247,7 +247,6 @@ export async function getBacklog(dataset: DbDatasetID = season1ID) {
  * @param session (optional), pass transaction session if used during transaction
  */
 export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize, dataset: DbDatasetID = season1ID, session?: ClientSession) {
-	// TODO: ensure that none of new backlog entries in answers
 	// Error if player collection is emtpy
 	const playerCount = await playerCollection.countDocuments();
 	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
@@ -270,7 +269,24 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 		slicedPlayers = players.slice(0, size);
 
 		// * Check if any of the backlog players are in current answer
-		isDuplicate = false;
+		// TODO: improve performance by only re-rolling duplicates instead of full array
+		const currAnswer = await getCurrentAnswer(dataset);
+		const nextAnswer = await getCurrentAnswer(dataset);
+
+		if (!currAnswer || !nextAnswer) throw new Error('error while generating backlog');
+
+		// Check if backlog contains duplicates in answers
+		let containsDuplicate = false;
+		for (const player of slicedPlayers) {
+			if (currAnswer.player.name === player.name || nextAnswer.player.name === player.name) {
+				containsDuplicate = true;
+			}
+		}
+
+		// If answers contain duplicates, re-roll
+		if (containsDuplicate === false) {
+			isDuplicate = false;
+		}
 	}
 
 	return backlogCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: slicedPlayers } }, { upsert: true });
