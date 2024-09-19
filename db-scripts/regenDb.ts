@@ -6,9 +6,10 @@ import { trimDate } from '@/lib/utils';
 import type { DbDatasetID } from '@/types/database';
 import { exit } from 'node:process';
 
-// ! Configure your first reset date here (in UTC)
 const DATASET: DbDatasetID = 'OWL_season1';
-const nextReset = trimDate(new Date(Date.UTC(2024, 8, 20, 2, 0, 0)));
+// ! Configure your first reset date here (in UTC)
+// ! Keep in mind that javascript months start at 0
+const nextReset = trimDate(new Date(Date.UTC(2024, 8, 19, 22, 0, 0)));
 const nextNextReset = new Date(nextReset);
 nextNextReset.setDate(nextNextReset.getDate() + 1);
 // const nextReset = getFormattedMidnightTmrw();
