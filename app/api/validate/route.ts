@@ -6,13 +6,9 @@ import type { ValidateResponse } from '@/types/server';
 import type { NextRequest } from 'next/server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 
-// export const dynamic = 'force-static';
 export const dynamicParams = true;
 
 let currentAnswer: DbAnswer;
-
-// How many days per "round" of the game (e.g. 1 means the game resets once per day, 2 every two days, etc)
-const DAY_INCREMENT = 1;
 
 // Configure rate limiter
 const postLimiter = new RateLimiterMemory({
@@ -54,6 +50,10 @@ export async function POST(req: NextRequest) {
 	}
 }
 
+/**
+ * Get current answer
+ * @returns ({nextReset: Date, correctPlayer: Player, iteration: number})
+ */
 export async function GET(req: NextRequest) {
 	try {
 		await getLimiter.consume(req.ip ?? 'anonymous');
@@ -62,6 +62,7 @@ export async function GET(req: NextRequest) {
 			// fetch current data
 			try {
 				const answer = await getCurrentAnswer();
+				// TODO: extract in function (passes response)
 				if (answer) {
 					currentAnswer = answer;
 				} else {
@@ -91,4 +92,12 @@ export async function GET(req: NextRequest) {
 	} catch (error) {
 		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
 	}
+}
+
+export async function PATCH(req: NextRequest) {
+	// Return forbidden if token was not passed (route should not be publicly accessible)
+	if (req.headers.get('Authorization') !== `Bearer ${process.env.ADMIN_API_TOKEN}`) {
+		return new Response('Unauthorized', { status: 401, statusText: 'Unauthorized' });
+	}
+	return new Response('Success');
 }
