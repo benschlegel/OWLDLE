@@ -26,6 +26,8 @@ class CustomReporter implements Reporter {
 
 	onInit(ctx: Vitest): void {
 		this.ctx = ctx;
+		console.log('Running tests in background...');
+		console.time('testDuration');
 	}
 
 	onFinished(files?: RunnerTestFile[]): void {
@@ -63,9 +65,28 @@ class CustomReporter implements Reporter {
 	}
 
 	private writeResults(): void {
-		const outputPath = path.join(process.cwd(), 'test-results.json');
+		console.timeEnd('testDuration');
+
+		const outputFile = this.ctx.config.outputFile;
+		let outputPath: string;
+
+		if (typeof outputFile === 'string') {
+			outputPath = outputFile;
+		} else if (outputFile && typeof outputFile.json === 'string') {
+			outputPath = outputFile.json;
+		} else {
+			// * Default path, if no other path gets set
+			outputPath = path.join(process.cwd(), '/tests/report.json');
+		}
+
+		const dir = path.dirname(outputPath);
+		if (!fs.existsSync(dir)) {
+			fs.mkdirSync(dir, { recursive: true });
+		}
+
 		fs.writeFileSync(outputPath, JSON.stringify(this.results, null, 2));
-		console.log(`Test results written to ${outputPath}`);
+		console.log(`Test results written to '${outputPath}'`);
+		process.exit();
 	}
 }
 

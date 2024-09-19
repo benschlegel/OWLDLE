@@ -5,6 +5,6 @@ import CustomReporter from './tests/CustomReporter';
 export default defineConfig({
 	plugins: [tsconfigPaths()],
 	test: {
-		reporters: [new CustomReporter()]
+		reporters: process.env.WRITE_TEST_REPORT === "true" ? [new CustomReporter()] : "default"
 	}
 });
