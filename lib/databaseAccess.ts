@@ -255,15 +255,17 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 	const seasonPlayers = await playerCollection.findOne({ _id: dataset });
 	if (!seasonPlayers) throw new Error(`can't find players collection for ${dataset}`);
 
-	// Check if any of the backlog players are in current answer
-	const currAnswer = await getCurrentAnswer(dataset);
-	const nextAnswer = await getNextAnswer(dataset);
-	if (!currAnswer || !nextAnswer) throw new Error('error while generating backlog');
-
 	// * Remove players from sampled players to make sure newly sampled backlog doesn't contain duplicates
-	const invalidPlayerNames = [currAnswer.player.name, nextAnswer.player.name];
+	const answers = await getAllAnswers(dataset);
+
+	// Check if answers exist. If they do, remove their entries
+	const invalidPlayerNames: string[] = [];
+	for (const answer of answers) {
+		if (answer !== null) {
+			invalidPlayerNames.push(answer.player.name);
+		}
+	}
 	const dedupedPlayers = seasonPlayers.players.filter((player) => !invalidPlayerNames.includes(player.name));
-	console.log('deduped size: ', dedupedPlayers.length);
 
 	// Apply Fisher-Yates shuffle
 	for (let i = dedupedPlayers.length - 1; i > 0; i--) {
