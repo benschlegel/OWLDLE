@@ -24,7 +24,7 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 	},
 	experimental: {
 		reactCompiler: true,
-		instrumentationHook: true,
+		// instrumentationHook: true,
 	},
 });
 // export default MillionLint.next({
