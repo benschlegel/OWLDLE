@@ -146,14 +146,44 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: player } });
 }
 
+// TODO: extract random unique player into function, make sure to also update in iteration backlog, if answer is current
 /**
  * Updates an answer with new player
  * @param answerPrefix "current" or "next"
  * @param player new player to set for answer
  * @param dataset what dataset to set player for
+ * @returns true, if update was rerolled and inserted successfully, false, if not
  */
 export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
+	const randomPlayer = await getUniqueRandomPlayer(dataset);
+	if (!randomPlayer) {
+		return false;
+	}
+
+	// Write player to answer
+	try {
+		await answerCollection.updateOne({ _id: answerKey }, { $set: { player: randomPlayer } }, { upsert: true });
+	} catch (e) {
+		return false;
+	}
+
+	if (answerPrefix === 'current') {
+		const iteration = await getCurrentIteration(dataset);
+		if (iteration === undefined) return false;
+
+		// Do partial update on backlog iteration
+		return updateIterationPlayer(iteration, randomPlayer);
+	}
+
+	return true;
+}
+
+/**
+ * Pick random unqiue player that isn't in any backlog (answers or main backlog)
+ * @param dataset what dataset to get unqiue player for
+ */
+export async function getUniqueRandomPlayer(dataset: DbDatasetID) {
 	let randomPlayer = getRandomPlayer();
 	let isIncluded = true;
 
@@ -173,9 +203,7 @@ export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbData
 		}
 	}
 
-	// Format and write player
-	const formattedPlayer = formattedToDbPlayer(randomPlayer);
-	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: formattedPlayer } });
+	return formattedToDbPlayer(randomPlayer);
 }
 
 /**
@@ -186,6 +214,23 @@ export async function getCurrentIteration(dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	const iterationRes = await answerCollection.findOne({ _id: answerKey }, { projection: { iteration: 1, _id: 0 } });
 	return iterationRes?.iteration;
+}
+
+/**
+ * Add new iteration to full iteration store
+ * @param it which iteration to store
+ */
+export async function addIteration(it: DbIteration, session?: ClientSession) {
+	return iterationCollection.insertOne(it, { session });
+}
+
+/**
+ * Update player in logged iterations (e.g. when re-shuffling)
+ * @param iteration what iteration to overwrite
+ * @param player new player to replace old one with
+ */
+export async function updateIterationPlayer(iteration: DbIteration['iteration'], player: DbIteration['player']) {
+	return iterationCollection.updateOne({ iteration: iteration }, { $set: { player: player } });
 }
 
 export async function getBacklog(dataset: DbDatasetID = season1ID) {
@@ -203,6 +248,7 @@ export async function getBacklog(dataset: DbDatasetID = season1ID) {
  * @param session (optional), pass transaction session if used during transaction
  */
 export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize, dataset: DbDatasetID = season1ID, session?: ClientSession) {
+	// TODO: ensure that none of new backlog entries in answers
 	// Error if player collection is emtpy
 	const playerCount = await playerCollection.countDocuments();
 	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
@@ -303,14 +349,6 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, dat
 }
 
 /**
- * Add new iteration to full iteration store
- * @param it which iteration to store
- */
-export async function addIteration(it: DbIteration, session?: ClientSession) {
-	return iterationCollection.insertOne(it, { session });
-}
-
-/**
  * Wrapper that handles going to the next iteration (if resetDate was reached)
  * Works as a transaction, either everything gets rolled over to next iteration or everything fails
  * @param nextResetHours hours until next reset
@@ -373,9 +411,7 @@ export async function goNextIteration(
 	// step 2: increment iteration
 	// step 3: set new current to old next
 	// step 4: log new current
-	// step 5: pop from backlog
+	// step 5: pop backlog
 	// step 5.5: regenerate backlog, if necessary
-	// step 6: set new next
+	// step 6: set new next answer
 }
-
-// TODO: add partial currentAnswer update + script

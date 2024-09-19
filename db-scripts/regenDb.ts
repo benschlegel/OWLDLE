@@ -1,52 +1,53 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import { addIteration, dropAll, generateBacklog, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
+import { GAME_CONFIG } from '@/lib/config';
+import { addIteration, dropAll, generateBacklog, getAnswer, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
+import type { DbDatasetID } from '@/types/database';
 import { exit } from 'node:process';
 
-// Make sure to only run this script if in dev mode, don't want to reset prod db
+// ! Configure your first reset date here (in UTC)
+const DATASET: DbDatasetID = 'OWL_season1';
 const nextReset = trimDate(new Date(Date.UTC(2024, 8, 20, 2, 0, 0)));
 const nextNextReset = new Date(nextReset);
 nextNextReset.setDate(nextNextReset.getDate() + 1);
 // const nextReset = getFormattedMidnightTmrw();
 // const nextNextReset = getFormattedMidnightDayAfter();
-const env = process.env.NODE_ENV;
-// if (env !== 'production') {
-console.time('regen');
 
-// Delete old data
+console.time('regen');
+// * Delete old data
 await dropAll();
 
-// Set players
-await insertAllPlayers();
+// * Set players
+await insertAllPlayers(DATASET);
 
-// Insert answers
+// * Regen backlog
+await generateBacklog(GAME_CONFIG.backlogMaxSize, DATASET);
+
+// * Insert answers (players get re-rolled later to ensure unique)
 const randomPlayer = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
 const randomPlayer2 = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
 const curr = { player: randomPlayer, iteration: 1, nextReset: nextReset };
-await setCurrentAnswer(curr);
-await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: nextNextReset });
+await setCurrentAnswer(curr, DATASET);
+await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: nextNextReset }, DATASET);
 
-// Set first iteration
-const dayBefore = new Date(nextReset);
-dayBefore.setDate(dayBefore.getDate() - 1);
-await addIteration({ iteration: curr.iteration, dataset: 'OWL_season1', player: curr.player, resetAt: dayBefore });
-
-// Regen backlog
-await generateBacklog();
-
-// Hacky, ensure both answers are unique and not included in the backlog
+// * Reroll answers to ensure unique
 await rerollAnswer('current');
 await rerollAnswer('next');
 
+// * Set first iteration (get curr_answer data from db)
+const dayBefore = new Date(nextReset);
+dayBefore.setDate(dayBefore.getDate() - 1);
+const currAnswer = await getAnswer('current');
+if (!currAnswer) throw new Error('Could not get current answer');
+await addIteration({ iteration: currAnswer.iteration, dataset: DATASET, player: currAnswer.player, resetAt: dayBefore });
+
+// * Regenerating/Initializing database done.
 console.timeEnd('regen');
 console.log('Finished.');
 exit(0);
-// }
 
-console.info("Make sure to run this script with NODE_ENV!='production'");
-exit(-1);
-
+// Date helpers if inserting automatically
 function getFormattedMidnight(): Date {
 	const midnight = new Date();
 	midnight.setHours(26);
@@ -75,7 +76,3 @@ function getFormattedMidnightDayAfter(): Date {
 	midnight.setMilliseconds(0);
 	return midnight;
 }
-
-// Before: curr: {id: 1, reset: 19., player: Clockwork}
-// Before: next: {id: 2, reset: 20., player: Linkzr}
-// Before: backlog: {length: 20, [...chips, dayfly]}
