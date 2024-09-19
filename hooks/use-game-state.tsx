@@ -64,31 +64,27 @@ export default function useGameState() {
 			if (guessResult.isNameCorrect === true) {
 				setGameState('won');
 				// TODO: extract duplicate code
-				const start = performance.now();
 				const saveData: DbSaveData = { gameData: newGuesses, gameResult: 'won' };
 				fetch('/api/save', { method: 'POST', body: JSON.stringify(saveData) })
 					.then((r) => {
-						const end = performance.now();
 						if (r.status === 200) {
-							plausible('logGame', { props: { duration: (end - start).toFixed(2), didSucceed: true, state: 'won' } });
+							plausible('finishGame', { props: { didSucceed: true, state: 'won' } });
 							console.log('saved successfully!');
 						}
 					})
-					.catch((e) => plausible('logGame', { props: { duration: undefined, didSucceed: false, state: 'won' } }));
+					.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: 'won' } }));
 			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
 				// * Game is lost
 				setGameState('lost');
-				const start = performance.now();
 				const saveData: DbSaveData = { gameData: newGuesses, gameResult: 'lost' };
 				fetch('/api/save', { method: 'POST', body: JSON.stringify(saveData) })
 					.then((r) => {
-						const end = performance.now();
 						if (r.status === 200) {
-							plausible('logGame', { props: { duration: (end - start).toFixed(2), didSucceed: true, state: 'lost' } });
+							plausible('finishGame', { props: { didSucceed: true, state: 'lost' } });
 							console.log('saved successfully!');
 						}
 					})
-					.catch((e) => plausible('logGame', { props: { duration: undefined, didSucceed: false, state: 'lost' } }));
+					.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: 'lost' } }));
 			}
 		} else {
 			toast({
