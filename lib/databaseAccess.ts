@@ -115,8 +115,15 @@ export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = sea
  * @param dataset which dataset to get answer for
  */
 export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
-	const answerKey: AnswerKey = `next_${dataset}`;
+	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
+}
+
+/**
+ * Get all answers (e.g. [{_id: "current_dataset"}, {_id: "next_dataset"}]) for given dataset
+ */
+export async function getAllAnswers(dataset: DbDatasetID = season1ID) {
+	return answerCollection.find({ _id: { $regex: `.+_${dataset}` } }).toArray();
 }
 
 /**
@@ -145,24 +152,30 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
  * @param player new player to set for answer
  * @param dataset what dataset to set player for
  */
-export async function reshuffleCurrentAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
+export async function reshuffleAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	let randomPlayer = getRandomPlayer();
 	let isIncluded = true;
-	const otherAnswer = await getAnswer(answerPrefix, dataset);
+
+	// Get other answer + backlog to compare against
+	const answers = await getAllAnswers(dataset);
+
 	const backlog = (await getBacklog(dataset))?.players;
 	if (!backlog) return;
 
 	while (isIncluded) {
 		const isIncludedBacklog = backlog.some((player) => player.name === randomPlayer.name);
-		const isOtherAnswerIncluded = otherAnswer?.player.name === randomPlayer.name;
-		if (isIncludedBacklog || isOtherAnswerIncluded) {
+		const isAnswersIncluded = answers.some((player) => player.player.name === randomPlayer.name);
+		if (isIncludedBacklog === false && isAnswersIncluded === false) {
 			isIncluded = false;
 		} else {
 			randomPlayer = getRandomPlayer();
 		}
 	}
-	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: randomPlayer } });
+
+	// Format and write player
+	const formattedPlayer = formattedToDbPlayer(randomPlayer);
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: formattedPlayer } });
 }
 
 /**
