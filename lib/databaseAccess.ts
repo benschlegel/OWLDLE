@@ -146,7 +146,6 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: player } });
 }
 
-// TODO: extract random unique player into function, make sure to also update in iteration backlog, if answer is current
 /**
  * Updates an answer with new player
  * @param answerPrefix "current" or "next"
@@ -258,16 +257,53 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 	if (!seasonPlayers) throw new Error(`can't find players collection for ${dataset}`);
 
 	// Apply Fisher-Yates shuffle
-	const players = seasonPlayers.players;
-	for (let i = players.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
-		[players[i], players[j]] = [players[j], players[i]];
+	let isDuplicate = true;
+	let slicedPlayers: DbPlayer[] = [];
+	while (isDuplicate) {
+		const players = seasonPlayers.players;
+		for (let i = players.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[players[i], players[j]] = [players[j], players[i]];
+		}
+
+		// Get slice with specified size
+		slicedPlayers = players.slice(0, size);
+
+		// * Check if any of the backlog players are in current answer
+		isDuplicate = false;
 	}
 
-	// Get slice with specified size
-	const slicedPlayers: DbPlayer[] = players.slice(0, size);
-
 	return backlogCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: slicedPlayers } }, { upsert: true });
+}
+
+/**
+ * Checks if a player is contained in backlog of dataset (checks answers with checkFull=false, checks answers + backlog for checkFull=true)
+ * @param player player to check
+ * @param dataset dataset to check against
+ * @param checkFull true: checks backlog + answers, false: only checks answers
+ */
+export async function isPlayerUnique(player: DbPlayer, dataset: DbDatasetID, checkFull = false) {
+	const backlogPlayers: DbPlayer[] = [];
+
+	// Add answer players to backlog
+	const answers = await getAllAnswers(dataset);
+	for (const answer of answers) {
+		backlogPlayers.push(answer.player);
+	}
+
+	// Add full backlog
+	if (checkFull === true) {
+		const backlog = await getBacklog(dataset);
+		if (backlog) {
+			for (const backlogPlayer of backlog.players) {
+				backlogPlayers.push(backlogPlayer);
+			}
+		} else {
+			throw new Error('Could not get backlog while checking if player is unique');
+		}
+	}
+
+	return !backlogPlayers.includes(player);
 }
 
 /**
@@ -276,6 +312,7 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
  * @param dataset what dataset to insert backlog (defaults to season1)
  */
 export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID = season1ID) {
+	// TODO: use isPlayerUnique
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: [player], $position: 0 } } }, { upsert: true });
 }
 
