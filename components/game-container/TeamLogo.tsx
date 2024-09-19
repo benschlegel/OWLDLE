@@ -14,13 +14,10 @@ export default function TeamLogo({ teamName, disableBorder = false }: Props) {
 	if (!teamName || !team) return <></>;
 
 	return (
-		<div
-			className={`rounded-md flex justify-center items-center m-1 aspect-square ${disableBorder === true ? '' : 'border-[0.5px] border-secondary/50'}`}
-			style={{ backgroundColor: team.backgroundColor }}>
+		<div className={`rounded-md flex justify-center items-center m-1 aspect-square`} style={{ backgroundColor: team.backgroundColor }}>
 			<Image
 				src={team.imgUrl}
 				alt={`Logo for ${team.displayName}`}
-				priority
 				unoptimized={false}
 				quality={100}
 				width={64}

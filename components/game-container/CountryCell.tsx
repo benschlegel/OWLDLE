@@ -8,11 +8,10 @@ export default function CountryCell({ imgSrc }: Props) {
 	if (!imgSrc) return <></>;
 
 	return (
-		<div className="rounded-md flex justify-center items-center m-[0.28rem] aspect-square border-[0.5px] border-secondary/50">
+		<div className="rounded-md flex justify-center items-center m-[0.28rem] aspect-square">
 			<Image
 				src={imgSrc}
 				alt={`Country logo`}
-				priority
 				unoptimized={false}
 				quality={100}
 				width={64}
