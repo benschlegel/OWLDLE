@@ -53,6 +53,9 @@ const config: Config = {
 				md: 'calc(var(--radius) - 2px)',
 				sm: 'calc(var(--radius) - 4px)',
 			},
+			scrollbarGutter: {
+				stable: 'stable',
+			},
 		},
 	},
 	corePlugins: {
@@ -88,6 +91,14 @@ const config: Config = {
 				},
 				{ values: theme('aspectRatio') }
 			);
+		},
+		({ addUtilities }: PluginAPI) => {
+			addUtilities({
+				'.scrollbar-stable': {
+					'scrollbar-gutter': 'stable',
+					// 'padding-right': 'calc(100vw - 100%)',
+				},
+			});
 		},
 	],
 };
