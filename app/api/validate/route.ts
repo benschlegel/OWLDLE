@@ -8,6 +8,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 export const dynamicParams = true;
 
+// TODO: every time reset date resets, add a few seconds of padding to ensure server has time to reset
 let currentAnswer: DbAnswer;
 
 // Configure rate limiter
