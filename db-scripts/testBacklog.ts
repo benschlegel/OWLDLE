@@ -1,7 +1,9 @@
 import { getCurrentAnswer, getNextAnswer, generateBacklog, getBacklog } from '@/lib/databaseAccess';
+import { exit } from 'node:process';
 
 const currAnswer = await getCurrentAnswer('OWL_season1');
 const nextAnswer = await getNextAnswer('OWL_season1');
+console.time('backlog');
 for (let i = 0; i < 1; i++) {
 	await generateBacklog(125, 'OWL_season1');
 
@@ -22,4 +24,7 @@ for (let i = 0; i < 1; i++) {
 		}
 	}, 100);
 	console.log('---');
+	console.timeEnd('backlog');
 }
+
+exit(0);
