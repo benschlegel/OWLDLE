@@ -87,7 +87,7 @@ export async function GET(req: NextRequest) {
 			}
 		}
 
-		const res: ValidateResponse = { nextReset: currentAnswer.nextReset, correctPlayer: currentAnswer.player, iteration: 1 };
+		const res: ValidateResponse = { nextReset: currentAnswer.nextReset, correctPlayer: currentAnswer.player, iteration: currentAnswer.iteration };
 		return Response.json(res);
 	} catch (error) {
 		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
@@ -99,5 +99,29 @@ export async function PATCH(req: NextRequest) {
 	if (req.headers.get('Authorization') !== `Bearer ${process.env.ADMIN_API_TOKEN}`) {
 		return new Response('Unauthorized', { status: 401, statusText: 'Unauthorized' });
 	}
-	return new Response('Success');
+
+	try {
+		const answer = await getCurrentAnswer();
+		if (answer) {
+			currentAnswer = answer;
+		} else {
+			throw new Error('Could not get answer from database');
+		}
+	} catch (e) {
+		return new Response('Failed to set get initial answer', { status: 500, statusText: 'Unauthorized' });
+	}
+	return new Response(JSON.stringify(currentAnswer), { status: 200 });
+}
+
+async function updateLocalAnswer() {
+	try {
+		const answer = await getCurrentAnswer();
+		if (answer) {
+			currentAnswer = answer;
+		} else {
+			throw new Error('Could not get answer from database');
+		}
+	} catch (e) {
+		return new Response('Failed to set get initial answer', { status: 500 });
+	}
 }
