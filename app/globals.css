@@ -143,6 +143,9 @@
   body {
     @apply bg-background text-foreground transition-colors duration-300;
   }
+  html {
+    @apply scrollbar-stable;
+  }
   /*
   html {
     Prevents layout shifts from scroll bar */
