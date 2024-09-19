@@ -256,36 +256,42 @@ export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize,
 	if (!seasonPlayers) throw new Error(`can't find players collection for ${dataset}`);
 
 	// Apply Fisher-Yates shuffle
-	let isDuplicate = true;
-	let slicedPlayers: DbPlayer[] = [];
-	while (isDuplicate) {
-		const players = seasonPlayers.players;
-		for (let i = players.length - 1; i > 0; i--) {
-			const j = Math.floor(Math.random() * (i + 1));
-			[players[i], players[j]] = [players[j], players[i]];
-		}
+	const players = seasonPlayers.players;
+	for (let i = players.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[players[i], players[j]] = [players[j], players[i]];
+	}
 
-		// Get slice with specified size
-		slicedPlayers = players.slice(0, size);
+	// Get slice with specified size
+	const slicedPlayers: DbPlayer[] = players.slice(0, size);
+	const unusedPool = players.slice(size);
 
-		// * Check if any of the backlog players are in current answer
-		// TODO: improve performance by only re-rolling duplicates instead of full array
-		const currAnswer = await getCurrentAnswer(dataset);
-		const nextAnswer = await getCurrentAnswer(dataset);
+	// * Check if any of the backlog players are in current answer
+	const currAnswer = await getCurrentAnswer(dataset);
+	const nextAnswer = await getCurrentAnswer(dataset);
 
-		if (!currAnswer || !nextAnswer) throw new Error('error while generating backlog');
+	if (!currAnswer || !nextAnswer) throw new Error('error while generating backlog');
 
-		// Check if backlog contains duplicates in answers
-		let containsDuplicate = false;
-		for (const player of slicedPlayers) {
+	// Check if backlog contains duplicates in answers
+	for (let i = 0; i < slicedPlayers.length; i++) {
+		const player = slicedPlayers[i];
+
+		let unique = false;
+		while (!unique) {
 			if (currAnswer.player.name === player.name || nextAnswer.player.name === player.name) {
-				containsDuplicate = true;
-			}
-		}
+				// Get random unused item and try replacing
+				const randomUnused = unusedPool[Math.floor(Math.random() * unusedPool.length)];
 
-		// If answers contain duplicates, re-roll
-		if (containsDuplicate === false) {
-			isDuplicate = false;
+				// If name is contained, item is still not unique (could skip this case but unique=false increases readability)
+				if (currAnswer.player.name === randomUnused.name || nextAnswer.player.name === randomUnused.name) {
+					unique = false;
+					console.info('Re-rolled player.');
+				} else {
+					// If unique re-shuffled item was found, insert it
+					slicedPlayers[i] = randomUnused;
+					unique = true;
+				}
+			}
 		}
 	}
 
