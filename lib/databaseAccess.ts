@@ -307,21 +307,54 @@ export async function isPlayerUnique(player: DbPlayer, dataset: DbDatasetID, che
 }
 
 /**
- * Insert one player to the start of the backlog
+ * Insert one player to the start of the backlog (checks if player is globally unique)
  * @param player player to insert
  * @param dataset what dataset to insert backlog (defaults to season1)
+ * @returns true, if new player is unqiue and was successfully inserted, false otherwise
  */
 export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID = season1ID) {
-	// TODO: use isPlayerUnique
+	// Check if player is unique, if not,
+	const isUnique = await isPlayerUnique(player, dataset, true);
+	if (!isUnique) return false;
+
+	// Update backlog and save success info
+	const res = await backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: [player], $position: 0 } } }, { upsert: true });
+	return res.acknowledged;
+}
+
+/**
+ * Same as insertOneBacklog, except it doesn't check if the new player is unique
+ */
+export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: DbDatasetID = season1ID) {
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: [player], $position: 0 } } }, { upsert: true });
 }
 
 /**
- * Insert many players to the start of the backlog
+ * Insert many players to the start of the backlog (checks if players are globally unique)
  * @param player player to insert
  * @param dataset what dataset to insert backlog (defaults to season1)
+ * @returns true, if new players are unqiue and were successfully inserted, false otherwise
  */
 export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetID = season1ID) {
+	let isInputUnique = true;
+	// Check if all input players are unique
+	for (const player of players) {
+		const isLocalUnique = isPlayerUnique(player, dataset, true);
+		if (!isLocalUnique) {
+			isInputUnique = false;
+		}
+	}
+
+	if (!isInputUnique) return false;
+	// Update backlog and save success info
+	const res = await backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
+	return res.acknowledged;
+}
+
+/**
+ * Same as insertManyBacklog, except it doesn't check if the new player is unique
+ */
+export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: DbDatasetID = season1ID) {
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
 }
 
