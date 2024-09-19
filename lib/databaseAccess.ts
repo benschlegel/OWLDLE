@@ -1,4 +1,4 @@
-import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { type FormattedPlayer, getRandomPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimAndAddHours, trimDate } from '@/lib/utils';
@@ -110,12 +110,59 @@ export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = sea
 }
 
 /**
+ * Get the answer for a given dataset
+ * @param answerPrefix the type of answer to get (e.g. "current" or "next")
+ * @param dataset which dataset to get answer for
+ */
+export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
+	const answerKey: AnswerKey = `next_${dataset}`;
+	return answerCollection.findOne({ _id: answerKey });
+}
+
+/**
  * Get current answer from db
  * @param dataset which dataset to get current answer for
  */
 export async function getNextAnswer(dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `next_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
+}
+
+/**
+ * Updates an answer with new player
+ * @param answerPrefix "current" or "next"
+ * @param player new player to set for answer
+ * @param dataset what dataset to set player for
+ */
+export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbPlayer, dataset: DbDatasetID = season1ID) {
+	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: player } });
+}
+
+/**
+ * Updates an answer with new player
+ * @param answerPrefix "current" or "next"
+ * @param player new player to set for answer
+ * @param dataset what dataset to set player for
+ */
+export async function reshuffleCurrentAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
+	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
+	let randomPlayer = getRandomPlayer();
+	let isIncluded = true;
+	const otherAnswer = await getAnswer(answerPrefix, dataset);
+	const backlog = (await getBacklog(dataset))?.players;
+	if (!backlog) return;
+
+	while (isIncluded) {
+		const isIncludedBacklog = backlog.some((player) => player.name === randomPlayer.name);
+		const isOtherAnswerIncluded = otherAnswer?.player.name === randomPlayer.name;
+		if (isIncludedBacklog || isOtherAnswerIncluded) {
+			isIncluded = false;
+		} else {
+			randomPlayer = getRandomPlayer();
+		}
+	}
+	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: randomPlayer } });
 }
 
 /**
@@ -126,6 +173,10 @@ export async function getCurrentIteration(dataset: DbDatasetID = season1ID) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	const iterationRes = await answerCollection.findOne({ _id: answerKey }, { projection: { iteration: 1, _id: 0 } });
 	return iterationRes?.iteration;
+}
+
+export async function getBacklog(dataset: DbDatasetID = season1ID) {
+	return backlogCollection.findOne({ _id: dataset });
 }
 
 /**

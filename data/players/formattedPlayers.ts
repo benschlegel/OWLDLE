@@ -32,3 +32,10 @@ export const PLAYERS = unsortedPlayers.sort((a, b) => {
 	});
 });
 export type FormattedPlayer = (typeof PLAYERS)[number];
+
+/**
+ * Returns random formatted player
+ */
+export function getRandomPlayer() {
+	return PLAYERS[Math.floor(Math.random() * PLAYERS.length)];
+}
