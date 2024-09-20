@@ -144,7 +144,7 @@
     @apply bg-background text-foreground transition-colors duration-300;
   }
   html {
-    @apply scrollbar-stable;
+
   }
   /*
   html {
@@ -152,4 +152,8 @@
     /* scrollbar-gutter: stable;
   }
     */
+}
+
+html {
+  /* @apply scrollbar-stable; */
 }
