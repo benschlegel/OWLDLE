@@ -1,7 +1,7 @@
 <h3 align="center">
 	<img src="images/logo.png" alt="Logo"/><br/>
-  <br />
-    Concert Maps
+<br/>
+  Guess the Overwatch League player using a series of clues (like team, role, country). Win the game by guessing the correct player name before your guesses run out.
   <br />
 
 </h2>
@@ -17,7 +17,7 @@
 </h6>
 
 <p align="center">
-  <img src="images/spacer.png" width="400" height="9" />
+  <img src="images/temp_spacer.png" width="400" height="9" />
 </p>
 
 <p align="center">
@@ -32,65 +32,135 @@
   <a href="">
     <img src="https://img.shields.io/github/contributors/benschlegel/react-native-todo-list?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNEOUUwRUUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS11c2VyIj48cGF0aCBkPSJNMTkgMjF2LTJhNCA0IDAgMCAwLTQtNEg5YTQgNCAwIDAgMC00IDR2MiIvPjxjaXJjbGUgY3g9IjEyIiBjeT0iNyIgcj0iNCIvPjwvc3ZnPg==&logoColor=fff&style=for-the-badge&labelColor=302D41&color=7dc4e4" alt="Contributors"/></a>
   <a href="https://map.bschlegel.com/">
-    <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmap.bschlegel.com%2Fapi%2Fviews&query=views&label=Demo%20Views&style=for-the-badge&color=a6da95&logoColor=D9E0EE&labelColor=302D41&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNEOUUwRUUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1leWUiPjxwYXRoIGQ9Ik0yIDEyczMtNyAxMC03IDEwIDcgMTAgNy0zIDctMTAgNy0xMC03LTEwLTdaIi8+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMyIvPjwvc3ZnPg==" alt="Views of demo website"/></a>
-  <a href="https://map.bschlegel.com/">
-    <img src="https://img.shields.io/badge/View%20Demo-000?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNEOUUwRUUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1nbG9iZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48cGF0aCBkPSJNMTIgMmExNC41IDE0LjUgMCAwIDAgMCAyMCAxNC41IDE0LjUgMCAwIDAgMC0yMCIvPjxwYXRoIGQ9Ik0yIDEyaDIwIi8+PC9zdmc+&logoColor=fff&style=for-the-badge&labelColor=302D41&color=eed49f" alt="Link to demo website"/></a>
+    <img src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fbenschlegel%2FOWLDLE%2Frefs%2Fheads%2Fmain%2Ftests%2Freport.json%3Ftoken%3DGHSAT0AAAAAACVSOCOAZOCUFJZAYXH5ZZSIZXNMRMA&query=%24.numPassedTests&suffix=%20passing&style=for-the-badge&logo=data%3Aimage%2Fsvg%2Bxml%3Bbase64%2CPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNkOWUwZWUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1mbGFzay1jb25pY2FsIj48cGF0aCBkPSJNMTAgMnY3LjUyN2EyIDIgMCAwIDEtLjIxMS44OTZMNC43MiAyMC41NWExIDEgMCAwIDAgLjkgMS40NWgxMi43NmExIDEgMCAwIDAgLjktMS40NWwtNS4wNjktMTAuMTI3QTIgMiAwIDAgMSAxNCA5LjUyN1YyIi8%2BPHBhdGggZD0iTTguNSAyaDciLz48cGF0aCBkPSJNNyAxNmgxMCIvPjwvc3ZnPg%3D%3D&logoColor=302D41&label=Tests&labelColor=%23302D41&color=%23a6da95
+    " alt="Number of passing tests"/></a>
+  <a href="https://owldle.bschlegel.com/">
+    <img src="https://img.shields.io/badge/View%20Website-000?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNEOUUwRUUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1nbG9iZSI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiLz48cGF0aCBkPSJNMTIgMmExNC41IDE0LjUgMCAwIDAgMCAyMCAxNC41IDE0LjUgMCAwIDAgMC0yMCIvPjxwYXRoIGQ9Ik0yIDEyaDIwIi8+PC9zdmc+&logoColor=fff&style=for-the-badge&labelColor=302D41&color=eed49f" alt="Link to website"/></a>
 
-</p>
-
-&nbsp;
-
-<p align="center">
-TODO: write summary
 </p>
 
 ## Showcase
 
-| ![Showcase Image 1](images/showcase1.png) | ![Showcase Image 2](images/showcase2.png) |
+| ![Showcase 1 (Showing screenshot of game)](images/showcase1.png) | ![Showcase 1 (Showing screenshot of game in light mode)](images/showcase2.png) |
 | ----------------------------------------- | ----------------------------------------- |
-| ![Showcase Image 3](images/showcase3.png) | ![Showcase Image 4](images/showcase4.png) |
+| ![Showcase 3 (Showing victory screen)](images/showcase3.png) | ![Showcase 3 (Showing mobile layout)](images/showcase4.png) |
+
+## Features
+
+This project was built using [`Next.js`](https://nextjs.org/) and [`tailwindcss`](https://tailwindcss.com/). Components are based on [`shadcn/ui`](https://ui.shadcn.com/). Tests were written with [`vitest`](https://vitest.dev/) and [`bun`](https://bun.sh/) is used instead of `npm`.
+
+Major features are:
+
+- 🎨 Consistent and dynamic themes (light + dark mode)
+  - All components use theme colors and automatically switch to correct theme
+- 📱 Fully responsive
+  - Works and looks good on any screen size (desktop + mobile + everything in-between)
+- 🛢 Dynamic database scheme
+  - Supports dynamic game iteration length (e.g. default to 1 reset per day, but can have more on event day)
+  - Supports multiple datasets (e.g. different seasons)
+  - saves iteration data to log (iteration number, correct player, time of reset)
+- 🕵 Anonymous game result collection (game result + guesses, no information that could identify users)
+  - Scheme can be found under `types/database` (`type DbLoggedGame`)
+  - saved using `lib/databaseAccess.ts` (`function logGame()`)
+- 🎲 Batched pseudo random selection
+  - Random backlog of players generated (to keep the game from being stale but also to avoid duplicate players for `backlog.length` iterations)
+- 🛠️ Easily configurable
+  - The behavior of the game can easily be adjusted by changing values in `game.config.json`
+  - Check `lib/config.ts` to find out more info about the config.
+- 🦿 Following modern accessiblity recommendations
+  - Fully compatible with screen readers
+  - Entire website can be navigated/used with keyboard inputs only
+- 🕵 Anonymous + EU compliant analytics (using [`Plausible`](https://plausible.io/))
+- ⚡ Blazingly fast through server side rendering + vercel edge functions/distributed servers
+- 📃 Follows modern SEO standards
+  - Automatically generates `robots.txt` (through `robots.ts`)
+  - Automatically generates sitemap (through `sitemap.ts`)
+  - Uses site metadata (preview image, title, description, etc)
+- 🧪 Contains tests for critical functionality
+  - Can be configured to automatically write test report/be ran through Github actions
+  - Tests for:
+    - Main game process + results
+    - Checks to ensure all images (even from country flag api) still work
+    - Database functions
+- and more!
+
 
 ## Getting Started
 
-First, clone the project locally and install dependencies:
+First, clone the project locally and install dependencies. If you're only working locally, you can also use npm/pnpm/yarn, but this project was built and tested with bun.
 
 ```bash
+bun install
+# or
 npm install
 ```
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+### env
+Before starting the project, make sure you provide the following values to the environment (either directly or by creating a file called `.env.local` in the project root folder):
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+MONGO_URI="<your_mongo_uri>"
+CRON_SECRET="<your_cron_secret>"
+# optional
+ADMIN_API_TOKEN="<your_secret>"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The only *strictly necessary* entry is `MONGO_URI` (as you won't have a database otherwise), so make sure you provide a valid [`Mongodb`](https://www.mongodb.com/) [connection uri](https://www.mongodb.com/docs/manual/reference/connection-string/).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+When trying to use this project in production, you should provide `CRON_SECRET`. This secret gets used in the `api/cron` path, which is responsible for resetting the game periodically (e.g. once per day).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The `ADMIN_API_TOKEN` can be used to secure the (WIP, not yet implemented) admin dashboard and can be skipped for now.
 
-## Learn More
+---
+After setting up your environment and installing all dependencies, you can start the project like this:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+bun run dev
+# or
+npm run dev
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+You should now be able to see the website running on `localhost:3000`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+To built the project, you can run
+```bash
+bun run build
+bun run start
+# or
+npm run build
+npm run start
+```
 
-## Deploy on Vercel
+## Tests
+This project contains tests for the major features under `tests/*.test.ts`. Tests that only run locally are postfixed by `*.local.test.ts` to allow filtering when running tests and ensure local tests always run with maximum performance.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+To run tests, run
+```bash
+bun run test:local # only runs local tests
+# or
+bun run test # runs all tests
+# or (using npm)
+npm run test:local # only runs local tests
+# or
+npm run test # runs all tests
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+I also created a custom test reporter, which writes the following fields to `tests/report.json`:
+
+```json
+{
+  "numTotalTests": "<total test amount>",
+  "numPassedTests": "<passed test amount>",
+  "numFailedTests": "<failed test amount>",
+  "numPendingTests": "<pending test amount (should always be 0)"
+}
+```
+
+To execute all tests with the custom reporter, run
+```bash
+bun run test:write
+# or
+npm run test:write
+```
+
+You should now see the updated report under `tests/report.json`.
