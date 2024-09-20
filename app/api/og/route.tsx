@@ -17,6 +17,7 @@ export async function GET() {
 				display: 'flex',
 				flexDirection: 'column',
 				alignItems: 'center',
+				borderRadius: '10px',
 				justifyContent: 'center',
 			}}>
 			<div style={{ display: 'flex', marginTop: -40 }}>
@@ -27,7 +28,7 @@ export async function GET() {
 		</div>,
 		{
 			width: 1200,
-			height: 630,
+			height: 400,
 			fonts: [
 				{
 					name: 'OWLFontBold',
