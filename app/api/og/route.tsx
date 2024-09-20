@@ -10,7 +10,7 @@ export async function GET() {
 		<div
 			style={{
 				height: '100%',
-				fontSize: 200,
+				fontSize: 160,
 				color: '#f06216',
 				background: '#1a1a1e',
 				width: '100%',
@@ -24,11 +24,11 @@ export async function GET() {
 				<div style={{ display: 'flex' }}>OWL</div>
 				<div style={{ display: 'flex', color: '#dfdfd6' }}>DLE</div>
 			</div>
-			<div style={{ display: 'flex', fontSize: 38, marginTop: 20, color: '#dfdfd6' }}>Guess the overwatch league player (season 1)</div>
+			<div style={{ display: 'flex', fontSize: 30, marginTop: 20, color: '#dfdfd6' }}>Guess the overwatch league player (season 1)</div>
 		</div>,
 		{
 			width: 1200,
-			height: 400,
+			height: 350,
 			fonts: [
 				{
 					name: 'OWLFontBold',
