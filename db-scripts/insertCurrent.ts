@@ -1,13 +1,15 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
-import { getCurrentAnswer, setCurrentAnswer } from '@/lib/databaseAccess';
+import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { getCurrentAnswer, setCurrentAnswer, setPartialAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { exit } from 'node:process';
 
 console.time('setCurrent');
-const player = formattedToDbPlayer(PLAYERS[5]);
+const newPlayerName = 'super';
+const foundPlayer = PLAYERS.find((p) => p.name === newPlayerName);
+if (!foundPlayer) exit(-1);
+const player = formattedToDbPlayer(foundPlayer);
 // await setCurrentAnswer({ player: player, iteration: 2, nextReset: new Date() });
-const abc = await getCurrentAnswer();
-console.log('Abc: ', abc);
+await setPartialAnswer('current', player);
 console.timeEnd('setCurrent');
 console.log('Finished.');
 exit(0);

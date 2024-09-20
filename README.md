@@ -41,9 +41,11 @@
 
 ## Showcase
 
-| ![Showcase 1 (Showing screenshot of game)](images/showcase1.png) | ![Showcase 1 (Showing screenshot of game in light mode)](images/showcase2.png) |
-| ----------------------------------------- | ----------------------------------------- |
+| ![Showcase 1 (Showing screenshot of game)](images/showcase1.png) | ![Showcase 2 (Showing screenshot of game in light mode)](images/showcase2.png) |
+| --- | --- |
 | ![Showcase 3 (Showing victory screen)](images/showcase3.png) | ![Showcase 3 (Showing mobile layout)](images/showcase4.png) |
+
+
 
 ## Features
 
