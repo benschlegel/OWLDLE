@@ -1,5 +1,5 @@
 <h3 align="center">
-	<img src="public/open-graph.png" alt="Logo"/><br/>
+	<img src="images/logo.png" alt="Logo"/><br/>
   <br />
     Concert Maps
   <br />
