@@ -86,6 +86,9 @@ Major features are:
     - Main game process + results
     - Checks to ensure all images (even from country flag api) still work
     - Database functions
+- ⚠️ Full error handling
+  - All invalid input errors are caught client side (with toasts that show what went wrong, works on desktop and mobile) + server side (zod schema validation for all api post endpoints)
+  - Rate limit on all api endpoints to increase stability
 - and more!
 
 
