@@ -92,3 +92,10 @@ export function getSiteName() {
 }
 
 export const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+/**
+ * Splits a string by capitalization (e.g. LosAngelesGladiators => 'Los Angeles Gladiators')
+ */
+export function splitCapitalization(teamName: string) {
+	return teamName.replace(/([A-Z])/g, ' $1').trim();
+}

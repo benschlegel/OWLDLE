@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
 import { CircleHelpIcon, Compass, Dices, Gamepad } from 'lucide-react';
 
@@ -100,23 +101,30 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								Pacific Division
 							</code>
-							. Season 1 contained the following teams:
+							. Season 1 had the following teams:
 						</p>
 						<div className="flex flex-col gap-3">
 							<div className="flex flex-col w-full">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
 									<Compass className="opacity-80 w-5 h-5" />
-									<h3 className="">Atlantic Division</h3>
+									<h3 className="">Pacific Division</h3>
 								</div>
 								<div className="flex h-16 w-full gap-1">
 									{ATLANTIC.map((team) => (
-										<TeamLogo teamName={team} key={team} />
+										<TeamLogo teamName={team} key={team} useTabIndex />
 									))}
 								</div>
 							</div>
-							<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-								<Compass className="opacity-80 w-5 h-5" />
-								<h3 className="">Pacific Division</h3>
+							<div className="flex flex-col w-full">
+								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+									<Compass className="opacity-80 w-5 h-5" />
+									<h3 className="">Pacific Division</h3>
+								</div>
+								<div className="flex h-16 w-full gap-1">
+									{PACIFIC.map((team) => (
+										<TeamLogo teamName={team} key={team} useTabIndex />
+									))}
+								</div>
 							</div>
 						</div>
 					</div>
