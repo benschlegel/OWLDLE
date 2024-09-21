@@ -5,12 +5,13 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
-	const params = useSearchParams();
+	const searchParams = useSearchParams();
+	const showFeedback = searchParams.get('showFeedback');
 	const router = useRouter();
-	const showFeedback = params.get('showFeedback');
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
@@ -33,7 +34,7 @@ export default function Header() {
 							size="icon"
 							className="p-0"
 							onClick={() => {
-								router.replace('?showFeedback=true');
+								router.replace('/?showFeedback=true');
 							}}>
 							<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
 							<span className="sr-only">Send feedback</span>
