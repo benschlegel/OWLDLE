@@ -4,8 +4,15 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
+import { useRouter } from 'next/router';
 
-export default function Header() {
+export default function Header({
+	searchParams,
+}: {
+	searchParams: { [key: string]: string | string[] | undefined };
+}) {
+	const { showFeedback, showHelp } = searchParams;
+	const router = useRouter();
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
@@ -22,8 +29,15 @@ export default function Header() {
 					</h1>
 				</div>
 				<div className="flex gap-1">
-					<FeedbackDialog>
-						<Button variant="ghost" size="icon" className="p-0">
+					<FeedbackDialog showFeedbackParam={showFeedback}>
+						<Button
+							variant="ghost"
+							size="icon"
+							className="p-0"
+							onClick={() => {
+								router.query.showFeedback = 'true';
+								router.push(router);
+							}}>
 							<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
 							<span className="sr-only">Send feedback</span>
 						</Button>

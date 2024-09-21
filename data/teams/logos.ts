@@ -35,6 +35,7 @@ const teamLogosS1: Partial<TeamLogoData>[] = [
 		teamName: 'LondonSpitfire',
 		displayName: 'London Spitfire',
 		backgroundColor: '#5bcae9',
+		useDarkForeground: true,
 	},
 	{
 		teamName: 'LosAngelesGladiators',
