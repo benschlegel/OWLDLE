@@ -1,6 +1,5 @@
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
-import { playerSchema } from '@/types/players';
-import { GuessSchema, type GuessResponse } from '@/types/server';
+import { type Feedback, GuessSchema } from '@/types/server';
 import { z } from 'zod';
 
 export type DbDatasetID = 'OWL_season1' | 'OWL_season2';
@@ -96,12 +95,11 @@ export const gameSaveValidator = z.object({
 	gameResult: z.enum(['won', 'lost']),
 });
 
+/**
+ * Feedback schema + timestamp
+ */
+export type DbFeedback = Feedback & { timestamp: Date };
+
 export type DbSaveData = z.infer<typeof gameSaveValidator>;
 export type DbGuess = DbSaveData['gameData'][number];
 export type DbGameResult = DbSaveData['gameResult'];
-
-export type DbFeedback = {
-	feedbackContent: string;
-	feedbackRating?: number;
-	feedbackName?: string;
-};
