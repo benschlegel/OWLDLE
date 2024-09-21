@@ -96,7 +96,7 @@ export default function StarRating({ onChange, className }: StarRatingProps = {}
 		<div className={cn('flex items-center space-x-2', className)}>
 			<div
 				ref={containerRef}
-				className="flex space-x-1 focus:outline-none focus:ring-1 focus:ring-primary-foreground rounded-md p-2 ml-[-0.5rem]"
+				className="flex space-x-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1 rounded-md p-2 ml-[-0.5rem]"
 				role="slider"
 				tabIndex={0}
 				aria-label="Rating"
