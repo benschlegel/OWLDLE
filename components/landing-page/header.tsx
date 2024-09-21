@@ -1,3 +1,4 @@
+import { FeedbackDialog } from '@/components/game-container/feedback-dialog';
 import Game from '@/components/landing-page/game';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
@@ -18,7 +19,10 @@ export default function Header() {
 						DLE
 					</h1>
 				</div>
-				<ModeToggle />
+				<div className="flex gap-1">
+					<FeedbackDialog />
+					<ModeToggle />
+				</div>
 			</div>
 			<Separator className="mb-6 mt-1 transition-colors duration-300" />
 		</>
