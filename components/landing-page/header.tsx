@@ -1,4 +1,5 @@
 import { FeedbackDialog } from '@/components/game-container/feedback-dialog';
+import { HelpDialog } from '@/components/game-container/HelpDialog';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -8,9 +9,11 @@ export default function Header() {
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
-				<Button variant="ghost" size="icon" className="p-0">
-					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
-				</Button>
+				<HelpDialog>
+					<Button variant="ghost" size="icon" className="p-0">
+						<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+					</Button>
+				</HelpDialog>
 				<div className="mb-1 flex items-center">
 					<h1 className="sm:text-4xl text-3xl font-bold text-center" style={{ fontFamily: 'var(--font-owl-bold)' }}>
 						<span className="text-primary-foreground">OWL</span>
