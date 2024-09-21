@@ -1,13 +1,12 @@
 'use client';
 import GameCell from '@/components/game-container/GameCell';
-import GuessRow from '@/components/game-container/GuessRow';
+import TeamLogo from '@/components/game-container/TeamLogo';
 import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
-import { DialogOverlay } from '@radix-ui/react-dialog';
-import { CircleHelpIcon, Dice1Icon, Dices, Gamepad, Medal, Trophy } from 'lucide-react';
+import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
+import { CircleHelpIcon, Compass, Dices, Gamepad } from 'lucide-react';
 
 type Props = {
 	setIsOpen: (old: boolean) => void;
@@ -46,7 +45,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 				<DialogDescription className="mt-2 text-left mb-0">Tutorial</DialogDescription>
 			</DialogHeader>
 			<ScrollArea type="scroll" className="h-[440px]">
-				<div className="h-full flex flex-col gap-6 px-2">
+				<main className="h-full flex flex-col gap-6 px-2">
 					<blockquote className="leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
 						Try to guess the correct player within 8 tries to win. Every time you make a guess, you will be given hints like the country a player is from, the
 						players role, region and country.
@@ -84,14 +83,44 @@ export default function HelpContent({ setIsOpen }: Props) {
 							</div>
 						))}
 					</div>
+					<p className="scroll-m-20 text-base tracking-normal">
+						A correct guess will turn the field green while a wrong one turns it red. Use this as a hint when make your next guess.
+					</p>
 					<div className="flex flex-col gap-5">
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Gamepad className="opacity-80" />
 							<h2 className=" ">Teams</h2>
 						</div>
-						<p>Test</p>
+						<p className="scroll-m-20 text-base tracking-normal">
+							Teams are divided into the{' '}
+							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+								Atlantic
+							</code>{' '}
+							and{' '}
+							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+								Pacific Division
+							</code>
+							. Season 1 contained the following teams:
+						</p>
+						<div className="flex flex-col gap-3">
+							<div className="flex flex-col w-full">
+								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+									<Compass className="opacity-80 w-5 h-5" />
+									<h3 className="">Atlantic Division</h3>
+								</div>
+								<div className="flex h-16 w-full gap-1">
+									{ATLANTIC.map((team) => (
+										<TeamLogo teamName={team} key={team} />
+									))}
+								</div>
+							</div>
+							<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+								<Compass className="opacity-80 w-5 h-5" />
+								<h3 className="">Pacific Division</h3>
+							</div>
+						</div>
 					</div>
-				</div>
+				</main>
 			</ScrollArea>
 			<DialogFooter>
 				<Button type="submit" variant="outline">

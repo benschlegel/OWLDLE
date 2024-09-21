@@ -4,7 +4,7 @@ import { TEAM_LOGOS_S1 } from '@/data/teams/logos';
 import Image from 'next/image';
 
 type Props = {
-	teamName?: Player['team'];
+	teamName?: string;
 	disableBorder?: boolean;
 };
 
