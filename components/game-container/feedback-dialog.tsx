@@ -1,14 +1,14 @@
+'use client';
 import FeedbackContent from '@/components/game-container/feedback-content';
-import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { MessageSquareTextIcon } from 'lucide-react';
-import type { PropsWithChildren } from 'react';
+import { useState, type PropsWithChildren } from 'react';
 
 export function FeedbackDialog({ children }: PropsWithChildren) {
+	const [open, setOpen] = useState(false);
 	return (
-		<Dialog>
+		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<FeedbackContent />
+			<FeedbackContent setIsOpen={setOpen} />
 		</Dialog>
 	);
 }

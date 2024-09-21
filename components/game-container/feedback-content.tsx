@@ -1,12 +1,46 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import StarRating from '@/components/ui/rate-stars';
 import { Textarea } from '@/components/ui/textarea';
-import React from 'react';
+import type React from 'react';
+import { type Dispatch, type SetStateAction, useCallback, useState } from 'react';
 
-export default function FeedbackContent() {
+const initialRating = -1;
+
+type Props = {
+	setIsOpen: Dispatch<SetStateAction<boolean>>;
+};
+
+export default function FeedbackContent({ setIsOpen }: Props) {
+	const [rating, setRating] = useState(initialRating);
+	const [name, setName] = useState('');
+	const [feedback, setFeedback] = useState('');
+	const trimmedFeedback = feedback.trim();
+
+	const handleChildValueChange = useCallback((newValue: number) => {
+		setRating(newValue);
+	}, []);
+
+	const handleSubmit = useCallback(() => {
+		const feedbackContent = { rating, name, feedback };
+		setFeedback('');
+		setRating(initialRating);
+		setIsOpen(false);
+	}, [rating, name, feedback, setIsOpen]);
+
+	const handleTextAreaSubmit = useCallback(
+		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+			if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+				event.preventDefault();
+				handleSubmit();
+			}
+		},
+		[handleSubmit]
+	);
+
 	return (
 		<DialogContent className="sm:max-w-[32rem]">
 			<DialogHeader>
@@ -20,23 +54,31 @@ export default function FeedbackContent() {
 					<Label htmlFor="name" className="text-left w-full col-span-4">
 						Name <span className="opacity-60">(optional)</span>
 					</Label>
-					<Input id="name" defaultValue="" className="col-span-4 " />
+					<Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-4 " />
 				</div>
 				<div className="grid grid-cols-4 items-start gap-4">
 					<Label htmlFor="feedback" className="text-left w-full col-span-4">
-						Feedback
+						Feedback<span className="text-primary-foreground">*</span>
 					</Label>
-					<Textarea id="feedback" defaultValue="" className="col-span-4 max-h-52 h-24 md:h-32" />
+					<Textarea
+						onKeyDown={handleTextAreaSubmit}
+						id="feedback"
+						value={feedback}
+						onChange={(e) => setFeedback(e.target.value)}
+						className="col-span-4 max-h-52 h-24 md:h-32"
+					/>
 				</div>
 				<div className="grid grid-cols-4 items-center gap-[0.6rem] grid-flow-row">
 					<Label htmlFor="name" className="text-left w-full col-span-4">
 						Rating <span className="opacity-60">(optional)</span>
 					</Label>
-					<StarRating />
+					<StarRating onChange={handleChildValueChange} />
 				</div>
 			</div>
 			<DialogFooter>
-				<Button type="submit">Send feedback</Button>
+				<Button type="submit" disabled={trimmedFeedback.length < 1} onClick={handleSubmit}>
+					Send feedback
+				</Button>
 			</DialogFooter>
 		</DialogContent>
 	);
