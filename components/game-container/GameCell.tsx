@@ -14,9 +14,22 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	 * Tooltip that will show after guess was made (e.g. "Playername")
 	 */
 	tooltipGuess?: string;
+	/**
+	 * Dynamic value for tooltip, works as suffix, (e.g. `Incorrect team (${tooltipValue})`)
+	 */
+	tooltipValue?: string;
 }
 
-export default function GameCell({ isLarge = false, isCorrect, cellSize, className, children, tooltipDescription, tooltipGuess }: PropsWithChildren<Props>) {
+export default function GameCell({
+	isLarge = false,
+	isCorrect,
+	cellSize,
+	tooltipValue,
+	className,
+	children,
+	tooltipDescription,
+	tooltipGuess,
+}: PropsWithChildren<Props>) {
 	// Set background color based on correct value (gray if undefined, green if correct, red if incorrect)
 	let bgColor = 'bg-secondary';
 	if (isCorrect === true) {
@@ -29,7 +42,7 @@ export default function GameCell({ isLarge = false, isCorrect, cellSize, classNa
 	let tooltip = isCorrect === undefined ? tooltipDescription : tooltipGuess;
 	if (tooltipGuess === undefined && isCorrect !== undefined) {
 		const prefix = !isCorrect ? 'Incorrect' : 'Correct';
-		tooltip = `${prefix} ${tooltipDescription}`;
+		tooltip = `${prefix} ${tooltipDescription}${tooltipValue ? ` (${tooltipValue.replace(/([A-Z])/g, ' $1').trim()})` : ''}`;
 	}
 
 	return (
