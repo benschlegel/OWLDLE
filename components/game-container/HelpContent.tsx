@@ -21,10 +21,10 @@ type DemoCells = {
 
 const demoCells: DemoCells[] = [
 	{ isLarge: true, bgColor: '#ed8796', color: '#fff', description: 'Player name', text: 'Player name', detailText: '' },
-	{ bgColor: '#f5a97f', description: 'Country', text: '1', detailText: 'Nationality' },
-	{ bgColor: '#eed49f', description: 'Role', text: '2', detailText: 'Role' },
-	{ bgColor: '#a6da95', description: 'Region', text: '3', detailText: 'Region' },
-	{ bgColor: '#8aadf4', description: 'Team', text: '4', detailText: 'Team' },
+	{ bgColor: '#f5a97f', description: 'Country', text: '1', detailText: 'Nationality (represented by flag)' },
+	{ bgColor: '#eed49f', description: 'Role', text: '2', detailText: 'Role (Support, Damage or Tank)' },
+	{ bgColor: '#a6da95', description: 'Region', text: '3', detailText: 'Region (Atlantic or Pacific Division)' },
+	{ bgColor: '#8aadf4', description: 'Team', text: '4', detailText: 'Team (represented by logo)' },
 ];
 
 const defaultTextColor = "'#3b3b44'";
@@ -65,10 +65,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 
 			<div className="grid grid-cols-2 grid-rows-2 gap-3 mt-2">
 				{demoCells.slice(1).map((cell) => (
-					<div key={cell.detailText} className="flex gap-4 items-center">
+					<div key={cell.detailText} className="flex gap-4 items-center sm:col-span-1 col-span-2">
 						<GameCell
 							className={`bg-[${cell.bgColor}] text-[#3b3b44] !w-[2.5rem] !h-[2.5rem] sm:!w-[3rem] sm:!h-[3rem]  flex items-center justify-center`}
 							tooltipClassname="!hidden"
+							ignoreTabIndex
 							id={`detail-${cell.text}`}>
 							<p>{cell.text}</p>
 						</GameCell>

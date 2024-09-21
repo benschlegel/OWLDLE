@@ -5,8 +5,10 @@ import type { PropsWithChildren } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	isLarge?: boolean;
+	/**
+	 * Wether cell is correct or not (sets background color)
+	 */
 	isCorrect?: boolean;
-	cellSize?: string;
 	/**
 	 * Tooltip that will show while cell is empty (e.g. "Role")
 	 */
@@ -23,16 +25,20 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	 * Style for tooltip content
 	 */
 	tooltipClassname?: string;
+	/**
+	 * Ignores tab index (ability to be navigated with tab/keyboard) when set to true
+	 */
+	ignoreTabIndex?: boolean;
 }
 
 export default function GameCell({
 	isLarge = false,
 	isCorrect,
 	tooltipClassname,
-	cellSize,
 	tooltipValue,
 	className,
 	children,
+	ignoreTabIndex,
 	tooltipDescription,
 	tooltipGuess,
 }: PropsWithChildren<Props>) {
@@ -55,7 +61,7 @@ export default function GameCell({
 		<>
 			<TooltipProvider delayDuration={0}>
 				<Tooltip>
-					<TooltipTrigger asChild tabIndex={0}>
+					<TooltipTrigger asChild tabIndex={!ignoreTabIndex ? 0 : -1}>
 						<div className={cn(`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`, className)}>
 							{children}
 						</div>
