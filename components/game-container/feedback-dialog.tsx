@@ -17,7 +17,6 @@ export function FeedbackDialog({ children, showFeedbackParam }: PropsWithChildre
 			router.replace('/');
 		}
 	}, [open, router]);
-
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
