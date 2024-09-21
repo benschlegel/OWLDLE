@@ -5,11 +5,16 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import SocialsRow, { type SocialProps } from '@/components/ui/socials-row';
 import SocialsRowCopy from '@/components/ui/socials-row-copy';
-import { BotMessageSquareIcon, Github, GithubIcon, Swords, TwitterIcon } from 'lucide-react';
+import { BotMessageSquareIcon, CoffeeIcon, Github, GithubIcon, Swords, TwitterIcon } from 'lucide-react';
 import Link from 'next/link';
 
 const socials: SocialProps[] = [
-	{ socialName: 'Twitter', socialLink: 'https://x.com/scorer5_', socialValue: '@scorer5_', children: <TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-1" /> },
+	{
+		socialName: 'Twitter',
+		socialLink: 'https://x.com/scorer5_',
+		socialValue: '@scorer5_',
+		children: <TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
+	},
 	{
 		socialName: 'Discord',
 		socialLink: '',
@@ -17,7 +22,13 @@ const socials: SocialProps[] = [
 		isCopyable: true,
 		children: <BotMessageSquareIcon className="w-[1.1rem] h-[1.1rem] mb-1" />,
 	},
-	{ socialName: 'Battle.net', socialLink: '', socialValue: 'scorer5#21277', isCopyable: true, children: <Swords className="w-[1.1rem] h-[1.1rem] mb-1" /> },
+	// { socialName: 'Battle.net', socialLink: '', socialValue: 'scorer5#21277', isCopyable: true, children: <Swords className="w-[1.1rem] h-[1.1rem] mb-1" /> },
+	{
+		socialName: 'Ko-fi',
+		socialLink: 'https://ko-fi.com/bschlegel',
+		socialValue: '@bschlegel',
+		children: <CoffeeIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
+	},
 	{
 		socialName: 'Github',
 		socialLink: 'https://github.com/benschlegel',
