@@ -19,13 +19,13 @@ export function HelpDialog({ children }: PropsWithChildren) {
 
 	// Keep localStorage value in sync with state
 	useEffect(() => {
-		if (open === false && defaultVal === true) {
-			localStorage.setItem(localStorageKey, `${open}`);
-		}
-	}, [open, defaultVal]);
+		localStorage.setItem(localStorageKey, `${open}`);
+		// if (open === false && defaultVal === true) {
+		// }
+	}, [open]);
 
 	return (
-		<Dialog open={open} onOpenChange={setOpen}>
+		<Dialog open={open} onOpenChange={setOpen} aria-describedby="Tutorial on how to play the game">
 			<DialogTrigger asChild>{children}</DialogTrigger>
 			<HelpContent setIsOpen={setOpen} />
 		</Dialog>
