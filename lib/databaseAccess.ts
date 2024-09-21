@@ -409,12 +409,12 @@ export async function addFeedback(feedback: DbFeedback) {
  * Log game state to db
  * @param dataset
  */
-export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, dataset: DbDatasetID = season1ID) {
+export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, timestamp: Date, dataset: DbDatasetID = season1ID) {
 	if (gameData.length > 0) {
 		// Get current iteration
 		const currIteration = await getCurrentIteration();
 		if (currIteration && currIteration > 0) {
-			return gameLogCollection.insertOne({ iteration: currIteration, dataset: dataset, gameData: gameData, gameResult: gameResult });
+			return gameLogCollection.insertOne({ iteration: currIteration, finishedAt: timestamp, dataset: dataset, gameData: gameData, gameResult: gameResult });
 		}
 		Promise.reject(new Error('Could not get current iteration from db.'));
 	}
