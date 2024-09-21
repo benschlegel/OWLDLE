@@ -4,7 +4,7 @@ type Props = {
 	imgSrc?: string;
 };
 
-export default function CountryCell({ imgSrc }: Props) {
+export default function ImageCell({ imgSrc }: Props) {
 	if (!imgSrc) return <></>;
 
 	return (
