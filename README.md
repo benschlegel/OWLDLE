@@ -1,10 +1,10 @@
 <h3 align="center">
 	<img src="images/logo.png" alt="Logo"/><br/>
 <br/>
-  Guess the Overwatch League player using a series of clues (like team, role, country). Win the game by guessing the correct player name before your guesses run out.
+  Guess the <a href="https://en.wikipedia.org/wiki/Overwatch_League">Overwatch League</a> (OWL) player using a series of clues (like team, role, country). Win the game by guessing the correct player name before your guesses run out.
   <br />
 
-</h2>
+</h3>
 
 <h6 align="center">
   <a href="#showcase">Showcase</a>
@@ -14,6 +14,8 @@
   <a href="#getting-started">Getting Started</a>
   ·
   <a href="#about">About</a>
+  .
+  <a href="#about">Sponsor me</a>
 </h6>
 
 <p align="center">
@@ -170,3 +172,10 @@ You should now see the updated report under `tests/report.json`.
 ## About
 
 Docs coming soon
+
+## Sponsor me
+If you like this project, you can support me here
+
+<a href="https://ko-fi.com/bschlegel">
+<img src="https://img.shields.io/badge/Buy%20Me%20A%20Coffee-000?logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiNEOUUwRUUiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBjbGFzcz0ibHVjaWRlIGx1Y2lkZS1jb2ZmZWUiPjxwYXRoIGQ9Ik0xMCAydjIiLz48cGF0aCBkPSJNMTQgMnYyIi8+PHBhdGggZD0iTTE2IDhhMSAxIDAgMCAxIDEgMXY4YTQgNCAwIDAgMS00IDRIN2E0IDQgMCAwIDEtNC00VjlhMSAxIDAgMCAxIDEtMWgxNGE0IDQgMCAxIDEgMCA4aC0xIi8+PHBhdGggZD0iTTYgMnYyIi8+PC9zdmc+&logoColor=D9E0EE&style=for-the-badge&labelColor=302D41&color=f5a97f" alt="Link to Ko-fi"/></a>
+</a>
