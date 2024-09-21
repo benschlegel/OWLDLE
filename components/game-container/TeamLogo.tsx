@@ -21,7 +21,7 @@ export default function TeamLogo({ teamName, useTabIndex, disableBorder = false 
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<div
-						className={`rounded-md flex justify-center items-center m-1 aspect-square`}
+						className={`rounded-md flex justify-center items-center m-1 aspect-square ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`}
 						style={{ backgroundColor: team.backgroundColor }}
 						tabIndex={useTabIndex ? 0 : -1}>
 						<Image

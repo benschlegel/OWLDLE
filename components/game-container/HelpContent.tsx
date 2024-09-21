@@ -35,7 +35,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 	return (
 		<DialogContent
 			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
-			onOpenAutoFocus={(e) => e.preventDefault()}
+			// onOpenAutoFocus={(e) => e.preventDefault()}
 			aria-describedby="Tutorial on how to play the game">
 			<DialogHeader>
 				<DialogTitle className="flex flex-row gap-2 items-center text-left">
@@ -142,7 +142,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 				</main>
 			</ScrollArea>
 			<DialogFooter>
-				<Button type="submit" variant="outline">
+				<Button type="submit" variant="outline" autoFocus>
 					Close
 				</Button>
 			</DialogFooter>

@@ -17,7 +17,7 @@ export default function CustomCell({ cellData, id, ignoreTabIndex, isSmall }: Pr
 					{!isSmall ? (
 						<div
 							id={id}
-							className={`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] rounded-sm flex items-center justify-center p-2 ${cellData.isLarge && 'flex-1'} text-opacity-85`}
+							className={`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] rounded-sm flex items-center justify-center p-2 ${cellData.isLarge && 'flex-1'} text-opacity-85 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1`}
 							style={{ backgroundColor: cellData.bgColor, color: cellData.color }}>
 							<p className="text-opacity-100 leading-4 text-sm">{cellData.text}</p>
 						</div>
