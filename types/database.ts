@@ -76,6 +76,10 @@ export type DbLoggedGame = {
 	 * Result of this game (won or lost)
 	 */
 	gameResult: DbGameResult;
+	/**
+	 * Timestamp of when the game was finished
+	 */
+	finishedAt: Date;
 };
 
 const trimmedPlayer = z.object({ name: z.string(), id: z.number().min(0) });
