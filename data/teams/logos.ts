@@ -6,6 +6,7 @@ export type TeamLogoData = {
 	backgroundColor: string;
 	imgUrl: string;
 	displayName: string;
+	useDarkForeground?: boolean;
 };
 
 const teamLogosS1: Partial<TeamLogoData>[] = [
@@ -23,6 +24,7 @@ const teamLogosS1: Partial<TeamLogoData>[] = [
 		teamName: 'FloridaMayhem',
 		displayName: 'Florida Mayhem',
 		backgroundColor: '#fdda00',
+		useDarkForeground: true,
 	},
 	{
 		teamName: 'HoustonOutlaws',
@@ -53,11 +55,13 @@ const teamLogosS1: Partial<TeamLogoData>[] = [
 		teamName: 'PhiladelphiaFusion',
 		displayName: 'Philadelphia Fusion',
 		backgroundColor: '#ffffff',
+		useDarkForeground: true,
 	},
 	{
 		teamName: 'SanFranciscoShock',
 		displayName: 'San Francisco Shock',
 		backgroundColor: '#ffffff',
+		useDarkForeground: true,
 	},
 	{
 		teamName: 'SeoulDynasty',

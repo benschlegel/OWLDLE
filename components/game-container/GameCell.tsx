@@ -1,4 +1,5 @@
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
 import type React from 'react';
 import type { PropsWithChildren } from 'react';
@@ -54,7 +55,7 @@ export default function GameCell({
 	let tooltip = isCorrect === undefined ? tooltipDescription : tooltipGuess;
 	if (tooltipGuess === undefined && isCorrect !== undefined) {
 		const prefix = !isCorrect ? 'Incorrect' : 'Correct';
-		tooltip = `${prefix} ${tooltipDescription}${tooltipValue ? ` (${tooltipValue.replace(/([A-Z])/g, ' $1').trim()})` : ''}`;
+		tooltip = `${prefix} ${tooltipDescription}${tooltipValue ? ` (${splitCapitalization(tooltipValue)})` : ''}`;
 	}
 
 	return (
