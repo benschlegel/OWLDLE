@@ -22,9 +22,9 @@ const unsortedPlayers = s1Players.map((player: Player, index) => {
 
 	// Set region image
 	if (region === 'AtlanticDivison') {
-		regionImg = '/regions/atlantic.avif';
+		regionImg = '/regions/atlantic.webp';
 	} else if (region === 'PacificDivision') {
-		regionImg = '/regions/pacific.avif';
+		regionImg = '/regions/pacific.webp';
 	}
 
 	// Take original player data and add auto calculated fields
