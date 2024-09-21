@@ -9,6 +9,7 @@ const unsupportedCountries: CustomFlag[] = [{ country: 'ET', customImg: 'https:/
 const unsortedPlayers = s1Players.map((player: Player, index) => {
 	// Default url for vectorflags country flag api
 	let countryImg = `https://vectorflags.s3.amazonaws.com/flags/${player.country.toLowerCase()}-square-01.png`;
+	let regionImg = '';
 
 	// Check if player is unsupported by vectorflags api and override with custom image
 	const unsupportedCountry = unsupportedCountries.find((unsupported) => unsupported.country === player.country);
@@ -19,8 +20,15 @@ const unsortedPlayers = s1Players.map((player: Player, index) => {
 	// Set player region
 	const region = getRegion(player.team);
 
+	// Set region image
+	if (region === 'AtlanticDivison') {
+		regionImg = '/regions/atlantic.avif';
+	} else if (region === 'PacificDivision') {
+		regionImg = '/regions/pacific.avif';
+	}
+
 	// Take original player data and add auto calculated fields
-	return { ...player, countryImg, id: index, region: region };
+	return { ...player, countryImg, regionImg, id: index, region: region };
 });
 
 // use sort instead of toSorted to fix webpack error
