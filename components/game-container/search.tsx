@@ -46,7 +46,7 @@ export default function PlayerSearch({ className }: Props) {
 				} else {
 					// Show toast if player was already guessed
 					toast({
-						title: 'Duplicate guess',
+						title: '❌ Duplicate guess',
 						description: 'You already guessed that player.',
 					});
 				}
