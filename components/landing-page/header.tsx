@@ -1,9 +1,8 @@
 import { FeedbackDialog } from '@/components/game-container/feedback-dialog';
-import Game from '@/components/landing-page/game';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { CircleHelpIcon } from 'lucide-react';
+import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
 
 export default function Header() {
 	return (
@@ -20,7 +19,12 @@ export default function Header() {
 					</h1>
 				</div>
 				<div className="flex gap-1">
-					<FeedbackDialog />
+					<FeedbackDialog>
+						<Button variant="ghost" size="icon" className="p-0">
+							<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
+							<span className="sr-only">Send feedback</span>
+						</Button>
+					</FeedbackDialog>
 					<ModeToggle />
 				</div>
 			</div>
