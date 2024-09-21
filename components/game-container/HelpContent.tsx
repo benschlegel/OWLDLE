@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
-import { CircleHelpIcon, Compass, Dices, Gamepad } from 'lucide-react';
+import { CircleHelpIcon, Compass, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 
 type Props = {
 	setIsOpen: (old: boolean) => void;
@@ -47,11 +47,13 @@ export default function HelpContent({ setIsOpen }: Props) {
 			</DialogHeader>
 			<ScrollArea type="scroll" className="h-[440px]">
 				<main className="h-full flex flex-col gap-6 px-2">
+					{/* Description section */}
 					<blockquote className="leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
 						Try to guess the correct player within 8 tries to win. Every time you make a guess, you will be given hints like the country a player is from, the
 						players role, region and country.
 					</blockquote>
 					<div>
+						{/* Guesses section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Dices className="opacity-80" />
 							<h2 className="">Guesses</h2>
@@ -88,6 +90,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 						A correct guess will turn the field green while a wrong one turns it red. Use this as a hint when make your next guess.
 					</p>
 					<div className="flex flex-col gap-5">
+						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Gamepad className="opacity-80" />
 							<h2 className=" ">Teams</h2>
@@ -106,8 +109,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 						<div className="flex flex-col gap-3">
 							<div className="flex flex-col w-full">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-									<Compass className="opacity-80 w-5 h-5" />
-									<h3 className="">Pacific Division</h3>
+									{/* <Compass className="opacity-80 w-5 h-5" /> */}
+									<h3 className="">Atlantic Division</h3>
 								</div>
 								<div className="flex h-16 w-full gap-1">
 									{ATLANTIC.map((team) => (
@@ -117,7 +120,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							</div>
 							<div className="flex flex-col w-full">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-									<Compass className="opacity-80 w-5 h-5" />
+									{/* <Compass className="opacity-80 w-5 h-5" /> */}
 									<h3 className="">Pacific Division</h3>
 								</div>
 								<div className="flex h-16 w-full gap-1">
@@ -127,6 +130,16 @@ export default function HelpContent({ setIsOpen }: Props) {
 								</div>
 							</div>
 						</div>
+					</div>
+					{/* Tips section */}
+					<div>
+						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
+							<LightbulbIcon className="opacity-80" />
+							<h2 className="">Tips</h2>
+						</div>
+						<p className="scroll-m-20 text-base tracking-normal mt-4">
+							Most elements on this website have tooltips, so when you need more info, try hovering it. The website also has some hotkeys:
+						</p>
 					</div>
 				</main>
 			</ScrollArea>
