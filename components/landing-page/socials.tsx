@@ -37,7 +37,7 @@ const socials: SocialProps[] = [
 	},
 ];
 
-const projectGithubLink = 'https://github.com/benschlegel';
+const projectGithubLink = 'https://github.com/benschlegel/OWLDLE';
 
 export default function Socials() {
 	return (
