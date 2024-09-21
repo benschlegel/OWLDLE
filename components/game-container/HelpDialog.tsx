@@ -19,8 +19,10 @@ export function HelpDialog({ children }: PropsWithChildren) {
 
 	// Keep localStorage value in sync with state
 	useEffect(() => {
-		localStorage.setItem(localStorageKey, `${open}`);
-	}, [open]);
+		if (open === false && defaultVal === true) {
+			localStorage.setItem(localStorageKey, `${open}`);
+		}
+	}, [open, defaultVal]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
