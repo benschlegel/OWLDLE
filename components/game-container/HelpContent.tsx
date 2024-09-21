@@ -105,14 +105,16 @@ export default function HelpContent({ setIsOpen }: Props) {
 							. Season 1 had the following teams:
 						</p>
 						<div className="flex flex-col gap-3">
-							<div className="flex flex-col w-full">
+							<div className="flex flex-col">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
 									{/* <Compass className="opacity-80 w-5 h-5" /> */}
 									<h3 className="">Atlantic Division</h3>
 								</div>
-								<div className="flex h-16 w-full gap-1">
+								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{ATLANTIC.map((team) => (
-										<TeamLogo teamName={team} key={team} useTabIndex />
+										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+											<TeamLogo teamName={team} useTabIndex />
+										</div>
 									))}
 								</div>
 							</div>
@@ -121,9 +123,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 									{/* <Compass className="opacity-80 w-5 h-5" /> */}
 									<h3 className="">Pacific Division</h3>
 								</div>
-								<div className="flex h-16 w-full gap-1">
+								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{PACIFIC.map((team) => (
-										<TeamLogo teamName={team} key={team} useTabIndex />
+										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+											<TeamLogo teamName={team} useTabIndex />
+										</div>
 									))}
 								</div>
 							</div>
