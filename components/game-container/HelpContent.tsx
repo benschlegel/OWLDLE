@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { DialogOverlay } from '@radix-ui/react-dialog';
-import { CircleHelpIcon } from 'lucide-react';
+import { CircleHelpIcon, Dice1Icon, Dices, Gamepad, Medal, Trophy } from 'lucide-react';
 
 type Props = {
 	setIsOpen: (old: boolean) => void;
@@ -45,15 +45,18 @@ export default function HelpContent({ setIsOpen }: Props) {
 				</DialogTitle>
 				<DialogDescription className="mt-2 text-left mb-0">Tutorial</DialogDescription>
 			</DialogHeader>
-			<ScrollArea type="auto" className="h-[440px]">
+			<ScrollArea type="scroll" className="h-[440px]">
 				<div className="h-full flex flex-col gap-6 px-2">
 					<blockquote className="leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
 						Try to guess the correct player within 8 tries to win. Every time you make a guess, you will be given hints like the country a player is from, the
 						players role, region and country.
 					</blockquote>
 					<div>
-						<h2 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0">Guesses</h2>
-						<p className="scroll-m-20 text-base tracking-normal mb-1 mt-5">This is what a row looks like after you made a guess:</p>
+						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
+							<Dices className="opacity-80" />
+							<h2 className="">Guesses</h2>
+						</div>
+						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you guessed a player:</p>
 						<div className="flex flex-row sm:gap-2 gap-1 md:w-[60%] sm:h-[3.7rem] h-[3rem]">
 							{demoCells.map((cell) => (
 								<GameCell
@@ -82,7 +85,10 @@ export default function HelpContent({ setIsOpen }: Props) {
 						))}
 					</div>
 					<div className="flex flex-col gap-5">
-						<h2 className="scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight first:mt-0">Teams</h2>
+						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
+							<Gamepad className="opacity-80" />
+							<h2 className=" ">Teams</h2>
+						</div>
 						<p>Test</p>
 					</div>
 				</div>
