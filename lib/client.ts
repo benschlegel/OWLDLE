@@ -90,3 +90,5 @@ function getEmojiCell(isCorrect: boolean) {
 export function getSiteName() {
 	return `${window.location.protocol}//${window.location.host}`;
 }
+
+export const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
