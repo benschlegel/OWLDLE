@@ -12,6 +12,14 @@ export const GuessSchema = z.object({
 	isRegionCorrect: z.boolean(),
 });
 
+export const feedbackSchema = z.object({
+	rating: z.number().min(0.5).max(5).step(0.5).optional(),
+	name: z.string().trim().max(128).optional(),
+	feedback: z.string().trim().max(4096),
+});
+
+export type Feedback = z.infer<typeof feedbackSchema>;
+
 export type PlayerWithRegion = {
 	name: Player['name'];
 	role: Player['role'];

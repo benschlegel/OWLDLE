@@ -5,6 +5,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import StarRating from '@/components/ui/rate-stars';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import type { Feedback } from '@/types/server';
 import type React from 'react';
 import { type Dispatch, type SetStateAction, useCallback, useState } from 'react';
 
@@ -19,17 +21,41 @@ export default function FeedbackContent({ setIsOpen }: Props) {
 	const [name, setName] = useState('');
 	const [feedback, setFeedback] = useState('');
 	const trimmedFeedback = feedback.trim();
+	const { toast } = useToast();
 
 	const handleChildValueChange = useCallback((newValue: number) => {
 		setRating(newValue);
 	}, []);
 
 	const handleSubmit = useCallback(() => {
-		const feedbackContent = { rating, name, feedback };
-		setFeedback('');
-		setRating(initialRating);
-		setIsOpen(false);
-	}, [rating, name, feedback, setIsOpen]);
+		// Format feedback content
+		const feedbackContent: Feedback = { rating: rating >= 0.5 ? rating : undefined, name: name === '' ? undefined : name, feedback };
+		fetch('/api/feedback', { method: 'POST', body: JSON.stringify(feedbackContent) })
+			.then((res) => {
+				if (res.status === 200) {
+					setFeedback('');
+					setRating(initialRating);
+					setIsOpen(false);
+					toast({
+						title: 'Feedback sent!',
+						description: 'Thanks for your feedback ❤️',
+					});
+				} else {
+					toast({
+						title: 'Server error',
+						description: "Can't reach server or invalid data.",
+						variant: 'destructive',
+					});
+				}
+			})
+			.catch((e) => {
+				toast({
+					title: 'Server error',
+					description: "Can't reach server or invalid data.",
+					variant: 'destructive',
+				});
+			});
+	}, [rating, name, feedback, setIsOpen, toast]);
 
 	const handleTextAreaSubmit = useCallback(
 		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
