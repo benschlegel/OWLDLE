@@ -2,6 +2,7 @@
 import GameCell from '@/components/game-container/GameCell';
 import TeamLogo from '@/components/game-container/TeamLogo';
 import { Button } from '@/components/ui/button';
+import CustomCell from '@/components/ui/CustomCell';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -13,7 +14,7 @@ type Props = {
 	setIsOpen: (old: boolean) => void;
 };
 
-type DemoCells = {
+export type DemoCell = {
 	isLarge?: boolean;
 	bgColor: string;
 	color?: string;
@@ -22,15 +23,13 @@ type DemoCells = {
 	detailText: string;
 };
 
-const demoCells: DemoCells[] = [
+const demoCells: DemoCell[] = [
 	{ isLarge: true, bgColor: '#ed8796', color: '#fff', description: 'Player name', text: 'Player name', detailText: '' },
-	{ bgColor: '#f5a97f', description: 'Country', text: '1', detailText: 'Nationality (represented by flag)' },
-	{ bgColor: '#eed49f', description: 'Role', text: '2', detailText: 'Role (Support, Damage or Tank)' },
-	{ bgColor: '#a6da95', description: 'Region', text: '3', detailText: 'Region (Atlantic or Pacific Division)' },
-	{ bgColor: '#8aadf4', description: 'Team', text: '4', detailText: 'Team (represented by logo)' },
+	{ bgColor: '#f5a97f', color: '#3b3b44', description: 'Country', text: '1', detailText: 'Nationality (represented by flag)' },
+	{ bgColor: '#eed49f', color: '#3b3b44', description: 'Role', text: '2', detailText: 'Role (Support, Damage or Tank)' },
+	{ bgColor: '#a6da95', color: '#3b3b44', description: 'Region', text: '3', detailText: 'Region (Atlantic or Pacific Division)' },
+	{ bgColor: '#8aadf4', color: '#3b3b44', description: 'Team', text: '4', detailText: 'Team (represented by logo)' },
 ];
-
-const defaultTextColor = "'#3b3b44'";
 
 export default function HelpContent({ setIsOpen }: Props) {
 	return (
@@ -46,7 +45,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 				<DialogDescription className="mt-2 text-left mb-0">Tutorial</DialogDescription>
 			</DialogHeader>
 			<ScrollArea type="scroll" className="h-[440px]">
-				<main className="h-full flex flex-col gap-6 px-2">
+				<main className="h-full w-full flex flex-col gap-6 px-2 text-wrap break-words">
 					{/* Description section */}
 					<blockquote className="leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
 						Try to guess the correct player within 8 tries to win. Every time you make a guess, you will be given hints like the country a player is from, the
@@ -59,21 +58,20 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<h2 className="">Guesses</h2>
 						</div>
 						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you guessed a player:</p>
-						<div className="flex flex-row sm:gap-2 gap-1 md:w-[60%] sm:h-[3.7rem] h-[3rem]">
+						<div className="flex flex-row sm:gap-2 gap-1 w-full md:w-[60%]">
 							{demoCells.map((cell) => (
-								<GameCell
-									key={cell.text}
-									isLarge={cell.isLarge}
-									className={`flex items-center justify-center text-[${cell.color ?? '#3b3b44'}] bg-[${cell.bgColor}] p-2`}
-									tooltipClassname={`bg-[${cell.bgColor}] text-[${cell.color ?? '#3b3b44'}]`}
-									tooltipDescription={cell.description}>
-									<p className="text-opacity-100 leading-4 text-sm">{cell.text}</p>
-								</GameCell>
+								<CustomCell cellData={cell} key={cell.text} />
 							))}
 						</div>
 					</div>
 					<div className="grid grid-cols-2 grid-rows-2 gap-3 mt-2">
 						{demoCells.slice(1).map((cell) => (
+							<div key={cell.text} className="flex gap-4 items-center sm:col-span-1 col-span-2">
+								<CustomCell id={`detail-${cell.text}`} cellData={cell} ignoreTabIndex isSmall />
+								<Label htmlFor={cell.text}>{cell.detailText}</Label>
+							</div>
+						))}
+						{/* {demoCells.slice(1).map((cell) => (
 							<div key={cell.detailText} className="flex gap-4 items-center sm:col-span-1 col-span-2">
 								<GameCell
 									className={`bg-[${cell.bgColor}] text-[#3b3b44] !w-[2.5rem] !h-[2.5rem] sm:!w-[3rem] sm:!h-[3rem]  flex items-center justify-center`}
@@ -84,7 +82,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 								</GameCell>
 								<Label htmlFor={cell.text}>{cell.detailText}</Label>
 							</div>
-						))}
+						))} */}
 					</div>
 					<p className="scroll-m-20 text-base tracking-normal">
 						A correct guess will turn the field green while a wrong one turns it red. Use this as a hint when make your next guess.
