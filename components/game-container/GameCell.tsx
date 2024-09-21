@@ -20,16 +20,16 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	 */
 	tooltipValue?: string;
 	/**
-	 * Custom cell color (e.g. for tutorial)
+	 * Style for tooltip content
 	 */
-	customColor?: string;
+	tooltipClassname?: string;
 }
 
 export default function GameCell({
 	isLarge = false,
 	isCorrect,
+	tooltipClassname,
 	cellSize,
-	customColor,
 	tooltipValue,
 	className,
 	children,
@@ -42,9 +42,6 @@ export default function GameCell({
 		bgColor = 'bg-green-600';
 	} else if (isCorrect === false) {
 		bgColor = 'bg-red-600';
-	}
-	if (customColor) {
-		bgColor = customColor;
 	}
 
 	// Set tooltip for cell (tooltipDescription if defined, e.g. "correct ${tooltipDescription}" if tooltipGuess undefined)
@@ -59,9 +56,11 @@ export default function GameCell({
 			<TooltipProvider delayDuration={0}>
 				<Tooltip>
 					<TooltipTrigger asChild tabIndex={0}>
-						<div className={cn(`sm:w-[3.7rem] w-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`, className)}>{children}</div>
+						<div className={cn(`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`, className)}>
+							{children}
+						</div>
 					</TooltipTrigger>
-					<TooltipContent className={className}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
+					<TooltipContent className={tooltipClassname}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		</>
