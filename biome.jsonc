@@ -10,7 +10,8 @@
 		"rules": {
 			"recommended": true,
 			"correctness": {},
-			"style": { "noUnusedTemplateLiteral": "off" }
+			"style": { "noUnusedTemplateLiteral": "off" },
+			"suspicious": { "noExplicitAny": "warn" }
 		}
 	},
 	"javascript": {

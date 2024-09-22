@@ -6,9 +6,26 @@ import { useTheme } from 'next-themes';
 
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { useCallback, useState } from 'react';
 
 export function ModeToggle() {
-	const { setTheme } = useTheme();
+	const { setTheme, theme } = useTheme();
+
+	const handleThemeSwitch = (theme: string) => {
+		// Ensure that the browser supports view transitions
+		// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+		if ((document as any).startViewTransition) {
+			// Set the animation style to "angled"
+			document.documentElement.dataset.style = 'angled';
+
+			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+			(document as any).startViewTransition(() => {
+				setTheme(theme);
+			});
+		} else {
+			setTheme(theme);
+		}
+	};
 
 	return (
 		<DropdownMenu>
@@ -20,19 +37,19 @@ export function ModeToggle() {
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent align="end" className="transition-colors duration-300">
-				<DropdownMenuItem onClick={() => setTheme('light')}>
+				<DropdownMenuItem onClick={() => handleThemeSwitch('light')}>
 					<div className="flex flex-row gap-2">
 						<Sun className="w-4 h-4" />
 						<p>Light</p>
 					</div>
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme('dark')}>
+				<DropdownMenuItem onClick={() => handleThemeSwitch('dark')}>
 					<div className="flex flex-row gap-2">
 						<Moon className="w-4 h-4" />
 						<p>Dark</p>
 					</div>
 				</DropdownMenuItem>
-				<DropdownMenuItem onClick={() => setTheme('system')}>
+				<DropdownMenuItem onClick={() => handleThemeSwitch('system')}>
 					<div className="flex flex-row gap-2">
 						<ComputerIcon className="w-4 h-4" />
 						<p>System</p>
