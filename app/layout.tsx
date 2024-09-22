@@ -49,11 +49,20 @@ export const metadata: Metadata = {
 			},
 		],
 		type: 'website',
+		siteName: 'OWLDLE',
 	},
 	twitter: {
 		title: title,
 		description: description,
-		images: [ogImagePath],
+		images: [
+			{
+				url: ogImagePath,
+				width: ogImageWidth,
+				height: ogImageHeight,
+				type: 'website',
+			},
+		],
+		card: 'summary_large_image',
 	},
 };
 
