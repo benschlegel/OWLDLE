@@ -73,7 +73,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 				<DialogDescription className="mt-2 text-left mb-0">Tutorial</DialogDescription>
 			</DialogHeader>
 			<ScrollArea type="scroll" className="h-[440px]">
-				<main className="h-full w-full flex flex-col gap-6 px-2 text-wrap break-words ">
+				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
 					{/* Description section */}
 					<blockquote className="leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
 						Try to guess the correct player within 8 tries to win. Every time you make a guess, you will be given hints like the country a player is from, the
