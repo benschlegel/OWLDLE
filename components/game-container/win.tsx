@@ -62,11 +62,19 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	return (
 		<div id="win" className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-				<Button className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl" variant="ghost" onClick={handleConfettiButton}>
+				<Button
+					className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl"
+					variant="ghost"
+					onClick={handleConfettiButton}
+					aria-label="Show confetti">
 					🎉
 				</Button>{' '}
 				You won!{' '}
-				<Button className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl" variant="ghost" onClick={handleConfettiButton}>
+				<Button
+					className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl"
+					variant="ghost"
+					onClick={handleConfettiButton}
+					aria-label="Show confetti">
 					🎉
 				</Button>
 			</h1>

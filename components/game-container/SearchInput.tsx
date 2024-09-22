@@ -10,6 +10,7 @@ export default function SearchInput() {
 				type="submit"
 				variant="secondary"
 				size="icon"
+				aria-label="Search"
 				className="absolute right-0 top-0 h-full w-auto rounded-l-none p-2 bg-primary-foreground/80 dark:text-secondary-foreground text-white hover:bg-primary-foreground">
 				<div className="flex flex-row gap-2">
 					<p className="text-lg tracking-tight">Guess</p>

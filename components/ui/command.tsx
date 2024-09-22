@@ -88,6 +88,7 @@ const CustomCommandInput = React.forwardRef<React.ElementRef<typeof CommandPrimi
 				size="icon"
 				onClick={onButtonClick}
 				disabled={isButtonDisabled}
+				aria-label="Search"
 				className="absolute right-0 top-0 h-full w-auto rounded-none p-2 bg-primary-foreground/80 dark:text-secondary-foreground text-white hover:bg-primary-foreground">
 				<div className="flex flex-row gap-2">
 					<p className="text-lg tracking-tight">Guess</p>

@@ -46,7 +46,7 @@ export default function Socials() {
 				Made with ❤️ by{' '}
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant="link" className="p-0 h-auto transition-colors duration-200">
+						<Button variant="link" className="p-0 h-auto transition-colors duration-200" name="Show socials">
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								@scorer5
 							</code>
@@ -80,7 +80,7 @@ export default function Socials() {
 							<div className="text-sm text-muted-foreground">
 								You can also find this project on{' '}
 								<Link target="_blank" href={projectGithubLink} rel="noopener noreferrer" className="border-md">
-									<Button variant="link" className="p-0 h-auto" tabIndex={-1}>
+									<Button variant="link" className="p-0 h-auto" tabIndex={-1} aria-label="View on Github">
 										<code
 											className="relative rounded bg-background px-[0.3rem] py-[0.2rem] text-sm font-semibold"
 											style={{ fontFamily: 'var(--font-geist-mono)' }}>

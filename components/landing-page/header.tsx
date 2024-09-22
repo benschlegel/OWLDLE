@@ -16,7 +16,7 @@ export default function Header() {
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
 				<HelpDialog>
-					<Button variant="ghost" size="icon" className="p-0">
+					<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
 						<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 					</Button>
 				</HelpDialog>
