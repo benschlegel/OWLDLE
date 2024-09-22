@@ -11,19 +11,19 @@ import { useCallback, useState } from 'react';
 export function ModeToggle() {
 	const { setTheme, theme } = useTheme();
 
-	const handleThemeSwitch = (theme: string) => {
+	const handleThemeSwitch = (newTheme: string) => {
 		// Ensure that the browser supports view transitions
 		// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-		if ((document as any).startViewTransition) {
+		if ((document as any).startViewTransition && newTheme !== theme) {
 			// Set the animation style to "angled"
 			document.documentElement.dataset.style = 'angled';
 
 			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
 			(document as any).startViewTransition(() => {
-				setTheme(theme);
+				setTheme(newTheme);
 			});
 		} else {
-			setTheme(theme);
+			setTheme(newTheme);
 		}
 	};
 
