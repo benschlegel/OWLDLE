@@ -1,7 +1,7 @@
 'use client';
 import HelpContent from '@/components/game-container/HelpContent';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { type PropsWithChildren, type SetStateAction, useCallback, useEffect, useState } from 'react';
+import { cloneElement, type PropsWithChildren, type ReactElement, type SetStateAction, useCallback, useEffect, useState } from 'react';
 
 const localStorageKey = 'sawHelp';
 
@@ -16,19 +16,28 @@ export function HelpDialog({ children }: PropsWithChildren) {
 		defaultVal = false;
 	}
 	const [open, setOpen] = useState(defaultVal);
+	const [mounted, setMounted] = useState(false);
 
 	// Keep localStorage value in sync with state
 	useEffect(() => {
-		if (open === false && defaultVal === true) {
-			// Set to false after closing dialog for the first time
-			localStorage.setItem(localStorageKey, `${open}`);
-		}
-	}, [open, defaultVal]);
+		setMounted(true);
+		localStorage.setItem(localStorageKey, `${open}`);
+		// if (open === false && defaultVal === true) {
+		// Set to false after closing dialog for the first time
+		// }
+	}, [open]);
+
+	if (!mounted) {
+		// biome-ignore lint/suspicious/noExplicitAny: other types for children did not work
+		return cloneElement(children as any, {
+			onClick: (e) => e.preventDefault(), // Prevent any action before hydration
+		});
+	}
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen} aria-describedby="Tutorial on how to play the game">
 			<DialogTrigger asChild>{children}</DialogTrigger>
-			<HelpContent setIsOpen={setOpen} />
+			{mounted && <HelpContent setIsOpen={setOpen} />}
 		</Dialog>
 	);
 }
