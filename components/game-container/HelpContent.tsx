@@ -185,7 +185,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							</div>
 						</div>
 						<div className="flex flex-col gap-2 mt-4">
-							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game also resets every day.</p>
+							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
 							<div className="w-full gap-2 flex flex-row">
 								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
 								<Countdown date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
@@ -197,7 +197,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 								If you like this project, you can{' '}
 								<Link
 									href={'https://ko-fi.com/bschlegel'}
-									className="underline-offset-4 underline decoration-primary-foreground text-base tracking-normal"
+									className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
 									prefetch={false}>
 									buy me a coffee
 								</Link>{' '}
