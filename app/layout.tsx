@@ -74,6 +74,7 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<head>
+				<meta name="twitter:card" content="summary_large_image" />
 				{/* Add your own plausible config (if you want to set up analytics) */}
 				<PlausibleProvider domain="owldle.bschlegel.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} trackOutboundLinks />
 			</head>
