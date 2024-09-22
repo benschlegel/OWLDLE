@@ -18,7 +18,7 @@ export default function Game() {
 					<SearchDialog />
 				</>
 			) : (
-				<GameResult results={evaluatedGuesses} validatedResponse={validatedData} />
+				<GameResult results={evaluatedGuesses} validatedResponse={validatedData} iteration={validatedData?.iteration} />
 			)}
 		</>
 	);
