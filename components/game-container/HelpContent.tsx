@@ -6,6 +6,7 @@ import CustomCell from '@/components/ui/CustomCell';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
 import { CircleHelpIcon, Compass, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
@@ -113,7 +114,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{ATLANTIC.map((team) => (
 										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-											<TeamLogo teamName={team} useTabIndex />
+											<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
 										</div>
 									))}
 								</div>
@@ -126,7 +127,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{PACIFIC.map((team) => (
 										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-											<TeamLogo teamName={team} useTabIndex />
+											<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
 										</div>
 									))}
 								</div>
@@ -139,9 +140,29 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<LightbulbIcon className="opacity-80" />
 							<h2 className="">Tips</h2>
 						</div>
-						<p className="scroll-m-20 text-base tracking-normal mt-4">
-							Most elements on this website have tooltips, so when you need more info, try hovering it. The website also has some hotkeys:
-						</p>
+						<div className="flex flex-col gap-2">
+							<p className="scroll-m-20 text-base tracking-normal mt-4">
+								Most elements on this website have tooltips, so when you need more info, try hovering it. The website also has some hotkeys:
+							</p>
+							<div className="flex items-center gap-6 mt-1">
+								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+									<span className="text-xs">ctrl + y</span>
+								</kbd>
+								<p className="opacity-90 tracking-tight">Jump to search input</p>
+							</div>
+							<div className="flex items-center gap-6">
+								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+									<span className="text-xs">ctrl + k</span>
+								</kbd>
+								<p className="opacity-90 tracking-tight">Open search in popup dialog</p>
+							</div>
+						</div>
+						<div className="flex flex-col gap-2 mt-4">
+							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game also resets every day.</p>
+							<div>
+								<p className="scroll-m-20 text-base tracking-normal">The next reset is in:</p>
+							</div>
+						</div>
 					</div>
 				</main>
 			</ScrollArea>

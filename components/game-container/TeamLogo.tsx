@@ -4,14 +4,15 @@ import { TEAM_LOGOS_S1 } from '@/data/teams/logos';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { splitCapitalization } from '@/lib/client';
+import { cn } from '@/lib/utils';
 
-type Props = {
+interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	teamName?: string;
 	disableBorder?: boolean;
 	useTabIndex?: boolean;
-};
+}
 
-export default function TeamLogo({ teamName, useTabIndex, disableBorder = false }: Props) {
+export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false }: Props) {
 	const team = TEAM_LOGOS_S1.find((t) => t.teamName === teamName);
 
 	if (!teamName || !team) return <></>;
@@ -21,7 +22,10 @@ export default function TeamLogo({ teamName, useTabIndex, disableBorder = false 
 			<Tooltip>
 				<TooltipTrigger asChild>
 					<div
-						className={`rounded-md flex justify-center items-center m-1 aspect-square ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`}
+						className={cn(
+							`rounded-md flex justify-center items-center m-1 aspect-square ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
+							className
+						)}
 						style={{ backgroundColor: team.backgroundColor }}
 						tabIndex={useTabIndex ? 0 : -1}>
 						<Image

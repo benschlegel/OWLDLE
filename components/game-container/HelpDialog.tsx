@@ -19,10 +19,11 @@ export function HelpDialog({ children }: PropsWithChildren) {
 
 	// Keep localStorage value in sync with state
 	useEffect(() => {
-		localStorage.setItem(localStorageKey, `${open}`);
-		// if (open === false && defaultVal === true) {
-		// }
-	}, [open]);
+		if (open === false && defaultVal === true) {
+			// Set to false after closing dialog for the first time
+			localStorage.setItem(localStorageKey, `${open}`);
+		}
+	}, [open, defaultVal]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen} aria-describedby="Tutorial on how to play the game">
