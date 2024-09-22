@@ -1,7 +1,7 @@
 <h3 align="center">
 	<img src="images/logo.png" alt="Logo"/><br/>
 <br/>
-  Guess the <a href="https://en.wikipedia.org/wiki/Overwatch_League">Overwatch League</a> (OWL) player using a series of clues (like team, role, country). Win the game by guessing the correct player name before your guesses run out.
+  Guess the <a href="https://en.wikipedia.org/wiki/Overwatch_League">Overwatch League</a> (OWL) player using a series of clues (like the players team, role, country and region). Resets every day at midnight.
   <br />
 
 </h3>
