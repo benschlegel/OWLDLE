@@ -15,7 +15,7 @@ type Props = {
 };
 
 export default function WinScreen({ nextReset, correctPlayer, formattedResult }: Partial<Props>) {
-	const [_, setGameState] = useContext(GameStateContext);
+	const [gameState, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
@@ -25,10 +25,19 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult }:
 		setShowTimer(true);
 	}, []);
 
+	useEffect(() => {
+		if (gameState === 'lost') {
+			const element = document.getElementById('lost');
+			if (element) {
+				element.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}, [gameState]);
+
 	if (nextReset === undefined) return <></>;
 
 	return (
-		<div className="flex p-4 gap-2 justify-center items-center mt-4 w-full flex-col">
+		<div id="lost" className="flex p-4 gap-2 justify-center items-center mt-4 w-full flex-col">
 			<h1 className="scroll-m-20 text-3xl font-extrabold tracking-tight lg:text-4xl">❌ You lost... ❌</h1>
 			<h3 className="text-xl tracking-tight mt-1 text-center">
 				The correct answer was:{' '}

@@ -9,7 +9,7 @@ export default function Game() {
 	const [evaluatedGuesses, gameState, validatedData] = useGameState();
 
 	return (
-		<>
+		<div className="pb-2">
 			<GameContainer guesses={evaluatedGuesses} />
 			{/* Render search bar while in progress, render result when done */}
 			{gameState === 'in-progress' ? (
@@ -20,6 +20,6 @@ export default function Game() {
 			) : (
 				<GameResult results={evaluatedGuesses} validatedResponse={validatedData} iteration={validatedData?.iteration} />
 			)}
-		</>
+		</div>
 	);
 }
