@@ -72,7 +72,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en">
+		<html lang="en" suppressHydrationWarning>
 			<head>
 				<meta name="twitter:card" content="summary_large_image" />
 				{/* Add your own plausible config (if you want to set up analytics) */}
