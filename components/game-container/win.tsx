@@ -18,13 +18,22 @@ type Props = {
 const confettiDuration = 7500;
 
 export default function WinScreen({ nextReset, formattedResult }: Partial<Props>) {
-	const [_, setGameState] = useContext(GameStateContext);
+	const [gameState, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
 	const [showConfetti, setShowConfetti] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
 
 	const [showButtonConfetti, setShowButtonConfetti] = useState(false);
+
+	useEffect(() => {
+		if (gameState === 'won') {
+			const element = document.getElementById('win');
+			if (element) {
+				element.scrollIntoView({ behavior: 'smooth' });
+			}
+		}
+	}, [gameState]);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
@@ -51,7 +60,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 	if (nextReset === undefined) return <></>;
 
 	return (
-		<div className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
+		<div id="win" className="flex p-4 gap-1 justify-center items-center mt-4 w-full flex-col">
 			<h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
 				<Button className="p-0 py-8 text-4xl font-extrabold tracking-tight lg:text-5xl" variant="ghost" onClick={handleConfettiButton}>
 					🎉
