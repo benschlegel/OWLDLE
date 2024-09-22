@@ -1,5 +1,4 @@
 'use client';
-import GameCell from '@/components/game-container/GameCell';
 import TeamLogo from '@/components/game-container/TeamLogo';
 import { Button } from '@/components/ui/button';
 import CustomCell from '@/components/ui/CustomCell';
@@ -7,9 +6,13 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
-import { CircleHelpIcon, Compass, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
+import type { ValidateResponse } from '@/types/server';
+import { CircleHelpIcon, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
 	setIsOpen: (old: boolean) => void;
@@ -32,7 +35,31 @@ const demoCells: DemoCell[] = [
 	{ bgColor: '#8aadf4', color: '#3b3b44', description: 'Team', text: '4', detailText: 'Team (represented by logo)' },
 ];
 
+function countdownRenderer({ days, hours, minutes, seconds, milliseconds, completed }: CountdownRenderProps) {
+	if (completed) {
+		// Render a completed state
+		return <></>;
+	}
+	// Render a countdown
+	return (
+		<p className="gap-2 font-mono font-bold">
+			<span>{zeroPad(hours)}</span>:<span>{zeroPad(minutes)}</span>:<span>{zeroPad(seconds)}</span>
+		</p>
+	);
+}
+
 export default function HelpContent({ setIsOpen }: Props) {
+	const [nextReset, setNextReset] = useState<Date>();
+	const router = useRouter();
+
+	useEffect(() => {
+		async function fetchReset() {
+			const res = await fetch('/api/validate');
+			const data = (await res.json()) as ValidateResponse;
+			setNextReset(new Date(data.nextReset));
+		}
+		fetchReset();
+	}, []);
 	return (
 		<DialogContent
 			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
@@ -159,9 +186,30 @@ export default function HelpContent({ setIsOpen }: Props) {
 						</div>
 						<div className="flex flex-col gap-2 mt-4">
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game also resets every day.</p>
-							<div>
-								<p className="scroll-m-20 text-base tracking-normal">The next reset is in:</p>
+							<div className="w-full gap-2 flex flex-row">
+								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
+								<Countdown date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
 							</div>
+						</div>
+						<Separator className="my-4" />
+						<div>
+							<p className="scroll-m-20 text-base tracking-normal">
+								If you like this project, you can{' '}
+								<Link
+									href={'https://ko-fi.com/bschlegel'}
+									className="underline-offset-4 underline decoration-primary-foreground text-base tracking-normal"
+									prefetch={false}>
+									buy me a coffee
+								</Link>{' '}
+								or check out the source code for this project on{' '}
+								<Link
+									href={'https://github.com/benschlegel/OWLDLE'}
+									className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
+									prefetch={false}>
+									Github
+								</Link>
+								.
+							</p>
 						</div>
 					</div>
 				</main>

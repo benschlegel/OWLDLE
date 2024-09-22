@@ -18,7 +18,7 @@ const postLimiter = new RateLimiterMemory({
 });
 
 const getLimiter = new RateLimiterMemory({
-	points: 2, // Number of requests
+	points: 100, // Number of requests
 	duration: 1, // Per second
 });
 
