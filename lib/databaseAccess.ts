@@ -60,7 +60,7 @@ iterationCollection.createIndex({ iteration: 1 }, { unique: true });
 /**
  * CAREFUL: deletes the entire player backlog from database
  */
-export async function deleteAllPlayers(dataset: DbDatasetID = season1ID) {
+export async function deleteAllPlayers(dataset: DbDatasetID) {
 	return playerCollection.deleteMany({ _id: dataset });
 }
 
@@ -71,7 +71,7 @@ export async function dropAll() {
 /**
  * Insert all players from a dataset to the database backlog (if no object with the current dataset id exists, create it, otherwise, update)
  */
-export async function insertAllPlayers(dataset: DbDatasetID = season1ID) {
+export async function insertAllPlayers(dataset: DbDatasetID) {
 	const dbPlayers = PLAYERS.map((player) => formattedToDbPlayer(player));
 	return playerCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: dbPlayers } }, { upsert: true });
 }
@@ -83,7 +83,7 @@ export async function insertAllPlayers(dataset: DbDatasetID = season1ID) {
  * @param dataset what dataset to write answer for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID, session?: ClientSession) {
+export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID, session?: ClientSession) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true, session });
 }
@@ -92,7 +92,7 @@ export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID = 
  * Get current answer from db
  * @param dataset which dataset to get current answer for
  */
-export async function getCurrentAnswer(dataset: DbDatasetID = season1ID) {
+export async function getCurrentAnswer(dataset: DbDatasetID) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
 }
@@ -104,7 +104,7 @@ export async function getCurrentAnswer(dataset: DbDatasetID = season1ID) {
  * @param dataset what dataset to write answer for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = season1ID, session?: ClientSession) {
+export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID, session?: ClientSession) {
 	const answerKey: AnswerKey = `next_${dataset}`;
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true, session });
 }
@@ -114,7 +114,7 @@ export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID = sea
  * @param answerPrefix the type of answer to get (e.g. "current" or "next")
  * @param dataset which dataset to get answer for
  */
-export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
+export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
 }
@@ -122,7 +122,7 @@ export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDataset
 /**
  * Get all answers (e.g. [{_id: "current_dataset"}, {_id: "next_dataset"}]) for given dataset
  */
-export async function getAllAnswers(dataset: DbDatasetID = season1ID) {
+export async function getAllAnswers(dataset: DbDatasetID) {
 	return answerCollection.find({ _id: { $regex: `.+_${dataset}` } }).toArray();
 }
 
@@ -130,7 +130,7 @@ export async function getAllAnswers(dataset: DbDatasetID = season1ID) {
  * Get current answer from db
  * @param dataset which dataset to get current answer for
  */
-export async function getNextAnswer(dataset: DbDatasetID = season1ID) {
+export async function getNextAnswer(dataset: DbDatasetID) {
 	const answerKey: AnswerKey = `next_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
 }
@@ -141,7 +141,7 @@ export async function getNextAnswer(dataset: DbDatasetID = season1ID) {
  * @param player new player to set for answer
  * @param dataset what dataset to set player for
  */
-export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbPlayer, dataset: DbDatasetID = season1ID) {
+export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbPlayer, dataset: DbDatasetID) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: player } });
 }
@@ -153,7 +153,7 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
  * @param dataset what dataset to set player for
  * @returns true, if update was rerolled and inserted successfully, false, if not
  */
-export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID = season1ID) {
+export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	const randomPlayer = await getUniqueRandomPlayer(dataset);
 	if (!randomPlayer) {
@@ -209,7 +209,7 @@ export async function getUniqueRandomPlayer(dataset: DbDatasetID) {
  * Get current iteration for dataset
  * @param dataset which dataset to get current iteration for
  */
-export async function getCurrentIteration(dataset: DbDatasetID = season1ID) {
+export async function getCurrentIteration(dataset: DbDatasetID) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	const iterationRes = await answerCollection.findOne({ _id: answerKey }, { projection: { iteration: 1, _id: 0 } });
 	return iterationRes?.iteration;
@@ -232,7 +232,7 @@ export async function updateIterationPlayer(iteration: DbIteration['iteration'],
 	return iterationCollection.updateOne({ iteration: iteration }, { $set: { player: player } });
 }
 
-export async function getBacklog(dataset: DbDatasetID = season1ID) {
+export async function getBacklog(dataset: DbDatasetID) {
 	return backlogCollection.findOne({ _id: dataset });
 }
 
@@ -246,7 +246,7 @@ export async function getBacklog(dataset: DbDatasetID = season1ID) {
  * @param dataset what dataset to generate backlog for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function generateBacklog(size: number = GAME_CONFIG.backlogMaxSize, dataset: DbDatasetID = season1ID, session?: ClientSession) {
+export async function generateBacklog(size: number, dataset: DbDatasetID, session?: ClientSession) {
 	// Error if player collection is emtpy
 	const playerCount = await playerCollection.countDocuments();
 	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
@@ -314,7 +314,7 @@ export async function isPlayerUnique(player: DbPlayer, dataset: DbDatasetID, che
  * @param dataset what dataset to insert backlog (defaults to season1)
  * @returns true, if new player is unqiue and was successfully inserted, false otherwise
  */
-export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID = season1ID) {
+export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID) {
 	// Check if player is unique, if not,
 	const isUnique = await isPlayerUnique(player, dataset, true);
 	if (!isUnique) return false;
@@ -327,7 +327,7 @@ export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID = 
 /**
  * Same as insertOneBacklog, except it doesn't check if the new player is unique
  */
-export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: DbDatasetID = season1ID) {
+export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: DbDatasetID) {
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: [player], $position: 0 } } }, { upsert: true });
 }
 
@@ -337,7 +337,7 @@ export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: DbDatase
  * @param dataset what dataset to insert backlog (defaults to season1)
  * @returns true, if new players are unqiue and were successfully inserted, false otherwise
  */
-export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetID = season1ID) {
+export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetID) {
 	let isInputUnique = true;
 	// Check if all input players are unique
 	for (const player of players) {
@@ -356,7 +356,7 @@ export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetI
 /**
  * Same as insertManyBacklog, except it doesn't check if the new player is unique
  */
-export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: DbDatasetID = season1ID) {
+export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: DbDatasetID) {
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
 }
 
@@ -366,7 +366,7 @@ export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: DbDa
  * @param session (optional), pass transaction session if used during transaction
  * @returns an object containing the popped item and the new length of the array
  */
-export async function popBacklog(dataset: DbDatasetID = season1ID, session?: ClientSession) {
+export async function popBacklog(dataset: DbDatasetID, session?: ClientSession) {
 	// Use aggregation to get the first item and array length (combines .findOne and aggregate for length)
 	const aggregationResult = await backlogCollection
 		.aggregate(
@@ -409,10 +409,10 @@ export async function addFeedback(feedback: DbFeedback) {
  * Log game state to db
  * @param dataset
  */
-export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, timestamp: Date, dataset: DbDatasetID = season1ID) {
+export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, timestamp: Date, dataset: DbDatasetID) {
 	if (gameData.length > 0) {
 		// Get current iteration
-		const currIteration = await getCurrentIteration();
+		const currIteration = await getCurrentIteration(dataset);
 		if (currIteration && currIteration > 0) {
 			return gameLogCollection.insertOne({ iteration: currIteration, finishedAt: timestamp, dataset: dataset, gameData: gameData, gameResult: gameResult });
 		}
@@ -431,8 +431,8 @@ export async function goNextIteration(
 	backlogSize: number = GAME_CONFIG.backlogMaxSize
 ) {
 	// * Prep: get current answer from db, error out if not working
-	const currentAnswer = await getCurrentAnswer();
-	const nextAnswer = await getNextAnswer();
+	const currentAnswer = await getCurrentAnswer(dataset);
+	const nextAnswer = await getNextAnswer(dataset);
 	if (!currentAnswer || !nextAnswer) {
 		throw new Error('Could not get current answers from database.');
 	}

@@ -8,7 +8,7 @@ for (let i = 0; i < 1; i++) {
 	await generateBacklog(125, 'OWL_season1');
 
 	setTimeout(async () => {
-		const backlog = await getBacklog();
+		const backlog = await getBacklog('OWL_season1');
 		let currIndex = -1;
 		const currDuplicate = backlog?.players.find((player, i) => {
 			currIndex = i;

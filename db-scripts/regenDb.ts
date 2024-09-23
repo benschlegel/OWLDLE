@@ -35,13 +35,13 @@ await setCurrentAnswer(curr, DATASET);
 await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: nextNextReset }, DATASET);
 
 // * Reroll answers to ensure unique
-await rerollAnswer('current');
-await rerollAnswer('next');
+await rerollAnswer('current', DATASET);
+await rerollAnswer('next', DATASET);
 
 // * Set first iteration (get curr_answer data from db)
 const dayBefore = new Date(nextReset);
 dayBefore.setDate(dayBefore.getDate() - 1);
-const currAnswer = await getAnswer('current');
+const currAnswer = await getAnswer('current', DATASET);
 if (!currAnswer) throw new Error('Could not get current answer');
 await addIteration({ iteration: currAnswer.iteration, dataset: DATASET, player: currAnswer.player, resetAt: nextReset });
 
