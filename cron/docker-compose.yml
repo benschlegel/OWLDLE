@@ -1,0 +1,8 @@
+services:
+  owldle-cron:
+    build: .
+    restart: unless-stopped
+    container_name: owldle-cron
+    env_file: ../.env.local
+    environment:
+      - SCHEDULE=0 22 * * *
