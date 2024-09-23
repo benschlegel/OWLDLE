@@ -25,8 +25,8 @@ const socials: SocialProps[] = [
 	// { socialName: 'Battle.net', socialLink: '', socialValue: 'scorer5#21277', isCopyable: true, children: <Swords className="w-[1.1rem] h-[1.1rem] mb-1" /> },
 	{
 		socialName: 'Ko-fi',
-		socialLink: 'https://ko-fi.com/bschlegel',
-		socialValue: '@bschlegel',
+		socialLink: 'https://ko-fi.com/scorer5',
+		socialValue: 'scorer5',
 		children: <CoffeeIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
 	},
 	{
