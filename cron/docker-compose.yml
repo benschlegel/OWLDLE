@@ -6,3 +6,4 @@ services:
     env_file: ../.env.local
     environment:
       - SCHEDULE=0 22 * * *
+      - ENDPOINT_URL=https://www.owldle.com/api/cron
