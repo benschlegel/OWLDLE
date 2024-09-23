@@ -38,6 +38,7 @@
     "vitest.config.mts"
 , "next.config.mjs", "postcss.config.mjs"  ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "cron"
   ]
 }
