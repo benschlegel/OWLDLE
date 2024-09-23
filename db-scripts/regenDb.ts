@@ -9,7 +9,9 @@ import { exit } from 'node:process';
 const DATASET: DbDatasetID = 'OWL_season1';
 // ! Configure your first reset date here (in UTC)
 // ! Keep in mind that javascript months start at 0
-const nextReset = trimDate(new Date(Date.UTC(2024, 8, 19, 22, 0, 0)));
+// ! By default, sets to midnight UTC (when timezone is Europe/Vienna)
+const now = new Date();
+const nextReset = trimDate(new Date(Date.UTC(2024, now.getMonth(), now.getDate(), 22, 0, 0)));
 const nextNextReset = new Date(nextReset);
 nextNextReset.setDate(nextNextReset.getDate() + 1);
 // const nextReset = getFormattedMidnightTmrw();
