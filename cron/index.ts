@@ -5,7 +5,6 @@ const secret = process.env.CRON_SECRET;
 const schedule = process.env.SCHEDULE;
 const endpoint = process.env.ENDPOINT_URL;
 console.log("Starting...")
-console.log("ENV: ", secret)
 console.log("SCHEDULE: ", schedule)
 console.log("Endpoint: ", endpoint)
 if(!secret) {
@@ -20,6 +19,8 @@ if(!endpoint) {
   console.error("ENDPOINT_URL could not be read. Make sure you set the local env variable called ENDPOINT_URL to the endpoint you want to call.")
   exit(1);
 }
+
+console.log("All necessary env variables successfully read.")
 
 const job = Cron(schedule, {
   timezone: 'UTC'  // Set time zone to UTC to be consistent with backend/vercel
