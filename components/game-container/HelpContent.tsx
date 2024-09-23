@@ -10,7 +10,6 @@ import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
 import type { ValidateResponse } from '@/types/server';
 import { CircleHelpIcon, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
@@ -50,9 +49,10 @@ function countdownRenderer({ days, hours, minutes, seconds, milliseconds, comple
 
 export default function HelpContent({ setIsOpen }: Props) {
 	const [nextReset, setNextReset] = useState<Date>();
-	const router = useRouter();
+	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
+		setMounted(true);
 		async function fetchReset() {
 			const res = await fetch('/api/validate');
 			const data = (await res.json()) as ValidateResponse;
@@ -188,7 +188,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
 							<div className="w-full gap-2 flex flex-row">
 								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
-								<Countdown date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
+								{mounted && <Countdown date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />}
 							</div>
 						</div>
 						<Separator className="my-4" />
