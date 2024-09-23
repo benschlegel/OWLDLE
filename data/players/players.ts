@@ -133,4 +133,5 @@ export const s1Players: Player[] = [
 	{ name: 'Fiveking', country: 'CN', role: 'Support', team: 'ShanghaiDragons' },
 	{ name: 'Freefeel', country: 'CN', role: 'Support', team: 'ShanghaiDragons' },
 	{ name: 'Sky', country: 'CN', role: 'Support', team: 'ShanghaiDragons' },
+	{ name: 'xQc', country: 'CA', role: 'Tank', team: 'DallasFuel' },
 ] as const;
