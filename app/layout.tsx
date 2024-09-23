@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 		siteId: 'owldle',
 		images: [
 			{
-				url: `https://owldle.bschlegel.com${ogImagePath}`,
+				url: `https://www.owldle.com${ogImagePath}`,
 				width: ogImageWidth,
 				height: ogImageHeight,
 				type: 'website',
@@ -78,7 +78,7 @@ export default function RootLayout({
 			<head>
 				<meta name="twitter:card" content="summary_large_image" />
 				{/* Add your own plausible config (if you want to set up analytics) */}
-				<PlausibleProvider domain="owldle.bschlegel.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} trackOutboundLinks />
+				<PlausibleProvider domain="www.owldle.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} trackOutboundLinks />
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>

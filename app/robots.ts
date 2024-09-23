@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
 			allow: '/',
 			disallow: ['/teams/', '/regions/'],
 		},
-		sitemap: 'https://owldle.bschlegel.com/sitemap.xml',
+		sitemap: 'https://www.owldle.com/sitemap.xml',
 	};
 }
