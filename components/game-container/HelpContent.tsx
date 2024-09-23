@@ -196,7 +196,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<p className="scroll-m-20 text-base tracking-normal">
 								If you like this project, you can{' '}
 								<Link
-									href={'https://ko-fi.com/bschlegel'}
+									href={'https://ko-fi.com/scorer5'}
 									className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
 									prefetch={false}>
 									buy me a coffee
