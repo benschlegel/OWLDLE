@@ -2,15 +2,13 @@
 
 Cron runner for OWLDLE that can be run as a self-hosted container.
 
-To install dependencies:
-
+To build, run
 ```bash
-bun install
+docker build -t <your-container-name> --squash .
 ```
 
-To run:
-
+You can then run the container with
 ```bash
-bun run index.ts
+docker compose up
 ```
-
+Or deploy it to dockerhub/deploy it on portainer (or wherever else you want to host it.)
