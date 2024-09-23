@@ -27,7 +27,7 @@ const owlHeader = localFont({
 	weight: '700',
 });
 
-const title = 'OWLDLE - Guess the OWL player';
+const title = 'OWLDLE';
 const description = 'Guess the Season 1 Overwatch League player';
 const ogImagePath = '/open-graph.png';
 const ogImageWidth = 1200;
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
 		siteId: 'owldle',
 		images: [
 			{
-				url: `https://owldle.bschlegel.com/${ogImagePath}`,
+				url: `https://owldle.bschlegel.com${ogImagePath}`,
 				width: ogImageWidth,
 				height: ogImageHeight,
 				type: 'website',
