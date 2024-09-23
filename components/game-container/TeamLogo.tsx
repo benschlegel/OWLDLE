@@ -21,22 +21,29 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 		<TooltipProvider delayDuration={0}>
 			<Tooltip>
 				<TooltipTrigger asChild>
-					<div
-						className={cn(
-							`rounded-md flex justify-center items-center m-1 aspect-square ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
-							className
-						)}
-						style={{ backgroundColor: team.backgroundColor }}
-						tabIndex={useTabIndex ? 0 : -1}>
-						<Image
-							src={team.imgUrl}
-							alt={`Logo for ${team.displayName}`}
-							unoptimized={false}
-							quality={100}
-							width={64}
-							height={64}
-							className="p-[0.35rem] h-auto w-auto max-h-full max-w-full"
-						/>
+					<div className="p-1">
+						<div
+							className={cn(
+								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
+								className
+							)}
+							style={{
+								backgroundColor: team.backgroundColor,
+								paddingBottom: '100%', // This creates the 1:1 aspect ratio
+							}}
+							tabIndex={useTabIndex ? 0 : -1}>
+							<div className="absolute inset-0 flex justify-center items-center p-[0.35rem]">
+								<Image
+									src={team.imgUrl}
+									alt={`Logo for ${team.displayName}`}
+									unoptimized={false}
+									quality={100}
+									width={64}
+									height={64}
+									className=" h-auto w-auto max-h-full max-w-full object-contain"
+								/>
+							</div>
+						</div>
 					</div>
 				</TooltipTrigger>
 				{useTabIndex && (
