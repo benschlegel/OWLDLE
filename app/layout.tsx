@@ -54,10 +54,11 @@ export const metadata: Metadata = {
 	twitter: {
 		title: title,
 		description: description,
+		site: GAME_CONFIG.siteUrl,
 		siteId: 'owldle',
 		images: [
 			{
-				url: ogImagePath,
+				url: `https://owldle.bschlegel.com/${ogImagePath}`,
 				width: ogImageWidth,
 				height: ogImageHeight,
 				type: 'website',
