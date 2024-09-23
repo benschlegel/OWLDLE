@@ -5,7 +5,7 @@ import { exit } from 'node:process';
 
 console.time('setNext');
 const player = formattedToDbPlayer(PLAYERS[3]);
-await setNextAnswer({ player: player, iteration: 2, nextReset: new Date() });
+await setNextAnswer({ player: player, iteration: 2, nextReset: new Date() }, 'OWL_season1');
 console.timeEnd('setNext');
 console.log('Finished.');
 exit(0);

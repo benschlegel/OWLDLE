@@ -101,7 +101,7 @@ export async function PATCH(req: NextRequest) {
 // TODO: throw error instead of response
 async function updateLocalAnswer() {
 	try {
-		const answer = await getCurrentAnswer();
+		const answer = await getCurrentAnswer('OWL_season1');
 		if (answer) {
 			currentAnswer = answer;
 		} else {

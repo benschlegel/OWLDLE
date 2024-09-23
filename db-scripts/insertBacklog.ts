@@ -10,7 +10,7 @@ const players = [PLAYERS[1], PLAYERS[2], PLAYERS[3]];
 
 // Format players + insert
 const mappedPlayers = players.map((player) => formattedToDbPlayer(player));
-await insertManyBacklog(mappedPlayers);
+await insertManyBacklog(mappedPlayers, 'OWL_season1');
 
 console.timeEnd('insertBacklog');
 console.log('Finished.');
