@@ -49,11 +49,12 @@ export const metadata: Metadata = {
 			},
 		],
 		type: 'website',
-		siteName: 'OWLDLE',
+		siteName: 'owldle',
 	},
 	twitter: {
 		title: title,
 		description: description,
+		siteId: 'owldle',
 		images: [
 			{
 				url: ogImagePath,
