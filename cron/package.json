@@ -1,0 +1,14 @@
+{
+  "name": "cron",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "croner": "^8.1.1"
+  }
+}
