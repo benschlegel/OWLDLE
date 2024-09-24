@@ -161,11 +161,22 @@ html {
   }
 }
 
+/* Add will-change for the element that will animate */
 [data-style='angled']::view-transition-new(root) {
+  will-change: clip-path, transform; /* Hint the browser to optimize clip-path changes */
   animation: unclip 1s;
+  transform: translateZ(0);
   clip-path: polygon(-100vmax 100%, 100% 100%, 100% -100vmax);
 }
 
+/* Optional: Remove will-change once animation ends */
+[data-style='angled']::view-transition-new(root):after {
+  content: "";
+  animation: unclip 1s forwards; /* ensures that clip-path ends up where we want */
+  will-change: auto; /* Reset will-change after animation */
+}
+
+/* The old element does not need animation */
 [data-style='angled']::view-transition-old(root) {
   animation: none;
   z-index: -1;
