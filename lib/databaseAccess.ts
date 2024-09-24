@@ -24,7 +24,7 @@ if (process.env.NODE_ENV !== 'production') {
 	useDevDatabase = true;
 }
 
-const uri = globalThis.process.env.MONGO_URI;
+const uri = process.env.MONGO_URI;
 if (!uri) {
 	throw new Error('MONGO_URI not found! Make sure to set MONGO_URI in your .env');
 }
