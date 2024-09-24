@@ -74,7 +74,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<html lang="en" suppressHydrationWarning>
+		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 			<head>
 				<meta name="twitter:card" content="summary_large_image" />
 				{/* Add your own plausible config (if you want to set up analytics) */}
