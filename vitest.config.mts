@@ -10,7 +10,5 @@ export default defineConfig({
 		env: loadEnv('', process.cwd(), ''),
 		setupFiles: ['tests/vitest.setup.ts'],
 		environment: 'node',
-		globals: true,
-		// globalSetup: ['tests/vitest.setup.ts']
 	}
 });
