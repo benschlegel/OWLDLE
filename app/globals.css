@@ -163,9 +163,9 @@ html {
 
 /* Add will-change for the element that will animate */
 [data-style='angled']::view-transition-new(root) {
-  will-change: clip-path, transform; /* Hint the browser to optimize clip-path changes */
+  will-change: clip-path; /* Hint the browser to optimize clip-path changes */
   animation: unclip 1s;
-  transform: translateZ(0);
+  /* transform: translateZ(0); */
   clip-path: polygon(-100vmax 100%, 100% 100%, 100% -100vmax);
 }
 
