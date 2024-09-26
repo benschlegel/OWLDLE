@@ -18,7 +18,7 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 		removeConsole:
 			process.env.NODE_ENV === 'production'
 				? {
-						exclude: ['error'],
+						exclude: [],
 					}
 				: false,
 	},

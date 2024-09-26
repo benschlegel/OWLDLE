@@ -10,9 +10,7 @@ export default function Home() {
 			<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
 				<main className="w-[32rem]">
 					<Socials />
-					<Suspense>
-						<Header />
-					</Suspense>
+					<Header />
 					<Game />
 				</main>
 			</div>
