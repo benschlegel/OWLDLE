@@ -30,6 +30,7 @@ export default function useGameState() {
 				});
 			})
 			.then((data) => setValidatedData(data));
+		// TODO: investigate
 	}, [toast]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
