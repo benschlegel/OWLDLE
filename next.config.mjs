@@ -21,12 +21,7 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 		formats: ['image/avif'],
 	},
 	compiler: {
-		removeConsole:
-			process.env.NODE_ENV === 'production'
-				? {
-						exclude: [],
-					}
-				: false,
+		removeConsole: process.env.NODE_ENV === 'production',
 	},
 	experimental: {
 		reactCompiler: true,
