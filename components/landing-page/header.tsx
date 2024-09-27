@@ -33,7 +33,11 @@ export default function Header() {
 					</Button>
 				</HelpDialog>
 				<div className="mb-1 flex items-center">
-					<h1 className="sm:text-4xl text-3xl font-bold text-center font-sans" style={{ fontFamily: 'var(--font-owl-bold)' }}>
+					<h1
+						className="sm:text-4xl text-3xl font-bold text-center"
+						style={{
+							fontFamily: 'var(--font-owl-bold) ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+						}}>
 						<span className="text-primary-foreground">OWL</span>
 						{/* <span className="text-primary-foreground/70">S1</span>LE */}
 						DLE
