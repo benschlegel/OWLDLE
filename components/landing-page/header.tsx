@@ -36,7 +36,7 @@ export default function Header() {
 					<h1
 						className="sm:text-4xl text-3xl font-bold text-center"
 						style={{
-							fontFamily: 'var(--font-owl-bold) ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+							fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 						}}>
 						<span className="text-primary-foreground">OWL</span>
 						{/* <span className="text-primary-foreground/70">S1</span>LE */}
