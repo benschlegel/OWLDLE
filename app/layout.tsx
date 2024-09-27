@@ -24,6 +24,8 @@ const geistMono = localFont({
 const owlHeader = localFont({
 	src: './fonts/OWLFontBold.woff',
 	variable: '--font-owl-bold',
+	display: 'swap',
+	adjustFontFallback: false,
 	weight: '700',
 });
 
