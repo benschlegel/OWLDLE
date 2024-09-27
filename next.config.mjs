@@ -11,6 +11,12 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 				port: '',
 				pathname: '/flags/**',
 			},
+			{
+				protocol: 'https',
+				hostname: 'flagsapi.com',
+				port: '',
+				pathname: '/ET/flat/**',
+			},
 		],
 		formats: ['image/avif'],
 	},
