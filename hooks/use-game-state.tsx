@@ -30,7 +30,6 @@ export default function useGameState() {
 				});
 			})
 			.then((data) => setValidatedData(data));
-		// TODO: investigate
 	}, [toast]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
@@ -88,6 +87,7 @@ export default function useGameState() {
 					.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: 'lost' } }));
 			}
 		} else {
+			// TODO: remove guess/find out why guess is added invisibly in this branch
 			toast({
 				title: 'Please try again',
 				description: 'Something went wrong, please try again',
