@@ -76,8 +76,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
 					{/* Description section */}
 					<blockquote className="leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
-						Try to guess the correct player within 8 tries to win. Every time you make a guess, you will be given hints like the country a player is from, the
-						players role, region and country.
+						Guess the correct Overwatch League player within 8 attempts to win. After each guess, you will receive hints based on attributes like the player's
+						role, team, region and nationality to help you get closer to the right answer.
 					</blockquote>
 					<div>
 						{/* Guesses section */}
@@ -222,3 +222,5 @@ export default function HelpContent({ setIsOpen }: Props) {
 		</DialogContent>
 	);
 }
+
+// TODO: add example (accordion)
