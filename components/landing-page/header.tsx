@@ -9,7 +9,11 @@ import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Suspense } from 'react';
 
-export default function Header() {
+type Props = {
+	slug: string;
+};
+
+export default function Header({ slug }: Props) {
 	const router = useRouter();
 
 	const feedbackButton = (
@@ -18,7 +22,7 @@ export default function Header() {
 			size="icon"
 			className="p-0"
 			onClick={() => {
-				router.replace('/?showFeedback=true');
+				router.replace(`${slug}?showFeedback=true`);
 			}}>
 			<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
 			<span className="sr-only">Send feedback</span>
@@ -48,7 +52,7 @@ export default function Header() {
 				</div>
 				<div className="flex gap-1">
 					<Suspense fallback={feedbackButton}>
-						<FeedbackDialog>{feedbackButton}</FeedbackDialog>
+						<FeedbackDialog slug={slug}>{feedbackButton}</FeedbackDialog>
 					</Suspense>
 					<ModeToggle />
 				</div>
