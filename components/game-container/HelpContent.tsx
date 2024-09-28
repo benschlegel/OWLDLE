@@ -97,7 +97,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 						{demoCells.slice(1).map((cell) => (
 							<div key={cell.text} className="flex gap-4 items-center sm:col-span-1 col-span-2">
 								<CustomCell id={`detail-${cell.text}`} cellData={cell} ignoreTabIndex isSmall />
-								<Label htmlFor={cell.text}>{cell.detailText}</Label>
+								<Label htmlFor={`detail-${cell.text}`}>{cell.detailText}</Label>
 							</div>
 						))}
 						{/* {demoCells.slice(1).map((cell) => (
