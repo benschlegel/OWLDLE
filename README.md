@@ -14,8 +14,8 @@
   <a href="#getting-started">Getting Started</a>
   ·
   <a href="#about">About</a>
-  .
-  <a href="#about">Sponsor me</a>
+  ·
+  <a href="#about">Sponsor</a>
 </h6>
 
 <p align="center">
