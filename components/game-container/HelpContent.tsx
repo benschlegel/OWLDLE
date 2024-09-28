@@ -188,7 +188,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
 							<div className="w-full gap-2 flex flex-row">
 								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
-								{mounted && <Countdown date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />}
+								{mounted ? <Countdown key="countdown" date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart /> : <></>}
 							</div>
 						</div>
 						<Separator className="my-4" />
