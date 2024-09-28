@@ -2,9 +2,13 @@
 import FeedbackContent from '@/components/game-container/feedback-content';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useEffect, useState, type PropsWithChildren } from 'react';
+import { useCallback, useEffect, useState, type PropsWithChildren } from 'react';
 
-export function FeedbackDialog({ children }: PropsWithChildren) {
+type Props = {
+	slug: string;
+};
+
+export function FeedbackDialog({ children, slug }: PropsWithChildren<Props>) {
 	const searchParams = useSearchParams();
 	const showFeedback = searchParams.get('showFeedback');
 	const [open, setOpen] = useState(showFeedback === 'true');
@@ -12,9 +16,14 @@ export function FeedbackDialog({ children }: PropsWithChildren) {
 
 	useEffect(() => {
 		if (open === false) {
-			router.replace('/');
+			handleClose();
 		}
-	}, [open, router]);
+	}, [open]);
+
+	const handleClose = useCallback(() => {
+		router.replace(slug);
+	}, [router, slug]);
+
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>{children}</DialogTrigger>
