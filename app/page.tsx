@@ -2,7 +2,6 @@ import Game from '@/components/landing-page/game';
 import Header from '@/components/landing-page/header';
 import Socials from '@/components/landing-page/socials';
 import { Toaster } from '@/components/ui/toaster';
-import { Suspense } from 'react';
 
 export default function Home() {
 	return (

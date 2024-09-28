@@ -1,4 +1,4 @@
-import { countries, type CountryCode } from '@/types/countries';
+import { countries, } from '@/types/countries';
 import { z } from 'zod';
 
 /**

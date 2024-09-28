@@ -1,5 +1,5 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
-import { insertManyBacklog, insertOneBacklog, setNextAnswer } from '@/lib/databaseAccess';
+import { insertManyBacklog, } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { exit } from 'node:process';
 

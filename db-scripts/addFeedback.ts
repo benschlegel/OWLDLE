@@ -1,4 +1,4 @@
-import { addFeedback, setNextAnswer } from '@/lib/databaseAccess';
+import { addFeedback, } from '@/lib/databaseAccess';
 import type { DbFeedback } from '@/types/database';
 import { exit } from 'node:process';
 

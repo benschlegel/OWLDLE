@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, test, vitest } from 'vitest';
+import { describe, expect, test, } from 'vitest';
 import { getAnswer } from '@/lib/databaseAccess';
 
 describe('basics', () => {

@@ -1,5 +1,5 @@
-import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
-import { getCurrentAnswer, setCurrentAnswer, setPartialAnswer } from '@/lib/databaseAccess';
+import { PLAYERS } from '@/data/players/formattedPlayers';
+import { setPartialAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { exit } from 'node:process';
 
