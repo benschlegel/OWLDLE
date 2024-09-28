@@ -15,7 +15,8 @@ export default function Game() {
 			{gameState === 'in-progress' ? (
 				<>
 					<PlayerSearch className="mt-6" />
-					<SearchDialog />
+					React.memo(
+					<SearchDialog />)
 				</>
 			) : (
 				<GameResult results={evaluatedGuesses} validatedResponse={validatedData} iteration={validatedData?.iteration} />
