@@ -46,9 +46,9 @@ export default function GameCell({
 	// Set background color based on correct value (gray if undefined, green if correct, red if incorrect)
 	let bgColor = 'bg-secondary';
 	if (isCorrect === true) {
-		bgColor = 'bg-green-600';
+		bgColor = 'bg-correct';
 	} else if (isCorrect === false) {
-		bgColor = 'bg-red-600';
+		bgColor = 'bg-incorrect';
 	}
 
 	// Set tooltip for cell (tooltipDescription if defined, e.g. "correct ${tooltipDescription}" if tooltipGuess undefined)
