@@ -1,5 +1,7 @@
 'use client';
+import HelpExample from '@/components/game-container/HelpExample';
 import TeamLogo from '@/components/game-container/TeamLogo';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import CustomCell from '@/components/ui/CustomCell';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -84,7 +86,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<Dices className="opacity-80" />
 							<h2 className="">Guesses</h2>
 						</div>
-						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you guessed a player:</p>
+						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you made a guess:</p>
 						<div className="flex flex-row sm:gap-2 gap-1 w-full md:w-[60%]">
 							{demoCells.map((cell) => (
 								<CustomCell cellData={cell} key={cell.text} />
@@ -111,6 +113,15 @@ export default function HelpContent({ setIsOpen }: Props) {
 							</div>
 						))} */}
 					</div>
+
+					<Accordion type="single" collapsible className="px-2">
+						<AccordionItem value="item-1">
+							<AccordionTrigger>Full example</AccordionTrigger>
+							<AccordionContent>
+								<HelpExample />
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
 					<p className="scroll-m-20 text-base tracking-normal">
 						A correct guess will turn the field green while a wrong one turns it red. Use this as a hint when you make your next guess.
 					</p>
@@ -187,7 +198,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
 							<div className="w-full gap-2 flex flex-row">
 								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
-								{mounted && <Countdown key="countdown" date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />}
+								{mounted ? (
+									<Countdown key="countdown" date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
+								) : (
+									<p className="text-muted-foreground">loading...</p>
+								)}
 							</div>
 						</div>
 						<Separator className="my-4" />

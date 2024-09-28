@@ -2,7 +2,7 @@ import type { DemoCell } from '@/components/game-container/HelpContent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 type Props = {
-	cellData: DemoCell;
+	cellData: Partial<DemoCell>;
 	ignoreTabIndex?: boolean;
 	id?: string;
 	isSmall?: boolean;
