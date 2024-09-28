@@ -1,6 +1,7 @@
 'use client';
 import { FeedbackDialog } from '@/components/game-container/feedback-dialog';
 import { HelpDialog } from '@/components/game-container/HelpDialog';
+import SeasonSelector from '@/components/game-container/SeasonSelector';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
@@ -32,9 +33,7 @@ export default function Header() {
 							<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 						</Button>
 					</HelpDialog>
-					<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-						<p className="text-2xl font-mono font-semibold tracking-wide">S1</p>
-					</Button>
+					<SeasonSelector />
 				</div>
 				<div className="mb-1 flex items-center">
 					<h1
