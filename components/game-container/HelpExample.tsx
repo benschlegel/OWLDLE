@@ -1,22 +1,24 @@
-import CustomCell from '@/components/ui/CustomCell';
+import type { RowData } from '@/components/game-container/GameContainer';
+import GuessRow from '@/components/game-container/GuessRow';
+import { PLAYERS } from '@/data/players/formattedPlayers';
 
-const demoCells = [
-	{ isLarge: true, bgColor: '#ed8796', color: '#fff', description: 'Name incorrect', text: 'Name incorrect', detailText: '' },
-	{ bgColor: '#f5a97f', color: '#3b3b44', description: 'Country', detailText: 'Nationality (represented by flag)' },
-	{ bgColor: '#eed49f', color: '#3b3b44', description: 'Role', detailText: 'Role (Support, Damage or Tank)' },
-	{ bgColor: '#a6da95', color: '#3b3b44', description: 'Region', detailText: 'Region (Atlantic or Pacific Division)' },
-	{ bgColor: '#8aadf4', color: '#3b3b44', description: 'Team', detailText: 'Team (represented by logo)' },
-];
+const player = PLAYERS[112];
+const data: RowData = {
+	player: player,
+	guessResult: { isNameCorrect: false, isCountryCorrect: true, isRegionCorrect: false, isRoleCorrect: true, isTeamCorrect: false },
+};
 
 export default function HelpExample() {
 	return (
-		<div className="flex flex-col">
-			<div>Abc</div>
-			<div className="flex flex-row sm:gap-2 gap-1 w-full md:w-[60%]">
-				{demoCells.map((cell) => (
-					<CustomCell cellData={cell} key={`example-${cell.description}`} />
-				))}
+		<div className="flex flex-col gap-2">
+			<p className="text-base tracking-normal">The first row could look like this after making your first guess:</p>
+			<div className="w-full md:w-[60%] opacity-90">
+				<GuessRow data={data} />
 			</div>
+			<p className="text-base tracking-normal">
+				This means that the player you guessed (super) has the same role (tank) and is from the same country (US) as the correct player you're looking for. You
+				can now use this information when making your next guess and slowly get closer to the answer.
+			</p>
 		</div>
 	);
 }
