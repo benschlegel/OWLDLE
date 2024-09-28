@@ -5,7 +5,7 @@ import { GuessContext } from '@/context/GuessContext';
 import type { PlausibleEvents } from '@/types/plausible';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { usePlausible } from 'next-plausible';
-import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { useContext, useEffect, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {

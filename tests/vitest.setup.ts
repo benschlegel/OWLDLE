@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, vi, vitest } from 'vitest';
+import { afterAll, beforeAll, vitest } from 'vitest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 
 // stubEnv needs to be here so env is stubbed in time for init code in databaseAccess.ts

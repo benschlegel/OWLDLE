@@ -10,7 +10,6 @@ import type {
 	DbFormattedPlayers,
 	DbPlayer,
 	DbDatasetID,
-	DbLogEntryKey,
 	DbFeedback,
 	DbIteration,
 	DbLoggedGame,

@@ -1,6 +1,5 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
-import { getCurrentAnswer, rerollAnswer, setCurrentAnswer } from '@/lib/databaseAccess';
-import { formattedToDbPlayer } from '@/lib/databaseHelpers';
+
+import { rerollAnswer, } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
 
 console.time('reroll');

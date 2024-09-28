@@ -5,9 +5,8 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
-import { ReactNode, Suspense, useCallback } from 'react';
+import { Suspense, } from 'react';
 
 export default function Header() {
 	const router = useRouter();

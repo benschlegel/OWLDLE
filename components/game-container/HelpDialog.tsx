@@ -1,7 +1,7 @@
 'use client';
 import HelpContent from '@/components/game-container/HelpContent';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { cloneElement, type PropsWithChildren, type ReactElement, type SetStateAction, useCallback, useEffect, useState } from 'react';
+import { cloneElement, type PropsWithChildren, useEffect, useState } from 'react';
 
 const localStorageKey = 'sawHelp';
 

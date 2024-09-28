@@ -5,7 +5,7 @@ import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
-import type { DbGameResult, DbSaveData } from '@/types/database';
+import type { DbSaveData } from '@/types/database';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';

@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import type { Player } from '@/types/players';
+
 import { TEAM_LOGOS_S1 } from '@/data/teams/logos';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';

@@ -1,21 +1,7 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
-import { GAME_CONFIG } from '@/lib/config';
+
 import {
-	generateBacklog,
 	getAllAnswers,
-	getBacklog,
-	getCurrentAnswer,
-	getCurrentIteration,
-	getNextAnswer,
-	getUniqueRandomPlayer,
-	goNextIteration,
-	popBacklog,
-	rerollAnswer,
-	setPartialAnswer,
-	updateIterationPlayer,
 } from '@/lib/databaseAccess';
-import { formattedToDbPlayer } from '@/lib/databaseHelpers';
-import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
 
 console.time('test');

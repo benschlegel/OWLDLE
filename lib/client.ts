@@ -1,4 +1,4 @@
-import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+
 import type { GuessResponse } from '@/types/server';
 
 export type FormatConfig = {

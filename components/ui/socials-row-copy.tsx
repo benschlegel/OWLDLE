@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { CheckIcon, CopyIcon } from 'lucide-react';
-import Link from 'next/link';
 import { useCallback, useState, type PropsWithChildren } from 'react';
 
 export type SocialProps = PropsWithChildren<{

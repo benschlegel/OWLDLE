@@ -1,11 +1,9 @@
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import SocialsRow, { type SocialProps } from '@/components/ui/socials-row';
 import SocialsRowCopy from '@/components/ui/socials-row-copy';
-import { BotMessageSquareIcon, CoffeeIcon, Github, GithubIcon, Swords, TwitterIcon } from 'lucide-react';
+import { BotMessageSquareIcon, CoffeeIcon, Github, TwitterIcon } from 'lucide-react';
 import Link from 'next/link';
 
 const socials: SocialProps[] = [
