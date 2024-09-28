@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import { Suspense, } from 'react';
+import { Suspense } from 'react';
 
 export default function Header() {
 	const router = useRouter();
@@ -26,11 +26,16 @@ export default function Header() {
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
-				<HelpDialog>
+				<div className="flex gap-1">
+					<HelpDialog>
+						<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
+							<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+						</Button>
+					</HelpDialog>
 					<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-						<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+						<p className="text-2xl font-mono font-semibold tracking-wide">S1</p>
 					</Button>
-				</HelpDialog>
+				</div>
 				<div className="mb-1 flex items-center">
 					<h1
 						className="sm:text-4xl text-3xl font-bold text-center"

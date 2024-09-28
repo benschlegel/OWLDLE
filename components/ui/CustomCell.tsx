@@ -27,10 +27,7 @@ export default function CustomCell({ cellData, id, ignoreTabIndex, isSmall }: Pr
 							onMouseEnter={() => setOpen(true)}
 							onMouseLeave={() => setOpen(false)}
 							onTouchStart={() => setOpen(!open)}
-							onKeyDown={(e) => {
-								e.preventDefault();
-								e.key === 'Enter' && setOpen(!open);
-							}}>
+							aria-label="Open tooltip">
 							<p className="text-opacity-100 leading-4 text-sm">{cellData.text}</p>
 						</button>
 					) : (
@@ -43,10 +40,7 @@ export default function CustomCell({ cellData, id, ignoreTabIndex, isSmall }: Pr
 							onMouseEnter={() => setOpen(true)}
 							onMouseLeave={() => setOpen(false)}
 							onTouchStart={() => setOpen(!open)}
-							onKeyDown={(e) => {
-								e.preventDefault();
-								e.key === 'Enter' && setOpen(!open);
-							}}>
+							aria-label="Open tooltip">
 							<p className="text-opacity-100 leading-4 text-sm">{cellData.text}</p>
 						</button>
 					)}
