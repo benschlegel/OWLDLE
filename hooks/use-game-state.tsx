@@ -12,10 +12,11 @@ import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
 export default function useGameState() {
-	const [playerGuesses, _] = useContext(GuessContext);
+	const [playerGuesses, setPlayerGuesses] = useContext(GuessContext);
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
-	const [validatedData, setValidatedData] = useState<ValidateResponse>();
+	const [validatedData, setValidatedData] = useState<ValidateResponse | undefined>(undefined);
+	const [isRollback, setIsRollback] = useState(false);
 	const { toast } = useToast();
 	const plausible = usePlausible<PlausibleEvents>();
 
@@ -34,16 +35,17 @@ export default function useGameState() {
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
+		// Skip handling guess if playerGuesses changed due to rollback
+		if (isRollback === true) {
+			setIsRollback(false);
+			return;
+		}
+
 		// Ensure that the max guesses are respected
 		if (playerGuesses && playerGuesses.length > 0 && playerGuesses.length <= GAME_CONFIG.maxGuesses) {
 			handleGuess();
 		}
-
-		// Clean up state if guesses are reset
-		// if (playerGuesses.length === 0) {
-		// 	resetGameState();
-		// }
-	}, [playerGuesses]);
+	}, [playerGuesses, isRollback]);
 
 	const handleGuess = useCallback(async () => {
 		// Get current guess
@@ -87,13 +89,15 @@ export default function useGameState() {
 					.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: 'lost' } }));
 			}
 		} else {
-			// TODO: remove guess/find out why guess is added invisibly in this branch
+			// Guess could not be processed, remove last guess
+			setIsRollback(true);
+			setPlayerGuesses((old) => old.slice(0, -1));
 			toast({
 				title: 'Please try again',
 				description: 'Something went wrong, please try again',
 			});
 		}
-	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, plausible]);
+	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, plausible, setPlayerGuesses]);
 
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
