@@ -9,13 +9,13 @@ interface SeasonPageProps {
 }
 
 export default function SeasonPage({ params }: SeasonPageProps) {
-	const { dataset: season } = params;
-	const rootSlug = season ? season[0] : '/';
+	const { dataset } = params;
+	const rootSlug = dataset ? dataset[0] : '/';
 
 	// Check if route is root (/) or a valid season (e.g. /season1) and render game page
 	// If slug length is longer than 1, this means that a sub-route exists (e.g. /season1/abc), also invalid
-	if (season === undefined || validSeasons.includes(rootSlug)) {
-		console.log('Route: ', season);
+	if (dataset === undefined || validSeasons.includes(rootSlug)) {
+		console.log('Route: ', dataset);
 		return <GamePage slug={rootSlug} />;
 	}
 
