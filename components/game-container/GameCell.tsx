@@ -1,8 +1,9 @@
+'use client';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
 import type React from 'react';
-import type { PropsWithChildren } from 'react';
+import { useState, type PropsWithChildren } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	isLarge?: boolean;
@@ -43,6 +44,7 @@ export default function GameCell({
 	tooltipDescription,
 	tooltipGuess,
 }: PropsWithChildren<Props>) {
+	const [open, setOpen] = useState(false);
 	// Set background color based on correct value (gray if undefined, green if correct, red if incorrect)
 	let bgColor = 'bg-secondary';
 	if (isCorrect === true) {
@@ -61,13 +63,22 @@ export default function GameCell({
 	return (
 		<>
 			<TooltipProvider delayDuration={0}>
-				<Tooltip>
+				<Tooltip open={open}>
 					<TooltipTrigger asChild tabIndex={!ignoreTabIndex ? 0 : -1}>
-						<div className={cn(`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''}`, className)}>
+						<button
+							type="button"
+							className={cn(
+								`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''} cursor-default select-text`,
+								className
+							)}
+							onClick={() => setOpen(!open)}
+							onMouseEnter={() => setOpen(true)}
+							onMouseLeave={() => setOpen(false)}
+							onTouchStart={() => setOpen(!open)}>
 							{children}
-						</div>
+						</button>
 					</TooltipTrigger>
-					<TooltipContent className={tooltipClassname}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
+					<TooltipContent className={cn(bgColor, tooltipClassname, 'text-white')}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		</>
