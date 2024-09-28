@@ -123,7 +123,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 						</AccordionItem>
 					</Accordion>
 					<p className="scroll-m-20 text-base tracking-normal">
-						A correct guess will turn the field green while a wrong one turns it red. Use this as a hint when you make your next guess.
+						A correct guess will mark the field as green while a wrong one marks it red. Use this information when making your next guess.
 					</p>
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
