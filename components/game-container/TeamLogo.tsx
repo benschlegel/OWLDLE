@@ -40,10 +40,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 								onMouseEnter={() => setOpen(true)}
 								onMouseLeave={() => setOpen(false)}
 								onTouchStart={() => setOpen(!open)}
-								onKeyDown={(e) => {
-									e.preventDefault();
-									e.key === 'Enter' && setOpen(!open);
-								}}>
+								aria-label="Open tooltip">
 								<Image
 									src={team.imgUrl}
 									alt={`Logo for ${team.displayName}`}

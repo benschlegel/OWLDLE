@@ -17,10 +17,7 @@ const Tip = ({ content, children, className }: React.PropsWithChildren<{ content
 						onMouseEnter={() => setOpen(true)}
 						onMouseLeave={() => setOpen(false)}
 						onTouchStart={() => setOpen(!open)}
-						onKeyDown={(e) => {
-							e.preventDefault();
-							e.key === 'Enter' && setOpen(!open);
-						}}>
+						aria-label="Open tooltip">
 						{children}
 					</button>
 				</TooltipTrigger>
