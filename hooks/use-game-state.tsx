@@ -1,6 +1,8 @@
 import type { RowData } from '@/components/game-container/GameContainer';
+import { DatasetContext } from '@/context/DatasetContext';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
+import { type Dataset, DEFAULT_DATASET, getDataset } from '@/data/datasets';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
@@ -11,18 +13,32 @@ import type { GuessResponse, ValidateResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
-export default function useGameState() {
+type Props = {
+	slug: string;
+};
+
+export default function useGameState({ slug }: Props) {
 	const [playerGuesses, setPlayerGuesses] = useContext(GuessContext);
 	const [gameState, setGameState] = useContext(GameStateContext);
+	const [dataset, setDataset] = useContext(DatasetContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
 	const [validatedData, setValidatedData] = useState<ValidateResponse | undefined>(undefined);
 	const [isRollback, setIsRollback] = useState(false);
 	const { toast } = useToast();
 	const plausible = usePlausible<PlausibleEvents>();
 
+	// * Set global dataset if slug changes
+	useEffect(() => {
+		const newDataset = getDataset(slug as Dataset) ?? DEFAULT_DATASET;
+		setDataset(newDataset);
+	}, [slug, setDataset]);
+
 	// * Fetch correct guess + data from server
 	useEffect(() => {
-		fetch('/api/validate')
+		// Reset all guesses (in case dataset was changed)
+		resetGuesses();
+
+		fetch(`/api/validate?${dataset.dataset}`)
 			.then((response) => response.json())
 			.catch(() => {
 				toast({
@@ -31,8 +47,17 @@ export default function useGameState() {
 					variant: 'destructive',
 				});
 			})
-			.then((data) => setValidatedData(data));
-	}, [toast]);
+			.then((data) => {
+				console.log('New data: ', data);
+				setValidatedData(data);
+			});
+	}, [toast, dataset]);
+
+	const resetGuesses = useCallback(() => {
+		setIsRollback(true);
+		setPlayerGuesses([]);
+		setEvaluatedGuesses([]);
+	}, [setPlayerGuesses]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {

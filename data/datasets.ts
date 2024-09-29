@@ -13,9 +13,34 @@ export type DatasetMetadata = {
 	name: string;
 	year: string;
 	formattedName: string;
+	shorthand: string;
 };
 
 export const DATASETS: DatasetMetadata[] = [
-	{ dataset: 'season1', playerData: PLAYERS, teamData: TEAM_LOGOS_S1, teams: TEAMS, formattedName: 'Season 1 (2018)', name: 'Season 1', year: '2018' },
-	{ dataset: 'season2', playerData: PLAYERS, teamData: TEAM_LOGOS_S1, teams: TEAMS, formattedName: 'Season 2 (2019)', name: 'Season 2', year: '2019' },
+	{
+		dataset: 'season1',
+		playerData: PLAYERS,
+		teamData: TEAM_LOGOS_S1,
+		teams: TEAMS,
+		formattedName: 'Season 1 (2018)',
+		name: 'Season 1',
+		year: '2018',
+		shorthand: 'S1',
+	},
+	{
+		dataset: 'season2',
+		playerData: PLAYERS,
+		teamData: TEAM_LOGOS_S1,
+		teams: TEAMS,
+		formattedName: 'Season 2 (2019)',
+		name: 'Season 2',
+		year: '2019',
+		shorthand: 'S2',
+	},
 ];
+
+export const DEFAULT_DATASET = DATASETS[0];
+
+export function getDataset(datasetName: Dataset) {
+	return DATASETS.find((set) => set.dataset === datasetName);
+}

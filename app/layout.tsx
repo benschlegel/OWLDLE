@@ -7,6 +7,7 @@ import GameStateContextProvider from '@/context/GameStateContext';
 import { GAME_CONFIG } from '@/lib/config';
 import PlausibleProvider from 'next-plausible';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import DatasetContexttProvider from '@/context/DatasetContext';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -86,7 +87,7 @@ export default function RootLayout({
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<GuessContextProvider>
 						<GameStateContextProvider>
-							{children}
+							<DatasetContexttProvider>{children}</DatasetContexttProvider>
 							<SpeedInsights />
 						</GameStateContextProvider>
 					</GuessContextProvider>

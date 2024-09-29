@@ -5,8 +5,12 @@ import PlayerSearch from '@/components/game-container/search';
 import SearchDialog from '@/components/game-container/search-dialog';
 import useGameState from '@/hooks/use-game-state';
 
-export default function Game() {
-	const [evaluatedGuesses, gameState, validatedData] = useGameState();
+type Props = {
+	slug: string;
+};
+
+export default function Game({ slug }: Props) {
+	const [evaluatedGuesses, gameState, validatedData] = useGameState({ slug });
 
 	return (
 		<div className="pb-2">
