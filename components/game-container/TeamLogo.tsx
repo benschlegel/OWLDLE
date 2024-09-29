@@ -1,10 +1,11 @@
 'use client';
-import { TEAM_LOGOS_S1 } from '@/data/teams/logos';
+import { getTeamLogo } from '@/data/teams/logos';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
+import { DatasetContext } from '@/context/DatasetContext';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	teamName?: string;
@@ -14,7 +15,8 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false }: Props) {
 	const [open, setOpen] = useState(false);
-	const team = TEAM_LOGOS_S1.find((t) => t.teamName === teamName);
+	const [dataset, _] = useContext(DatasetContext);
+	const team = getTeamLogo(dataset.dataset, teamName ?? '');
 
 	if (!teamName || !team) return <></>;
 
