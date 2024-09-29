@@ -1,4 +1,5 @@
-import { countries } from '@/types/countries';
+import type { Dataset } from '@/data/datasets';
+import { countries, type CountryCode } from '@/types/countries';
 import { z } from 'zod';
 
 /**
@@ -69,3 +70,47 @@ export function getRegion(team: OWLTeam): Player['region'] {
 	if ((WESTERN as ReadonlyArray<string>).includes(team)) return 'PacificDivision';
 	return undefined;
 }
+
+// * Season 2
+
+const EASTERN_S2 = [
+	'AtlantaReign',
+	'ParisEternal',
+	'TorontoDefiant',
+	'WashingtonJustice',
+	'BostonUprising',
+	'FloridaMayhem',
+	'HoustonOutlaws',
+	'LondonSpitfire',
+	'NewYorkExcelsior',
+	'PhiladelphiaFusion',
+] as const;
+const WESTERN_S2 = [
+	'ChengduHunters',
+	'HangzhouSpark',
+	'GuangzhouCharge',
+	'Vancouver Titans',
+	'DallasFuel',
+	'LosAngelesGladiators',
+	'LosAngelesValiant',
+	'SanFranciscoShock',
+	'SeoulDynasty',
+	'ShanghaiDragons',
+] as const;
+
+const ALL_TEAMS = [
+	{ dataset: 'season1', data: [...EASTERN, ...WESTERN] },
+	{ dataset: 'season2', data: [...EASTERN_S2, ...WESTERN_S2] },
+] as const;
+
+export type TeamName<T extends Dataset = 'season1'> = Extract<(typeof ALL_TEAMS)[number], { dataset: T }>['data'][number];
+
+export type GenericPlayer<T extends Dataset = 'season1'> = {
+	name: string;
+	role: (typeof ROLES)[number];
+	country: CountryCode;
+	team: TeamName<T>;
+	region?: (typeof REGIONS)[number];
+	isFlex?: boolean;
+	id?: number;
+};
