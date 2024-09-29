@@ -1,4 +1,3 @@
-
 import type { GuessResponse } from '@/types/server';
 
 export type FormatConfig = {
@@ -30,6 +29,7 @@ export type FormatConfig = {
  * @returns a string formatted using emojis (🟥 🟩) + stats
  */
 export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl }: FormatConfig): string {
+	if (guesses.length === 0 || guesses === undefined) return '';
 	// TODO: add X to header if game was not completed successfully
 	// Add header
 	let result = `${gameName} ${gameIteration} ${guesses.length}/${maxGuesses}\n`;
