@@ -1,4 +1,4 @@
-import { countries, } from '@/types/countries';
+import { countries } from '@/types/countries';
 import { z } from 'zod';
 
 /**
@@ -17,6 +17,7 @@ type WesternTeam = (typeof WESTERN)[number];
 type OWLTeam = EasternTeam | WesternTeam;
 const REGIONS = ['AtlanticDivison', 'PacificDivision'] as const;
 
+// TODO: probably remove strong typing from teams
 export const playerSchema = z.object({
 	/**
 	 * Player name
