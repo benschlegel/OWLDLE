@@ -25,7 +25,7 @@ const WESTERN_S2 = [
 	'ChengduHunters',
 	'HangzhouSpark',
 	'GuangzhouCharge',
-	'Vancouver Titans',
+	'VancouverTitans',
 	'DallasFuel',
 	'LosAngelesGladiators',
 	'LosAngelesValiant',
