@@ -1,13 +1,14 @@
 import { PLAYERS } from '@/data/players/formattedPlayers';
 import { TEAM_LOGOS_S1, type TeamLogoData } from '@/data/teams/logos';
 import { TEAMS } from '@/data/teams/teams';
+import type { Player } from '@/types/players';
 
 const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
 export type Dataset = (typeof datasets)[number];
 
 export type DatasetMetadata = {
 	dataset: Dataset;
-	playerData: unknown[];
+	playerData: Player[];
 	teamData: TeamLogoData[];
 	teams: string[];
 	name: string;
@@ -29,7 +30,7 @@ export const DATASETS: DatasetMetadata[] = [
 	},
 	{
 		dataset: 'season2',
-		playerData: PLAYERS,
+		playerData: [PLAYERS[0], PLAYERS[3], PLAYERS[4], PLAYERS[5]],
 		teamData: TEAM_LOGOS_S1,
 		teams: TEAMS,
 		formattedName: 'Season 2 (2019)',

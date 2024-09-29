@@ -1,7 +1,8 @@
 'use client';
 
-import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, } from '@/components/ui/command';
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
@@ -16,9 +17,11 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 export default function SearchDialog({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
+	const [dataset, setDataset] = useContext(DatasetContext);
 	const [searchValue, setSearchValue] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
+	const players = dataset.playerData;
 
 	const [open, setOpen] = useState(false);
 
@@ -65,7 +68,7 @@ export default function SearchDialog({ className }: Props) {
 				<ScrollArea className="h-[17rem]">
 					<CommandEmpty>No results found.</CommandEmpty>
 					<CommandGroup heading="">
-						{PLAYERS.map((player) => {
+						{players.map((player) => {
 							return (
 								<CommandItem value={JSON.stringify(player)} key={`${player.name}-${player.team}`} onSelect={handleItemSubmit}>
 									<UserIcon className="mr-2 h-4 w-4" />
