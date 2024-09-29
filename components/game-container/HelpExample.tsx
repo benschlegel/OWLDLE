@@ -1,8 +1,8 @@
 import type { RowData } from '@/components/game-container/GameContainer';
 import GuessRow from '@/components/game-container/GuessRow';
-import { PLAYERS } from '@/data/players/formattedPlayers';
+import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 
-const player = PLAYERS[112];
+const player = PLAYERS_S1[112];
 const data: RowData = {
 	player: player,
 	guessResult: { isNameCorrect: false, isCountryCorrect: true, isRegionCorrect: false, isRoleCorrect: true, isTeamCorrect: false },

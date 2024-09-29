@@ -4,7 +4,7 @@ import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, C
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
-import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';

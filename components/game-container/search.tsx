@@ -3,7 +3,7 @@
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
-import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
+import { type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';

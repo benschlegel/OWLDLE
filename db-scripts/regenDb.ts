@@ -1,4 +1,4 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
+import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { addIteration, dropAll, generateBacklog, getAnswer, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
@@ -28,8 +28,8 @@ await insertAllPlayers(DATASET);
 await generateBacklog(GAME_CONFIG.backlogMaxSize, DATASET);
 
 // * Insert answers (players get re-rolled later to ensure unique)
-const randomPlayer = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
-const randomPlayer2 = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
+const randomPlayer = formattedToDbPlayer(PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)]);
+const randomPlayer2 = formattedToDbPlayer(PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)]);
 const curr = { player: randomPlayer, iteration: 1, nextReset: nextReset };
 await setCurrentAnswer(curr, DATASET);
 await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: nextNextReset }, DATASET);
