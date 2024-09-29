@@ -1,8 +1,8 @@
 import { test, expect, describe } from 'vitest';
-import { PLAYERS } from '@/data/players/formattedPlayers';
+import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 
 // Get the country and flag url from each player
-const playerCountries = PLAYERS.map((player) => ({ country: player.country, imgUrl: player.countryImg }));
+const playerCountries = PLAYERS_S1.map((player) => ({ country: player.country, imgUrl: player.countryImg }));
 
 // Test if all flags for countries that players are from are working
 describe('country flag logos loading', () => {

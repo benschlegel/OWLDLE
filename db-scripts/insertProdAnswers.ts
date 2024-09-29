@@ -1,11 +1,11 @@
-import { PLAYERS } from '@/data/players/formattedPlayers';
+import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { exit } from 'node:process';
 
 console.time('setCurrent');
-const randomPlayer = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
-const randomPlayer2 = formattedToDbPlayer(PLAYERS[Math.floor(Math.random() * PLAYERS.length)]);
+const randomPlayer = formattedToDbPlayer(PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)]);
+const randomPlayer2 = formattedToDbPlayer(PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)]);
 await setCurrentAnswer({ player: randomPlayer, iteration: 1, nextReset: getFormattedMidnightTmrw() }, 'OWL_season1');
 await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: getFormattedMidnightDayAfter() }, 'OWL_season1');
 console.timeEnd('setCurrent');

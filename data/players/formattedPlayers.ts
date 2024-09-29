@@ -32,18 +32,18 @@ const unsortedPlayers = s1Players.map((player: Player, index) => {
 });
 
 // use sort instead of toSorted to fix webpack error
-export const PLAYERS = unsortedPlayers.sort((a, b) => {
+export const PLAYERS_S1 = unsortedPlayers.sort((a, b) => {
 	// Sort all players by player name
 	return a.name.localeCompare(b.name, undefined, {
 		numeric: true,
 		sensitivity: 'base',
 	});
 });
-export type FormattedPlayer = (typeof PLAYERS)[number];
+export type FormattedPlayer = (typeof PLAYERS_S1)[number];
 
 /**
  * Returns random formatted player
  */
 export function getRandomPlayer() {
-	return PLAYERS[Math.floor(Math.random() * PLAYERS.length)];
+	return PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)];
 }
