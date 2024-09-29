@@ -15,7 +15,7 @@ export type DatasetMetadata = {
 	formattedName: string;
 };
 
-export const Datasets: DatasetMetadata[] = [
+export const DATASETS: DatasetMetadata[] = [
 	{ dataset: 'season1', playerData: PLAYERS, teamData: TEAM_LOGOS_S1, teams: TEAMS, formattedName: 'Season 1 (2018)', name: 'Season 1', year: '2018' },
 	{ dataset: 'season2', playerData: PLAYERS, teamData: TEAM_LOGOS_S1, teams: TEAMS, formattedName: 'Season 2 (2019)', name: 'Season 2', year: '2019' },
 ];

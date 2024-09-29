@@ -10,14 +10,22 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useCallback, useState } from 'react';
+import { DATASETS } from '@/data/datasets';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 
-export default function SeasonSelector() {
-	const [season, setSeason] = useState('season1');
+type Props = {
+	slug: string;
+};
+export default function SeasonSelector({ slug }: Props) {
+	const router = useRouter();
 
-	const handleChange = useCallback((value: string) => {
-		// TODO: implement
-	}, []);
+	const handleChange = useCallback(
+		(value: string) => {
+			router.replace(`/${value}`);
+		},
+		[router.replace]
+	);
 	return (
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
@@ -28,8 +36,12 @@ export default function SeasonSelector() {
 			<DropdownMenuContent className="px-1">
 				<DropdownMenuLabel>Select season</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuRadioGroup value={season} onValueChange={handleChange}>
-					<DropdownMenuRadioItem value="season1">Season 1 (2018)</DropdownMenuRadioItem>
+				<DropdownMenuRadioGroup value={slug} onValueChange={handleChange}>
+					{DATASETS.map((dataset) => (
+						<DropdownMenuRadioItem value={dataset.dataset} key={dataset.dataset}>
+							{dataset.formattedName}
+						</DropdownMenuRadioItem>
+					))}
 					<DropdownMenuItem disabled>More coming soon...</DropdownMenuItem>
 				</DropdownMenuRadioGroup>
 			</DropdownMenuContent>
