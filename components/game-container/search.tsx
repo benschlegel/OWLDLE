@@ -1,6 +1,7 @@
 'use client';
 
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
+import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
 import { type FormattedPlayer, PLAYERS } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
@@ -16,11 +17,13 @@ type SearchState = 'unfocused' | 'typing' | 'submitting';
 
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
+	const [dataset, setDataset] = useContext(DatasetContext);
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
 	const [searchState, setSearchState] = useState<SearchState>('unfocused');
 	const [searchValue, setSearchValue] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
+	const players = dataset.playerData;
 
 	const closeSearch = useCallback(() => {
 		// TODO: find better workaround
@@ -120,7 +123,7 @@ export default function PlayerSearch({ className }: Props) {
 				{/* <ScrollArea className="sm:h-[10rem] h-[15rem]"> */}
 				<CommandEmpty>No results found.</CommandEmpty>
 				<CommandGroup heading="">
-					{PLAYERS.map((player) => {
+					{players.map((player) => {
 						return (
 							<CommandItem
 								value={JSON.stringify(player)}
