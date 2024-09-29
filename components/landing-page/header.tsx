@@ -37,7 +37,7 @@ export default function Header({ slug }: Props) {
 							<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 						</Button>
 					</HelpDialog>
-					<SeasonSelector />
+					<SeasonSelector slug={slug} />
 				</div>
 				<div className="mb-1 flex items-center">
 					<h1
