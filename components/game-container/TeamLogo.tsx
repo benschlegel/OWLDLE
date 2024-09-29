@@ -34,7 +34,9 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 								backgroundColor: team.backgroundColor,
 								paddingBottom: '100%', // This creates the 1:1 aspect ratio
 							}}
-							tabIndex={useTabIndex ? 0 : -1}>
+							tabIndex={useTabIndex ? 0 : -1}
+							onFocus={() => setOpen(true)}
+							onBlur={() => setOpen(false)}>
 							<button
 								type="button"
 								className="absolute inset-0 flex justify-center items-center p-[0.35rem] cursor-default"
@@ -42,7 +44,8 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 								onMouseEnter={() => setOpen(true)}
 								onMouseLeave={() => setOpen(false)}
 								onTouchStart={() => setOpen(!open)}
-								aria-label="Open tooltip">
+								aria-label="Open tooltip"
+								tabIndex={-1}>
 								<Image
 									src={team.imgUrl}
 									alt={`Logo for ${team.displayName}`}
