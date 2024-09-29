@@ -19,6 +19,7 @@ type Props = {
 };
 export default function SeasonSelector({ slug }: Props) {
 	const router = useRouter();
+	const shorthand = DATASETS.find((dataset) => dataset.dataset === slug);
 
 	const handleChange = useCallback(
 		(value: string) => {
@@ -30,7 +31,7 @@ export default function SeasonSelector({ slug }: Props) {
 		<DropdownMenu>
 			<DropdownMenuTrigger asChild>
 				<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-					<p className="text-2xl font-mono font-semibold tracking-wide">S1</p>
+					<p className="text-2xl font-mono tracking-wide">{shorthand?.shorthand ?? 'S1'}</p>
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="px-1">

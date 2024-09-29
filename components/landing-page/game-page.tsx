@@ -14,7 +14,7 @@ export default function GamePage({ slug }: Props) {
 				<main className="w-[32rem]">
 					<Socials />
 					<Header slug={slug} />
-					<Game />
+					<Game slug={slug} />
 				</main>
 			</div>
 			<Toaster />
