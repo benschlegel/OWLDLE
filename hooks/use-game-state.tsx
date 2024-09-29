@@ -54,10 +54,11 @@ export default function useGameState({ slug }: Props) {
 	}, [toast, dataset]);
 
 	const resetGuesses = useCallback(() => {
+		setGameState('in-progress');
 		setIsRollback(true);
 		setPlayerGuesses([]);
 		setEvaluatedGuesses([]);
-	}, [setPlayerGuesses]);
+	}, [setPlayerGuesses, setGameState]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
