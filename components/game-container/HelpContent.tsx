@@ -8,11 +8,12 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
-import { ATLANTIC, PACIFIC } from '@/data/teams/teams';
+import { DatasetContext } from '@/context/DatasetContext';
+import { getAtlantic, getPacific } from '@/data/teams/teams';
 import type { ValidateResponse } from '@/types/server';
 import { CircleHelpIcon, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
@@ -51,7 +52,11 @@ function countdownRenderer({ days, hours, minutes, seconds, milliseconds, comple
 
 export default function HelpContent({ setIsOpen }: Props) {
 	const [nextReset, setNextReset] = useState<Date>();
+	const [dataset, _] = useContext(DatasetContext);
 	const [mounted, setMounted] = useState(false);
+
+	const atlanticTeams = getAtlantic(dataset.dataset);
+	const pacificTeams = getPacific(dataset.dataset);
 
 	useEffect(() => {
 		async function fetchReset() {
@@ -140,7 +145,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								Pacific Division
 							</code>
-							. Season 1 had the following teams:
+							. {dataset.name} had the following teams:
 						</p>
 						<div className="flex flex-col gap-3">
 							<div className="flex flex-col">
@@ -149,7 +154,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 									<h3 className="">Atlantic Division</h3>
 								</div>
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-									{ATLANTIC.map((team) => (
+									{atlanticTeams?.map((team) => (
 										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
 											<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
 										</div>
@@ -162,7 +167,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 									<h3 className="">Pacific Division</h3>
 								</div>
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-									{PACIFIC.map((team) => (
+									{pacificTeams?.map((team) => (
 										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
 											<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
 										</div>
