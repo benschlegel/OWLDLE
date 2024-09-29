@@ -1,5 +1,6 @@
 import { s1Players } from '@/data/players/players';
-import { getRegion, type Player } from '@/types/players';
+import { getRegion } from '@/data/teams/teams';
+import type { Player } from '@/types/players';
 
 type CustomFlag = { country: Player['country']; customImg: string };
 
