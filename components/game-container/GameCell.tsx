@@ -75,7 +75,9 @@ export default function GameCell({
 							onMouseEnter={() => setOpen(true)}
 							onMouseLeave={() => setOpen(false)}
 							onTouchStart={() => setOpen(!open)}
-							aria-label="Open tooltip">
+							aria-label="Open tooltip"
+							onFocus={() => setOpen(true)}
+							onBlur={() => setOpen(false)}>
 							{children}
 						</button>
 					</TooltipTrigger>
