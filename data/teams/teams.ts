@@ -90,6 +90,24 @@ const WESTERN_S5 = [
 	'WashingtonJustice',
 ] as const;
 
+const EASTERN_S6 = ['DallasFuel', 'GuangzhouCharge', 'HangzhouSpark', 'SeoulDynasty', 'SeoulInfernal', 'ShanghaiDragons'] as const;
+
+const WESTERN_S6 = [
+	'AtlantaReign',
+	'BostonUprising',
+	'FloridaMayhem',
+	'HoustonOutlaws',
+	'LondonSpitfire',
+	'LosAngelesGladiators',
+	'LosAngelesValiant',
+	'NewYorkExcelsior',
+	'ParisEternal',
+	'SanFranciscoShock',
+	'TorontoDefiant',
+	'VancouverTitans',
+	'WashingtonJustice',
+] as const;
+
 // * Combine data
 
 const ALL_EASTERN = [
@@ -98,6 +116,7 @@ const ALL_EASTERN = [
 	{ dataset: 'season3', data: EASTERN_S2 },
 	{ dataset: 'season4', data: EASTERN_S4 },
 	{ dataset: 'season5', data: EASTERN_S5 },
+	{ dataset: 'season6', data: EASTERN_S6 },
 ] as const;
 
 const ALL_WESTERN = [
@@ -106,6 +125,7 @@ const ALL_WESTERN = [
 	{ dataset: 'season3', data: WESTERN_S2 },
 	{ dataset: 'season4', data: WESTERN_S4 },
 	{ dataset: 'season5', data: WESTERN_S5 },
+	{ dataset: 'season6', data: WESTERN_S6 },
 ] as const;
 
 export const ALL_TEAMS = [
@@ -114,6 +134,8 @@ export const ALL_TEAMS = [
 	{ dataset: 'season3', data: [...EASTERN_S2, ...WESTERN_S2] },
 	{ dataset: 'season4', data: [...EASTERN_S4, ...WESTERN_S4] },
 	{ dataset: 'season5', data: [...EASTERN_S5, ...WESTERN_S5] },
+	{ dataset: 'season5', data: [...EASTERN_S5, ...WESTERN_S5] },
+	{ dataset: 'season6', data: [...EASTERN_S6, ...WESTERN_S6] },
 ] as const;
 
 export type TeamName<T extends Dataset = 'season1'> = Extract<(typeof ALL_TEAMS)[number], { dataset: T }>['data'][number];

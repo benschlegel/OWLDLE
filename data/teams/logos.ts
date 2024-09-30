@@ -141,6 +141,14 @@ const teamLogosS3: Partial<TeamLogoData<'season3'>>[] = [
 	},
 ];
 
+const teamLogosS5: Partial<TeamLogoData<'season4'>>[] = [
+	{
+		teamName: 'LosAngelesGladiators',
+		displayName: 'Los Angeles Gladiators',
+		backgroundColor: '#60269e',
+	},
+];
+
 export const TEAM_LOGOS_S1: TeamLogoData[] = teamLogosS1.map(
 	(team) => ({ ...team, imgUrl: `/teams/s1/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData
 );
@@ -158,6 +166,12 @@ for (const logo of teamLogosS3) {
 	if (oldLogoIndex !== -1) {
 		TEAM_LOGOS_S3[oldLogoIndex] = { ...TEAM_LOGOS_S3[oldLogoIndex], ...logo, imgUrl: `/teams/s3/${logo.teamName}.${GAME_CONFIG.teamLogoImgExtension}` };
 	}
+}
+
+const TEAM_LOGOS_S5 = [...TEAM_LOGOS_S3];
+const oldGlads = TEAM_LOGOS_S5.find((l) => l.teamName === teamLogosS5[0].teamName);
+if (oldGlads) {
+	oldGlads.backgroundColor = teamLogosS5[0].backgroundColor ?? '#fff';
 }
 
 type LogoData<T extends Dataset> = {
@@ -178,6 +192,7 @@ export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season2', data: TEAM_LOGOS_S2 },
 	{ dataset: 'season3', data: TEAM_LOGOS_S3 },
 	{ dataset: 'season4', data: TEAM_LOGOS_S3 as unknown[] as TeamLogoData<'season4'>[] },
+	{ dataset: 'season5', data: TEAM_LOGOS_S5 as unknown[] as TeamLogoData<'season5'>[] },
 ] as const;
 
 export function getTeamLogos(dataset: Dataset) {
