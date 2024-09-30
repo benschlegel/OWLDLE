@@ -177,6 +177,7 @@ export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },
 	{ dataset: 'season2', data: TEAM_LOGOS_S2 },
 	{ dataset: 'season3', data: TEAM_LOGOS_S3 },
+	{ dataset: 'season4', data: TEAM_LOGOS_S3 as unknown[] as TeamLogoData<'season4'>[] },
 ] as const;
 
 export function getTeamLogos(dataset: Dataset) {
