@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
 
 		// Try to parse request
 		const parsedBody = await req.json();
-		const playerRes = playerSchema.safeParse(parsedBody);
+		const season1Schema = playerSchema('season1');
+		const playerRes = season1Schema.safeParse(parsedBody);
 
 		// Error handling
 		if (!playerRes.success) {

@@ -85,6 +85,10 @@ async function extractPlayers() {
 		console.log('Players data has been written to players.json');
 		console.log('Found: ', players.length);
 		console.timeEnd('parse');
+
+		const valueArr = players.map((item) => item.name);
+		const isDuplicate = valueArr.some((item, idx) => valueArr.indexOf(item) !== idx);
+		console.log('Found duplicates: ', isDuplicate);
 	} catch (error) {
 		console.error('Error fetching or parsing the data:', error);
 	}
