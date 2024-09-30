@@ -1,5 +1,5 @@
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
-import { PLAYERS_S2 } from '@/data/players/players';
+import { s2Players } from '@/data/players/players';
 import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import type { Player } from '@/types/players';
@@ -39,7 +39,7 @@ export const DATASETS: CombinedDatasetMetadata[] = [
 	},
 	{
 		dataset: 'season2',
-		playerData: PLAYERS_S2,
+		playerData: s2Players,
 		teamData: LOGOS[1].data,
 		teams: ALL_TEAMS[1].data,
 		formattedName: 'Season 2 (2019)',
