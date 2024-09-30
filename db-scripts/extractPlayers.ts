@@ -10,8 +10,8 @@ type PlayerData = {
 	team: string;
 };
 
-const url = 'https://liquipedia.net/overwatch/Overwatch_League/2019';
-
+const url = 'https://liquipedia.net/overwatch/Overwatch_League/2018';
+const blacklist = ['sinatraa'];
 console.time('parse');
 
 // Function to fetch and extract player data
@@ -23,9 +23,9 @@ async function extractPlayers() {
 		// Load the HTML into cheerio for parsing
 		const $ = cheerio.load(data);
 
-		// Division ids/selectors
+		// Division ids/selectors (Only select Atlantic because Pacific sibling will be automatically selected, Specify Atlantic_Division and _Conference, because 2020 season has a different id)
 		// Could also select by <span id="Participants"> and select h3 sibling children
-		const divisions = ['Atlantic_Division', 'Pacific_Division', 'Atlantic_Conference', 'Pacific_Conference'];
+		const divisions = ['Atlantic_Division', 'Atlantic_Conference'];
 
 		const players: PlayerData[] = [];
 
@@ -57,7 +57,7 @@ async function extractPlayers() {
 						const country = row.find('td span a img').attr('alt') || 'Unknown';
 
 						// If a player's name exists, add them to the players array
-						if (name && role !== 'Unknown') {
+						if (name && role !== 'Unknown' && !blacklist.includes(name)) {
 							// * Parse data
 							let parsedRole = role;
 							if (parsedRole === 'DPS') {
