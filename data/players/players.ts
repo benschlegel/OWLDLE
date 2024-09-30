@@ -149,7 +149,7 @@ export const s2Players: GenericPlayer<'season2'>[] = [
 	{ name: 'Dogman', country: 'US', role: 'Support', team: 'AtlantaReign' },
 	{ name: 'FunnyAstro', country: 'UK', role: 'Support', team: 'AtlantaReign' },
 
-	{ name: 'Colourhex', country: 'AU', role: 'Damage', team: 'BostonUprising' },
+	{ name: 'Colourhex', country: 'NZ', role: 'Damage', team: 'BostonUprising' },
 	{ name: 'Stellar', country: 'KR', role: 'Damage', team: 'BostonUprising' },
 	{ name: 'blasé', country: 'US', role: 'Damage', team: 'BostonUprising', isFlex: true },
 	{ name: 'rCk', country: 'FI', role: 'Tank', team: 'BostonUprising' },

@@ -1,3 +1,4 @@
+import { getCountryAbbreviation } from '@/types/countries';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import fs from 'node:fs';
@@ -10,6 +11,8 @@ type PlayerData = {
 };
 
 const url = 'https://liquipedia.net/overwatch/Overwatch_League/2020';
+
+console.time('parse');
 
 // Function to fetch and extract player data
 async function extractPlayers() {
@@ -52,26 +55,35 @@ async function extractPlayers() {
 							const country = row.find('td span a img').attr('alt') || 'Unknown';
 
 							// If a player's name exists, add them to the players array
-							if (name) {
+							if (name && role !== 'Unknown') {
+								// * Parse data
+								let parsedRole = role;
+								if (parsedRole === 'DPS') {
+									parsedRole = 'Damage';
+								}
+
+								const parsedCountry = getCountryAbbreviation(country) ?? 'Unknown';
+								// Remove whitespaces from team name
+								const parsedTeamName = teamName.replaceAll(' ', '');
 								players.push({
 									name,
-									country,
-									role,
-									team: teamName,
+									country: parsedCountry,
+									role: parsedRole,
+									team: parsedTeamName,
 								});
 							}
 						});
 				});
 		}
+		console.timeEnd('parse');
 
 		// Write the players array to a JSON file
-		const filteredPlayers = players.filter((p) => p.role !== 'Unknown');
-		fs.writeFileSync('players.json', JSON.stringify(filteredPlayers, null, 2));
+		fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
 
 		// Log success and output the players
 		console.log('Players data has been written to players.json');
-		console.log(filteredPlayers);
-		console.log('Found: ', filteredPlayers.length);
+		console.log(players);
+		console.log('Found: ', players.length);
 	} catch (error) {
 		console.error('Error fetching or parsing the data:', error);
 	}
