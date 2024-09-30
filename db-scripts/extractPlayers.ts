@@ -1,16 +1,36 @@
+import type { Dataset } from '@/data/datasets';
 import { getCountryAbbreviation } from '@/types/countries';
+import { playerSchema } from '@/types/players';
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 import fs from 'node:fs';
+import { exit } from 'node:process';
 
 type PlayerData = {
 	name: string;
 	country: string;
 	role: string;
 	team: string;
+	isFlex?: boolean;
 };
 
-const url = 'https://liquipedia.net/overwatch/Overwatch_League/2018';
+type MappedDataset = {
+	dataset: Dataset;
+	url: string;
+};
+
+const mappedDatasets: MappedDataset[] = [
+	{ dataset: 'season1', url: 'https://liquipedia.net/overwatch/Overwatch_League/2018' },
+	{ dataset: 'season2', url: 'https://liquipedia.net/overwatch/Overwatch_League/2019' },
+	{ dataset: 'season3', url: 'https://liquipedia.net/overwatch/Overwatch_League/2020' },
+	{ dataset: 'season4', url: 'https://liquipedia.net/overwatch/Overwatch_League/2021' },
+	{ dataset: 'season5', url: 'https://liquipedia.net/overwatch/Overwatch_League/2022' },
+	{ dataset: 'season6', url: 'https://liquipedia.net/overwatch/Overwatch_League/2023' },
+];
+
+const DATASET: Dataset = 'season2';
+
+const url = mappedDatasets.find((d) => d.dataset === DATASET)?.url ?? mappedDatasets[0].dataset;
 const blacklist = ['sinatraa'];
 console.time('parse');
 
@@ -67,15 +87,35 @@ async function extractPlayers() {
 							const parsedCountry = getCountryAbbreviation(country) ?? 'Unknown';
 							// Remove whitespaces from team name
 							const parsedTeamName = teamName.replaceAll(' ', '');
-							players.push({
+
+							const parsedPlayer: PlayerData = {
 								name,
 								country: parsedCountry,
 								role: parsedRole,
 								team: parsedTeamName,
-							});
+							};
+
+							if (parsedRole === 'Flex') {
+								parsedPlayer.role = 'Tank';
+								parsedPlayer.isFlex = true;
+							}
+							players.push(parsedPlayer);
 						}
 					});
 				});
+		}
+
+		// * Validate data
+		const validatePlayers = playerSchema(DATASET);
+		for (const player of players) {
+			const playerRes = validatePlayers.safeParse(player);
+
+			// Error handling
+			if (!playerRes.success) {
+				const errMessage = playerRes.error.errors.map((err) => `${err.path}: ${err.message},`);
+				console.error(`Invalid Player. Errors: {\n${errMessage.join('\n')}\n}`);
+				exit(1);
+			}
 		}
 
 		// Write the players array to a JSON file
