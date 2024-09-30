@@ -44,13 +44,3 @@ export const playerSchema = <T extends Dataset = 'season1'>(season: T) =>
 		 */
 		id: z.number().optional(),
 	});
-
-export type GenericPlayer<T extends Dataset = 'season1'> = {
-	name: string;
-	role: (typeof ROLES)[number];
-	country: CountryCode;
-	team: TeamName<T>;
-	region?: (typeof REGIONS)[number];
-	isFlex?: boolean;
-	id?: number;
-};
