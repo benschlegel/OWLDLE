@@ -28,6 +28,7 @@ const mappedDatasets: MappedDataset[] = [
 	{ dataset: 'season6', url: 'https://liquipedia.net/overwatch/Overwatch_League/2023' },
 ];
 
+// ! Change this value for different script output
 const DATASET: Dataset = 'season2';
 
 const url = mappedDatasets.find((d) => d.dataset === DATASET)?.url ?? mappedDatasets[0].dataset;
