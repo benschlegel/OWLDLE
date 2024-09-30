@@ -75,15 +75,14 @@ async function extractPlayers() {
 						});
 				});
 		}
-		console.timeEnd('parse');
 
 		// Write the players array to a JSON file
-		fs.writeFileSync('players.json', JSON.stringify(players, null, 2));
+		fs.writeFileSync('players.json', JSON.stringify(players));
 
 		// Log success and output the players
 		console.log('Players data has been written to players.json');
-		console.log(players);
 		console.log('Found: ', players.length);
+		console.timeEnd('parse');
 	} catch (error) {
 		console.error('Error fetching or parsing the data:', error);
 	}
