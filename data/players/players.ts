@@ -136,7 +136,7 @@ export const s1Players: Player[] = [
 	{ name: 'xQc', country: 'CA', role: 'Tank', team: 'DallasFuel' },
 ] as const;
 
-export const PLAYERS_S2: Player<'season2'>[] = [
+export const s2Players: Player<'season2'>[] = [
 	// Eastern teams
 	{ name: 'babybay', country: 'US', role: 'Damage', team: 'AtlantaReign' },
 	{ name: 'Erster', country: 'KR', role: 'Damage', team: 'AtlantaReign' },
