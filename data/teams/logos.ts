@@ -146,29 +146,38 @@ export const TEAM_LOGOS_S1: TeamLogoData[] = teamLogosS1.map(
 );
 
 // Add new logos and combine with old ones for full season 2 team logos
-const logosS2: TeamLogoData[] = teamLogosS2.map(
-	(team) => ({ ...team, imgUrl: `/teams/s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData
+const logosS2: TeamLogoData<'season2'>[] = teamLogosS2.map(
+	(team) => ({ ...team, imgUrl: `/teams/s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData<'season2'>
 );
-const TEAM_LOGOS_S2: TeamLogoData[] = [...TEAM_LOGOS_S1, ...logosS2];
+const TEAM_LOGOS_S2: TeamLogoData<'season2'>[] = [...(TEAM_LOGOS_S1 as unknown[] as TeamLogoData<'season2'>[]), ...logosS2];
 
 // Copy old logos, update to new colors/pictures
-const logosS3Base = [...(TEAM_LOGOS_S2 as unknown as TeamLogoData<'season3'>[])];
+const TEAM_LOGOS_S3 = [...(TEAM_LOGOS_S2 as unknown as TeamLogoData<'season3'>[])];
 for (const logo of teamLogosS3) {
-	const oldLogoIndex = logosS3Base.findIndex((l) => l.teamName === logo.teamName);
+	const oldLogoIndex = TEAM_LOGOS_S3.findIndex((l) => l.teamName === logo.teamName);
 	if (oldLogoIndex !== -1) {
-		logosS3Base[oldLogoIndex] = { ...logosS3Base[oldLogoIndex], ...logo, imgUrl: `/teams/s3/${logo.teamName}.${GAME_CONFIG.teamLogoImgExtension}` };
+		TEAM_LOGOS_S3[oldLogoIndex] = { ...TEAM_LOGOS_S3[oldLogoIndex], ...logo, imgUrl: `/teams/s3/${logo.teamName}.${GAME_CONFIG.teamLogoImgExtension}` };
 	}
 }
 
-type LogoData = {
-	dataset: Dataset;
-	data: TeamLogoData[];
+type LogoData<T extends Dataset> = {
+	dataset: T;
+	data: TeamLogoData<T>[];
 };
 
-export const LOGOS: LogoData[] = [
+export type CombinedLogoData =
+	| LogoData<'season1'>
+	| LogoData<'season2'>
+	| LogoData<'season3'>
+	| LogoData<'season4'>
+	| LogoData<'season5'>
+	| LogoData<'season6'>;
+
+export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },
 	{ dataset: 'season2', data: TEAM_LOGOS_S2 },
-];
+	{ dataset: 'season3', data: TEAM_LOGOS_S3 },
+] as const;
 
 export function getTeamLogos(dataset: Dataset) {
 	return LOGOS.find((l) => l.dataset === dataset)?.data;

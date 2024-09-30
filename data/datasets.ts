@@ -1,6 +1,6 @@
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { PLAYERS_S2 } from '@/data/players/players';
-import { LOGOS, type TeamLogoData } from '@/data/teams/logos';
+import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import type { Player } from '@/types/players';
 
@@ -10,7 +10,7 @@ export type Dataset = (typeof datasets)[number];
 export type DatasetMetadata<T extends Dataset> = {
 	dataset: T;
 	playerData: Player<T>[];
-	teamData: TeamLogoData[];
+	teamData: CombinedLogoData['data'];
 	teams: readonly string[];
 	name: string;
 	year: string;
