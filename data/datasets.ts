@@ -2,14 +2,14 @@ import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { PLAYERS_S2 } from '@/data/players/players';
 import { LOGOS, type TeamLogoData } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
-import type { GenericPlayer } from '@/types/players';
+import type { Player } from '@/types/players';
 
 const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
 export type Dataset = (typeof datasets)[number];
 
 export type DatasetMetadata<T extends Dataset> = {
 	dataset: T;
-	playerData: GenericPlayer<T>[];
+	playerData: Player<T>[];
 	teamData: TeamLogoData[];
 	teams: readonly string[];
 	name: string;
