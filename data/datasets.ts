@@ -18,7 +18,7 @@ export type DatasetMetadata<T extends Dataset> = {
 	shorthand: string;
 };
 
-type CombinedDatasetMetadata =
+export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season1'>
 	| DatasetMetadata<'season2'>
 	| DatasetMetadata<'season3'>
