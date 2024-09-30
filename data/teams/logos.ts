@@ -122,6 +122,25 @@ const teamLogosS2: Partial<TeamLogoData<'season2'>>[] = [
 	},
 ];
 
+const teamLogosS3: Partial<TeamLogoData<'season3'>>[] = [
+	{
+		teamName: 'FloridaMayhem',
+		displayName: 'Florida Mayhem',
+		backgroundColor: '#3db2e3',
+		useDarkForeground: true,
+	},
+	{
+		teamName: 'SanFranciscoShock',
+		displayName: 'San Francisco Shock',
+		backgroundColor: '#000',
+	},
+	{
+		teamName: 'LosAngelesValiant',
+		displayName: 'Los Angeles Valiant',
+		backgroundColor: '#1888c6',
+	},
+];
+
 export const TEAM_LOGOS_S1: TeamLogoData[] = teamLogosS1.map(
 	(team) => ({ ...team, imgUrl: `/teams/s1/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData
 );
@@ -131,6 +150,15 @@ const logosS2: TeamLogoData[] = teamLogosS2.map(
 	(team) => ({ ...team, imgUrl: `/teams/s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData
 );
 const TEAM_LOGOS_S2: TeamLogoData[] = [...TEAM_LOGOS_S1, ...logosS2];
+
+// Copy old logos, update to new colors/pictures
+const logosS3Base = [...(TEAM_LOGOS_S2 as unknown as TeamLogoData<'season3'>[])];
+for (const logo of teamLogosS3) {
+	const oldLogoIndex = logosS3Base.findIndex((l) => l.teamName === logo.teamName);
+	if (oldLogoIndex !== -1) {
+		logosS3Base[oldLogoIndex] = { ...logosS3Base[oldLogoIndex], ...logo, imgUrl: `/teams/s3/${logo.teamName}.${GAME_CONFIG.teamLogoImgExtension}` };
+	}
+}
 
 type LogoData = {
 	dataset: Dataset;
