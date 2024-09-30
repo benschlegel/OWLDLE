@@ -57,7 +57,7 @@ export default function GameCell({
 	let tooltip = isCorrect === undefined ? tooltipDescription : tooltipGuess;
 	if (tooltipGuess === undefined && isCorrect !== undefined) {
 		const prefix = !isCorrect ? 'Incorrect' : 'Correct';
-		tooltip = `${prefix} ${tooltipDescription}${tooltipValue ? ` (${splitCapitalization(tooltipValue)})` : ''}`;
+		tooltip = `${prefix} ${tooltipDescription}${tooltipValue ? ` (${isLarge === false ? splitCapitalization(tooltipValue) : tooltipValue})` : ''}`;
 	}
 
 	return (
