@@ -171,7 +171,9 @@ You should now see the updated report under `tests/report.json`.
 
 ## About
 
-Docs coming soon
+Docs coming soon.
+
+Not affiliated with Blizzard, data from Liquipedia.
 
 ## Sponsor me
 If you like this project, you can support me here
