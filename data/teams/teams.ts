@@ -34,21 +34,26 @@ const WESTERN_S2 = [
 	'ShanghaiDragons',
 ] as const;
 
+// Season 3 same teams/split as S2
+
 // * Combine data
 
 const ALL_EASTERN = [
 	{ dataset: 'season1', data: EASTERN },
 	{ dataset: 'season2', data: EASTERN_S2 },
+	{ dataset: 'season3', data: EASTERN_S2 },
 ] as const;
 
 const ALL_WESTERN = [
 	{ dataset: 'season1', data: WESTERN },
 	{ dataset: 'season2', data: WESTERN_S2 },
+	{ dataset: 'season3', data: WESTERN_S2 },
 ] as const;
 
 export const ALL_TEAMS = [
 	{ dataset: 'season1', data: [...EASTERN, ...WESTERN] },
 	{ dataset: 'season2', data: [...EASTERN_S2, ...WESTERN_S2] },
+	{ dataset: 'season3', data: [...EASTERN_S2, ...WESTERN_S2] },
 ] as const;
 
 export type TeamName<T extends Dataset = 'season1'> = Extract<(typeof ALL_TEAMS)[number], { dataset: T }>['data'][number];
