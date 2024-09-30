@@ -37,24 +37,83 @@ const WESTERN_S2 = [
 
 // Season 3 same teams/split as S2
 
+// Season 4
+const EASTERN_S4 = [
+	'ChengduHunters',
+	'GuangzhouCharge',
+	'HangzhouSpark',
+	'NewYorkExcelsior',
+	'LosAngelesValiant',
+	'PhiladelphiaFusion',
+	'SeoulDynasty',
+	'ShanghaiDragons',
+] as const;
+
+const WESTERN_S4 = [
+	'AtlantaReign',
+	'BostonUprising',
+	'DallasFuel',
+	'FloridaMayhem',
+	'HoustonOutlaws',
+	'LondonSpitfire',
+	'LosAngelesGladiators',
+	'ParisEternal',
+	'SanFranciscoShock',
+	'TorontoDefiant',
+	'VancouverTitans',
+	'WashingtonJustice',
+] as const;
+
+const EASTERN_S5 = [
+	'ChengduHunters',
+	'GuangzhouCharge',
+	'HangzhouSpark',
+	'LosAngelesValiant',
+	'PhiladelphiaFusion',
+	'SeoulDynasty',
+	'ShanghaiDragons',
+] as const;
+
+const WESTERN_S5 = [
+	'AtlantaReign',
+	'BostonUprising',
+	'DallasFuel',
+	'FloridaMayhem',
+	'HoustonOutlaws',
+	'LondonSpitfire',
+	'LosAngelesGladiators',
+	'NewYorkExcelsior',
+	'ParisEternal',
+	'SanFranciscoShock',
+	'TorontoDefiant',
+	'VancouverTitans',
+	'WashingtonJustice',
+] as const;
+
 // * Combine data
 
 const ALL_EASTERN = [
 	{ dataset: 'season1', data: EASTERN },
 	{ dataset: 'season2', data: EASTERN_S2 },
 	{ dataset: 'season3', data: EASTERN_S2 },
+	{ dataset: 'season4', data: EASTERN_S4 },
+	{ dataset: 'season5', data: EASTERN_S5 },
 ] as const;
 
 const ALL_WESTERN = [
 	{ dataset: 'season1', data: WESTERN },
 	{ dataset: 'season2', data: WESTERN_S2 },
 	{ dataset: 'season3', data: WESTERN_S2 },
+	{ dataset: 'season4', data: WESTERN_S4 },
+	{ dataset: 'season5', data: WESTERN_S5 },
 ] as const;
 
 export const ALL_TEAMS = [
 	{ dataset: 'season1', data: [...EASTERN, ...WESTERN] },
 	{ dataset: 'season2', data: [...EASTERN_S2, ...WESTERN_S2] },
 	{ dataset: 'season3', data: [...EASTERN_S2, ...WESTERN_S2] },
+	{ dataset: 'season4', data: [...EASTERN_S4, ...WESTERN_S4] },
+	{ dataset: 'season5', data: [...EASTERN_S5, ...WESTERN_S5] },
 ] as const;
 
 export type TeamName<T extends Dataset = 'season1'> = Extract<(typeof ALL_TEAMS)[number], { dataset: T }>['data'][number];
