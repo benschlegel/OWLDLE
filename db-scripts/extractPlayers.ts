@@ -10,7 +10,7 @@ type PlayerData = {
 	team: string;
 };
 
-const url = 'https://liquipedia.net/overwatch/Overwatch_League/2020';
+const url = 'https://liquipedia.net/overwatch/Overwatch_League/2019';
 
 console.time('parse');
 
@@ -23,13 +23,14 @@ async function extractPlayers() {
 		// Load the HTML into cheerio for parsing
 		const $ = cheerio.load(data);
 
-		// Select the Atlantic Conference sections
-		const atlanticConferenceSections = ['Atlantic_Conference'];
+		// Division ids/selectors
+		// Could also select by <span id="Participants"> and select h3 sibling children
+		const divisions = ['Atlantic_Division', 'Pacific_Division', 'Atlantic_Conference', 'Pacific_Conference'];
 
 		const players: PlayerData[] = [];
 
 		// Loop through each section and extract player details
-		for (const sectionId of atlanticConferenceSections) {
+		for (const sectionId of divisions) {
 			// Find the parent div and loop through all teamcards
 			$(`#${sectionId}`)
 				.parent()
@@ -39,40 +40,41 @@ async function extractPlayers() {
 					// Extract the team name from the center tag just before the .teamcard-inner div
 					const teamName = $(this).parent().find('center a').text().trim();
 
-					// Loop through each player row in the table
-					$(this)
-						.find('table.wikitable tbody tr')
-						.each((index, element) => {
-							const row = $(element);
+					// Only select the table with [data-toggle-area-content="1"] (this one actually contains the data, not images, etc)
+					const validTable = $(this).find('table[data-toggle-area-content="1"]');
 
-							// Extract the role from the image's alt attribute in the first <th> cell
-							const role = row.find('th img').attr('alt') || 'Unknown';
+					// Loop through each player row in the valid table
+					validTable.find('tbody tr').each((index, element) => {
+						const row = $(element);
 
-							// Extract the player's name from the second <td> cell
-							const name = row.find('td:nth-child(2) a').text().trim();
+						// Extract the role from the image's alt attribute in the first <th> cell
+						const role = row.find('th img').attr('alt') || 'Unknown';
 
-							// Extract the player's country from the title attribute of the <a> tag inside the flag span
-							const country = row.find('td span a img').attr('alt') || 'Unknown';
+						// Extract the player's name from the second <td> cell
+						const name = row.find('td:nth-child(2) a').text().trim();
 
-							// If a player's name exists, add them to the players array
-							if (name && role !== 'Unknown') {
-								// * Parse data
-								let parsedRole = role;
-								if (parsedRole === 'DPS') {
-									parsedRole = 'Damage';
-								}
+						// Extract the player's country from the title attribute of the <a> tag inside the flag span
+						const country = row.find('td span a img').attr('alt') || 'Unknown';
 
-								const parsedCountry = getCountryAbbreviation(country) ?? 'Unknown';
-								// Remove whitespaces from team name
-								const parsedTeamName = teamName.replaceAll(' ', '');
-								players.push({
-									name,
-									country: parsedCountry,
-									role: parsedRole,
-									team: parsedTeamName,
-								});
+						// If a player's name exists, add them to the players array
+						if (name && role !== 'Unknown') {
+							// * Parse data
+							let parsedRole = role;
+							if (parsedRole === 'DPS') {
+								parsedRole = 'Damage';
 							}
-						});
+
+							const parsedCountry = getCountryAbbreviation(country) ?? 'Unknown';
+							// Remove whitespaces from team name
+							const parsedTeamName = teamName.replaceAll(' ', '');
+							players.push({
+								name,
+								country: parsedCountry,
+								role: parsedRole,
+								team: parsedTeamName,
+							});
+						}
+					});
 				});
 		}
 
