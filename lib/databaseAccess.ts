@@ -1,3 +1,4 @@
+import type { Dataset } from '@/data/datasets';
 import { getRandomPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
@@ -9,7 +10,6 @@ import type {
 	DbAnswerPrefix,
 	DbFormattedPlayers,
 	DbPlayer,
-	DbDatasetID,
 	DbFeedback,
 	DbIteration,
 	DbLoggedGame,
@@ -35,7 +35,7 @@ export const dbName = !useDevDatabase ? PROD_NAME : DEV_NAME;
 export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
 export const backlogCollectionName = 'backlog';
-const season1ID: DbDatasetID = 'OWL_season1';
+const season1ID: Dataset = 'season1';
 const gameLogs = 'game_logs';
 const iterationsId = 'iterations';
 const feedbackID = 'feedback';
@@ -59,7 +59,7 @@ iterationCollection.createIndex({ iteration: 1 }, { unique: true });
 /**
  * CAREFUL: deletes the entire player backlog from database
  */
-export async function deleteAllPlayers(dataset: DbDatasetID) {
+export async function deleteAllPlayers(dataset: Dataset) {
 	return playerCollection.deleteMany({ _id: dataset });
 }
 
@@ -70,7 +70,7 @@ export async function dropAll() {
 /**
  * Insert all players from a dataset to the database backlog (if no object with the current dataset id exists, create it, otherwise, update)
  */
-export async function insertAllPlayers(dataset: DbDatasetID) {
+export async function insertAllPlayers(dataset: Dataset) {
 	const dbPlayers = PLAYERS_S1.map((player) => formattedToDbPlayer(player));
 	return playerCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: dbPlayers } }, { upsert: true });
 }
@@ -82,7 +82,7 @@ export async function insertAllPlayers(dataset: DbDatasetID) {
  * @param dataset what dataset to write answer for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID, session?: ClientSession) {
+export async function setCurrentAnswer(answer: DbAnswer, dataset: Dataset, session?: ClientSession) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true, session });
 }
@@ -91,7 +91,7 @@ export async function setCurrentAnswer(answer: DbAnswer, dataset: DbDatasetID, s
  * Get current answer from db
  * @param dataset which dataset to get current answer for
  */
-export async function getCurrentAnswer(dataset: DbDatasetID) {
+export async function getCurrentAnswer(dataset: Dataset) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
 }
@@ -103,7 +103,7 @@ export async function getCurrentAnswer(dataset: DbDatasetID) {
  * @param dataset what dataset to write answer for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID, session?: ClientSession) {
+export async function setNextAnswer(answer: DbAnswer, dataset: Dataset, session?: ClientSession) {
 	const answerKey: AnswerKey = `next_${dataset}`;
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { ...answer, _id: answerKey } }, { upsert: true, session });
 }
@@ -113,7 +113,7 @@ export async function setNextAnswer(answer: DbAnswer, dataset: DbDatasetID, sess
  * @param answerPrefix the type of answer to get (e.g. "current" or "next")
  * @param dataset which dataset to get answer for
  */
-export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID) {
+export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: Dataset) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
 }
@@ -121,7 +121,7 @@ export async function getAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDataset
 /**
  * Get all answers (e.g. [{_id: "current_dataset"}, {_id: "next_dataset"}]) for given dataset
  */
-export async function getAllAnswers(dataset: DbDatasetID) {
+export async function getAllAnswers(dataset: Dataset) {
 	return answerCollection.find({ _id: { $regex: `.+_${dataset}` } }).toArray();
 }
 
@@ -129,7 +129,7 @@ export async function getAllAnswers(dataset: DbDatasetID) {
  * Get current answer from db
  * @param dataset which dataset to get current answer for
  */
-export async function getNextAnswer(dataset: DbDatasetID) {
+export async function getNextAnswer(dataset: Dataset) {
 	const answerKey: AnswerKey = `next_${dataset}`;
 	return answerCollection.findOne({ _id: answerKey });
 }
@@ -140,7 +140,7 @@ export async function getNextAnswer(dataset: DbDatasetID) {
  * @param player new player to set for answer
  * @param dataset what dataset to set player for
  */
-export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbPlayer, dataset: DbDatasetID) {
+export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbPlayer, dataset: Dataset) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	return answerCollection.updateOne({ _id: answerKey }, { $set: { player: player } });
 }
@@ -152,7 +152,7 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
  * @param dataset what dataset to set player for
  * @returns true, if update was rerolled and inserted successfully, false, if not
  */
-export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbDatasetID) {
+export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: Dataset) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
 	const randomPlayer = await getUniqueRandomPlayer(dataset);
 	if (!randomPlayer) {
@@ -181,7 +181,7 @@ export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: DbData
  * Pick random unqiue player that isn't in any backlog (answers or main backlog)
  * @param dataset what dataset to get unqiue player for
  */
-export async function getUniqueRandomPlayer(dataset: DbDatasetID) {
+export async function getUniqueRandomPlayer(dataset: Dataset) {
 	let randomPlayer = getRandomPlayer();
 	let isIncluded = true;
 
@@ -208,7 +208,7 @@ export async function getUniqueRandomPlayer(dataset: DbDatasetID) {
  * Get current iteration for dataset
  * @param dataset which dataset to get current iteration for
  */
-export async function getCurrentIteration(dataset: DbDatasetID) {
+export async function getCurrentIteration(dataset: Dataset) {
 	const answerKey: AnswerKey = `current_${dataset}`;
 	const iterationRes = await answerCollection.findOne({ _id: answerKey }, { projection: { iteration: 1, _id: 0 } });
 	return iterationRes?.iteration;
@@ -231,7 +231,7 @@ export async function updateIterationPlayer(iteration: DbIteration['iteration'],
 	return iterationCollection.updateOne({ iteration: iteration }, { $set: { player: player } });
 }
 
-export async function getBacklog(dataset: DbDatasetID) {
+export async function getBacklog(dataset: Dataset) {
 	return backlogCollection.findOne({ _id: dataset });
 }
 
@@ -245,7 +245,7 @@ export async function getBacklog(dataset: DbDatasetID) {
  * @param dataset what dataset to generate backlog for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function generateBacklog(size: number, dataset: DbDatasetID, session?: ClientSession) {
+export async function generateBacklog(size: number, dataset: Dataset, session?: ClientSession) {
 	// Error if player collection is emtpy
 	const playerCount = await playerCollection.countDocuments();
 	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
@@ -283,7 +283,7 @@ export async function generateBacklog(size: number, dataset: DbDatasetID, sessio
  * @param dataset dataset to check against
  * @param checkFull true: checks backlog + answers, false: only checks answers
  */
-export async function isPlayerUnique(player: DbPlayer, dataset: DbDatasetID, checkFull = false) {
+export async function isPlayerUnique(player: DbPlayer, dataset: Dataset, checkFull = false) {
 	const backlogPlayers: DbPlayer[] = [];
 
 	// Add answer players to backlog
@@ -313,7 +313,7 @@ export async function isPlayerUnique(player: DbPlayer, dataset: DbDatasetID, che
  * @param dataset what dataset to insert backlog (defaults to season1)
  * @returns true, if new player is unqiue and was successfully inserted, false otherwise
  */
-export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID) {
+export async function insertOneBacklog(player: DbPlayer, dataset: Dataset) {
 	// Check if player is unique, if not,
 	const isUnique = await isPlayerUnique(player, dataset, true);
 	if (!isUnique) return false;
@@ -326,7 +326,7 @@ export async function insertOneBacklog(player: DbPlayer, dataset: DbDatasetID) {
 /**
  * Same as insertOneBacklog, except it doesn't check if the new player is unique
  */
-export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: DbDatasetID) {
+export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: Dataset) {
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: [player], $position: 0 } } }, { upsert: true });
 }
 
@@ -336,7 +336,7 @@ export async function insertOneBacklogUnsafe(player: DbPlayer, dataset: DbDatase
  * @param dataset what dataset to insert backlog (defaults to season1)
  * @returns true, if new players are unqiue and were successfully inserted, false otherwise
  */
-export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetID) {
+export async function insertManyBacklog(players: DbPlayer[], dataset: Dataset) {
 	let isInputUnique = true;
 	// Check if all input players are unique
 	for (const player of players) {
@@ -355,7 +355,7 @@ export async function insertManyBacklog(players: DbPlayer[], dataset: DbDatasetI
 /**
  * Same as insertManyBacklog, except it doesn't check if the new player is unique
  */
-export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: DbDatasetID) {
+export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: Dataset) {
 	return backlogCollection.updateOne({ _id: dataset }, { $push: { players: { $each: players, $position: 0 } } }, { upsert: true });
 }
 
@@ -365,7 +365,7 @@ export async function insertManyBacklogUnsafe(players: DbPlayer[], dataset: DbDa
  * @param session (optional), pass transaction session if used during transaction
  * @returns an object containing the popped item and the new length of the array
  */
-export async function popBacklog(dataset: DbDatasetID, session?: ClientSession) {
+export async function popBacklog(dataset: Dataset, session?: ClientSession) {
 	// Use aggregation to get the first item and array length (combines .findOne and aggregate for length)
 	const aggregationResult = await backlogCollection
 		.aggregate(
@@ -408,7 +408,7 @@ export async function addFeedback(feedback: DbFeedback) {
  * Log game state to db
  * @param dataset
  */
-export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, timestamp: Date, dataset: DbDatasetID) {
+export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, timestamp: Date, dataset: Dataset) {
 	if (gameData.length > 0) {
 		// Get current iteration
 		const currIteration = await getCurrentIteration(dataset);
@@ -426,7 +426,7 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
  */
 export async function goNextIteration(
 	nextResetHours: number = GAME_CONFIG.nextResetHours,
-	dataset: DbDatasetID = 'OWL_season1',
+	dataset: Dataset = 'OWL_season1',
 	backlogSize: number = GAME_CONFIG.backlogMaxSize
 ) {
 	// * Prep: get current answer from db, error out if not working

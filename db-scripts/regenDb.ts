@@ -1,12 +1,12 @@
+import type { Dataset } from '@/data/datasets';
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { addIteration, dropAll, generateBacklog, getAnswer, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
-import type { DbDatasetID } from '@/types/database';
 import { exit } from 'node:process';
 
-const DATASET: DbDatasetID = 'OWL_season1';
+const DATASET: Dataset = 'season1';
 // ! Configure your first reset date here (in UTC)
 // ! Keep in mind that javascript months start at 0
 // ! By default, sets to midnight UTC (when timezone is Europe/Vienna)

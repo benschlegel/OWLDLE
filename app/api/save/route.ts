@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
 		try {
 			// Try to log game, return with success code if so
 			const timestamp = new Date();
-			const res = await logGame(playerGuesses, gameSaveRes.data.gameResult, timestamp, 'OWL_season1');
+			const res = await logGame(playerGuesses, gameSaveRes.data.gameResult, timestamp, 'season1');
 			if (res?.acknowledged) {
 				return new Response(undefined, { status: 200 });
 			}

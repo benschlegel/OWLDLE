@@ -1,14 +1,14 @@
 import { getCurrentAnswer, getNextAnswer, generateBacklog, getBacklog } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
 
-const currAnswer = await getCurrentAnswer('OWL_season1');
-const nextAnswer = await getNextAnswer('OWL_season1');
+const currAnswer = await getCurrentAnswer('season1');
+const nextAnswer = await getNextAnswer('season1');
 console.time('backlog');
 for (let i = 0; i < 1; i++) {
-	await generateBacklog(125, 'OWL_season1');
+	await generateBacklog(125, 'season1');
 
 	setTimeout(async () => {
-		const backlog = await getBacklog('OWL_season1');
+		const backlog = await getBacklog('season1');
 		let currIndex = -1;
 		const currDuplicate = backlog?.players.find((player, i) => {
 			currIndex = i;

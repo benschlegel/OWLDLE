@@ -1,22 +1,22 @@
+import type { Dataset } from '@/data/datasets';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { type Feedback, GuessSchema } from '@/types/server';
 import { z } from 'zod';
 
-export type DbDatasetID = 'OWL_season1' | 'OWL_season2';
 export type DbAnswerPrefix = 'current' | 'next';
 
-export type AnswerKey = `${DbAnswerPrefix}_${DbDatasetID}`;
+export type AnswerKey = `${DbAnswerPrefix}_${Dataset}`;
 
 export type DbAnswer = Omit<DbAnswerFull, '_id'>;
 export type DbPlayer = Omit<FormattedPlayer, 'countryImg'>;
 
-export type DbLogEntryKey = `games_${DbDatasetID}`;
+export type DbLogEntryKey = `games_${Dataset}`;
 
 export type DbFormattedPlayers = {
 	/**
 	 * which season players are from
 	 */
-	_id: DbDatasetID;
+	_id: Dataset;
 	players: DbPlayer[];
 };
 
@@ -43,7 +43,7 @@ export type DbIteration = {
 	/**
 	 * What dataset this iteration is for
 	 */
-	dataset: DbDatasetID;
+	dataset: Dataset;
 	/**
 	 * The game iteration number
 	 */
@@ -62,7 +62,7 @@ export type DbLoggedGame = {
 	/**
 	 * What dataset this iteration is for
 	 */
-	dataset: DbDatasetID;
+	dataset: Dataset;
 	/**
 	 * The game iteration number
 	 */
