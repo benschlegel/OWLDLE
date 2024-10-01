@@ -8,7 +8,7 @@ export type DbAnswerPrefix = 'current' | 'next';
 export type AnswerKey = `${DbAnswerPrefix}_${Dataset}`;
 
 export type DbAnswer = Omit<DbAnswerFull, '_id'>;
-export type DbPlayer = Omit<CombinedFormattedPlayer, 'countryImg'>;
+export type DbPlayer = Omit<CombinedFormattedPlayer, 'countryImg' | 'regionImg'>;
 
 export type DbLogEntryKey = `games_${Dataset}`;
 

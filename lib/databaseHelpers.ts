@@ -2,7 +2,8 @@ import type { CombinedFormattedPlayer, FormattedPlayer } from '@/data/players/fo
 import type { DbPlayer } from '@/types/database';
 
 export function formattedToDbPlayer(player: CombinedFormattedPlayer): DbPlayer {
-	return deleteProperty(player, 'countryImg');
+	const deleted = deleteProperty(player, 'countryImg');
+	return deleteProperty(deleted, 'regionImg');
 }
 function deleteProperty<T, K extends keyof T>(obj: T, key: K): Omit<T, K> {
 	// Destructuring to remove the key
