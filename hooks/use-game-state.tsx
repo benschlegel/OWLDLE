@@ -5,6 +5,7 @@ import { GuessContext } from '@/context/GuessContext';
 import { type Dataset, DEFAULT_DATASET, getDataset } from '@/data/datasets';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
+import { fetchAnswer } from '@/lib/client';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import type { DbSaveData } from '@/types/database';
@@ -12,6 +13,8 @@ import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useAnswerQuery } from '@/hooks/use-answer-query';
 
 type Props = {
 	slug: string;
@@ -22,7 +25,7 @@ export default function useGameState({ slug }: Props) {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [dataset, setDataset] = useContext(DatasetContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
-	const [validatedData, setValidatedData] = useState<ValidateResponse | undefined>(undefined);
+	const { data: validatedData, isLoading, error } = useAnswerQuery(dataset.dataset);
 	const [isRollback, setIsRollback] = useState(false);
 	const { toast } = useToast();
 	const plausible = usePlausible<PlausibleEvents>();
@@ -34,24 +37,25 @@ export default function useGameState({ slug }: Props) {
 	}, [slug, setDataset]);
 
 	// * Fetch correct guess + data from server
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset guesses every time that dataset changes
 	useEffect(() => {
 		// Reset all guesses (in case dataset was changed)
 		resetGuesses();
 
-		fetch(`/api/validate?${dataset.dataset}`)
-			.then((response) => response.json())
-			.catch(() => {
-				toast({
-					title: 'Server error',
-					description: "Can't reach server or invalid data.",
-					variant: 'destructive',
-				});
-			})
-			.then((data) => {
-				console.log('New data: ', data);
-				setValidatedData(data);
-			});
-	}, [toast, dataset]);
+		// fetch(`/api/validate?${dataset.dataset}`)
+		// 	.then((response) => response.json())
+		// 	.catch(() => {
+		// 		toast({
+		// 			title: 'Server error',
+		// 			description: "Can't reach server or invalid data.",
+		// 			variant: 'destructive',
+		// 		});
+		// 	})
+		// 	.then((data) => {
+		// 		console.log('New data: ', data);
+		// 		setValidatedData(data);
+		// 	});
+	}, [dataset]);
 
 	const resetGuesses = useCallback(() => {
 		setGameState('in-progress');
