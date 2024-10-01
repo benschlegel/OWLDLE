@@ -1,5 +1,6 @@
 import type { Player } from '@/types/players';
 
+// * Season 1
 export const s1Players: Player[] = [
 	// Eastern teams
 	{ name: 'Mistakes', country: 'RU', role: 'Damage', team: 'BostonUprising' },
@@ -136,6 +137,7 @@ export const s1Players: Player[] = [
 	{ name: 'xQc', country: 'CA', role: 'Tank', team: 'DallasFuel' },
 ] as const;
 
+// * Season 2
 export const s2Players: Player<'season2'>[] = [
 	// Eastern teams
 	{ name: 'babybay', country: 'US', role: 'Damage', team: 'AtlantaReign' },
@@ -357,3 +359,5 @@ export const s2Players: Player<'season2'>[] = [
 	{ name: 'SLIME', country: 'KR', role: 'Support', team: 'VancouverTitans' },
 	{ name: 'Twilight', country: 'KR', role: 'Support', team: 'VancouverTitans' },
 ] as const;
+
+// * Season 3

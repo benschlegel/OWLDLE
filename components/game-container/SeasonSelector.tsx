@@ -10,7 +10,7 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { DATASETS } from '@/data/datasets';
+import { Dataset, DATASETS } from '@/data/datasets';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
 
@@ -18,12 +18,17 @@ type Props = {
 	slug: string;
 };
 export default function SeasonSelector({ slug }: Props) {
+	const parsedSlug = slug === '/' ? 'season1' : slug;
 	const router = useRouter();
-	const shorthand = DATASETS.find((dataset) => dataset.dataset === slug);
+	const shorthand = DATASETS.find((dataset) => dataset.dataset === parsedSlug);
 
 	const handleChange = useCallback(
 		(value: string) => {
-			router.replace(`/${value}`);
+			if (value === 'season1') {
+				router.replace('/');
+			} else {
+				router.replace(`/${value}`);
+			}
 		},
 		[router.replace]
 	);
@@ -37,7 +42,7 @@ export default function SeasonSelector({ slug }: Props) {
 			<DropdownMenuContent className="px-1">
 				<DropdownMenuLabel>Select season</DropdownMenuLabel>
 				<DropdownMenuSeparator />
-				<DropdownMenuRadioGroup value={slug} onValueChange={handleChange}>
+				<DropdownMenuRadioGroup value={parsedSlug} onValueChange={handleChange}>
 					{DATASETS.map((dataset) => (
 						<DropdownMenuRadioItem value={dataset.dataset} key={dataset.dataset}>
 							{dataset.formattedName}
