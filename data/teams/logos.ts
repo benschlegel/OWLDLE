@@ -156,6 +156,12 @@ const teamLogosS6: TeamLogoData<'season6'>[] = [
 		backgroundColor: '#e30e2c',
 		imgUrl: `/teams/s6/SeoulInfernal.${GAME_CONFIG.teamLogoImgExtension}`,
 	},
+	{
+		teamName: 'VegasEternal',
+		displayName: 'Vegas Eternal',
+		backgroundColor: '#000',
+		imgUrl: `/teams/s6/VegasEternal.${GAME_CONFIG.teamLogoImgExtension}`,
+	},
 ];
 
 export const TEAM_LOGOS_S1: TeamLogoData[] = teamLogosS1.map(
@@ -185,8 +191,9 @@ if (oldGlads) {
 }
 
 const teamLogosS6Raw = [...TEAM_LOGOS_S5] as unknown as TeamLogoData<'season6'>[];
-const TEAM_LOGOS_S6 = teamLogosS6Raw.filter((l) => l.teamName !== ('PhiladelphiaFusion' as string));
+const TEAM_LOGOS_S6 = teamLogosS6Raw.filter((l) => l.teamName !== ('PhiladelphiaFusion' as string) && l.teamName !== ('ParisEternal' as string));
 TEAM_LOGOS_S6.push(teamLogosS6[0]);
+TEAM_LOGOS_S6.push(teamLogosS6[1]);
 
 type LogoData<T extends Dataset> = {
 	dataset: T;

@@ -101,7 +101,7 @@ const WESTERN_S6 = [
 	'LosAngelesGladiators',
 	'LosAngelesValiant',
 	'NewYorkExcelsior',
-	'ParisEternal',
+	'VegasEternal',
 	'SanFranciscoShock',
 	'TorontoDefiant',
 	'VancouverTitans',
