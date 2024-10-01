@@ -3,7 +3,7 @@ import type { ValidateResponse } from '@/types/server';
 import { useQuery } from '@tanstack/react-query';
 
 async function fetchValidateDataset(dataset: Dataset): Promise<ValidateResponse> {
-	const response = await fetch(`/api/validate?${dataset}`);
+	const response = await fetch(`/api/validate?dataset=${dataset}`);
 	if (!response.ok) {
 		throw new Error('Network response was not ok');
 	}
