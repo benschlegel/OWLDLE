@@ -140,6 +140,9 @@ export const ALL_TEAMS = [
 
 export type TeamName<T extends Dataset = 'season1'> = Extract<(typeof ALL_TEAMS)[number], { dataset: T }>['data'][number];
 
+const allTeamNames = ALL_TEAMS.flatMap((t) => t.data);
+export type TeamNamesFull = (typeof allTeamNames)[number];
+
 /**
  * Gets region from a team (e.g. "BostonUprising" -> "AtlanticDivision")
  * @param team team name to check
