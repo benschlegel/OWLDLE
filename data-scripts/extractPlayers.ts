@@ -29,7 +29,7 @@ const mappedDatasets: MappedDataset[] = [
 ];
 
 // ! Change this value for different script output
-const DATASET: Dataset = 'season4';
+const DATASET: Dataset = 'season6';
 
 const url = mappedDatasets.find((d) => d.dataset === DATASET)?.url ?? mappedDatasets[0].dataset;
 const blacklist = ['sinatraa', 'Aspire'];
