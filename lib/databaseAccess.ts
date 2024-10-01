@@ -426,7 +426,7 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
  */
 export async function goNextIteration(
 	nextResetHours: number = GAME_CONFIG.nextResetHours,
-	dataset: Dataset = 'OWL_season1',
+	dataset: Dataset = 'season1',
 	backlogSize: number = GAME_CONFIG.backlogMaxSize
 ) {
 	// * Prep: get current answer from db, error out if not working
