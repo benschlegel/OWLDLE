@@ -182,7 +182,7 @@ export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: Datase
  * @param dataset what dataset to get unqiue player for
  */
 export async function getUniqueRandomPlayer(dataset: Dataset) {
-	let randomPlayer = getRandomPlayer();
+	let randomPlayer = getRandomPlayer(dataset);
 	let isIncluded = true;
 
 	// Get other answer + backlog to compare against
@@ -197,7 +197,7 @@ export async function getUniqueRandomPlayer(dataset: Dataset) {
 		if (isIncludedBacklog === false && isAnswersIncluded === false) {
 			isIncluded = false;
 		} else {
-			randomPlayer = getRandomPlayer();
+			randomPlayer = getRandomPlayer(dataset);
 		}
 	}
 
