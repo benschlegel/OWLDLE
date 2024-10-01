@@ -1,3 +1,4 @@
+import type { Dataset } from '@/data/datasets';
 import { s1Players } from '@/data/players/players';
 import { getRegion } from '@/data/teams/teams';
 import type { Player } from '@/types/players';
@@ -40,7 +41,7 @@ export const PLAYERS_S1 = unsortedPlayers.sort((a, b) => {
 		sensitivity: 'base',
 	});
 });
-export type FormattedPlayer = (typeof PLAYERS_S1)[number];
+export type FormattedPlayer<T extends Dataset = 'season1'> = Player<T> & { countryImg: string; regionImg: string; id: number };
 
 /**
  * Returns random formatted player

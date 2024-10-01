@@ -1032,3 +1032,5 @@ export const s6Players: Player<'season6'>[] = [
 	{ name: 'D0nghun', country: 'KR', role: 'Support', team: 'WashingtonJustice' },
 	{ name: 'Teru', country: 'KR', role: 'Support', team: 'WashingtonJustice' },
 ] as const;
+
+export const ALL_PLAYERS = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players] as const;
