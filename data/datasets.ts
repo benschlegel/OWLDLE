@@ -3,10 +3,12 @@ import { s2Players } from '@/data/players/players';
 import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import type { Player } from '@/types/players';
+import { z } from 'zod';
 
 const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
 export type Dataset = (typeof datasets)[number];
 
+export const datasetSchema = z.enum(datasets);
 export type DatasetMetadata<T extends Dataset> = {
 	dataset: T;
 	playerData: Player<T>[];

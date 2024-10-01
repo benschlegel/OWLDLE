@@ -1,3 +1,4 @@
+import { datasetSchema } from '@/data/datasets';
 import { getCurrentAnswer } from '@/lib/databaseAccess';
 import { validateGuess } from '@/lib/server';
 import type { DbAnswer } from '@/types/database';
@@ -61,6 +62,17 @@ export async function GET(req: NextRequest) {
 		await getLimiter.consume(req.ip ?? 'anonymous');
 
 		if (!currentAnswer || currentAnswer === undefined) {
+			const searchParams = req.nextUrl.searchParams;
+			const dataset = searchParams.get('dataset');
+			// Get query parameter
+			const datasetParsed = datasetSchema.safeParse(dataset);
+
+			// Error handling
+			if (!datasetParsed.success) {
+				const errMessage = datasetParsed.error.errors.map((err) => `${err.path}: ${err.message},`);
+				return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
+			}
+
 			// fetch current data
 			const res = await updateLocalAnswer();
 			if (res) {
@@ -91,6 +103,7 @@ export async function PATCH(req: NextRequest) {
 		return new Response('Unauthorized', { status: 401, statusText: 'Unauthorized' });
 	}
 
+	// TODO: do for all datasets
 	const res = await updateLocalAnswer();
 	if (!res) {
 		// Unintuitive, but this is the happy path (function only returns error response)
