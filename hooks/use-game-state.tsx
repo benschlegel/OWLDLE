@@ -10,10 +10,9 @@ import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import type { DbSaveData } from '@/types/database';
 import type { PlausibleEvents } from '@/types/plausible';
-import type { GuessResponse, ValidateResponse } from '@/types/server';
+import type { GuessResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 
 type Props = {
