@@ -70,6 +70,8 @@ export const PLAYERS_S1 = SORTED_PLAYERS[0];
 /**
  * Returns random formatted player
  */
-export function getRandomPlayer() {
-	return PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)];
+export function getRandomPlayer(dataset: Dataset) {
+	const datasetIndex = datasets.findIndex((d) => d === dataset);
+	const datasetPlayers = SORTED_PLAYERS[datasetIndex];
+	return datasetPlayers[Math.floor(Math.random() * datasetPlayers.length)];
 }
