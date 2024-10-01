@@ -7,7 +7,7 @@ console.time('test');
 // const popped = await popBacklog();
 // console.log('Popped item: ', popped);
 try {
-	await goNextIteration(GAME_CONFIG.nextResetHours, 'OWL_season1', GAME_CONFIG.backlogMaxSize);
+	await goNextIteration(GAME_CONFIG.nextResetHours, 'season1', GAME_CONFIG.backlogMaxSize);
 } catch (e) {
 	console.error('Failed to roll over iteration: ', e);
 }

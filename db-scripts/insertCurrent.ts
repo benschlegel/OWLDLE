@@ -9,7 +9,7 @@ const foundPlayer = PLAYERS_S1.find((p) => p.name === newPlayerName);
 if (!foundPlayer) exit(-1);
 const player = formattedToDbPlayer(foundPlayer);
 // await setCurrentAnswer({ player: player, iteration: 2, nextReset: new Date() });
-await setPartialAnswer('current', player, 'OWL_season1');
+await setPartialAnswer('current', player, 'season1');
 console.timeEnd('setCurrent');
 console.log('Finished.');
 exit(0);

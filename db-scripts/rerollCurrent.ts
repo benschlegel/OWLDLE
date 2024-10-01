@@ -1,10 +1,9 @@
-
-import { rerollAnswer, } from '@/lib/databaseAccess';
+import { rerollAnswer } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
 
 console.time('reroll');
 // await setCurrentAnswer({ player: player, iteration: 2, nextReset: new Date() });
-await rerollAnswer('current', 'OWL_season1');
+await rerollAnswer('current', 'season1');
 console.timeEnd('reroll');
 console.log('Finished.');
 exit(0);

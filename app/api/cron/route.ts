@@ -15,7 +15,7 @@ export async function GET(request: Request) {
 	// Request authorized, safely run code starting here
 	// *
 	try {
-		await goNextIteration(GAME_CONFIG.nextResetHours, 'OWL_season1', GAME_CONFIG.backlogMaxSize);
+		await goNextIteration(GAME_CONFIG.nextResetHours, 'season1', GAME_CONFIG.backlogMaxSize);
 		const reset = (await (await RouteGet({ ip: 'fake.ip.abc.de' } as unknown as NextRequest)).json()) as Date;
 		return new Response('Successfully set next iteration and re-fetched on server', { status: 200 });
 	} catch (e) {

@@ -1,7 +1,4 @@
-
-import {
-	getAllAnswers,
-} from '@/lib/databaseAccess';
+import { getAllAnswers } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
 
 console.time('test');
@@ -9,7 +6,7 @@ console.time('test');
 // const popped = await popBacklog();
 // console.log('Popped item: ', popped);
 try {
-	const answers = await getAllAnswers('OWL_season1');
+	const answers = await getAllAnswers('season1');
 	console.log('Answers: ', answers);
 	// await goNextIteration(GAME_CONFIG.nextResetHours, 'OWL_season1', GAME_CONFIG.backlogMaxSize);
 } catch (e) {

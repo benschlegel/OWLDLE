@@ -12,7 +12,7 @@ offsetDate.setMinutes(offsetDate.getMinutes() + offsetMinutes);
 offsetDate.setSeconds(0);
 offsetDate.setMilliseconds(0);
 // await setCurrentAnswer({ player: player, iteration: 2, nextReset: new Date() });
-const abc = await setCurrentAnswer({ iteration: 8, nextReset: offsetDate, player: player }, 'OWL_season1');
+const abc = await setCurrentAnswer({ iteration: 8, nextReset: offsetDate, player: player }, 'season1');
 console.log('Abc: ', abc);
 console.timeEnd('setCurrent');
 console.log('Finished.');
