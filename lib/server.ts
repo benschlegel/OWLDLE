@@ -1,3 +1,4 @@
+import type { DbPlayer } from '@/types/database';
 import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';
 
@@ -7,7 +8,7 @@ import type { GuessResponse } from '@/types/server';
  * @param correct the correct player
  * @returns Object containing what entries are correct/incorrect
  */
-export function validateGuess(guess: Player, correct: Player): GuessResponse {
+export function validateGuess(guess: Player, correct: DbPlayer): GuessResponse {
 	// TODO: make clean
 	const response: GuessResponse = { isRegionCorrect: false, isCountryCorrect: false, isNameCorrect: false, isRoleCorrect: false, isTeamCorrect: false };
 

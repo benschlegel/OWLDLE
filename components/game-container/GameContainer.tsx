@@ -2,14 +2,14 @@ import { Card, CardContent } from '@/components/ui/card';
 import GuessRow from '@/components/game-container/GuessRow';
 import { GAME_CONFIG } from '@/lib/config';
 import type { GuessResponse } from '@/types/server';
-import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+import type { CombinedFormattedPlayer, FormattedPlayer } from '@/data/players/formattedPlayers';
 
 type Props = {
 	guesses: RowData[];
 };
 
 export type RowData = {
-	player: FormattedPlayer;
+	player: CombinedFormattedPlayer;
 	guessResult: GuessResponse;
 };
 

@@ -1,5 +1,5 @@
 import type { Dataset } from '@/data/datasets';
-import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+import type { CombinedFormattedPlayer, FormattedPlayer } from '@/data/players/formattedPlayers';
 import { type Feedback, GuessSchema } from '@/types/server';
 import { z } from 'zod';
 
@@ -8,7 +8,7 @@ export type DbAnswerPrefix = 'current' | 'next';
 export type AnswerKey = `${DbAnswerPrefix}_${Dataset}`;
 
 export type DbAnswer = Omit<DbAnswerFull, '_id'>;
-export type DbPlayer = Omit<FormattedPlayer, 'countryImg'>;
+export type DbPlayer = Omit<CombinedFormattedPlayer, 'countryImg'>;
 
 export type DbLogEntryKey = `games_${Dataset}`;
 

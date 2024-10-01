@@ -1,17 +1,16 @@
-import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { type CombinedFormattedPlayer, FormattedPlayer, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { s2Players } from '@/data/players/players';
 import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
-import type { Player } from '@/types/players';
 import { z } from 'zod';
 
-const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
-export type Dataset = (typeof datasets)[number];
+export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
+export type Dataset = (typeof DATASETS)[number];
 
-export const datasetSchema = z.enum(datasets);
+export const datasetSchema = z.enum(DATASETS);
 export type DatasetMetadata<T extends Dataset> = {
 	dataset: T;
-	playerData: Player<T>[];
+	playerData: CombinedFormattedPlayer[];
 	teamData: CombinedLogoData['data'];
 	teams: readonly string[];
 	name: string;
@@ -28,10 +27,10 @@ export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season5'>
 	| DatasetMetadata<'season6'>;
 
-export const DATASETS: CombinedDatasetMetadata[] = [
+export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = [
 	{
 		dataset: 'season1',
-		playerData: PLAYERS_S1,
+		playerData: SORTED_PLAYERS[0],
 		teamData: LOGOS[0].data,
 		teams: ALL_TEAMS[0].data,
 		formattedName: 'Season 1 (2018)',
@@ -41,7 +40,7 @@ export const DATASETS: CombinedDatasetMetadata[] = [
 	},
 	{
 		dataset: 'season2',
-		playerData: s2Players,
+		playerData: SORTED_PLAYERS[1],
 		teamData: LOGOS[1].data,
 		teams: ALL_TEAMS[1].data,
 		formattedName: 'Season 2 (2019)',
@@ -51,8 +50,8 @@ export const DATASETS: CombinedDatasetMetadata[] = [
 	},
 ] as const;
 
-export const DEFAULT_DATASET = DATASETS[0];
+export const DEFAULT_DATASET = FORMATTED_DATASETS[0];
 
 export function getDataset(datasetName: Dataset) {
-	return DATASETS.find((set) => set.dataset === datasetName);
+	return FORMATTED_DATASETS.find((set) => set.dataset === datasetName);
 }
