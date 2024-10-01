@@ -1,7 +1,7 @@
 import type { Player } from '@/types/players';
 
 // * Season 1
-export const s1Players: Player[] = [
+export const s1Players: Player<'season1'>[] = [
 	// Eastern teams
 	{ name: 'Mistakes', country: 'RU', role: 'Damage', team: 'BostonUprising' },
 	{ name: 'Striker', country: 'KR', role: 'Damage', team: 'BostonUprising' },
@@ -1033,4 +1033,5 @@ export const s6Players: Player<'season6'>[] = [
 	{ name: 'Teru', country: 'KR', role: 'Support', team: 'WashingtonJustice' },
 ] as const;
 
-export const ALL_PLAYERS = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players] as const;
+export type CombinedPlayers = Player<'season1'>[] | Player<'season2'>[] | Player<'season3'>[] | Player<'season4'>[] | Player<'season5'>[] | Player<'season6'>[];
+export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players];

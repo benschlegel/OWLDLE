@@ -40,6 +40,7 @@ export default function useGameState({ slug }: Props) {
 	useEffect(() => {
 		// Reset all guesses (in case dataset was changed)
 		resetGuesses();
+		console.log('Dataset: ', dataset);
 
 		// fetch(`/api/validate?${dataset.dataset}`)
 		// 	.then((response) => response.json())
