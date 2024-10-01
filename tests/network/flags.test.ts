@@ -1,7 +1,10 @@
 import { test, expect, describe } from 'vitest';
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { ALL_PLAYERS } from '@/data/players/players';
 
 // Get the country and flag url from each player
+// First, flatten players array
+const mergedPlayers = ALL_PLAYERS.flat(1);
 const playerCountries = PLAYERS_S1.map((player) => ({ country: player.country, imgUrl: player.countryImg }));
 
 // Test if all flags for countries that players are from are working
