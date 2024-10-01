@@ -29,10 +29,10 @@ const mappedDatasets: MappedDataset[] = [
 ];
 
 // ! Change this value for different script output
-const DATASET: Dataset = 'season2';
+const DATASET: Dataset = 'season4';
 
 const url = mappedDatasets.find((d) => d.dataset === DATASET)?.url ?? mappedDatasets[0].dataset;
-const blacklist = ['sinatraa'];
+const blacklist = ['sinatraa', 'Aspire'];
 console.time('parse');
 
 // Function to fetch and extract player data
@@ -46,7 +46,7 @@ async function extractPlayers() {
 
 		// Division ids/selectors (Only select Atlantic because Pacific sibling will be automatically selected, Specify Atlantic_Division and _Conference, because 2020 season has a different id)
 		// Could also select by <span id="Participants"> and select h3 sibling children
-		const divisions = ['Atlantic_Division', 'Atlantic_Conference'];
+		const divisions = ['Atlantic_Division', 'Atlantic_Conference', 'East'];
 
 		const players: PlayerData[] = [];
 
