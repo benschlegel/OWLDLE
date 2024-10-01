@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
 
 		if (!currentAnswer || currentAnswer === undefined) {
 			const searchParams = req.nextUrl.searchParams;
-			const dataset = searchParams.get('dataset');
+			const dataset = searchParams.get('dataset') ?? 'season1';
 			// Get query parameter
 			const datasetParsed = datasetSchema.safeParse(dataset);
 
