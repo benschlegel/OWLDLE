@@ -8,6 +8,7 @@ import { GAME_CONFIG } from '@/lib/config';
 import PlausibleProvider from 'next-plausible';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import DatasetContexttProvider from '@/context/DatasetContext';
+import ReactQueryProvider from '@/context/ReactQueryProvider';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -84,14 +85,16 @@ export default function RootLayout({
 				<PlausibleProvider domain="www.owldle.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} trackOutboundLinks />
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-					<GuessContextProvider>
-						<GameStateContextProvider>
-							<DatasetContexttProvider>{children}</DatasetContexttProvider>
-							<SpeedInsights />
-						</GameStateContextProvider>
-					</GuessContextProvider>
-				</ThemeProvider>
+				<ReactQueryProvider>
+					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+						<GuessContextProvider>
+							<GameStateContextProvider>
+								<DatasetContexttProvider>{children}</DatasetContexttProvider>
+								<SpeedInsights />
+							</GameStateContextProvider>
+						</GuessContextProvider>
+					</ThemeProvider>
+				</ReactQueryProvider>
 			</body>
 		</html>
 	);

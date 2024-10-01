@@ -1,4 +1,5 @@
-import type { GuessResponse } from '@/types/server';
+import type { Dataset } from '@/data/datasets';
+import type { GuessResponse, ValidateResponse } from '@/types/server';
 
 export type FormatConfig = {
 	/**
@@ -98,4 +99,12 @@ export const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
  */
 export function splitCapitalization(teamName: string) {
 	return teamName.replace(/([A-Z])/g, ' $1').trim();
+}
+
+export async function fetchAnswer(dataset: Dataset): Promise<ValidateResponse> {
+	const response = await fetch(`/api/validate?${dataset}`);
+	if (!response.ok) {
+		throw new Error('Could not fetch answer from server.');
+	}
+	return response.json();
 }
