@@ -94,7 +94,7 @@ export async function PATCH(req: NextRequest) {
 	// Error handling
 	if (!datasetParsed.success) {
 		const errMessage = datasetParsed.error.errors.map((err) => `${err.path}: ${err.message},`);
-		return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
+		return new Response(`Invalid dataset. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
 	}
 
 	// TODO: use dataset query parameter
