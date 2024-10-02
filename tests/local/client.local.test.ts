@@ -32,16 +32,16 @@ const WON_GUESSES_8: GuessResponse[] = [
 	{ isCountryCorrect: true, isRoleCorrect: true, isRegionCorrect: true, isTeamCorrect: true, isNameCorrect: true },
 ];
 
-const FORMAT_CONFIG_WON_4: FormatConfig = { guesses: WON_GUESSES_4, gameIteration: 1, gameName: 'TEST_NAME', maxGuesses: 8, siteUrl: 'test.url.com' };
+const FORMAT_CONFIG_WON_4: FormatConfig = { guesses: WON_GUESSES_4, gameIteration: 1, gameName: 'TEST_NAME', maxGuesses: 8, siteUrl: 'test.url.com/' };
 
-const FORMAT_CONFIG_LOST_8: FormatConfig = { guesses: LOST_GUESSES_8, gameIteration: 2, gameName: 'NAME', maxGuesses: 8, siteUrl: 'my.url.com' };
+const FORMAT_CONFIG_LOST_8: FormatConfig = { guesses: LOST_GUESSES_8, gameIteration: 2, gameName: 'NAME', maxGuesses: 8, siteUrl: 'my.url.com/' };
 
 const FORMAT_CONFIG_WON_8: FormatConfig = {
 	guesses: WON_GUESSES_8,
 	gameIteration: 3,
 	gameName: 'COOL_GAME',
 	maxGuesses: 8,
-	siteUrl: 'another.url.com',
+	siteUrl: 'another.url.com/',
 };
 
 describe('game result', () => {
@@ -87,6 +87,6 @@ describe('format correct for all datasets', () => {
 });
 
 function getExpectedString(config: FormatConfig, content: string) {
-	const datasetPostfix = config.dataset && config.dataset !== 'season1' ? `/${config.dataset}` : '';
+	const datasetPostfix = config.dataset && config.dataset !== 'season1' ? config.dataset : '';
 	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses}\n${content}\n<${config.siteUrl}${datasetPostfix}>`;
 }
