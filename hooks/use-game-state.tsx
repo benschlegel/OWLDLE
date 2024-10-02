@@ -36,10 +36,10 @@ export default function useGameState({ slug }: Props) {
 	}, [slug, setDataset]);
 
 	// * Fetch correct guess + data from server
+	// biome-ignore lint/correctness/useExhaustiveDependencies: Should reset all guesses every time dataset changes
 	useEffect(() => {
 		// Reset all guesses (in case dataset was changed)
 		resetGuesses();
-		console.log('Dataset: ', dataset);
 	}, [dataset]);
 
 	const resetGuesses = useCallback(() => {
