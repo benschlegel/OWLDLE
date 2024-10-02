@@ -12,8 +12,12 @@ export type CombinedFormattedPlayer =
 	| FormattedPlayer<'season4'>
 	| FormattedPlayer<'season5'>
 	| FormattedPlayer<'season6'>;
+export type PlayerDataset = {
+	dataset: Dataset;
+	players: CombinedFormattedPlayer[];
+};
 
-export const FORMATTED_PLAYERS: CombinedFormattedPlayer[][] = [];
+export const FORMATTED_PLAYERS: PlayerDataset[] = [];
 
 // Countries that are not supported by vectorflags api
 const unsupportedCountries: CustomFlag[] = [{ country: 'ET', customImg: 'https://flagsapi.com/ET/flat/64.png' }];
@@ -22,7 +26,7 @@ const unsupportedCountries: CustomFlag[] = [{ country: 'ET', customImg: 'https:/
 const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
 for (let i = 0; i < ALL_PLAYERS.length; i++) {
 	const currentPlayers = ALL_PLAYERS[i];
-	const currRegion = datasets[i];
+	const currDataset = datasets[i];
 	const formattedPlayers = currentPlayers.map((player, index) => {
 		// Default url for vectorflags country flag api
 		let countryImg = `https://vectorflags.s3.amazonaws.com/flags/${player.country.toLowerCase()}-square-01.png`;
@@ -36,7 +40,7 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 
 		// Set player region
 
-		const region = getRegion<typeof currRegion>(player.team, currRegion);
+		const region = getRegion<typeof currDataset>(player.team, currDataset);
 
 		// Set region image
 		if (region === 'AtlanticDivison') {
@@ -48,30 +52,30 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 		// Take original player data and add auto calculated fields
 		return { ...player, countryImg, regionImg, id: index, region: region };
 	});
-	FORMATTED_PLAYERS.push(formattedPlayers);
+	FORMATTED_PLAYERS.push({ dataset: currDataset, players: formattedPlayers });
 }
 
-export const SORTED_PLAYERS: CombinedFormattedPlayer[][] = [];
+export const SORTED_PLAYERS: PlayerDataset[] = [];
 
 for (const formatted of FORMATTED_PLAYERS) {
-	const sorted = formatted.toSorted((a, b) => {
+	const sorted = formatted.players.toSorted((a, b) => {
 		// Sort all players by player name
 		return a.name.localeCompare(b.name, undefined, {
 			numeric: true,
 			sensitivity: 'base',
 		});
 	});
-	SORTED_PLAYERS.push(sorted);
+	SORTED_PLAYERS.push({ dataset: formatted.dataset, players: sorted });
 }
 
 // use sort instead of toSorted to fix webpack error
-export const PLAYERS_S1 = SORTED_PLAYERS[0];
+export const PLAYERS_S1 = SORTED_PLAYERS[0].players;
 
 /**
  * Returns random formatted player
  */
 export function getRandomPlayer(dataset: Dataset) {
 	const datasetIndex = datasets.findIndex((d) => d === dataset);
-	const datasetPlayers = SORTED_PLAYERS[datasetIndex];
+	const datasetPlayers = SORTED_PLAYERS[datasetIndex].players;
 	return datasetPlayers[Math.floor(Math.random() * datasetPlayers.length)];
 }
