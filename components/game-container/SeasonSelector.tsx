@@ -1,18 +1,8 @@
 'use client';
-import { Button } from '@/components/ui/button';
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuLabel,
-	DropdownMenuRadioGroup,
-	DropdownMenuRadioItem,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Dataset, FORMATTED_DATASETS } from '@/data/datasets';
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { type Dataset, FORMATTED_DATASETS } from '@/data/datasets';
 import { useRouter } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 type Props = {
 	slug: string;
@@ -20,10 +10,12 @@ type Props = {
 export default function SeasonSelector({ slug }: Props) {
 	const parsedSlug = slug === '/' ? 'season1' : slug;
 	const router = useRouter();
-	const shorthand = FORMATTED_DATASETS.find((dataset) => dataset.dataset === parsedSlug);
+	const dataset = FORMATTED_DATASETS.find((dataset) => dataset.dataset === parsedSlug);
+	const [value, setValue] = useState(dataset?.dataset ?? 'Season 1');
 
 	const handleChange = useCallback(
 		(value: string) => {
+			setValue(value as Dataset);
 			if (value === 'season1') {
 				router.replace('/');
 			} else {
@@ -32,25 +24,22 @@ export default function SeasonSelector({ slug }: Props) {
 		},
 		[router.replace]
 	);
+
 	return (
-		<DropdownMenu>
-			<DropdownMenuTrigger asChild>
-				<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-					<p className="text-2xl font-mono tracking-wide">{shorthand?.shorthand ?? 'S1'}</p>
-				</Button>
-			</DropdownMenuTrigger>
-			<DropdownMenuContent className="px-1">
-				<DropdownMenuLabel>Select season</DropdownMenuLabel>
-				<DropdownMenuSeparator />
-				<DropdownMenuRadioGroup value={parsedSlug} onValueChange={handleChange}>
+		<Select defaultValue={value} onValueChange={handleChange}>
+			<SelectTrigger className="w-auto max-w-[7rem] pl-3 h-9 py-1 text-left text-sm leading-tight">
+				<SelectValue placeholder="Season 1" defaultValue={'Test'} />
+			</SelectTrigger>
+			<SelectContent>
+				<SelectGroup>
+					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Select season</SelectLabel>
 					{FORMATTED_DATASETS.map((dataset) => (
-						<DropdownMenuRadioItem value={dataset.dataset} key={dataset.dataset}>
+						<SelectItem value={dataset.dataset} key={dataset.dataset}>
 							{dataset.formattedName}
-						</DropdownMenuRadioItem>
+						</SelectItem>
 					))}
-					<DropdownMenuItem disabled>More coming soon...</DropdownMenuItem>
-				</DropdownMenuRadioGroup>
-			</DropdownMenuContent>
-		</DropdownMenu>
+				</SelectGroup>
+			</SelectContent>
+		</Select>
 	);
 }
