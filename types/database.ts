@@ -1,5 +1,5 @@
 import type { Dataset } from '@/data/datasets';
-import type { CombinedFormattedPlayer, FormattedPlayer } from '@/data/players/formattedPlayers';
+import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
 import { type Feedback, GuessSchema } from '@/types/server';
 import { z } from 'zod';
 
