@@ -1,3 +1,4 @@
+import { DATASETS, type Dataset } from '@/data/datasets';
 import { type FormatConfig, formatResult } from '@/lib/client';
 import type { GuessResponse } from '@/types/server';
 import { test, expect, describe } from 'vitest';
@@ -70,6 +71,22 @@ describe('game result', () => {
 	});
 });
 
+describe('format correct for all datasets', () => {
+	test.concurrent.each(DATASETS)('lost after 8/8 guesses (%s)', async (dataset) => {
+		const config = { ...FORMAT_CONFIG_LOST_8, dataset: dataset };
+		const formattedResult = formatResult(config);
+		const expectedString = getExpectedString(config, '🟩🟥🟥🟥\n🟩🟥🟥🟥\n🟩🟩🟩🟥\n🟩🟥🟩🟩\n🟥🟥🟩🟩\n🟩🟥🟩🟩\n🟩🟥🟥🟩\n🟩🟥🟩🟩❌');
+		expect(formattedResult).toBe(expectedString);
+	});
+	test.concurrent.each(DATASETS)('won after 8/8 guesses (%s)', async (dataset) => {
+		const config = { ...FORMAT_CONFIG_WON_8, dataset: dataset };
+		const formattedResult = formatResult(config);
+		const expectedString = getExpectedString(config, '🟩🟥🟥🟥\n🟩🟥🟥🟥\n🟩🟩🟩🟥\n🟥🟥🟩🟩\n🟥🟥🟥🟩\n🟩🟥🟩🟩\n🟩🟩🟥🟥\n🟩🟩🟩🟩✅');
+		expect(formattedResult).toBe(expectedString);
+	});
+});
+
 function getExpectedString(config: FormatConfig, content: string) {
-	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses}\n${content}\n<${config.siteUrl}>`;
+	const datasetPostfix = config.dataset && config.dataset !== 'season1' ? `/${config.dataset}` : '';
+	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses}\n${content}\n<${config.siteUrl}${datasetPostfix}>`;
 }
