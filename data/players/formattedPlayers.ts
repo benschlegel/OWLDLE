@@ -1,6 +1,7 @@
 import { DATASETS, type Dataset } from '@/data/datasets';
 import { ALL_PLAYERS, s1Players } from '@/data/players/players';
 import { getRegion } from '@/data/teams/teams';
+import type { CountryCode } from '@/types/countries';
 import type { Player } from '@/types/players';
 
 type CustomFlag = { country: Player['country']; customImg: string };
@@ -20,7 +21,9 @@ export type PlayerDataset = {
 export const FORMATTED_PLAYERS: PlayerDataset[] = [];
 
 // Countries that are not supported by vectorflags api
-const unsupportedCountries: CustomFlag[] = [{ country: 'ET', customImg: 'https://flagsapi.com/ET/flat/64.png' }];
+// ! Add unsupported countries here
+const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL'];
+const unsupportedCountries: CustomFlag[] = unsupportedCountryCodes.map((c) => ({ country: c, customImg: `https://flagsapi.com/${c}/flat/64.png` }));
 
 // TODO: find out why using DATASETS causes "cant use before initialization"
 const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
