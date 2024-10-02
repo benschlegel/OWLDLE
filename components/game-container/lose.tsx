@@ -2,6 +2,7 @@
 import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
+import type { Dataset } from '@/data/datasets';
 import type { PlausibleEvents } from '@/types/plausible';
 import { CheckIcon, CopyIcon } from 'lucide-react';
 import { usePlausible } from 'next-plausible';
@@ -12,9 +13,10 @@ type Props = {
 	nextReset: Date;
 	formattedResult: string;
 	correctPlayer: string;
+	dataset: Dataset;
 };
 
-export default function WinScreen({ nextReset, correctPlayer, formattedResult }: Partial<Props>) {
+export default function WinScreen({ nextReset, correctPlayer, formattedResult, dataset }: Partial<Props>) {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
@@ -65,7 +67,7 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult }:
 				className="w-72 mt-3"
 				onClick={() => {
 					navigator.clipboard.writeText(formattedResult ?? '');
-					plausible('copyResult', { props: { state: 'lost' } });
+					plausible('copyResult', { props: { state: 'lost', dataset: dataset ?? 'season1' } });
 				}}
 				switchedContent={<SwitchedButtonContent />}>
 				<DefaultButtonContent />

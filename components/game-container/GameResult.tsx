@@ -8,6 +8,7 @@ import type { ValidateResponse } from '@/types/server';
 import type { RowData } from '@/components/game-container/GameContainer';
 import { formatResult } from '@/lib/client';
 import { GAME_CONFIG } from '@/lib/config';
+import { DatasetContext } from '@/context/DatasetContext';
 
 type Props = {
 	results: RowData[];
@@ -17,6 +18,7 @@ type Props = {
 
 export default function GameResult({ results, iteration, validatedResponse }: Props) {
 	const [gameState, setGameState] = useContext(GameStateContext);
+	const [dataset, _] = useContext(DatasetContext);
 
 	// Memoize clipboard content
 	const formattedResult = useMemo(() => {
@@ -35,8 +37,15 @@ export default function GameResult({ results, iteration, validatedResponse }: Pr
 		case 'in-progress':
 			return <></>;
 		case 'won':
-			return <WinScreen nextReset={validatedResponse?.nextReset} formattedResult={formattedResult} />;
+			return <WinScreen nextReset={validatedResponse?.nextReset} formattedResult={formattedResult} dataset={dataset.dataset} />;
 		case 'lost':
-			return <LossScreen correctPlayer={validatedResponse?.correctPlayer.name} formattedResult={formattedResult} nextReset={validatedResponse?.nextReset} />;
+			return (
+				<LossScreen
+					correctPlayer={validatedResponse?.correctPlayer.name}
+					formattedResult={formattedResult}
+					nextReset={validatedResponse?.nextReset}
+					dataset={dataset.dataset}
+				/>
+			);
 	}
 }
