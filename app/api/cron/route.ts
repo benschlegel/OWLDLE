@@ -1,6 +1,8 @@
 import { GET as RouteGet } from '@/app/api/validate/route';
+import { DATASETS } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 import { goNextIteration } from '@/lib/databaseAccess';
+import { NextURL } from 'next/dist/server/web/next-url';
 import type { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
@@ -15,8 +17,10 @@ export async function GET(request: Request) {
 	// Request authorized, safely run code starting here
 	// *
 	try {
-		await goNextIteration(GAME_CONFIG.nextResetHours, 'season1', GAME_CONFIG.backlogMaxSize);
-		const reset = (await (await RouteGet({ ip: 'fake.ip.abc.de' } as unknown as NextRequest)).json()) as Date;
+		for (const dataset of DATASETS) {
+			await goNextIteration(GAME_CONFIG.nextResetHours, dataset, GAME_CONFIG.backlogMaxSize);
+			await RouteGet({ ip: 'fake.ip.abc.de', nextUrl: new NextURL(`https://www.owldle.com?dataset=${dataset}`) } as NextRequest);
+		}
 		return new Response('Successfully set next iteration and re-fetched on server', { status: 200 });
 	} catch (e) {
 		return new Response('Failed to set next iteration', { status: 500, statusText: 'Unauthorized' });
