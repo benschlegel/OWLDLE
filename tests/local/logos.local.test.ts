@@ -1,4 +1,4 @@
-import { TEAM_LOGOS_S1, type TeamLogoData } from '@/data/teams/logos';
+import { LOGOS, TEAM_LOGOS_S1, type TeamLogoData } from '@/data/teams/logos';
 import { test, expect, describe } from 'vitest';
 import crypto from 'node:crypto';
 import { join } from 'node:path';
@@ -41,10 +41,11 @@ const hashedTeamLogos: HashedLogo[] = TEAM_LOGOS_S1.map((teamData) => {
 	}
 });
 
-describe('all team logos loading (season 1)', () => {
-	test.concurrent.each(hashedTeamLogos)('$logo.displayName: logo exists and can be read', async ({ logo, hash }) => {
-		// Convert the public folder URL path into a local file system path
-		const absoluteImagePath = join(__dirname, '../../public', logo.imgUrl);
+// Then, only use unique countries to minimize fetch calls/tests
+describe.concurrent.each(LOGOS)('all team logos loading ($dataset)', ({ data, dataset }) => {
+	const copiedData = [...data];
+	test.concurrent.each(copiedData)('$teamName: logo exists and can be read', async ({ imgUrl, teamName }) => {
+		const absoluteImagePath = join(__dirname, '../../public', imgUrl);
 
 		// Read the image file from the public folder
 		const imageBuffer = readFileSync(absoluteImagePath);
@@ -53,11 +54,5 @@ describe('all team logos loading (season 1)', () => {
 		expect(imageBuffer).toBeInstanceOf(Buffer);
 		// Ensures it's not an empty file
 		expect(imageBuffer.length).toBeGreaterThan(10);
-
-		// TODO: consider comparing hash data
-		// Hash the image data
-		// const imageHash = hashImage(imageData);
-		// Compare the fetched image's hash with the expected hash
-		// expect(imageHash).toBe(hash);
 	});
 });
