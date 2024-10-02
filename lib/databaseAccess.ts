@@ -1,5 +1,5 @@
 import type { Dataset } from '@/data/datasets';
-import { getRandomPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { getRandomPlayer, PLAYERS_S1, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimAndAddHours, trimDate } from '@/lib/utils';
@@ -78,10 +78,12 @@ export async function insertPlayers(dataset: Dataset) {
 /**
  * Insert all players from all datasets to the database backlog (if no object with the current dataset id exists, create it, otherwise, update)
  */
-// export async function insertAllPlayers() {
-// 	const dbPlayers = PLAYERS_S1.map((player) => formattedToDbPlayer(player));
-// 	return playerCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: dbPlayers } }, { upsert: true });
-// }
+export async function insertAllPlayers() {
+	for (const playerDataset of SORTED_PLAYERS) {
+		const dbPlayers = playerDataset.players.map((player) => formattedToDbPlayer(player));
+		await playerCollection.updateOne({ _id: playerDataset.dataset }, { $set: { _id: playerDataset.dataset, players: dbPlayers } }, { upsert: true });
+	}
+}
 
 /**
  * Sets the current game answer

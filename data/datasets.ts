@@ -30,7 +30,7 @@ export type CombinedDatasetMetadata =
 export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = [
 	{
 		dataset: 'season1',
-		playerData: SORTED_PLAYERS[0],
+		playerData: SORTED_PLAYERS[0].players,
 		teamData: LOGOS[0].data,
 		teams: ALL_TEAMS[0].data,
 		formattedName: 'Season 1 (2018)',
@@ -40,7 +40,7 @@ export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = [
 	},
 	{
 		dataset: 'season2',
-		playerData: SORTED_PLAYERS[1],
+		playerData: SORTED_PLAYERS[1].players,
 		teamData: LOGOS[1].data,
 		teams: ALL_TEAMS[1].data,
 		formattedName: 'Season 2 (2019)',

@@ -1,7 +1,17 @@
 import { DATASETS, type Dataset } from '@/data/datasets';
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
-import { addIteration, dropAll, generateBacklog, getAnswer, insertPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
+import {
+	addIteration,
+	dropAll,
+	generateBacklog,
+	getAnswer,
+	insertAllPlayers,
+	insertPlayers,
+	rerollAnswer,
+	setCurrentAnswer,
+	setNextAnswer,
+} from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
@@ -20,10 +30,10 @@ console.time('regen');
 // * Delete old data
 await dropAll();
 
-for (const dataset of DATASETS) {
-	// * Set players
-	await insertPlayers(dataset);
+// * Insert all players
+await insertAllPlayers();
 
+for (const dataset of DATASETS) {
 	// * Regen backlog
 	await generateBacklog(GAME_CONFIG.backlogMaxSize, dataset);
 
