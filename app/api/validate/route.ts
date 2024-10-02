@@ -97,7 +97,7 @@ export async function PATCH(req: NextRequest) {
 		return new Response(`Invalid dataset. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
 	}
 
-	// TODO: use dataset query parameter
+	console.log(`Updated cache (${dataset})`);
 	const res = await updateLocalAnswer(datasetParsed.data);
 	if (!res) {
 		// Unintuitive, but this is the happy path (function only returns error response)
