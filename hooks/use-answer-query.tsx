@@ -15,8 +15,7 @@ export function useAnswerQuery(dataset: Dataset) {
 		queryKey: ['dataset', dataset],
 		queryFn: () => fetchValidateDataset(dataset),
 		staleTime: 60 * 60 * 1000, // 1 hour
-		gcTime: 60 * 60 * 1000,
-		refetchInterval: 60 * 60 * 1000,
+		refetchOnWindowFocus: false, // Disable fetching on window focus, data doesn't update that often
 	});
 }
 
