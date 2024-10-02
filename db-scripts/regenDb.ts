@@ -1,17 +1,7 @@
 import { DATASETS, type Dataset } from '@/data/datasets';
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
-import {
-	addIteration,
-	dropAll,
-	generateBacklog,
-	getAnswer,
-	insertAllPlayers,
-	insertPlayers,
-	rerollAnswer,
-	setCurrentAnswer,
-	setNextAnswer,
-} from '@/lib/databaseAccess';
+import { addIteration, dropAll, generateBacklog, getAnswer, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
