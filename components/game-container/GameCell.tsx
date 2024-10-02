@@ -81,7 +81,9 @@ export default function GameCell({
 							{children}
 						</button>
 					</TooltipTrigger>
-					<TooltipContent className={cn(bgColor, tooltipClassname, 'text-white')}>{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}</TooltipContent>
+					<TooltipContent className={cn(bgColor === 'bg-secondary' ? 'bg-card' : bgColor, tooltipClassname, 'text-text')}>
+						{tooltip && tooltip.length > 0 && <p>{tooltip}</p>}
+					</TooltipContent>
 				</Tooltip>
 			</TooltipProvider>
 		</>
