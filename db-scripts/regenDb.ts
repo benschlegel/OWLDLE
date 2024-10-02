@@ -1,7 +1,17 @@
 import { DATASETS, type Dataset } from '@/data/datasets';
 import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
-import { addIteration, dropAll, generateBacklog, getAnswer, insertAllPlayers, rerollAnswer, setCurrentAnswer, setNextAnswer } from '@/lib/databaseAccess';
+import {
+	addIteration,
+	dropAll,
+	generateBacklog,
+	getAnswer,
+	getUniqueRandomPlayer,
+	insertAllPlayers,
+	rerollAnswer,
+	setCurrentAnswer,
+	setNextAnswer,
+} from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
@@ -23,13 +33,19 @@ await dropAll();
 // * Insert all players
 await insertAllPlayers();
 
+// const newDatasets = DATASETS.slice(1);
+
 for (const dataset of DATASETS) {
 	// * Regen backlog
 	await generateBacklog(GAME_CONFIG.backlogMaxSize, dataset);
 
 	// * Insert answers (players get re-rolled later to ensure unique)
-	const randomPlayer = formattedToDbPlayer(PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)]);
-	const randomPlayer2 = formattedToDbPlayer(PLAYERS_S1[Math.floor(Math.random() * PLAYERS_S1.length)]);
+	const randomPlayer = await getUniqueRandomPlayer(dataset);
+	const randomPlayer2 = await getUniqueRandomPlayer(dataset);
+	if (!randomPlayer || !randomPlayer2) {
+		console.error(`Did not find random player for dataset ${dataset}.`);
+		exit(1);
+	}
 	const curr = { player: randomPlayer, iteration: 1, nextReset: nextReset };
 	await setCurrentAnswer(curr, dataset);
 	await setNextAnswer({ player: randomPlayer2, iteration: 2, nextReset: nextNextReset }, dataset);
