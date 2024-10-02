@@ -28,9 +28,11 @@ export default function GameResult({ results, iteration, validatedResponse }: Pr
 			gameIteration: iteration ?? 1,
 			guesses: guesses,
 			maxGuesses: GAME_CONFIG.maxGuesses,
+			siteUrl: GAME_CONFIG.siteUrl,
+			dataset: dataset.dataset,
 		});
 		return formatted;
-	}, [results, iteration]);
+	}, [results, iteration, dataset]);
 
 	// Win/LossScreen automatically reset game state if timer hits 0/next game starts
 	switch (gameState) {
