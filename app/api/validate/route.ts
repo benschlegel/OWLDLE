@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
 
 		if (!currentAnswer || currentAnswer === undefined) {
 			// fetch current data
-			console.log('Writing to cache...');
+			console.log(`Updating cache (${dataset})`);
 			const res = await updateLocalAnswer(datasetParsed.data);
 			if (res) {
 				// Update failed, return error response
