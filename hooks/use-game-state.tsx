@@ -107,12 +107,12 @@ export default function useGameState({ slug }: Props) {
 			// Guess could not be processed, remove last guess
 			setIsRollback(true);
 			setPlayerGuesses((old) => old.slice(0, -1));
-			toast({
-				title: 'Please try again',
-				description: 'Something went wrong, please try again',
-			});
+			// toast({
+			// 	title: 'Please try again',
+			// 	description: 'Something went wrong, please try again',
+			// });
 		}
-	}, [toast, gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame]);
+	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame]);
 
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
