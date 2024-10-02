@@ -22,6 +22,10 @@ export type FormatConfig = {
 	 *  The number of the current iteration of the game (e.g. 3 on the third day)
 	 */
 	gameIteration: number;
+	/**
+	 * What dataset the result is from (gets appended to url, e.g. www.owldle.com/season2, if dataset is season2)
+	 */
+	dataset?: Dataset;
 };
 
 /**
@@ -29,9 +33,13 @@ export type FormatConfig = {
  * @param config The config to ge for formatting (more info can be found in FormatConfig type)
  * @returns a string formatted using emojis (🟥 🟩) + stats
  */
-export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl }: FormatConfig): string {
+export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl, dataset }: FormatConfig): string {
+	let datasetPostfix = '';
+	if (dataset !== undefined && dataset !== 'season1') {
+		datasetPostfix = dataset;
+	}
+
 	if (guesses.length === 0 || guesses === undefined) return '';
-	// TODO: add X to header if game was not completed successfully
 	// Add header
 	let result = `${gameName} ${gameIteration} ${guesses.length}/${maxGuesses}\n`;
 
@@ -48,7 +56,7 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (hasFailed === true) result += '❌';
 
 	// Add footer (with site url)
-	result += `\n<${siteUrl ?? getSiteName()}>`;
+	result += `\n<${siteUrl ? siteUrl + datasetPostfix : getSiteName()}>`;
 	return result;
 }
 
