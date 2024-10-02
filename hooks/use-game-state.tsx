@@ -36,25 +36,10 @@ export default function useGameState({ slug }: Props) {
 	}, [slug, setDataset]);
 
 	// * Fetch correct guess + data from server
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Reset guesses every time that dataset changes
 	useEffect(() => {
 		// Reset all guesses (in case dataset was changed)
 		resetGuesses();
 		console.log('Dataset: ', dataset);
-
-		// fetch(`/api/validate?${dataset.dataset}`)
-		// 	.then((response) => response.json())
-		// 	.catch(() => {
-		// 		toast({
-		// 			title: 'Server error',
-		// 			description: "Can't reach server or invalid data.",
-		// 			variant: 'destructive',
-		// 		});
-		// 	})
-		// 	.then((data) => {
-		// 		console.log('New data: ', data);
-		// 		setValidatedData(data);
-		// 	});
 	}, [dataset]);
 
 	const resetGuesses = useCallback(() => {
@@ -80,7 +65,7 @@ export default function useGameState({ slug }: Props) {
 
 	const saveGame = useCallback(
 		(data: DbSaveData) => {
-			fetch('/api/save', { method: 'POST', body: JSON.stringify(data) })
+			fetch(`/api/save?dataset=${dataset.dataset}`, { method: 'POST', body: JSON.stringify(data) })
 				.then((r) => {
 					if (r.status === 200) {
 						plausible('finishGame', { props: { didSucceed: true, state: data.gameResult } });
@@ -89,7 +74,7 @@ export default function useGameState({ slug }: Props) {
 				})
 				.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: data.gameResult } }));
 		},
-		[plausible]
+		[plausible, dataset.dataset]
 	);
 
 	const handleGuess = useCallback(async () => {
