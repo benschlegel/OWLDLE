@@ -31,19 +31,19 @@ const owlHeader = localFont({
 	weight: '700',
 });
 
-const title = 'OWLDLE';
-const description = 'Guess the Season 1 Overwatch League player';
+export const DEFAULT_TITLE = 'OWLDLE';
+export const DEFAULT_DESCRIPTION = 'Guess the Overwatch League player';
 const ogImagePath = '/open-graph.png';
 const ogImageWidth = 1200;
 const ogImageHeight = 630;
 
 export const metadata: Metadata = {
-	title: title,
-	description: description,
+	title: DEFAULT_TITLE,
+	description: DEFAULT_DESCRIPTION,
 	metadataBase: new URL(GAME_CONFIG.siteUrl),
 	openGraph: {
-		title: title,
-		description: description,
+		title: DEFAULT_TITLE,
+		description: DEFAULT_DESCRIPTION,
 		url: GAME_CONFIG.siteUrl,
 		images: [
 			{
@@ -56,8 +56,8 @@ export const metadata: Metadata = {
 		siteName: 'owldle',
 	},
 	twitter: {
-		title: title,
-		description: description,
+		title: DEFAULT_TITLE,
+		description: DEFAULT_DESCRIPTION,
 		site: GAME_CONFIG.siteUrl,
 		siteId: 'owldle',
 		images: [
@@ -70,6 +70,7 @@ export const metadata: Metadata = {
 		],
 		card: 'summary_large_image',
 	},
+	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame'],
 };
 
 export default function RootLayout({
