@@ -31,7 +31,7 @@ export default function Header({ slug }: Props) {
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
-				<div className="flex gap-2">
+				<div className="flex gap-2 items-center">
 					<HelpDialog>
 						<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
 							<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
