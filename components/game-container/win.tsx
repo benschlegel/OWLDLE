@@ -9,15 +9,17 @@ import Confetti from 'react-confetti';
 import { Button } from '@/components/ui/button';
 import { usePlausible } from 'next-plausible';
 import type { PlausibleEvents } from '@/types/plausible';
+import type { Dataset } from '@/data/datasets';
 
 type Props = {
 	nextReset: Date;
 	formattedResult: string;
+	dataset: Dataset;
 };
 
 const confettiDuration = 7500;
 
-export default function WinScreen({ nextReset, formattedResult }: Partial<Props>) {
+export default function WinScreen({ nextReset, formattedResult, dataset }: Partial<Props>) {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
@@ -98,7 +100,7 @@ export default function WinScreen({ nextReset, formattedResult }: Partial<Props>
 				className="w-72 mt-3"
 				onClick={() => {
 					navigator.clipboard.writeText(formattedResult ?? '');
-					plausible('copyResult', { props: { state: 'won' } });
+					plausible('copyResult', { props: { state: 'won', dataset: dataset ?? 'season1' } });
 					setShowButtonConfetti(true);
 				}}
 				switchedContent={<SwitchedButtonContent />}>
