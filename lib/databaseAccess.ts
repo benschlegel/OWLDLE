@@ -54,7 +54,7 @@ const feedbackCollection = database.collection<DbFeedback>(feedbackID);
 const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
 
 const iterationCollection = database.collection<DbIteration>(iterationsId);
-iterationCollection.createIndex({ iteration: 1 }, { unique: true });
+iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
 
 /**
  * CAREFUL: deletes the entire player backlog from database
@@ -70,10 +70,18 @@ export async function dropAll() {
 /**
  * Insert all players from a dataset to the database backlog (if no object with the current dataset id exists, create it, otherwise, update)
  */
-export async function insertAllPlayers(dataset: Dataset) {
+export async function insertPlayers(dataset: Dataset) {
 	const dbPlayers = PLAYERS_S1.map((player) => formattedToDbPlayer(player));
 	return playerCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: dbPlayers } }, { upsert: true });
 }
+
+/**
+ * Insert all players from all datasets to the database backlog (if no object with the current dataset id exists, create it, otherwise, update)
+ */
+// export async function insertAllPlayers() {
+// 	const dbPlayers = PLAYERS_S1.map((player) => formattedToDbPlayer(player));
+// 	return playerCollection.updateOne({ _id: dataset }, { $set: { _id: dataset, players: dbPlayers } }, { upsert: true });
+// }
 
 /**
  * Sets the current game answer
