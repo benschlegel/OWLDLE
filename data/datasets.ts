@@ -27,12 +27,9 @@ export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season5'>
 	| DatasetMetadata<'season6'>;
 
-export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = [
+const datasetInfo: Partial<CombinedDatasetMetadata>[] = [
 	{
 		dataset: 'season1',
-		playerData: SORTED_PLAYERS[0].players,
-		teamData: LOGOS[0].data,
-		teams: ALL_TEAMS[0].data,
 		formattedName: 'Season 1 (2018)',
 		name: 'Season 1',
 		year: '2018',
@@ -40,15 +37,45 @@ export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = [
 	},
 	{
 		dataset: 'season2',
-		playerData: SORTED_PLAYERS[1].players,
-		teamData: LOGOS[1].data,
-		teams: ALL_TEAMS[1].data,
 		formattedName: 'Season 2 (2019)',
 		name: 'Season 2',
 		year: '2019',
 		shorthand: 'S2',
 	},
+	{
+		dataset: 'season3',
+		formattedName: 'Season 3 (2020)',
+		name: 'Season 3',
+		year: '2020',
+		shorthand: 'S3',
+	},
+	{
+		dataset: 'season4',
+		formattedName: 'Season 4 (2021)',
+		name: 'Season 4',
+		year: '2021',
+		shorthand: 'S4',
+	},
+	{
+		dataset: 'season5',
+		formattedName: 'Season 5 (2022)',
+		name: 'Season 5',
+		year: '2022',
+		shorthand: 'S5',
+	},
+	{
+		dataset: 'season6',
+		formattedName: 'Season 6 (2023)',
+		name: 'Season 6',
+		year: '2023',
+		shorthand: 'S6',
+	},
 ] as const;
+
+export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = datasetInfo.map(
+	(dataset, index) =>
+		({ ...dataset, playerData: SORTED_PLAYERS[index].players, teamData: LOGOS[index].data, teams: ALL_TEAMS[index].data }) as CombinedDatasetMetadata
+);
 
 export const DEFAULT_DATASET = FORMATTED_DATASETS[0];
 

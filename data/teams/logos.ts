@@ -126,8 +126,7 @@ const teamLogosS3: Partial<TeamLogoData<'season3'>>[] = [
 	{
 		teamName: 'FloridaMayhem',
 		displayName: 'Florida Mayhem',
-		backgroundColor: '#3db2e3',
-		useDarkForeground: true,
+		backgroundColor: '#000',
 	},
 	{
 		teamName: 'SanFranciscoShock',
@@ -179,7 +178,12 @@ const TEAM_LOGOS_S3 = [...(TEAM_LOGOS_S2 as unknown as TeamLogoData<'season3'>[]
 for (const logo of teamLogosS3) {
 	const oldLogoIndex = TEAM_LOGOS_S3.findIndex((l) => l.teamName === logo.teamName);
 	if (oldLogoIndex !== -1) {
-		TEAM_LOGOS_S3[oldLogoIndex] = { ...TEAM_LOGOS_S3[oldLogoIndex], ...logo, imgUrl: `/teams/s3/${logo.teamName}.${GAME_CONFIG.teamLogoImgExtension}` };
+		TEAM_LOGOS_S3[oldLogoIndex] = {
+			...TEAM_LOGOS_S3[oldLogoIndex],
+			...logo,
+			useDarkForeground: logo.useDarkForeground,
+			imgUrl: `/teams/s3/${logo.teamName}.${GAME_CONFIG.teamLogoImgExtension}`,
+		};
 	}
 }
 
