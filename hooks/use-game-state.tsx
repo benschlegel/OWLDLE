@@ -68,11 +68,11 @@ export default function useGameState({ slug }: Props) {
 			fetch(`/api/save?dataset=${dataset.dataset}`, { method: 'POST', body: JSON.stringify(data) })
 				.then((r) => {
 					if (r.status === 200) {
-						plausible('finishGame', { props: { didSucceed: true, state: data.gameResult } });
+						plausible('finishGame', { props: { didSucceed: true, state: data.gameResult, dataset: dataset.dataset } });
 						console.log('saved successfully!');
 					}
 				})
-				.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: data.gameResult } }));
+				.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: data.gameResult, dataset: dataset.dataset } }));
 		},
 		[plausible, dataset.dataset]
 	);
