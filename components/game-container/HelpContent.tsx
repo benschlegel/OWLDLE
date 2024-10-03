@@ -12,7 +12,7 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { getAtlantic, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import type { ValidateResponse } from '@/types/server';
-import { CircleHelpIcon, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
+import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
@@ -97,18 +97,6 @@ export default function HelpContent({ setIsOpen }: Props) {
 								<Label htmlFor={`detail-${cell.text}`}>{cell.detailText}</Label>
 							</div>
 						))}
-						{/* {demoCells.slice(1).map((cell) => (
-							<div key={cell.detailText} className="flex gap-4 items-center sm:col-span-1 col-span-2">
-								<GameCell
-									className={`bg-[${cell.bgColor}] text-[#3b3b44] !w-[2.5rem] !h-[2.5rem] sm:!w-[3rem] sm:!h-[3rem]  flex items-center justify-center`}
-									tooltipClassname="!hidden"
-									ignoreTabIndex
-									id={`detail-${cell.text}`}>
-									<p>{cell.text}</p>
-								</GameCell>
-								<Label htmlFor={cell.text}>{cell.detailText}</Label>
-							</div>
-						))} */}
 					</div>
 
 					<Accordion type="single" collapsible className="px-2">
@@ -176,7 +164,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 						</div>
 						<div className="flex flex-col gap-2">
 							<p className="scroll-m-20 text-base tracking-normal mt-4">
-								Most elements on this website have tooltips, so when you need more info, try hovering it. The website also has some hotkeys:
+								Most elements on this website have tooltips, so when you need more info, try hovering it (or pressing on mobile). The website also has some
+								hotkeys:
 							</p>
 							<div className="flex items-center gap-6 mt-1">
 								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
@@ -202,25 +191,45 @@ export default function HelpContent({ setIsOpen }: Props) {
 								)}
 							</div>
 						</div>
-						<Separator className="my-4" />
-						<div>
-							<p className="scroll-m-20 text-base tracking-normal">
-								If you like this project, you can{' '}
-								<Link
-									href={'https://ko-fi.com/scorer5'}
+					</div>
+					<div>
+						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
+							<Clapperboard className="opacity-80" />
+							<h2 className="">Credits</h2>
+						</div>
+						<div className="flex flex-col gap-2">
+							<p className="text-base tracking-normal mt-4">
+								All player data was sourced through{' '}
+								<a
+									href={'https://liquipedia.net/overwatch/Overwatch_League/2018'}
 									className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
-									prefetch={false}>
-									buy me a coffee
-								</Link>{' '}
-								or check out the source code for this project on{' '}
-								<Link
-									href={'https://github.com/benschlegel/OWLDLE'}
-									className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
-									prefetch={false}>
-									Github
-								</Link>
-								.
+									target="_blank"
+									rel="noreferrer">
+									Liquipedia
+								</a>
+								. Not affiliated with Blizzard Entertainment.
 							</p>
+							<div>
+								<p className="scroll-m-20 text-base tracking-normal">
+									If you like this project, you can{' '}
+									<a
+										href={'https://ko-fi.com/scorer5'}
+										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
+										target="_blank"
+										rel="noreferrer">
+										buy me a coffee
+									</a>{' '}
+									or check out the source code for this project on{' '}
+									<a
+										href={'https://github.com/benschlegel/OWLDLE'}
+										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
+										target="_blank"
+										rel="noreferrer">
+										Github
+									</a>
+									.
+								</p>
+							</div>
 						</div>
 					</div>
 				</main>
