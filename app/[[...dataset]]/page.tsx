@@ -1,6 +1,7 @@
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/app/layout';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, OgConfig, metadata as prevMetadata } from '@/app/layout';
 import GamePage from '@/components/landing-page/game-page';
 import { type Dataset, DATASETS } from '@/data/datasets';
+import { GAME_CONFIG } from '@/lib/config';
 import { notFound } from 'next/navigation';
 
 // Predefined valid seasons
@@ -27,10 +28,46 @@ export async function generateMetadata({ params }: SeasonPageProps) {
 
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = `${currentDataset.charAt(0).toUpperCase() + currentDataset.slice(1, -1)} ${currentDataset.slice(-1)}`;
+	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
+	const formattedDescritpion = `${DEFAULT_DESCRIPTION} (${formattedDataset})`;
+
+	const ogImagePath = `/open-graph${currentDataset}.png`;
 
 	return {
-		title: `${DEFAULT_TITLE} - ${formattedDataset}`,
-		description: `${DEFAULT_DESCRIPTION} (${formattedDataset})`,
+		...prevMetadata,
+		title: formattedTitle,
+		description: formattedDescritpion,
+		openGraph: {
+			title: formattedTitle,
+			description: formattedDescritpion,
+			url: GAME_CONFIG.siteUrl,
+			images: [
+				{
+					alt: formattedTitle,
+					url: ogImagePath,
+					width: OgConfig.ogImageWidth,
+					height: OgConfig.ogImageHeight,
+				},
+			],
+			type: 'website',
+			siteName: 'owldle',
+		},
+		twitter: {
+			title: DEFAULT_TITLE,
+			description: DEFAULT_DESCRIPTION,
+			site: GAME_CONFIG.siteUrl,
+			siteId: 'owldle',
+			images: [
+				{
+					url: `https://www.owldle.com${ogImagePath}`,
+					alt: formattedTitle,
+					width: OgConfig.ogImageWidth,
+					height: OgConfig.ogImageHeight,
+					type: 'website',
+				},
+			],
+			card: 'summary_large_image',
+		},
 	};
 }
 

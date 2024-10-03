@@ -33,9 +33,11 @@ const owlHeader = localFont({
 
 export const DEFAULT_TITLE = 'OWLDLE';
 export const DEFAULT_DESCRIPTION = 'Guess the Overwatch League player';
-const ogImagePath = '/open-graph.png';
-const ogImageWidth = 1200;
-const ogImageHeight = 630;
+export const OgConfig = {
+	ogImagePath: '/open-graph.png',
+	ogImageWidth: 1200,
+	ogImageHeight: 630,
+};
 
 export const metadata: Metadata = {
 	title: DEFAULT_TITLE,
@@ -47,9 +49,10 @@ export const metadata: Metadata = {
 		url: GAME_CONFIG.siteUrl,
 		images: [
 			{
-				url: ogImagePath,
-				width: ogImageWidth,
-				height: ogImageHeight,
+				url: OgConfig.ogImagePath,
+				alt: DEFAULT_TITLE,
+				width: OgConfig.ogImageWidth,
+				height: OgConfig.ogImageHeight,
 			},
 		],
 		type: 'website',
@@ -62,9 +65,10 @@ export const metadata: Metadata = {
 		siteId: 'owldle',
 		images: [
 			{
-				url: `https://www.owldle.com${ogImagePath}`,
-				width: ogImageWidth,
-				height: ogImageHeight,
+				url: `https://www.owldle.com${OgConfig.ogImagePath}`,
+				alt: DEFAULT_TITLE,
+				width: OgConfig.ogImageWidth,
+				height: OgConfig.ogImageHeight,
 				type: 'website',
 			},
 		],
