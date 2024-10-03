@@ -5,31 +5,13 @@ import SeasonSelector from '@/components/game-container/SeasonSelector';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { Suspense } from 'react';
-import { parseAsBoolean, useQueryState } from 'nuqs';
+import { CircleHelpIcon } from 'lucide-react';
 
 type Props = {
 	slug: string;
 };
 
 export default function Header({ slug }: Props) {
-	const router = useRouter();
-	const [open, setOpen] = useQueryState('showFeedback', parseAsBoolean.withDefault(false));
-
-	const feedbackButton = (
-		<Button
-			variant="ghost"
-			size="icon"
-			className="p-0"
-			onClick={() => {
-				setOpen(true);
-			}}>
-			<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
-			<span className="sr-only">Send feedback</span>
-		</Button>
-	);
 	return (
 		<>
 			<div className="flex flex-row justify-between items-center w-full">
@@ -49,17 +31,12 @@ export default function Header({ slug }: Props) {
 								fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 							}}>
 							<span className="text-primary-foreground">OWL</span>
-							{/* <span className="text-primary-foreground/70">S1</span>LE */}
 							DLE
 						</h1>
 					</div>
 				</div>
 				<div className="flex gap-1">
-					<Suspense fallback={feedbackButton}>
-						<FeedbackDialog slug={slug} open={open} setOpen={setOpen}>
-							{feedbackButton}
-						</FeedbackDialog>
-					</Suspense>
+					<FeedbackDialog />
 					<ModeToggle />
 				</div>
 			</div>
