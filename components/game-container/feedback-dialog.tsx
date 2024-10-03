@@ -1,19 +1,16 @@
 'use client';
 import FeedbackContent from '@/components/game-container/feedback-content';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
-import { useRouter, useSearchParams } from 'next/navigation';
+import type { Options } from 'nuqs';
 import { useCallback, useEffect, useState, type PropsWithChildren } from 'react';
 
 type Props = {
 	slug: string;
+	setOpen: <Shallow>(value: boolean | ((old: boolean) => boolean | null) | null, options?: Options<Shallow> | undefined) => Promise<URLSearchParams>;
+	open: boolean;
 };
 
-export function FeedbackDialog({ children, slug }: PropsWithChildren<Props>) {
-	const searchParams = useSearchParams();
-	const showFeedback = searchParams.get('showFeedback');
-	const [open, setOpen] = useState(showFeedback === 'true');
-	const router = useRouter();
-
+export function FeedbackDialog({ children, slug, open, setOpen }: PropsWithChildren<Props>) {
 	useEffect(() => {
 		if (open === false) {
 			handleClose();
@@ -21,8 +18,8 @@ export function FeedbackDialog({ children, slug }: PropsWithChildren<Props>) {
 	}, [open]);
 
 	const handleClose = useCallback(() => {
-		router.replace(slug);
-	}, [router, slug]);
+		setOpen(null);
+	}, [setOpen]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>

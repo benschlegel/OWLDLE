@@ -8,6 +8,7 @@ import { Separator } from '@/components/ui/separator';
 import { CircleHelpIcon, MessageSquareTextIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Suspense } from 'react';
+import { parseAsBoolean, useQueryState } from 'nuqs';
 
 type Props = {
 	slug: string;
@@ -15,6 +16,7 @@ type Props = {
 
 export default function Header({ slug }: Props) {
 	const router = useRouter();
+	const [open, setOpen] = useQueryState('showFeedback', parseAsBoolean.withDefault(false));
 
 	const feedbackButton = (
 		<Button
@@ -22,7 +24,7 @@ export default function Header({ slug }: Props) {
 			size="icon"
 			className="p-0"
 			onClick={() => {
-				router.replace(`${slug}?showFeedback=true`);
+				setOpen(true);
 			}}>
 			<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
 			<span className="sr-only">Send feedback</span>
@@ -54,7 +56,9 @@ export default function Header({ slug }: Props) {
 				</div>
 				<div className="flex gap-1">
 					<Suspense fallback={feedbackButton}>
-						<FeedbackDialog slug={slug}>{feedbackButton}</FeedbackDialog>
+						<FeedbackDialog slug={slug} open={open} setOpen={setOpen}>
+							{feedbackButton}
+						</FeedbackDialog>
 					</Suspense>
 					<ModeToggle />
 				</div>
