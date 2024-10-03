@@ -77,39 +77,6 @@ export default function HelpContent({ setIsOpen }: Props) {
 						Guess the correct Overwatch League player within 8 attempts to win. After each guess, you will receive hints based on attributes like the player's
 						role, team, region and nationality to help you get closer to the right answer.
 					</blockquote>
-					<div>
-						{/* Guesses section */}
-						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
-							<Dices className="opacity-80" />
-							<h2 className="">Guesses</h2>
-						</div>
-						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you made a guess:</p>
-						<div className="flex flex-row sm:gap-2 gap-1 w-full md:w-[60%]">
-							{demoCells.map((cell) => (
-								<CustomCell cellData={cell} key={cell.text} />
-							))}
-						</div>
-					</div>
-					<div className="grid grid-cols-2 grid-rows-2 gap-3 mt-2">
-						{demoCells.slice(1).map((cell) => (
-							<div key={cell.text} className="flex gap-4 items-center sm:col-span-1 col-span-2">
-								<CustomCell id={`detail-${cell.text}`} cellData={cell} ignoreTabIndex isSmall />
-								<Label htmlFor={`detail-${cell.text}`}>{cell.detailText}</Label>
-							</div>
-						))}
-					</div>
-
-					<Accordion type="single" collapsible className="px-2">
-						<AccordionItem value="item-1">
-							<AccordionTrigger>Full example</AccordionTrigger>
-							<AccordionContent>
-								<HelpExample />
-							</AccordionContent>
-						</AccordionItem>
-					</Accordion>
-					<p className="scroll-m-20 text-base tracking-normal">
-						A correct guess will mark the field as green while a wrong one marks it red. Use this information when making your next guess.
-					</p>
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
@@ -159,6 +126,39 @@ export default function HelpContent({ setIsOpen }: Props) {
 							Check back here when switching to a different season to see updated teams. You can switch seasons using the dropdown next to the help icon.
 						</blockquote>
 					</div>
+					<div>
+						{/* Guesses section */}
+						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
+							<Dices className="opacity-80" />
+							<h2 className="">Guesses</h2>
+						</div>
+						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you made a guess:</p>
+						<div className="flex flex-row sm:gap-2 gap-1 w-full md:w-[60%]">
+							{demoCells.map((cell) => (
+								<CustomCell cellData={cell} key={cell.text} />
+							))}
+						</div>
+					</div>
+					<div className="grid grid-cols-2 grid-rows-2 gap-3 mt-2">
+						{demoCells.slice(1).map((cell) => (
+							<div key={cell.text} className="flex gap-4 items-center sm:col-span-1 col-span-2">
+								<CustomCell id={`detail-${cell.text}`} cellData={cell} ignoreTabIndex isSmall />
+								<Label htmlFor={`detail-${cell.text}`}>{cell.detailText}</Label>
+							</div>
+						))}
+					</div>
+
+					<Accordion type="single" collapsible className="px-2">
+						<AccordionItem value="item-1">
+							<AccordionTrigger>Full example</AccordionTrigger>
+							<AccordionContent>
+								<HelpExample />
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
+					<p className="scroll-m-20 text-base tracking-normal">
+						A correct guess will mark the field as green while a wrong one marks it red. Use this information when making your next guess.
+					</p>
 					{/* Tips section */}
 					<div>
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
