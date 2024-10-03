@@ -12,7 +12,7 @@ export function HelpDialog() {
 	const [open, setOpen] = useQueryState('showHelp', parseAsBoolean.withDefault(false));
 
 	const TriggerButton = (
-		<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
+		<Button variant="ghost" size="icon" className="p-0" aria-activedescendant-label="Help">
 			<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 		</Button>
 	);
