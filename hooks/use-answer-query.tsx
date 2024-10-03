@@ -7,6 +7,7 @@ async function fetchValidateDataset(dataset: Dataset): Promise<ValidateResponse>
 	if (!response.ok) {
 		throw new Error('Network response was not ok');
 	}
+	console.log('Fetched new dataset.');
 	return response.json();
 }
 
