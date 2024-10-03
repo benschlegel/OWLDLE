@@ -4,22 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { CircleHelpIcon } from 'lucide-react';
 import { parseAsBoolean, useQueryState } from 'nuqs';
-import { cloneElement, type PropsWithChildren, useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect } from 'react';
 
 const localStorageKey = 'sawHelp';
 
-export function HelpDialog({ children }: PropsWithChildren) {
+export function HelpDialog() {
 	const [open, setOpen] = useQueryState('showHelp', parseAsBoolean.withDefault(false));
-	const [mounted, setMounted] = useState(false);
-	// setOpen(defaultVal);
 
-	const TriggerButton = useMemo(
-		() => (
-			<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-				<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
-			</Button>
-		),
-		[]
+	const TriggerButton = (
+		<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
+			<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+		</Button>
 	);
 
 	useEffect(() => {
@@ -39,25 +34,15 @@ export function HelpDialog({ children }: PropsWithChildren) {
 
 	// Keep localStorage value in sync with state
 	useEffect(() => {
-		setMounted(true);
 		// Set to false after closing dialog for the first time
 		if (open === false) {
 			localStorage.setItem(localStorageKey, `${open}`);
 		}
-		console.log('Local storage: ', open);
 	}, [open]);
-
-	if (!mounted) {
-		// biome-ignore lint/suspicious/noExplicitAny: other types for children did not work
-		return cloneElement(TriggerButton as any, {
-			onClick: (e) => e.preventDefault(), // Prevent any action before hydration
-		});
-	}
-
 	return (
 		<Dialog open={open} onOpenChange={(val) => (val === true ? setOpen(true) : setOpen(null))} aria-describedby="Tutorial on how to play the game">
 			<DialogTrigger asChild>{TriggerButton}</DialogTrigger>
-			{mounted && <HelpContent setIsOpen={setOpen} />}
+			<HelpContent setIsOpen={setOpen} />
 		</Dialog>
 	);
 }
