@@ -71,6 +71,7 @@ Major features are:
 - 🦿 Following modern accessiblity recommendations
   - Fully compatible with screen readers
   - Entire website can be navigated/used with keyboard inputs only
+  - All dialogs use search parameters (meaning you can share a link where e.g. the feedback dialog is open)
 - 🕵 Anonymous + EU compliant analytics (using [`Plausible`](https://plausible.io/))
 - ⚡ Blazingly fast through server side rendering + vercel edge functions/distributed servers
 - 📃 Follows modern SEO standards
@@ -175,7 +176,7 @@ Docs coming soon.
 
 Not affiliated with Blizzard, data from Liquipedia.
 
-## Sponsor me
+## Sponsor
 If you like this project, you can support me here
 
 <a href="https://ko-fi.com/bschlegel">
