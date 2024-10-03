@@ -13,11 +13,41 @@ export default function sitemap(): MetadataRoute.Sitemap {
 			changeFrequency: 'daily',
 			priority: 1,
 		},
-		// {
-		// 	url: 'https://acme.com/help',
-		// 	lastModified: new Date(),
-		// 	changeFrequency: 'monthly',
-		// 	priority: 0.8,
-		// },
+		{
+			url: 'https://www.owldle.com/season2',
+			lastModified: yesterday,
+			changeFrequency: 'daily',
+			priority: 1,
+		},
+		{
+			url: 'https://www.owldle.com/season3',
+			lastModified: yesterday,
+			changeFrequency: 'daily',
+			priority: 1,
+		},
+		{
+			url: 'https://www.owldle.com/season4',
+			lastModified: yesterday,
+			changeFrequency: 'daily',
+			priority: 1,
+		},
+		{
+			url: 'https://www.owldle.com/season5',
+			lastModified: yesterday,
+			changeFrequency: 'daily',
+			priority: 1,
+		},
+		{
+			url: 'https://www.owldle.com/season6',
+			lastModified: yesterday,
+			changeFrequency: 'daily',
+			priority: 1,
+		},
+		{
+			url: 'https://www.owldle.com/?feedback=true',
+			lastModified: yesterday,
+			changeFrequency: 'daily',
+			priority: 0.5,
+		},
 	];
 }
