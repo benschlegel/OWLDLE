@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: SeasonPageProps) {
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = `${currentDataset.charAt(0).toUpperCase() + currentDataset.slice(1, -1)} ${currentDataset.slice(-1)}`;
 	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
-	const formattedDescritpion = `${DEFAULT_DESCRIPTION} (${formattedDataset})`;
+	const formattedDescritpion = DEFAULT_DESCRIPTION;
 
 	const ogImagePath = `/open-graph/${currentDataset}.png`;
 
