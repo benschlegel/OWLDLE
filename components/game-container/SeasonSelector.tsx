@@ -28,7 +28,7 @@ export default function SeasonSelector({ slug }: Props) {
 
 	return (
 		<Select defaultValue={dataset?.dataset} onValueChange={handleChange}>
-			<SelectTrigger className="w-auto max-w-[7rem] px-3 pr-2 h-9 py-1 text-left text-sm leading-tight gap-1">
+			<SelectTrigger className="w-auto max-w-[7rem] px-3 pr-2 h-9 py-1 text-left text-sm leading-tight gap-1" aria-label="Select season">
 				<SelectValue placeholder={value}>{value}</SelectValue>
 			</SelectTrigger>
 			<SelectContent>
