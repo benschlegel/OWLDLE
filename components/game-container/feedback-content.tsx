@@ -7,13 +7,14 @@ import StarRating from '@/components/ui/rate-stars';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import type { Feedback } from '@/types/server';
+import type { Options } from 'nuqs';
 import type React from 'react';
-import { type Dispatch, type SetStateAction, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 const initialRating = -1;
 
 type Props = {
-	setIsOpen: Dispatch<SetStateAction<boolean>>;
+	setIsOpen: <Shallow>(value: boolean | ((old: boolean) => boolean | null) | null, options?: Options<Shallow> | undefined) => Promise<URLSearchParams>;
 };
 
 export default function FeedbackContent({ setIsOpen }: Props) {
@@ -35,7 +36,7 @@ export default function FeedbackContent({ setIsOpen }: Props) {
 				if (res.status === 200) {
 					setFeedback('');
 					setRating(initialRating);
-					setIsOpen(false);
+					setIsOpen(null);
 					toast({
 						title: 'Feedback sent!',
 						description: 'Thanks for your feedback ❤️',
