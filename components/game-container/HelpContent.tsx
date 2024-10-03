@@ -10,6 +10,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { DatasetContext } from '@/context/DatasetContext';
 import { getAtlantic, getPacific } from '@/data/teams/teams';
+import { useAnswerQuery } from '@/hooks/use-answer-query';
 import type { ValidateResponse } from '@/types/server';
 import { CircleHelpIcon, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -51,21 +52,12 @@ function countdownRenderer({ days, hours, minutes, seconds, milliseconds, comple
 }
 
 export default function HelpContent({ setIsOpen }: Props) {
-	const [nextReset, setNextReset] = useState<Date>();
 	const [dataset, _] = useContext(DatasetContext);
-	const [mounted, setMounted] = useState(false);
+	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
 
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
 
-	useEffect(() => {
-		async function fetchReset() {
-			const res = await fetch('/api/validate');
-			const data = (await res.json()) as ValidateResponse;
-			setNextReset(new Date(data.nextReset));
-		}
-		fetchReset().then(() => setMounted(true));
-	}, []);
 	return (
 		<DialogContent
 			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
@@ -203,8 +195,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
 							<div className="w-full gap-2 flex flex-row">
 								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
-								{mounted ? (
-									<Countdown key="countdown" date={nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
+								{isSuccess ? (
+									<Countdown key="countdown" date={validatedData?.nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
 								) : (
 									<p className="text-muted-foreground">loading...</p>
 								)}
