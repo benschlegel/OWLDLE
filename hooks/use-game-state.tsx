@@ -27,7 +27,6 @@ export default function useGameState({ slug }: Props) {
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 	const [isRollback, setIsRollback] = useState(false);
 	const plausible = usePlausible<PlausibleEvents>();
-	console.log('Game state render.');
 
 	// * Set global dataset if slug changes
 	useEffect(() => {
