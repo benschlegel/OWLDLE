@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: SeasonPageProps) {
 	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
 	const formattedDescritpion = `${DEFAULT_DESCRIPTION} (${formattedDataset})`;
 
-	const ogImagePath = `/open-graph${currentDataset}.png`;
+	const ogImagePath = `/open-graph/${currentDataset}.png`;
 
 	return {
 		...prevMetadata,
