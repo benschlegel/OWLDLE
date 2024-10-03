@@ -16,7 +16,7 @@ interface SeasonPageProps {
 	params: { dataset?: string[] };
 }
 
-export async function Image({ params }: SeasonPageProps) {
+export async function Image_disabled({ params }: SeasonPageProps) {
 	const { dataset } = params;
 	let formattedDataset = dataset ? dataset[0] : null;
 	if (!DATASETS.includes(formattedDataset as Dataset) || formattedDataset === 'season1') {
