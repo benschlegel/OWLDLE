@@ -7,18 +7,16 @@ import CustomCell from '@/components/ui/CustomCell';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
 import { DatasetContext } from '@/context/DatasetContext';
 import { getAtlantic, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
-import type { ValidateResponse } from '@/types/server';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
-import Link from 'next/link';
+import type { Options } from 'nuqs';
 import { useContext, useEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
-	setIsOpen: (old: boolean) => void;
+	setIsOpen: <Shallow>(value: boolean | ((old: boolean) => boolean | null) | null, options?: Options<Shallow> | undefined) => Promise<URLSearchParams>;
 };
 
 export type DemoCell = {
@@ -238,12 +236,17 @@ export default function HelpContent({ setIsOpen }: Props) {
 				</main>
 			</ScrollArea>
 			<DialogFooter>
-				<Button type="submit" variant="outline" autoFocus onClick={() => setIsOpen(false)}>
+				<Button
+					type="submit"
+					variant="outline"
+					autoFocus
+					onClick={() => {
+						console.log('Button clicked.');
+						setIsOpen(null);
+					}}>
 					Close
 				</Button>
 			</DialogFooter>
 		</DialogContent>
 	);
 }
-
-// TODO: add example (accordion)
