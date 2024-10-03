@@ -24,10 +24,10 @@ export default function useGameState({ slug }: Props) {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [dataset, setDataset] = useContext(DatasetContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
-	const { data: validatedData, isLoading, error } = useAnswerQuery(dataset.dataset);
+	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 	const [isRollback, setIsRollback] = useState(false);
-	const { toast } = useToast();
 	const plausible = usePlausible<PlausibleEvents>();
+	console.log('Game state render.');
 
 	// * Set global dataset if slug changes
 	useEffect(() => {

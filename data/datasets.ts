@@ -27,7 +27,15 @@ export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season5'>
 	| DatasetMetadata<'season6'>;
 
-const datasetInfo: Partial<CombinedDatasetMetadata>[] = [
+type BaseDatasetMetadata = {
+	dataset: Dataset;
+	formattedName: string;
+	name: string;
+	year: string;
+	shorthand: string;
+};
+
+export const datasetInfo: BaseDatasetMetadata[] = [
 	{
 		dataset: 'season1',
 		formattedName: 'Season 1 (2018)',
