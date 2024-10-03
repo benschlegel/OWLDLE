@@ -155,6 +155,9 @@ export default function HelpContent({ setIsOpen }: Props) {
 								</div>
 							</div>
 						</div>
+						<blockquote className="leading-7 tracking-wide opacity-90 border-primary-foreground border-l-[3px] pl-4 mt-1">
+							Check back here when switching to a different season to see updated teams. You can switch seasons using the dropdown next to the help icon.
+						</blockquote>
 					</div>
 					{/* Tips section */}
 					<div>
