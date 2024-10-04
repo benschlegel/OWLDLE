@@ -14,6 +14,18 @@ const cellSize = '3.75rem';
 const fontBreakpoint = 7;
 export default function GuessRow({ data }: Props) {
 	const useSmallerFont = data && data.player.name.length > 7;
+
+	let region = undefined;
+	let regionTooltip = undefined;
+	if (data) {
+		if (data.player.region === 'AtlanticDivison') {
+			region = 'E';
+			regionTooltip = 'East';
+		} else if (data.player.region === 'PacificDivision') {
+			region = 'W';
+			regionTooltip = 'West';
+		}
+	}
 	return (
 		<div className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] h-[3rem] transition-colors`}>
 			{/* Player name */}
@@ -36,8 +48,10 @@ export default function GuessRow({ data }: Props) {
 				<RoleCell role={data?.player.role} />
 			</GameCell>
 			{/* Region */}
-			<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={data?.player.region}>
-				<ImageCell imgSrc={data?.player.regionImg} />
+			<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
+				{/* <ImageCell imgSrc={data?.player.regionImg} /> */}
+
+				<p className="text-3xl sm:text-4xl font-bold tracking-tight first:mt-0">{region}</p>
 			</GameCell>
 			{/* Team */}
 			<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={data?.player.team}>
