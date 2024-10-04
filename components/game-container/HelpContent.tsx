@@ -57,8 +57,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
 
-	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division' : 'Eastern';
-	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division' : 'Western';
+	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
+	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
 
 	return (
 		<DialogContent
