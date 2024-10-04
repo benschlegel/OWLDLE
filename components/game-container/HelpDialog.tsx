@@ -1,61 +1,57 @@
 'use client';
-import HelpContent from '@/components/game-container/HelpContent';
-import { Button } from '@/components/ui/button';
+import { useEffect, useCallback, useState } from 'react';
+import { useQueryState, parseAsBoolean } from 'nuqs';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 import { CircleHelpIcon } from 'lucide-react';
-import { parseAsBoolean, useQueryState } from 'nuqs';
-import { useCallback, useEffect } from 'react';
+import HelpContent from '@/components/game-container/HelpContent';
 
-const localStorageKey = 'sawHelp';
+const LOCAL_STORAGE_KEY = 'sawHelp';
 
 export function HelpDialog() {
 	const [open, setOpen] = useQueryState('showHelp', parseAsBoolean.withDefault(false));
-
-	const TriggerButton = (
-		<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-			<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
-		</Button>
-	);
+	const [shouldOpenOnMount, setShouldOpenOnMount] = useState(false);
 
 	useEffect(() => {
-		// Convoluted way to check to get value from localstorage and use it as default for the state (nextjs quirk with client components)
-		let localStorageVal: string | null = '';
-		if (typeof window !== 'undefined') {
-			localStorageVal = localStorage.getItem(localStorageKey);
+		// Check localStorage on mount
+		const sawHelp = localStorage.getItem(LOCAL_STORAGE_KEY);
+		if (sawHelp === null) {
+			setShouldOpenOnMount(true);
 		}
-		let defaultVal = true;
-		if (localStorageVal && localStorageVal === 'false') {
-			defaultVal = false;
-		}
-		if (defaultVal === true) {
+	}, []);
+
+	useEffect(() => {
+		// Open dialog after initial render if needed
+		if (shouldOpenOnMount) {
 			setOpen(true);
+			setShouldOpenOnMount(false);
+			localStorage.setItem(LOCAL_STORAGE_KEY, String(true));
 		}
-	}, [setOpen]);
-
-	// Keep localStorage value in sync with state
-	useEffect(() => {
-		// Set to false after closing dialog for the first time
-		if (open === false) {
-			localStorage.setItem(localStorageKey, `${open}`);
-		}
-	}, [open]);
+	}, [shouldOpenOnMount, setOpen]);
 
 	const toggleDialogOpen = useCallback(() => {
-		setOpen(open === true ? null : true);
-	}, [open, setOpen]);
+		setOpen((prevOpen) => {
+			return prevOpen === true ? null : true;
+		});
+	}, [setOpen]);
 
 	useEffect(() => {
-		const down = (e: KeyboardEvent) => {
-			// Focus search on ctrl + y
+		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'e' && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
 				toggleDialogOpen();
 			}
 		};
 
-		document.addEventListener('keydown', down);
-		return () => document.removeEventListener('keydown', down);
+		document.addEventListener('keydown', handleKeyDown);
+		return () => document.removeEventListener('keydown', handleKeyDown);
 	}, [toggleDialogOpen]);
+
+	const TriggerButton = (
+		<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
+			<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+		</Button>
+	);
 
 	return (
 		<Dialog open={open} onOpenChange={toggleDialogOpen} aria-describedby="Tutorial on how to play the game">
