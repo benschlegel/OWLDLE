@@ -21,12 +21,12 @@ export default function SeasonSelector({ slug }: Props) {
 			setValue(dataset?.shorthand ?? 'S1');
 			setDataset(dataset ?? DEFAULT_DATASET);
 			if (value === 'season1') {
-				router.replace('/');
+				router.push('/');
 			} else {
-				router.replace(`/${value}`);
+				router.push(`/${value}`);
 			}
 		},
-		[router.replace, setDataset]
+		[router.push, setDataset]
 	);
 
 	return (
