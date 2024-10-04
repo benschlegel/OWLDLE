@@ -32,12 +32,27 @@ const WON_GUESSES_8: GuessResponse[] = [
 	{ isCountryCorrect: true, isRoleCorrect: true, isRegionCorrect: true, isTeamCorrect: true, isNameCorrect: true },
 ];
 
-const FORMAT_CONFIG_WON_4: FormatConfig = { guesses: WON_GUESSES_4, gameIteration: 1, gameName: 'TEST_NAME', maxGuesses: 8, siteUrl: 'test.url.com/' };
+const FORMAT_CONFIG_WON_4: FormatConfig = {
+	guesses: WON_GUESSES_4,
+	dataset: 'season1',
+	gameIteration: 1,
+	gameName: 'TEST_NAME',
+	maxGuesses: 8,
+	siteUrl: 'test.url.com/',
+};
 
-const FORMAT_CONFIG_LOST_8: FormatConfig = { guesses: LOST_GUESSES_8, gameIteration: 2, gameName: 'NAME', maxGuesses: 8, siteUrl: 'my.url.com/' };
+const FORMAT_CONFIG_LOST_8: FormatConfig = {
+	guesses: LOST_GUESSES_8,
+	dataset: 'season6',
+	gameIteration: 2,
+	gameName: 'NAME',
+	maxGuesses: 8,
+	siteUrl: 'my.url.com/',
+};
 
 const FORMAT_CONFIG_WON_8: FormatConfig = {
 	guesses: WON_GUESSES_8,
+	dataset: 'season3',
 	gameIteration: 3,
 	gameName: 'COOL_GAME',
 	maxGuesses: 8,
@@ -47,7 +62,8 @@ const FORMAT_CONFIG_WON_8: FormatConfig = {
 describe('game result', () => {
 	test('header correct', () => {
 		const formattedResult = formatResult(FORMAT_CONFIG_WON_4);
-		const expectedHeader = `${FORMAT_CONFIG_WON_4.gameName} ${FORMAT_CONFIG_WON_4.gameIteration} ${FORMAT_CONFIG_WON_4.guesses.length}/${FORMAT_CONFIG_WON_4.maxGuesses}\n`;
+		// TODO: also use getExpectedString here
+		const expectedHeader = `${FORMAT_CONFIG_WON_4.gameName} ${FORMAT_CONFIG_WON_4.gameIteration} ${FORMAT_CONFIG_WON_4.guesses.length}/${FORMAT_CONFIG_WON_4.maxGuesses} [Season 1]\n`;
 		expect(formattedResult).toContain(expectedHeader);
 	});
 	test('footer correct', () => {
@@ -88,5 +104,6 @@ describe('format correct for all datasets', () => {
 
 function getExpectedString(config: FormatConfig, content: string) {
 	const datasetPostfix = config.dataset && config.dataset !== 'season1' ? config.dataset : '';
-	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses}\n${content}\n<${config.siteUrl}${datasetPostfix}>`;
+	const seasonText = config.dataset !== undefined ? `${config.dataset.charAt(0).toUpperCase()}${config.dataset.slice(1, -1)} ${config.dataset.slice(-1)}` : '';
+	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses} [${seasonText}]\n${content}\n<${config.siteUrl}${datasetPostfix}>`;
 }
