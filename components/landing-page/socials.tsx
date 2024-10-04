@@ -1,9 +1,12 @@
+'use client';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import SocialsRow, { type SocialProps } from '@/components/ui/socials-row';
 import SocialsRowCopy from '@/components/ui/socials-row-copy';
+import type { PlausibleEvents } from '@/types/plausible';
 import { BotMessageSquareIcon, CoffeeIcon, Github, TwitterIcon } from 'lucide-react';
+import { usePlausible } from 'next-plausible';
 import Link from 'next/link';
 
 const socials: SocialProps[] = [
@@ -38,13 +41,14 @@ const socials: SocialProps[] = [
 const projectGithubLink = 'https://github.com/benschlegel/OWLDLE';
 
 export default function Socials() {
+	const plausible = usePlausible<PlausibleEvents>();
 	return (
 		<div className="flex justify-center items-center opacity-60 mb-[0.5rem]">
 			<div className="text-sm font-medium leading-none">
 				Made with ❤️ by{' '}
 				<Popover>
 					<PopoverTrigger asChild>
-						<Button variant="link" className="p-0 h-auto transition-colors duration-200" name="Show socials">
+						<Button variant="link" className="p-0 h-auto transition-colors duration-200" name="Show socials" onClick={() => plausible('openSocials')}>
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								@scorer5
 							</code>
