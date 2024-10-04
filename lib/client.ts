@@ -38,10 +38,11 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (dataset !== undefined && dataset !== 'season1') {
 		datasetPostfix = dataset;
 	}
+	const seasonText = dataset !== undefined ? `${dataset.charAt(0).toUpperCase()}${dataset.slice(1, -1)} ${dataset.slice(-1)}` : '';
 
 	if (guesses.length === 0 || guesses === undefined) return '';
 	// Add header
-	let result = `${gameName} ${gameIteration} ${guesses.length}/${maxGuesses}\n`;
+	let result = `${gameName} ${gameIteration} ${guesses.length}/${maxGuesses} [${seasonText}]\n`;
 
 	// Format every guess to emoji row
 	guesses.forEach((guess, index) => {
