@@ -97,7 +97,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div className="flex flex-col">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
 									{/* <Compass className="opacity-80 w-5 h-5" /> */}
-									<h3 className="">Atlantic Division</h3>
+									<h3 className="">Atlantic Division (East)</h3>
 								</div>
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{atlanticTeams?.map((team) => (
@@ -110,7 +110,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div className="flex flex-col w-full">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
 									{/* <Compass className="opacity-80 w-5 h-5" /> */}
-									<h3 className="">Pacific Division</h3>
+									<h3 className="">Pacific Division (West)</h3>
 								</div>
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{pacificTeams?.map((team) => (
