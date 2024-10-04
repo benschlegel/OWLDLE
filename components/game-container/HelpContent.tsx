@@ -8,7 +8,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
-import { getAtlantic, getPacific } from '@/data/teams/teams';
+import { atlanticPacificTeams, getAtlantic, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
@@ -57,6 +57,9 @@ export default function HelpContent({ setIsOpen }: Props) {
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
 
+	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division' : 'Eastern';
+	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division' : 'Western';
+
 	return (
 		<DialogContent
 			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
@@ -85,11 +88,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 						<p className="scroll-m-20 text-base tracking-normal">
 							Teams are divided into the{' '}
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								Atlantic
+								{atlanticText}
 							</code>{' '}
 							and{' '}
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								Pacific Division
+								{pacificText}
 							</code>
 							. {dataset.name} had the following teams:
 						</p>
@@ -97,7 +100,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div className="flex flex-col">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
 									{/* <Compass className="opacity-80 w-5 h-5" /> */}
-									<h3 className="">Atlantic Division (East)</h3>
+									<h3 className="">{atlanticText}</h3>
 								</div>
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{atlanticTeams?.map((team) => (
@@ -110,7 +113,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div className="flex flex-col w-full">
 								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
 									{/* <Compass className="opacity-80 w-5 h-5" /> */}
-									<h3 className="">Pacific Division (West)</h3>
+									<h3 className="">{pacificText}</h3>
 								</div>
 								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 									{pacificTeams?.map((team) => (

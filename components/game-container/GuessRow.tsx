@@ -3,7 +3,11 @@ import GameCell from '@/components/game-container/GameCell';
 import type { RowData } from '@/components/game-container/GameContainer';
 import RoleCell from '@/components/game-container/RoleCell';
 import TeamLogo from '@/components/game-container/TeamLogo';
+import { DatasetContext } from '@/context/DatasetContext';
+import type { Dataset } from '@/data/datasets';
+import { atlanticPacificTeams } from '@/data/teams/teams';
 import { regionNames } from '@/lib/client';
+import { useContext } from 'react';
 type Props = {
 	data?: RowData;
 };
@@ -14,6 +18,11 @@ const cellSize = '3.75rem';
 const fontBreakpoint = 7;
 export default function GuessRow({ data }: Props) {
 	const useSmallerFont = data && data.player.name.length > 7;
+	const [dataset, _] = useContext(DatasetContext);
+	let useAtlanticPacificImage = false;
+	if (atlanticPacificTeams.includes(dataset.dataset)) {
+		useAtlanticPacificImage = true;
+	}
 
 	let region = undefined;
 	let regionTooltip = undefined;
@@ -49,9 +58,11 @@ export default function GuessRow({ data }: Props) {
 			</GameCell>
 			{/* Region */}
 			<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
-				{/* <ImageCell imgSrc={data?.player.regionImg} /> */}
-
-				<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90">{region}</p>
+				{useAtlanticPacificImage ? (
+					<ImageCell imgSrc={data?.player.regionImg} />
+				) : (
+					<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90">{region}</p>
+				)}
 			</GameCell>
 			{/* Team */}
 			<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={data?.player.team}>
