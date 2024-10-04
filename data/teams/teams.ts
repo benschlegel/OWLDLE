@@ -198,3 +198,5 @@ export function getAtlantic(dataset: Dataset) {
 export function getPacific(dataset: Dataset) {
 	return teamData.find((t) => t.dataset === dataset)?.pacific;
 }
+
+export const atlanticPacificTeams: Dataset[] = ['season1', 'season2', 'season3'] as const;
