@@ -4,19 +4,62 @@ import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
-import { useContext, useState } from 'react';
+import { useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { DatasetContext } from '@/context/DatasetContext';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	teamName?: string;
 	disableBorder?: boolean;
 	useTabIndex?: boolean;
+	debounceTime?: number;
 }
 
-export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false }: Props) {
+export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false, debounceTime = 100 }: Props) {
 	const [open, setOpen] = useState(false);
 	const [dataset, _] = useContext(DatasetContext);
 	const team = getTeamLogo(dataset.dataset, teamName ?? '');
+	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const logoRef = useRef<HTMLDivElement>(null);
+
+	const clearPendingTimeout = useCallback(() => {
+		if (timeoutRef.current !== null) {
+			clearTimeout(timeoutRef.current);
+			timeoutRef.current = null;
+		}
+	}, []);
+
+	const handleOpen = useCallback(() => {
+		if (useTabIndex) {
+			clearPendingTimeout();
+			timeoutRef.current = setTimeout(() => {
+				if (logoRef.current?.matches(':hover')) {
+					setOpen(true);
+				}
+			}, debounceTime / 2);
+		}
+	}, [clearPendingTimeout, debounceTime, useTabIndex]);
+
+	const handleClose = useCallback(() => {
+		if (useTabIndex) {
+			clearPendingTimeout();
+			timeoutRef.current = setTimeout(() => {
+				setOpen(false);
+			}, debounceTime);
+		}
+	}, [clearPendingTimeout, debounceTime, useTabIndex]);
+
+	const handleToggle = useCallback(() => {
+		if (useTabIndex) {
+			clearPendingTimeout();
+			timeoutRef.current = setTimeout(() => {
+				setOpen((prevOpen) => !prevOpen);
+			}, debounceTime);
+		}
+	}, [clearPendingTimeout, debounceTime, useTabIndex]);
+
+	useEffect(() => {
+		return clearPendingTimeout;
+	}, [clearPendingTimeout]);
 
 	if (!teamName || !team) return <></>;
 
@@ -26,6 +69,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 				<TooltipTrigger asChild>
 					<div className="p-1">
 						<div
+							ref={logoRef}
 							className={cn(
 								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
 								className
@@ -35,15 +79,15 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 								paddingBottom: '100%', // This creates the 1:1 aspect ratio
 							}}
 							tabIndex={useTabIndex ? 0 : -1}
-							onFocus={() => setOpen(true)}
-							onBlur={() => setOpen(false)}>
+							onFocus={handleOpen}
+							onBlur={handleClose}>
 							<button
 								type="button"
 								className="absolute inset-0 flex justify-center items-center p-[0.35rem] cursor-default"
-								onClick={() => setOpen(!open)}
-								onMouseEnter={() => setOpen(true)}
-								onMouseLeave={() => setOpen(false)}
-								onTouchStart={() => setOpen(!open)}
+								onClick={handleToggle}
+								onMouseEnter={handleOpen}
+								onMouseLeave={handleClose}
+								onTouchStart={handleToggle}
 								aria-label="Open tooltip"
 								tabIndex={-1}>
 								<Image
