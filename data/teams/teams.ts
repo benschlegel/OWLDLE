@@ -5,24 +5,11 @@ import type { Player } from '@/types/players';
 // * Team data
 
 // Keep types in array to check what region player is from
-export const EASTERN = ['BostonUprising', 'FloridaMayhem', 'HoustonOutlaws', 'LondonSpitfire', 'NewYorkExcelsior', 'PhiladelphiaFusion'] as const;
-export const WESTERN = ['DallasFuel', 'LosAngelesGladiators', 'LosAngelesValiant', 'SanFranciscoShock', 'SeoulDynasty', 'ShanghaiDragons'] as const;
+export const EASTERN = ['DallasFuel', 'LosAngelesGladiators', 'LosAngelesValiant', 'SanFranciscoShock', 'SeoulDynasty', 'ShanghaiDragons'] as const;
+export const WESTERN = ['BostonUprising', 'FloridaMayhem', 'HoustonOutlaws', 'LondonSpitfire', 'NewYorkExcelsior', 'PhiladelphiaFusion'] as const;
 
 // Season 2
 const EASTERN_S2 = [
-	'AtlantaReign',
-	'ParisEternal',
-	'TorontoDefiant',
-	'WashingtonJustice',
-	'BostonUprising',
-	'FloridaMayhem',
-	'HoustonOutlaws',
-	'LondonSpitfire',
-	'NewYorkExcelsior',
-	'PhiladelphiaFusion',
-] as const;
-
-const WESTERN_S2 = [
 	'ChengduHunters',
 	'HangzhouSpark',
 	'GuangzhouCharge',
@@ -33,6 +20,19 @@ const WESTERN_S2 = [
 	'SanFranciscoShock',
 	'SeoulDynasty',
 	'ShanghaiDragons',
+] as const;
+
+const WESTERN_S2 = [
+	'AtlantaReign',
+	'ParisEternal',
+	'TorontoDefiant',
+	'WashingtonJustice',
+	'BostonUprising',
+	'FloridaMayhem',
+	'HoustonOutlaws',
+	'LondonSpitfire',
+	'NewYorkExcelsior',
+	'PhiladelphiaFusion',
 ] as const;
 
 // Season 3 same teams/split as S2
