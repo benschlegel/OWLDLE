@@ -73,7 +73,7 @@ export default function FeedbackContent({ setIsOpen }: Props) {
 			<DialogHeader>
 				<DialogTitle className="text-left">Feedback</DialogTitle>
 				<DialogDescription className="text-left">
-					If you have any suggestions, encountered any bugs or want to leave just leave feedback, you can do so here!
+					If you have any suggestions, encountered any bugs or just want to leave any other kind of feedback, you can do so here!
 				</DialogDescription>
 			</DialogHeader>
 			<div className="grid gap-6 py-4">
