@@ -51,7 +51,7 @@ export default function GuessRow({ data }: Props) {
 			<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
 				{/* <ImageCell imgSrc={data?.player.regionImg} /> */}
 
-				<p className="text-3xl sm:text-4xl font-bold tracking-tight first:mt-0">{region}</p>
+				<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90">{region}</p>
 			</GameCell>
 			{/* Team */}
 			<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={data?.player.team}>
