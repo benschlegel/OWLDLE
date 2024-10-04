@@ -2,6 +2,7 @@ import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, OgConfig, metadata as prevMetadata 
 import GamePage from '@/components/landing-page/game-page';
 import { type Dataset, DATASETS } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 // Predefined valid seasons
@@ -11,7 +12,7 @@ interface SeasonPageProps {
 	params: { dataset?: string[] };
 }
 
-export async function generateMetadata({ params }: SeasonPageProps) {
+export async function generateMetadata({ params }: SeasonPageProps): Promise<Metadata> {
 	const { dataset } = params;
 
 	if (!dataset || !dataset[0]) {
@@ -24,7 +25,7 @@ export async function generateMetadata({ params }: SeasonPageProps) {
 	const currentDataset = dataset[0];
 
 	// Return and use default metadata for season 1
-	if (currentDataset === 'season1') return;
+	if (currentDataset === 'season1') return {};
 
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = `${currentDataset.charAt(0).toUpperCase() + currentDataset.slice(1, -1)} ${currentDataset.slice(-1)}`;
@@ -47,6 +48,7 @@ export async function generateMetadata({ params }: SeasonPageProps) {
 					url: ogImagePath,
 					width: OgConfig.ogImageWidth,
 					height: OgConfig.ogImageHeight,
+					type: 'image/png',
 				},
 			],
 			type: 'website',
@@ -63,7 +65,7 @@ export async function generateMetadata({ params }: SeasonPageProps) {
 					alt: formattedTitle,
 					width: OgConfig.ogImageWidth,
 					height: OgConfig.ogImageHeight,
-					type: 'website',
+					type: 'image/png',
 				},
 			],
 			card: 'summary_large_image',
