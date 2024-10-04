@@ -180,6 +180,12 @@ export default function HelpContent({ setIsOpen }: Props) {
 								</kbd>
 								<p className="opacity-90 tracking-tight">Open search in popup dialog</p>
 							</div>
+							<div className="flex items-center gap-6">
+								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+									<span className="text-xs">ctrl + e</span>
+								</kbd>
+								<p className="opacity-90 tracking-tight">Open/close help dialog</p>
+							</div>
 						</div>
 						<div className="flex flex-col gap-2 mt-4">
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
