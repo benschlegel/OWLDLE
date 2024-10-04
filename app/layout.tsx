@@ -34,7 +34,7 @@ const owlHeader = localFont({
 export const DEFAULT_TITLE = 'OWLDLE';
 export const DEFAULT_DESCRIPTION = 'Guess the Overwatch League player';
 export const OgConfig = {
-	ogImagePath: '/opengraph-image.png',
+	ogImagePath: '/opengraph-image.png?new=true',
 	ogImageWidth: 1200,
 	ogImageHeight: 630,
 };
