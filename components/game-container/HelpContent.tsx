@@ -11,6 +11,7 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { getAtlantic, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
+import Link from 'next/link';
 import type { Options } from 'nuqs';
 import { useContext, useEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
@@ -219,6 +220,12 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div>
 								<p className="scroll-m-20 text-base tracking-normal">
 									If you like this project, you can{' '}
+									<Link
+										href={'?showFeedback=true'}
+										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal">
+										send feedback/suggestions
+									</Link>
+									,{' '}
 									<a
 										href={'https://ko-fi.com/scorer5'}
 										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
