@@ -42,7 +42,7 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 		}
 
 		// Set player region
-		// Check if this works
+
 		const region = getRegion<typeof currDataset>(player.team, currDataset);
 
 		// Set region image
