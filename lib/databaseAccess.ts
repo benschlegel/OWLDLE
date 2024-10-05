@@ -241,8 +241,20 @@ export async function updateIterationPlayer(iteration: DbIteration['iteration'],
 	return iterationCollection.updateOne({ iteration: iteration }, { $set: { player: player } });
 }
 
+/**
+ * Get backlog for a given dataset
+ * @param dataset what dataset to get backlog for
+ */
 export async function getBacklog(dataset: Dataset) {
 	return backlogCollection.findOne({ _id: dataset });
+}
+
+/**
+ * Set/overwrite backlog for given dataset
+ * @param backlog what dataset to
+ */
+export async function setBacklog(backlog: DbFormattedPlayers) {
+	return backlogCollection.updateOne({ _id: backlog._id }, { $set: { players: backlog.players } });
 }
 
 /**
