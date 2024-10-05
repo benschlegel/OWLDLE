@@ -8,7 +8,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 // * Configure here:
 // Shows global stats if true, details stats for specific season otherwise
-const SHOW_GLOBAL_STATS = true;
+const SHOW_GLOBAL_STATS = false;
 // If SHOW_GLOBAL_STATS is false, this decides what season the report will be generated for
 const DETAIL_DATASET: Dataset = 'season1';
 
@@ -24,10 +24,6 @@ export default function GameStats() {
 				return d;
 			});
 			parsed.winPercent.map((d) => {
-				d.dataset = `${d.dataset.charAt(0).toUpperCase()}${d.dataset.slice(1, -1)} ${d.dataset.slice(-1)}` as Dataset;
-				return d;
-			});
-			parsed.playerStats.map((d) => {
 				d.dataset = `${d.dataset.charAt(0).toUpperCase()}${d.dataset.slice(1, -1)} ${d.dataset.slice(-1)}` as Dataset;
 				return d;
 			});
