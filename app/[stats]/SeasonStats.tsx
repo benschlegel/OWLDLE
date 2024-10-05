@@ -12,7 +12,7 @@ const chartConfig = {
 		color: 'hsl(var(--chart-1))',
 	},
 	count: {
-		label: 'Test',
+		label: 'Games',
 		color: 'hsl(var(--chart-1))',
 	},
 	label: {
@@ -32,22 +32,23 @@ export default function SeasonStats({ data, sortBySeason }: Props) {
 	if (sortBySeason) {
 		data.sort((a, b) => a.dataset.localeCompare(b.dataset));
 	}
-	console.log('Data: ', data);
 	return (
 		<ChartContainer config={chartConfig} className="min-w-[200px] min-h-[100px] w-full">
 			<BarChart
 				accessibilityLayer
 				data={[...data]}
+				// Temp hack to make animation work
+				key={Math.random()}
 				layout="vertical"
 				margin={{
-					right: 16,
+					right: 26,
 				}}>
 				<CartesianGrid horizontal={false} />
 				<YAxis dataKey="dataset" type="category" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.slice(0, 3)} hide />
 				<XAxis dataKey="count" type="number" hide />
 				<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
 				<Bar dataKey="count" layout="vertical" fill="var(--color-dataset)" radius={4}>
-					<LabelList dataKey="dataset" position="insideLeft" offset={12} className="fill-white" fontSize={15} />
+					<LabelList dataKey="dataset" position="insideLeft" offset={12} className="fill-white" fontSize={16} />
 					<LabelList dataKey="count" position="right" formatter={formatNumber} offset={8} className="fill-white" fontSize={14} />
 				</Bar>
 			</BarChart>

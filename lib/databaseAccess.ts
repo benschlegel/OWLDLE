@@ -20,7 +20,7 @@ import { type ClientSession, MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
 if (process.env.NODE_ENV !== 'production') {
-	useDevDatabase = true;
+	useDevDatabase = false;
 }
 
 const uri = process.env.MONGO_URI;

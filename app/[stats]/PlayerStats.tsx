@@ -21,6 +21,14 @@ export default function GameStats() {
 				d.dataset = `${d.dataset.charAt(0).toUpperCase()}${d.dataset.slice(1, -1)} ${d.dataset.slice(-1)}` as Dataset;
 				return d;
 			});
+			parsed.winPercent.map((d) => {
+				d.dataset = `${d.dataset.charAt(0).toUpperCase()}${d.dataset.slice(1, -1)} ${d.dataset.slice(-1)}` as Dataset;
+				return d;
+			});
+			parsed.playerStats.map((d) => {
+				d.dataset = `${d.dataset.charAt(0).toUpperCase()}${d.dataset.slice(1, -1)} ${d.dataset.slice(-1)}` as Dataset;
+				return d;
+			});
 			setTotalGames(parsed);
 			// console.log('Total: ', parsed);
 		});
@@ -29,9 +37,13 @@ export default function GameStats() {
 	useEffect(() => {
 		getTotalGames();
 	}, [getTotalGames]);
+
+	if (!totalGames) return <></>;
+	const avgWin = totalGames.winPercent.reduce((r, c) => r + c.winPercentage, 0) / totalGames.winPercent.length;
+
 	return (
 		<div className="flex-col flex w-full h-full">
-			<div className="px-12 py-10 flex-1 relative">
+			<div className="px-12 pt-10 flex-1 relative">
 				<div>
 					<h1 className="text-primary-foreground text-6xl font-bold" style={customFontStyle}>
 						Statistics
@@ -47,6 +59,12 @@ export default function GameStats() {
 							</h3>
 						</div>
 						<SeasonStats data={totalGames?.seasons} />
+						<div className="flex gap-2 items-end mt-4">
+							<h4 className="text-lg font-bold" style={customFontStyle}>
+								Total games played:
+							</h4>
+							<h4 className="font-mono font-bold text-2xl opacity-80">{totalGames?.total.toLocaleString()}</h4>
+						</div>
 					</div>
 
 					<div className="flex flex-1 flex-col">
@@ -56,6 +74,12 @@ export default function GameStats() {
 							</h3>
 						</div>
 						<SeasonStats data={totalGames?.seasons} />
+						<div className="flex gap-2 items-end mt-4">
+							<h4 className="text-lg font-bold" style={customFontStyle}>
+								Global win percentage:
+							</h4>
+							<h4 className="font-mono font-bold text-xl opacity-80">{avgWin.toFixed(2)}%</h4>
+						</div>
 					</div>
 				</div>
 				{/* <div className="absolute top-0 right-0 border-l-2 border-b-2 rounded-lg h-[170px] w-[500px]">Test</div> */}
