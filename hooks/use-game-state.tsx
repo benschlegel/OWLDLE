@@ -84,6 +84,8 @@ export default function useGameState({ slug }: Props) {
 		if (validatedData !== undefined && gameState === 'in-progress') {
 			// Validate data
 			const correctPlayer = validatedData.correctPlayer;
+			console.log('Current region: ', currentGuess.region);
+			console.log('Correct region: ', correctPlayer.region);
 			const guessResult: GuessResponse = validateGuess(currentGuess, correctPlayer);
 
 			// Add guess response to row
