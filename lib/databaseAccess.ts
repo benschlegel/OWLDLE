@@ -448,7 +448,7 @@ export async function countTotalGames() {
 	return gameLogCollection.countDocuments();
 }
 
-type SeasonStat = { dataset: Dataset; count: number };
+export type SeasonStat = { dataset: Dataset; count: number };
 export async function countGamesByDataset() {
 	// Perform the aggregation to count games by dataset and sort by count in descending order
 	const result = await gameLogCollection
@@ -478,7 +478,7 @@ export async function countGamesByDataset() {
 	return result as SeasonStat[];
 }
 
-type WinPercentage = { dataset: Dataset; winPercentage: number };
+export type WinPercentage = { dataset: Dataset; winPercentage: number };
 
 /**
  * Calculate win percentage for all datasets (from all logged games)
@@ -536,7 +536,7 @@ export async function getWinPercentages() {
 	return aggregationCursor.toArray() as Promise<WinPercentage[]>;
 }
 
-type PlayerOccurance = { dataset: Dataset; players: { name: string; count: number }[] };
+export type PlayerOccurance = { dataset: Dataset; players: { name: string; count: number }[] };
 
 export async function countPlayers(): Promise<PlayerOccurance[]> {
 	const cursor = gameLogCollection.aggregate([
