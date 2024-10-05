@@ -2,7 +2,6 @@
 import { Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import type { SeasonStat } from '@/lib/databaseAccess';
-import type { Dataset } from '@/data/datasets';
 
 export const description = 'A bar chart with a custom label';
 
@@ -33,7 +32,7 @@ export default function SeasonStats({ data, sortBySeason }: Props) {
 		data.sort((a, b) => a.dataset.localeCompare(b.dataset));
 	}
 	return (
-		<ChartContainer config={chartConfig} className="min-w-[200px] min-h-[100px] w-full">
+		<ChartContainer config={chartConfig} className="min-w-[200px] min-h-[100px] max-h-[300px] w-full">
 			<BarChart
 				accessibilityLayer
 				data={[...data]}

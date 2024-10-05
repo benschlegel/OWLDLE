@@ -1,9 +1,16 @@
 'use client';
+import DatasetStats from '@/app/[stats]/DatasetStats';
 import GlobalStatsScreen from '@/app/[stats]/GlobalStats';
 import type { StatsRes } from '@/app/[stats]/types';
 import type { Dataset } from '@/data/datasets';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
+
+// * Configure here:
+// Shows global stats if true, details stats for specific season otherwise
+const SHOW_GLOBAL_STATS = true;
+// If SHOW_GLOBAL_STATS is false, this decides what season the report will be generated for
+const DETAIL_DATASET: Dataset = 'season1';
 
 export default function GameStats() {
 	const [totalGames, setTotalGames] = useState<StatsRes>();
@@ -35,5 +42,5 @@ export default function GameStats() {
 
 	if (!totalGames) return <></>;
 
-	return <GlobalStatsScreen stats={totalGames} />;
+	return SHOW_GLOBAL_STATS ? <GlobalStatsScreen stats={totalGames} /> : <DatasetStats stats={totalGames} dataset={DETAIL_DATASET} />;
 }
