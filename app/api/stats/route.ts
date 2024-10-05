@@ -1,17 +1,12 @@
 import { type Dataset, DATASETS } from '@/data/datasets';
-import { countGames, countPlayers, getWinPercentages } from '@/lib/databaseAccess';
+import { countGamesByDataset, countPlayers, countTotalGames, getWinPercentages } from '@/lib/databaseAccess';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
-type SeasonStat = { dataset: Dataset; count: number };
 export async function GET(request: Request) {
-	const total = await countGames();
+	const total = await countTotalGames();
 
-	const seasonStats: SeasonStat[] = [];
-	for (const dataset of DATASETS) {
-		const count = await countGames(dataset);
-		seasonStats.push({ dataset, count });
-	}
+	const seasonStats = await countGamesByDataset();
 
 	const winPercent = await getWinPercentages();
 	const playerStats = await countPlayers();

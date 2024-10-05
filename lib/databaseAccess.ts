@@ -444,12 +444,38 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
 /**
  * Returns the total number of games played (all seasons/datasets)
  */
-export async function countGames(dataset?: Dataset) {
-	if (!dataset) {
-		return gameLogCollection.countDocuments();
-	}
-	// Filter by dataset (if specified)
-	return gameLogCollection.countDocuments({ dataset: { $eq: dataset } });
+export async function countTotalGames() {
+	return gameLogCollection.countDocuments();
+}
+
+type SeasonStat = { dataset: Dataset; count: number };
+export async function countGamesByDataset() {
+	// Perform the aggregation to count games by dataset and sort by count in descending order
+	const result = await gameLogCollection
+		.aggregate([
+			// Group by dataset and count the number of games for each dataset
+			{
+				$group: {
+					_id: '$dataset',
+					count: { $sum: 1 },
+				},
+			},
+			// Sort the result by count in descending order
+			{
+				$sort: { count: -1 },
+			},
+			// Rename fields for clarity
+			{
+				$project: {
+					_id: 0,
+					dataset: '$_id',
+					count: 1,
+				},
+			},
+		])
+		.toArray();
+
+	return result as SeasonStat[];
 }
 
 type WinPercentage = { dataset: Dataset; winPercentage: number };

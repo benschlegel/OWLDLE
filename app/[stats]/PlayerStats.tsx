@@ -1,6 +1,5 @@
 'use client';
 import { Separator } from '@/components/ui/separator';
-import { countGames } from '@/lib/databaseAccess';
 import React, { useCallback, useEffect, useState } from 'react';
 
 export default function GameStats() {
