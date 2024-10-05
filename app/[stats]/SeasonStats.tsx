@@ -32,7 +32,7 @@ export default function SeasonStats({ data, sortBySeason }: Props) {
 		data.sort((a, b) => a.dataset.localeCompare(b.dataset));
 	}
 	return (
-		<ChartContainer config={chartConfig} className="min-w-[200px] min-h-[100px] max-h-[300px] w-full">
+		<ChartContainer config={chartConfig} className="min-w-[200px] min-h-[100px] w-full">
 			<BarChart
 				accessibilityLayer
 				data={[...data]}
