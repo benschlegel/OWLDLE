@@ -28,16 +28,15 @@ export default function DatasetStats({ stats: totalGames, dataset }: Props) {
 					<div className="flex flex-1 flex-col">
 						<div className="w-full flex justify-center">
 							<h3 className="text-3xl font-bold text-center mb-4 tracking-wide" style={customFontStyle}>
-								Most popular guesses ({`${dataset.slice(0, -1)} ${dataset.slice(-1)}`})
+								Top 5 guesses ({`${dataset.slice(0, -1)} ${dataset.slice(-1)}`})
 							</h3>
 						</div>
 						<WinnerStats data={datasetPlayerStats} maxLength={5} />
-						{/* <div className="flex gap-2 items-end mt-4">
-							<h4 className="text-lg font-bold" style={customFontStyle}>
-								Total games played:
-							</h4>
-							<h4 className="font-mono font-bold text-2xl opacity-80">{totalGames?.total.toLocaleString()}</h4>
-						</div> */}
+						<div className="absolute bottom-4 right-12">
+							<p className="opacity-70 text-sm tracking-wide">
+								<span className="text-primary-foreground">*</span>Excluding correct answer
+							</p>
+						</div>
 					</div>
 				</div>
 			</div>
