@@ -452,6 +452,55 @@ export async function countGames(dataset?: Dataset) {
 	return gameLogCollection.countDocuments({ dataset: { $eq: dataset } });
 }
 
+export async function getWinPercentages() {
+	const aggregationCursor = gameLogCollection.aggregate([
+		// Unwind the gameData array to handle each entry separately
+		{
+			$unwind: '$gameData',
+		},
+		// Group back the gameData entries by document _id to get the last entry of the array
+		{
+			$group: {
+				_id: '$_id',
+				// Get the dataset from the document
+				dataset: { $first: '$dataset' },
+				// Get the last entry of the gameData array
+				lastGuess: { $last: '$gameData' },
+			},
+		},
+		// Check if document counts as won
+		{
+			$project: {
+				dataset: 1,
+				won: { $cond: [{ $eq: ['$lastGuess.guessResult.isNameCorrect', true] }, 1, 0] },
+			},
+		},
+		// Group by dataset and calculate the win percentage
+		{
+			$group: {
+				_id: '$dataset',
+				// Total number of games in each dataset
+				totalGames: { $sum: 1 },
+				// Sum the wins for each dataset
+				totalWins: { $sum: '$won' },
+			},
+		},
+		// Calculate win percentage
+		{
+			$project: {
+				_id: 0,
+				dataset: '$_id',
+				winPercentage: {
+					$multiply: [{ $divide: ['$totalWins', '$totalGames'] }, 100],
+				},
+			},
+		},
+	]);
+
+	// Convert the aggregation result to an array so can be easier handled in frontend
+	return aggregationCursor.toArray();
+}
+
 /**
  * Wrapper that handles going to the next iteration (if resetDate was reached)
  * Works as a transaction, either everything gets rolled over to next iteration or everything fails
