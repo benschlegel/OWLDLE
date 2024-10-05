@@ -1,15 +1,20 @@
-import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { type Dataset, getDataset } from '@/data/datasets';
 import { setPartialAnswer } from '@/lib/databaseAccess';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
+import type { DbAnswerPrefix } from '@/types/database';
 import { exit } from 'node:process';
 
+// * config
+const season: Dataset = 'season3';
+const newPlayerName = 'jjonak';
+const answer: DbAnswerPrefix = 'current';
+
 console.time('setCurrent');
-const newPlayerName = 'super';
-const foundPlayer = PLAYERS_S1.find((p) => p.name === newPlayerName);
+const dataset = getDataset(season);
+const foundPlayer = dataset?.playerData.find((p) => p.name.toLowerCase() === newPlayerName.toLowerCase());
 if (!foundPlayer) exit(-1);
 const player = formattedToDbPlayer(foundPlayer);
-// await setCurrentAnswer({ player: player, iteration: 2, nextReset: new Date() });
-await setPartialAnswer('current', player, 'season1');
+await setPartialAnswer(answer, player, season);
 console.timeEnd('setCurrent');
 console.log('Finished.');
 exit(0);
