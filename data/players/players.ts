@@ -523,7 +523,6 @@ export const s3Players: Player<'season3'>[] = [
 	{ name: 'ONIGOD', country: 'NO', role: 'Damage', team: 'DallasFuel' },
 	{ name: 'NotE', country: 'CA', role: 'Tank', team: 'DallasFuel' },
 	{ name: 'Trill', country: 'AU', role: 'Tank', team: 'DallasFuel' },
-	//
 	{ name: 'Gamsu', country: 'KR', role: 'Tank', team: 'DallasFuel' },
 	{ name: 'uNKOE', country: 'FR', role: 'Support', team: 'DallasFuel' },
 	{ name: 'Closer', country: 'KR', role: 'Support', team: 'DallasFuel' },
