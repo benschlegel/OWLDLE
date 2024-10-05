@@ -1,5 +1,5 @@
 import { type Dataset, DATASETS } from '@/data/datasets';
-import { countGames, getWinPercentages } from '@/lib/databaseAccess';
+import { countGames, countPlayers, getWinPercentages } from '@/lib/databaseAccess';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +15,8 @@ export async function GET(request: Request) {
 	}
 
 	const winPercent = await getWinPercentages();
+	const playerStats = await countPlayers();
 
-	const res = { total: total, seasons: seasonStats, winPercent: winPercent };
+	const res = { total, seasons: seasonStats, winPercent, playerStats };
 	return new Response(JSON.stringify(res), { status: 200 });
 }

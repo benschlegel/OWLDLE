@@ -20,7 +20,7 @@ import { type ClientSession, MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
 if (process.env.NODE_ENV !== 'production') {
-	useDevDatabase = true;
+	useDevDatabase = false;
 }
 
 const uri = process.env.MONGO_URI;
@@ -452,6 +452,12 @@ export async function countGames(dataset?: Dataset) {
 	return gameLogCollection.countDocuments({ dataset: { $eq: dataset } });
 }
 
+type WinPercentage = { dataset: Dataset; winPercentage: number };
+
+/**
+ * Calculate win percentage for all datasets (from all logged games)
+ * @returns win percentage for each season
+ */
 export async function getWinPercentages() {
 	const aggregationCursor = gameLogCollection.aggregate([
 		// Unwind the gameData array to handle each entry separately
@@ -498,7 +504,67 @@ export async function getWinPercentages() {
 	]);
 
 	// Convert the aggregation result to an array so can be easier handled in frontend
-	return aggregationCursor.toArray();
+	return aggregationCursor.toArray() as Promise<WinPercentage[]>;
+}
+
+type PlayerOccurance = { dataset: Dataset; players: { name: string; count: number }[] };
+
+export async function countPlayers(): Promise<PlayerOccurance[]> {
+	const cursor = gameLogCollection.aggregate([
+		// Add a field to store the last entry of the gameData array
+		{
+			$set: {
+				lastGuess: { $arrayElemAt: ['$gameData', -1] }, // Get the last entry in gameData
+			},
+		},
+		// Unwind the gameData array to deal with each guess separately
+		{
+			$unwind: '$gameData',
+		},
+		// Filter out the last entry if isNameCorrect is true
+		{
+			$match: {
+				$expr: {
+					$not: {
+						$and: [
+							{ $eq: ['$gameData', '$lastGuess'] }, // Only exclude if this is the last guess
+							{ $eq: ['$gameData.guessResult.isNameCorrect', true] }, // And if isNameCorrect is true
+						],
+					},
+				},
+			},
+		},
+		// Group by both the dataset and player name
+		{
+			$group: {
+				_id: { dataset: '$dataset', playerName: '$gameData.player.name' },
+				count: { $sum: 1 }, // Count the number of occurrences of each player
+			},
+		},
+		// Sort by player count before grouping by dataset
+		{
+			$sort: { count: -1 }, // Sort by 'count' in descending order
+		},
+		// Group by dataset to aggregate the players in each dataset
+		{
+			$group: {
+				_id: '$_id.dataset',
+				players: {
+					$push: { name: '$_id.playerName', count: '$count' },
+				},
+			},
+		},
+		// Rename the fields for better readability
+		{
+			$project: {
+				_id: 0,
+				dataset: '$_id',
+				players: 1,
+			},
+		},
+	]);
+
+	return cursor.toArray() as Promise<PlayerOccurance[]>;
 }
 
 /**
