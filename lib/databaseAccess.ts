@@ -444,8 +444,12 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
 /**
  * Returns the total number of games played (all seasons/datasets)
  */
-export async function countGames() {
-	return gameLogCollection.countDocuments();
+export async function countGames(dataset?: Dataset) {
+	if (!dataset) {
+		return gameLogCollection.countDocuments();
+	}
+	// Filter by dataset (if specified)
+	return gameLogCollection.countDocuments({ dataset: { $eq: dataset } });
 }
 
 /**
