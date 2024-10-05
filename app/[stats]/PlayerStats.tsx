@@ -1,5 +1,6 @@
 'use client';
 import Footer from '@/app/[stats]/Footer';
+import SeasonStats from '@/app/[stats]/SeasonStats';
 import type { StatsRes } from '@/app/[stats]/types';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -10,7 +11,6 @@ const customFontStyle: React.CSSProperties = {
 
 export default function GameStats() {
 	const [totalGames, setTotalGames] = useState<StatsRes>();
-
 	const getTotalGames = useCallback(() => {
 		fetch('/api/stats').then(async (res) => {
 			const parsed = (await res.json()) as StatsRes;
@@ -32,20 +32,23 @@ export default function GameStats() {
 				</div>
 				{/* Sub-sections */}
 				<div className="mt-10" />
-				<div className="flex flex-row">
-					<div className="flex flex-1">
+				<div className="flex flex-row gap-10">
+					<div className="flex flex-1 flex-col">
 						<div className="w-full flex justify-center">
 							<h3 className="text-3xl font-bold text-center" style={customFontStyle}>
 								Games per season
 							</h3>
 						</div>
+						<SeasonStats data={totalGames?.seasons} />
 					</div>
-					<div className="flex flex-1">
+
+					<div className="flex flex-1 flex-col">
 						<div className="w-full flex justify-center">
 							<h3 className="text-3xl font-bold text-center" style={customFontStyle}>
 								Win percentage
 							</h3>
 						</div>
+						<SeasonStats data={totalGames?.seasons} />
 					</div>
 				</div>
 				{/* <div className="absolute top-0 right-0 border-l-2 border-b-2 rounded-lg h-[170px] w-[500px]">Test</div> */}
