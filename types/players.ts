@@ -12,6 +12,8 @@ const ROLES = ['Damage', 'Tank', 'Support'] as const;
 
 const REGIONS = ['AtlanticDivison', 'PacificDivision'] as const;
 
+export type Region = (typeof REGIONS)[number];
+
 // TODO: probably remove strong typing from teams
 export const playerSchema = <T extends Dataset = 'season1'>(season: T) =>
 	z.object({
