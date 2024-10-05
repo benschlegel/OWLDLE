@@ -442,6 +442,13 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
 }
 
 /**
+ * Returns the total number of games played (all seasons/datasets)
+ */
+export async function countGames() {
+	return gameLogCollection.countDocuments();
+}
+
+/**
  * Wrapper that handles going to the next iteration (if resetDate was reached)
  * Works as a transaction, either everything gets rolled over to next iteration or everything fails
  * @param nextResetHours hours until next reset
