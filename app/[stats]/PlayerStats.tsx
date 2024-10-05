@@ -2,6 +2,7 @@
 import Footer from '@/app/[stats]/Footer';
 import SeasonStats from '@/app/[stats]/SeasonStats';
 import type { StatsRes } from '@/app/[stats]/types';
+import WinPercentStats from '@/app/[stats]/WinPercentStats';
 import type { Dataset } from '@/data/datasets';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
@@ -73,7 +74,7 @@ export default function GameStats() {
 								Win percentage
 							</h3>
 						</div>
-						<SeasonStats data={totalGames?.seasons} />
+						<WinPercentStats data={totalGames?.winPercent} />
 						<div className="flex gap-2 items-end mt-4">
 							<h4 className="text-lg font-bold" style={customFontStyle}>
 								Global win percentage:
