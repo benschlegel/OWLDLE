@@ -20,7 +20,7 @@ import { type ClientSession, MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
 if (process.env.NODE_ENV !== 'production') {
-	useDevDatabase = false;
+	useDevDatabase = true;
 }
 
 const uri = process.env.MONGO_URI;
@@ -501,6 +501,9 @@ export async function getWinPercentages() {
 				},
 			},
 		},
+		{
+			$sort: { dataset: 1 },
+		},
 	]);
 
 	// Convert the aggregation result to an array so can be easier handled in frontend
@@ -561,6 +564,10 @@ export async function countPlayers(): Promise<PlayerOccurance[]> {
 				dataset: '$_id',
 				players: 1,
 			},
+		},
+		// Sort the final output by dataset in ascending order
+		{
+			$sort: { dataset: 1 },
 		},
 	]);
 

@@ -4,7 +4,6 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 type SeasonStat = { dataset: Dataset; count: number };
-
 export async function GET(request: Request) {
 	const total = await countGames();
 
