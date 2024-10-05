@@ -110,6 +110,10 @@ export function splitCapitalization(teamName: string) {
 	return teamName.replace(/([A-Z])/g, ' $1').trim();
 }
 
+export function formatDataset(dataset: Dataset) {
+	return `${dataset.charAt(0).toUpperCase()}${dataset.slice(1, -1)} ${dataset.slice(-1)}`;
+}
+
 export async function fetchAnswer(dataset: Dataset): Promise<ValidateResponse> {
 	const response = await fetch(`/api/validate?${dataset}`);
 	if (!response.ok) {

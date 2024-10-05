@@ -2,6 +2,7 @@
 import Footer from '@/app/[stats]/Footer';
 import SeasonStats from '@/app/[stats]/SeasonStats';
 import type { StatsRes } from '@/app/[stats]/types';
+import type { Dataset } from '@/data/datasets';
 import type React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -14,8 +15,14 @@ export default function GameStats() {
 	const getTotalGames = useCallback(() => {
 		fetch('/api/stats').then(async (res) => {
 			const parsed = (await res.json()) as StatsRes;
+
+			// Format datasets
+			parsed.seasons.map((d) => {
+				d.dataset = `${d.dataset.charAt(0).toUpperCase()}${d.dataset.slice(1, -1)} ${d.dataset.slice(-1)}` as Dataset;
+				return d;
+			});
 			setTotalGames(parsed);
-			console.log('Total: ', parsed);
+			// console.log('Total: ', parsed);
 		});
 	}, []);
 
@@ -31,11 +38,11 @@ export default function GameStats() {
 					</h1>
 				</div>
 				{/* Sub-sections */}
-				<div className="mt-10" />
+				<div className="mb-8" />
 				<div className="flex flex-row gap-10">
 					<div className="flex flex-1 flex-col">
 						<div className="w-full flex justify-center">
-							<h3 className="text-3xl font-bold text-center" style={customFontStyle}>
+							<h3 className="text-3xl font-bold text-center mb-4" style={customFontStyle}>
 								Games per season
 							</h3>
 						</div>
@@ -44,7 +51,7 @@ export default function GameStats() {
 
 					<div className="flex flex-1 flex-col">
 						<div className="w-full flex justify-center">
-							<h3 className="text-3xl font-bold text-center" style={customFontStyle}>
+							<h3 className="text-3xl font-bold text-center mb-4" style={customFontStyle}>
 								Win percentage
 							</h3>
 						</div>
