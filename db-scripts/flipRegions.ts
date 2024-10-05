@@ -29,4 +29,5 @@ for (let i = 0; i < seasons.length; i++) {
 }
 console.log('Done.');
 exit(0);
-// AD, PD, PD ->
+// current: AD, PD, PD
+// expected: PP, AD, AD
