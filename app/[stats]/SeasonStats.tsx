@@ -40,7 +40,7 @@ export default function SeasonStats({ data, sortBySeason }: Props) {
 				key={Math.random()}
 				layout="vertical"
 				margin={{
-					right: 26,
+					right: 30,
 				}}>
 				<CartesianGrid horizontal={false} />
 				<YAxis dataKey="dataset" type="category" tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(value) => value.slice(0, 3)} hide />

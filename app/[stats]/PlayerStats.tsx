@@ -10,8 +10,9 @@ import { useCallback, useEffect, useState } from 'react';
 // Shows global stats if true, details stats for specific season otherwise
 const SHOW_GLOBAL_STATS = false;
 // If SHOW_GLOBAL_STATS is false, this decides what season the report will be generated for
-const DETAIL_DATASET: Dataset = 'season1';
+const DETAIL_DATASET: Dataset = 'season3';
 
+// Anonymous data
 export default function GameStats() {
 	const [totalGames, setTotalGames] = useState<StatsRes>();
 	const getTotalGames = useCallback(() => {
