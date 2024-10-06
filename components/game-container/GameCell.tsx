@@ -48,9 +48,9 @@ export default function GameCell({
 	// Set background color based on correct value (gray if undefined, green if correct, red if incorrect)
 	let bgColor = 'bg-secondary';
 	if (isCorrect === true) {
-		bgColor = 'bg-correct';
+		bgColor = 'bg-correct !text-white opacity-90';
 	} else if (isCorrect === false) {
-		bgColor = 'bg-incorrect';
+		bgColor = 'bg-incorrect !text-white opacity-90';
 	}
 
 	// Set tooltip for cell (tooltipDescription if defined, e.g. "correct ${tooltipDescription}" if tooltipGuess undefined)
@@ -59,7 +59,6 @@ export default function GameCell({
 		const prefix = !isCorrect ? 'Incorrect' : 'Correct';
 		tooltip = `${prefix} ${tooltipDescription}${tooltipValue ? ` (${isLarge === false ? splitCapitalization(tooltipValue) : tooltipValue})` : ''}`;
 	}
-
 	return (
 		<>
 			<TooltipProvider delayDuration={0}>
