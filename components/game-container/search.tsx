@@ -3,7 +3,7 @@
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
-import { type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { type CombinedFormattedPlayer, type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
@@ -71,7 +71,8 @@ export default function PlayerSearch({ className }: Props) {
 
 	const filterSearch = useCallback((value: string, search: string, keywords?: string[]) => {
 		// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
-		if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+		const parsed = JSON.parse(value) as CombinedFormattedPlayer;
+		if (parsed.name.toLowerCase().includes(search.toLowerCase())) return 1;
 		return 0;
 	}, []);
 
