@@ -61,6 +61,9 @@ export default function HelpContent({ setIsOpen }: Props) {
 	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
 	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
 
+	const trimmedAtlantic = atlanticText.slice(0, -10);
+	const trimmedPacific = atlanticText.slice(0, -10);
+
 	return (
 		<DialogContent
 			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
@@ -89,11 +92,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 						<p className="scroll-m-20 text-base tracking-normal">
 							Teams are divided into the{' '}
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								{atlanticText}
+								{trimmedAtlantic}
 							</code>{' '}
 							and{' '}
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								{pacificText}
+								{trimmedPacific}
 							</code>
 							. {dataset.name} had the following teams:
 						</p>
