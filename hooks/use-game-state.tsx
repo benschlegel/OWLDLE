@@ -4,8 +4,6 @@ import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import { type Dataset, DEFAULT_DATASET, getDataset } from '@/data/datasets';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
-import { useToast } from '@/hooks/use-toast';
-import { fetchAnswer } from '@/lib/client';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import type { DbSaveData } from '@/types/database';
