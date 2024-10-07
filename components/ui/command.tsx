@@ -34,7 +34,9 @@ const CommandDialog = ({ children, srDialogTitle = 'Command Dialog', srDialogDes
 					loop
 					filter={(value, search) => {
 						// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
-						if (value.toLowerCase().includes(search.toLowerCase())) return 1;
+						// TODO: find better solution than parsing json on every search
+						const parsed = JSON.parse(value);
+						if (parsed.name.toLowerCase().includes(search.toLowerCase())) return 1;
 						return 0;
 					}}>
 					{children}

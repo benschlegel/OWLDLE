@@ -71,6 +71,7 @@ export default function PlayerSearch({ className }: Props) {
 
 	const filterSearch = useCallback((value: string, search: string, keywords?: string[]) => {
 		// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
+		// TODO: find better solution than parsing json on every search
 		const parsed = JSON.parse(value) as CombinedFormattedPlayer;
 		if (parsed.name.toLowerCase().includes(search.toLowerCase())) return 1;
 		return 0;
