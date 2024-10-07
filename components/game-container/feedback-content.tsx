@@ -89,6 +89,7 @@ export default function FeedbackContent({ setIsOpen }: Props) {
 					</Label>
 					<Textarea
 						onKeyDown={handleTextAreaSubmit}
+						autoFocus
 						id="feedback"
 						value={feedback}
 						onChange={(e) => setFeedback(e.target.value)}
