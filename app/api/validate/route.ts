@@ -7,7 +7,7 @@ import { RateLimiterMemory } from 'rate-limiter-flexible';
 
 export const dynamicParams = true;
 
-type DatasetAnswer = { dataset: Dataset; answer?: DbAnswer };
+export type DatasetAnswer = { dataset: Dataset; answer?: DbAnswer };
 
 // TODO: every time reset date resets, add a few seconds of padding to ensure server has time to reset
 const currentAnswers: DatasetAnswer[] = [];
@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
 
 		// * Handle get for all datasets
 		if (dataset === 'all') {
-			// * Check if all answers exist (and fetch them if they dont)
+			// Check if all answers exist (and fetch them if they dont)
 			for (const answer of currentAnswers) {
 				if (answer.answer === undefined || now >= answer.answer.nextReset) {
 					console.log(`re-fetching... (${answer.dataset})`);
