@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
 			// * Check if all answers exist (and fetch them if they dont)
 			for (const answer of currentAnswers) {
 				if (answer.answer === undefined || now >= answer.answer.nextReset) {
-					console.log('re-fetching...');
+					console.log(`re-fetching... (${answer.dataset})`);
 					const res = await updateLocalAnswer(answer.dataset);
 					// res only contains error, return error response if it exists
 					if (res) {
@@ -52,7 +52,16 @@ export async function GET(req: NextRequest) {
 					}
 				}
 			}
-			return Response.json(currentAnswers);
+
+			// Calculate seconds until next reset (based on season1, same for all datasets. Default to next reset in 0 seconds if undefined)
+			const secondsUntilNextReset =
+				currentAnswers[0].answer === undefined ? 0 : Math.floor((currentAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000);
+			return new Response(JSON.stringify(currentAnswers), {
+				status: 200,
+				headers: {
+					'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
+				},
+			});
 		}
 
 		// * zod error handling for dataset
@@ -94,13 +103,12 @@ export async function GET(req: NextRequest) {
 			iteration: validatedCurrAnswer.iteration,
 		};
 
-		const secondsUntilNextReset = (validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000;
-		console.log('seconds: ', secondsUntilNextReset);
+		const secondsUntilNextReset = Math.floor((validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000);
 		return new Response(JSON.stringify(res), {
 			status: 200,
-			// headers: {
-			// 	'Cache-Control': 'max-age=0, s-maxage=3600',
-			// },
+			headers: {
+				'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
+			},
 		});
 	} catch (error) {
 		return new Response(JSON.stringify({ message: `Too Many Requests: ${error}` }), { status: 429 });
