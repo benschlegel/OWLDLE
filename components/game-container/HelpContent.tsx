@@ -61,8 +61,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
 	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
 
-	const trimmedAtlantic = atlanticText.slice(0, -10);
-	const trimmedPacific = atlanticText.slice(0, -10);
+	const trimmedAtlantic = atlanticPacificTeams.includes(dataset.dataset) ? atlanticText.slice(0, -10) : 'Eastern';
+	const trimmedPacific = atlanticPacificTeams.includes(dataset.dataset) ? pacificText.slice(0, -10) : 'Western';
 
 	return (
 		<DialogContent
@@ -90,7 +90,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<h2 className=" ">Teams</h2>
 						</div>
 						<p className="scroll-m-20 text-base tracking-normal">
-							Teams are divided into the{' '}
+							Teams are divided into{' '}
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								{trimmedAtlantic}
 							</code>{' '}
