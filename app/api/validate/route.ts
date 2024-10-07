@@ -33,11 +33,30 @@ const getLimiter = new RateLimiterMemory({
 export async function GET(req: NextRequest) {
 	try {
 		await getLimiter.consume(req.ip ?? 'anonymous');
+		// Get query parameter
 		const searchParams = req.nextUrl.searchParams;
 		const dataset = searchParams.get('dataset') ?? 'season1';
-		// Get query parameter
-		const datasetParsed = datasetSchema.safeParse(dataset);
 
+		const now = new Date();
+
+		// * Handle get for all datasets
+		if (dataset === 'all') {
+			// * Check if all answers exist (and fetch them if they dont)
+			for (const answer of currentAnswers) {
+				if (answer.answer === undefined || now >= answer.answer.nextReset) {
+					console.log('re-fetching...');
+					const res = await updateLocalAnswer(answer.dataset);
+					// res only contains error, return error response if it exists
+					if (res) {
+						return res;
+					}
+				}
+			}
+			return Response.json(currentAnswers);
+		}
+
+		// * zod error handling for dataset
+		const datasetParsed = datasetSchema.safeParse(dataset);
 		// Error handling
 		if (!datasetParsed.success) {
 			const errMessage = datasetParsed.error.errors.map((err) => `${err.path}: ${err.message},`);
@@ -60,7 +79,7 @@ export async function GET(req: NextRequest) {
 			return;
 		}
 
-		if (new Date() >= validatedCurrAnswer.nextReset) {
+		if (now >= validatedCurrAnswer.nextReset) {
 			// fetch updated data
 			const res = await updateLocalAnswer(datasetParsed.data);
 			if (res) {
@@ -74,7 +93,15 @@ export async function GET(req: NextRequest) {
 			correctPlayer: validatedCurrAnswer.player,
 			iteration: validatedCurrAnswer.iteration,
 		};
-		return Response.json(res);
+
+		const secondsUntilNextReset = (validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000;
+		console.log('seconds: ', secondsUntilNextReset);
+		return new Response(JSON.stringify(res), {
+			status: 200,
+			// headers: {
+			// 	'Cache-Control': 'max-age=0, s-maxage=3600',
+			// },
+		});
 	} catch (error) {
 		return new Response(JSON.stringify({ message: `Too Many Requests: ${error}` }), { status: 429 });
 	}
