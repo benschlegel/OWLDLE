@@ -212,7 +212,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 						<div className="flex flex-col gap-2">
 							<p className="text-base tracking-normal mt-4">
 								All player data was sourced through{' '}
-								<EnhancedButton variant={'linkHover1'} className="p-0 decoration-primary-foreground">
+								<EnhancedButton variant={'linkHover1'}>
 									<a href={'https://liquipedia.net/overwatch/Overwatch_League/2018'} className=" text-base tracking-normal" target="_blank" rel="noreferrer">
 										Liquipedia
 									</a>
@@ -220,29 +220,25 @@ export default function HelpContent({ setIsOpen }: Props) {
 								. Not affiliated with Blizzard Entertainment.
 							</p>
 							<div>
-								<p className="scroll-m-20 text-base tracking-normal">
+								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
-									<Link
-										href={'?showFeedback=true'}
-										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal">
-										send feedback/suggestions
-									</Link>
+									<EnhancedButton variant={'linkHover1'}>
+										<Link href={'?showFeedback=true'} className="text-base tracking-normal">
+											send feedback/suggestions
+										</Link>
+									</EnhancedButton>
 									,{' '}
-									<a
-										href={'https://ko-fi.com/scorer5'}
-										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
-										target="_blank"
-										rel="noreferrer">
-										buy me a coffee
-									</a>{' '}
+									<EnhancedButton variant={'linkHover1'}>
+										<a href={'https://ko-fi.com/scorer5'} className="text-base tracking-normal" target="_blank" rel="noreferrer">
+											buy me a coffee
+										</a>
+									</EnhancedButton>{' '}
 									or check out the source code for this project on{' '}
-									<a
-										href={'https://github.com/benschlegel/OWLDLE'}
-										className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
-										target="_blank"
-										rel="noreferrer">
-										Github
-									</a>
+									<EnhancedButton variant={'linkHover1'}>
+										<a href={'https://github.com/benschlegel/OWLDLE'} className="text-base tracking-normal" target="_blank" rel="noreferrer">
+											Github
+										</a>
+									</EnhancedButton>
 									.
 								</p>
 							</div>
