@@ -5,6 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button';
 import CustomCell from '@/components/ui/CustomCell';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { EnhancedButton } from '@/components/ui/enhanced.button';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
@@ -211,13 +212,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 						<div className="flex flex-col gap-2">
 							<p className="text-base tracking-normal mt-4">
 								All player data was sourced through{' '}
-								<a
-									href={'https://liquipedia.net/overwatch/Overwatch_League/2018'}
-									className="underline-offset-4 underline decoration-primary-foreground hover:decoration-primary-foreground/80 text-base tracking-normal"
-									target="_blank"
-									rel="noreferrer">
-									Liquipedia
-								</a>
+								<EnhancedButton variant={'linkHover1'} className="p-0 decoration-primary-foreground">
+									<a href={'https://liquipedia.net/overwatch/Overwatch_League/2018'} className=" text-base tracking-normal" target="_blank" rel="noreferrer">
+										Liquipedia
+									</a>
+								</EnhancedButton>
 								. Not affiliated with Blizzard Entertainment.
 							</p>
 							<div>
