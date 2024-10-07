@@ -1,10 +1,11 @@
 'use client';
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, lazy, Suspense } from 'react';
 import { useQueryState, parseAsBoolean } from 'nuqs';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { CircleHelpIcon } from 'lucide-react';
-import HelpContent from '@/components/game-container/HelpContent';
+// import HelpContent from '@/components/game-container/HelpContent';
+const LazyHelpContent = lazy(() => import('@/components/game-container/HelpContent'));
 
 const LOCAL_STORAGE_KEY = 'sawHelp';
 
@@ -56,7 +57,9 @@ export function HelpDialog() {
 	return (
 		<Dialog open={open} onOpenChange={toggleDialogOpen} aria-describedby="Tutorial on how to play the game">
 			<DialogTrigger asChild>{TriggerButton}</DialogTrigger>
-			<HelpContent setIsOpen={setOpen} />
+			<Suspense>
+				<LazyHelpContent setIsOpen={setOpen} />
+			</Suspense>
 		</Dialog>
 	);
 }
