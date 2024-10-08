@@ -10,7 +10,7 @@ import type { DbSaveData } from '@/types/database';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import type { GameState } from '@/types/client';
 
@@ -23,7 +23,7 @@ export default function useGameState({ slug }: Props) {
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [_, setDataset] = useContext(DatasetContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
-	const [isRollback, setIsRollback] = useState(false);
+	const isRollbackRef = useRef(false);
 	const plausible = usePlausible<PlausibleEvents>();
 
 	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
@@ -37,19 +37,19 @@ export default function useGameState({ slug }: Props) {
 
 	const resetGuesses = useCallback(() => {
 		setGameState('in-progress');
-		setIsRollback(true);
+		isRollbackRef.current = true;
 		setPlayerGuesses([]);
 		setEvaluatedGuesses([]);
 	}, [setPlayerGuesses, setGameState]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
-		if (isRollback) {
-			setIsRollback(false);
+		if (isRollbackRef.current === true) {
+			isRollbackRef.current = false;
 		} else if (playerGuesses && playerGuesses.length > 0 && playerGuesses.length <= GAME_CONFIG.maxGuesses) {
 			handleGuess();
 		}
-	}, [playerGuesses, isRollback]);
+	}, [playerGuesses]);
 
 	const saveGame = useCallback(
 		(data: DbSaveData) => {
@@ -96,7 +96,7 @@ export default function useGameState({ slug }: Props) {
 			}
 		} else {
 			// Guess could not be processed, remove last guess
-			setIsRollback(true);
+			isRollbackRef.current = true;
 			setPlayerGuesses((old) => old.slice(0, -1));
 		}
 	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame]);
