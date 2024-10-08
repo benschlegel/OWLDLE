@@ -228,8 +228,12 @@ export default function HelpContent({ setIsOpen }: Props) {
 						<div className="flex flex-col gap-2">
 							<p className="text-base tracking-normal mt-4">
 								All player data was sourced through{' '}
-								<EnhancedButton variant={'linkHover1'}>
-									<a href={'https://liquipedia.net/overwatch/Overwatch_League/2018'} className=" text-base tracking-normal" target="_blank" rel="noreferrer">
+								<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
+									<a
+										href={'https://liquipedia.net/overwatch/Overwatch_League/2018'}
+										className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]"
+										target="_blank"
+										rel="noreferrer">
 										Liquipedia
 									</a>
 								</EnhancedButton>
@@ -238,20 +242,28 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div>
 								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
-									<EnhancedButton variant={'linkHover1'}>
-										<Link href={'?showFeedback=true'} className="text-base tracking-normal">
+									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
+										<Link href={'?showFeedback=true'} className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]">
 											send feedback/suggestions
 										</Link>
 									</EnhancedButton>
 									,{' '}
-									<EnhancedButton variant={'linkHover1'}>
-										<a href={'https://ko-fi.com/scorer5'} className="text-base tracking-normal" target="_blank" rel="noreferrer">
+									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
+										<a
+											href={'https://ko-fi.com/scorer5'}
+											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]"
+											target="_blank"
+											rel="noreferrer">
 											buy me a coffee
 										</a>
 									</EnhancedButton>{' '}
 									or check out the source code for this project on{' '}
-									<EnhancedButton variant={'linkHover1'}>
-										<a href={'https://github.com/benschlegel/OWLDLE'} className="text-base tracking-normal" target="_blank" rel="noreferrer">
+									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
+										<a
+											href={'https://github.com/benschlegel/OWLDLE'}
+											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]"
+											target="_blank"
+											rel="noreferrer">
 											Github
 										</a>
 									</EnhancedButton>
