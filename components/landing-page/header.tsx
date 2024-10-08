@@ -10,7 +10,7 @@ type Props = {
 
 export default function Header({ slug }: Props) {
 	return (
-		<>
+		<div className="sticky top-0 bg-background z-50 pt-[0.5rem]">
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
 					<HelpDialog />
@@ -34,6 +34,6 @@ export default function Header({ slug }: Props) {
 				</div>
 			</div>
 			<Separator className="mb-6 mt-1 transition-colors duration-300" />
-		</>
+		</div>
 	);
 }
