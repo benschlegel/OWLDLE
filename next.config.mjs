@@ -1,4 +1,4 @@
-import MillionLint from '@million/lint';
+// import MillionLint from '@million/lint';
 import { withPlausibleProxy } from 'next-plausible';
 /** @type {import('next').NextConfig} */
 const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
@@ -28,7 +28,7 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 		// instrumentationHook: true,
 	},
 });
-export default MillionLint.next({
-	rsc: true,
-})(nextConfig);
-// export default nextConfig;
+// export default MillionLint.next({
+// 	rsc: true,
+// })(nextConfig);
+export default nextConfig;
