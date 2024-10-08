@@ -14,7 +14,8 @@ import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
 import type { Options } from 'nuqs';
-import { useContext, useEffect, useState } from 'react';
+import React from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
@@ -51,6 +52,13 @@ function countdownRenderer({ days, hours, minutes, seconds, milliseconds, comple
 	);
 }
 
+// Memoized Button component to prevent unnecessary re-renders
+const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
+	<Button type="submit" variant="outline" autoFocus onClick={onClick}>
+		Close
+	</Button>
+));
+
 export default function HelpContent({ setIsOpen }: Props) {
 	const [dataset, _] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
@@ -63,6 +71,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 
 	const trimmedAtlantic = atlanticPacificTeams.includes(dataset.dataset) ? atlanticText.slice(0, -10) : 'Eastern';
 	const trimmedPacific = atlanticPacificTeams.includes(dataset.dataset) ? pacificText.slice(0, -10) : 'Western';
+
+	// Memoize the setIsOpen function to prevent unnecessary re-renders
+	const handleClose = useCallback(() => {
+		setIsOpen(null);
+	}, [setIsOpen]);
 
 	return (
 		<DialogContent
@@ -250,16 +263,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 				</main>
 			</ScrollArea>
 			<DialogFooter>
-				<Button
-					type="submit"
-					variant="outline"
-					autoFocus
-					onClick={() => {
-						console.log('Button clicked.');
-						setIsOpen(null);
-					}}>
-					Close
-				</Button>
+				<MemoizedButton onClick={handleClose} />
 			</DialogFooter>
 		</DialogContent>
 	);
