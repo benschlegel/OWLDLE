@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: SeasonPageProps): Promise<Met
 	const currentDataset = dataset[0];
 
 	// Return and use default metadata for season 1
-	if (currentDataset === 'season1') return {};
+	if (currentDataset === 'season6') return {};
 
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = `${currentDataset.charAt(0).toUpperCase() + currentDataset.slice(1, -1)} ${currentDataset.slice(-1)}`;
