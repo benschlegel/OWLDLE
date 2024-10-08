@@ -27,6 +27,16 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 		reactCompiler: true,
 		// instrumentationHook: true,
 	},
+	async redirects() {
+		return [
+			// Basic redirect
+			{
+				source: '/',
+				destination: '/season6',
+				permanent: true,
+			},
+		];
+	},
 });
 // export default MillionLint.next({
 // 	rsc: true,
