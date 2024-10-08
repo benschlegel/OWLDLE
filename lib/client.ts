@@ -35,7 +35,7 @@ export type FormatConfig = {
  */
 export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl, dataset }: FormatConfig): string {
 	let datasetPostfix = '';
-	if (dataset !== undefined && dataset !== 'season1') {
+	if (dataset !== undefined) {
 		datasetPostfix = dataset;
 	}
 	const seasonText = dataset !== undefined ? `${dataset.charAt(0).toUpperCase()}${dataset.slice(1, -1)} ${dataset.slice(-1)}` : '';
