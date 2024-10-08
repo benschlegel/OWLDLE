@@ -10,7 +10,7 @@ import type { DbSaveData } from '@/types/database';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 
 type Props = {
@@ -20,24 +20,19 @@ type Props = {
 export default function useGameState({ slug }: Props) {
 	const [playerGuesses, setPlayerGuesses] = useContext(GuessContext);
 	const [gameState, setGameState] = useContext(GameStateContext);
-	const [dataset, setDataset] = useContext(DatasetContext);
+	const [_, setDataset] = useContext(DatasetContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
-	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 	const [isRollback, setIsRollback] = useState(false);
 	const plausible = usePlausible<PlausibleEvents>();
 
-	// * Set global dataset if slug changes
-	useEffect(() => {
-		const newDataset = getDataset(slug as Dataset) ?? DEFAULT_DATASET;
-		setDataset(newDataset);
-	}, [slug, setDataset]);
+	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
+	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 
-	// * Fetch correct guess + data from server
-	// biome-ignore lint/correctness/useExhaustiveDependencies: Should reset all guesses every time dataset changes
+	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
 	useEffect(() => {
-		// Reset all guesses (in case dataset was changed)
+		setDataset(dataset);
 		resetGuesses();
-	}, [dataset]);
+	}, [dataset, setDataset]);
 
 	const resetGuesses = useCallback(() => {
 		setGameState('in-progress');
@@ -48,14 +43,9 @@ export default function useGameState({ slug }: Props) {
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
-		// Skip handling guess if playerGuesses changed due to rollback
-		if (isRollback === true) {
+		if (isRollback) {
 			setIsRollback(false);
-			return;
-		}
-
-		// Ensure that the max guesses are respected
-		if (playerGuesses && playerGuesses.length > 0 && playerGuesses.length <= GAME_CONFIG.maxGuesses) {
+		} else if (playerGuesses && playerGuesses.length > 0 && playerGuesses.length <= GAME_CONFIG.maxGuesses) {
 			handleGuess();
 		}
 	}, [playerGuesses, isRollback]);
@@ -104,10 +94,6 @@ export default function useGameState({ slug }: Props) {
 			// Guess could not be processed, remove last guess
 			setIsRollback(true);
 			setPlayerGuesses((old) => old.slice(0, -1));
-			// toast({
-			// 	title: 'Please try again',
-			// 	description: 'Something went wrong, please try again',
-			// });
 		}
 	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame]);
 
