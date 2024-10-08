@@ -12,6 +12,7 @@ import type { GuessResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
+import type { GameState } from '@/types/client';
 
 type Props = {
 	slug: string;
@@ -79,15 +80,18 @@ export default function useGameState({ slug }: Props) {
 			const newGuesses = [...evaluatedGuesses, newRow];
 			setEvaluatedGuesses(newGuesses);
 
-			// * Game is won
+			// Determine game state
+			let result: GameState = 'in-progress';
 			if (guessResult.isNameCorrect === true) {
-				setGameState('won');
-				const data: DbSaveData = { gameData: newGuesses, gameResult: 'won' };
-				saveGame(data);
+				result = 'won';
 			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
-				// * Game is lost
-				setGameState('lost');
-				const data: DbSaveData = { gameData: newGuesses, gameResult: 'lost' };
+				result = 'lost';
+			}
+
+			// Save result and update game state
+			if (result !== 'in-progress') {
+				setGameState(result);
+				const data: DbSaveData = { gameData: newGuesses, gameResult: result };
 				saveGame(data);
 			}
 		} else {
