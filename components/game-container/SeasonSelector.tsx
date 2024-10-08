@@ -1,43 +1,39 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DatasetContext } from '@/context/DatasetContext';
-import { type Dataset, datasetInfo, DEFAULT_DATASET, getDataset } from '@/data/datasets';
+import { datasetInfo } from '@/data/datasets';
 import { useRouter } from 'next/navigation';
-import { useCallback, useContext, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 type Props = {
 	slug: string;
 };
 export default function SeasonSelector({ slug }: Props) {
-	const parsedSlug = slug === '/' ? 'season1' : slug;
 	const router = useRouter();
-	const dataset = getDataset(parsedSlug as Dataset);
-	const [_, setDataset] = useContext(DatasetContext);
-	const [value, setValue] = useState(dataset?.shorthand ?? 'S1');
+	const defaultValue = datasetToShorthand(slug);
+	const [value, setValue] = useState(defaultValue);
+
+	const reversedSeasons = useMemo(() => {
+		return datasetInfo.toReversed();
+	}, []);
 
 	const handleChange = useCallback(
 		(value: string) => {
-			const dataset = getDataset(value as Dataset);
-			setValue(dataset?.shorthand ?? 'S1');
-			setDataset(dataset ?? DEFAULT_DATASET);
-			if (value === 'season1') {
-				router.push('/');
-			} else {
-				router.push(`/${value}`);
-			}
+			router.push(`/${value}`);
+			const newDataset = datasetToShorthand(value);
+			setValue(newDataset);
 		},
-		[router.push, setDataset]
+		[router.push]
 	);
 
 	return (
-		<Select defaultValue={dataset?.dataset} onValueChange={handleChange}>
+		<Select defaultValue={slug} onValueChange={handleChange}>
 			<SelectTrigger className="w-auto max-w-[7rem] px-3 pr-2 h-9 py-1 text-left text-sm leading-tight gap-1" aria-label="Select season">
 				<SelectValue placeholder={value}>{value}</SelectValue>
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
 					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Select season</SelectLabel>
-					{datasetInfo.map((dataset) => (
+					{reversedSeasons.map((dataset) => (
 						<SelectItem value={dataset.dataset} key={dataset.dataset}>
 							{dataset.formattedName}
 						</SelectItem>
@@ -46,4 +42,11 @@ export default function SeasonSelector({ slug }: Props) {
 			</SelectContent>
 		</Select>
 	);
+}
+
+/**
+ * Converts dataset string to shorthand (e.g. "season6" -> "S6")
+ */
+function datasetToShorthand(dataset: string) {
+	return `${dataset.charAt(0).toUpperCase()}${dataset.slice(-1)}`;
 }
