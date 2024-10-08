@@ -16,13 +16,32 @@ export default function SeasonSelector({ slug }: Props) {
 		return datasetInfo.toReversed();
 	}, []);
 
+	const handleThemeSwitch = useCallback(
+		(newSlug: string) => {
+			// Ensure that the browser supports view transitions
+			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+			if ((document as any).startViewTransition && newSlug !== slug) {
+				// Set the animation style to "angled"
+				document.documentElement.dataset.style = 'angled';
+
+				// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+				(document as any).startViewTransition(() => {
+					router.push(`/${newSlug}`);
+				});
+			} else {
+				router.push(`/${newSlug}`);
+			}
+		},
+		[router.push, slug]
+	);
+
 	const handleChange = useCallback(
 		(value: string) => {
-			router.push(`/${value}`);
 			const newDataset = datasetToShorthand(value);
 			setValue(newDataset);
+			handleThemeSwitch(value);
 		},
-		[router.push]
+		[handleThemeSwitch]
 	);
 
 	return (
