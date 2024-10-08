@@ -97,7 +97,7 @@ export default function WinScreen({ nextReset, formattedResult, dataset }: Parti
 				)}
 			</div>
 			<SwitchableButton
-				className="w-72 mt-3"
+				className="max-w-[20rem] mt-3 box-border px-4"
 				onClick={() => {
 					navigator.clipboard.writeText(formattedResult ?? '');
 					plausible('copyResult', { props: { state: 'won', dataset: dataset ?? 'season1' } });
@@ -136,7 +136,7 @@ function renderer({ days, hours, minutes, seconds, milliseconds, completed }: Co
 
 function DefaultButtonContent() {
 	return (
-		<div className="flex flex-row justify-center items-center  gap-2 ">
+		<div className="flex flex-row justify-center items-center gap-2">
 			<p className="dark:text-[#dfdfd7] text-white w-auto text-lg font-mono tracking-tight">Copy result to clipboard</p>
 			<CopyIcon className="h-4 w-4 dark:text-[#dfdfd7] text-white" />
 		</div>

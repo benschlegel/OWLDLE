@@ -64,7 +64,7 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult, d
 				)}
 			</div>
 			<SwitchableButton
-				className="w-72 mt-3"
+				className="max-w-[20rem] mt-3 box-border px-4"
 				onClick={() => {
 					navigator.clipboard.writeText(formattedResult ?? '');
 					plausible('copyResult', { props: { state: 'lost', dataset: dataset ?? 'season1' } });
