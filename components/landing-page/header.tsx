@@ -10,7 +10,7 @@ type Props = {
 
 export default function Header({ slug }: Props) {
 	return (
-		<div className="sticky sm:static top-0 bg-background z-10 pt-[0.5rem] w-full">
+		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-[0.5rem] w-full">
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
 					<HelpDialog />
