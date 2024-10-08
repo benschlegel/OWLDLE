@@ -76,12 +76,12 @@ export default function GameCell({
 		<>
 			<TooltipProvider delayDuration={0}>
 				<Tooltip open={open}>
-					<TooltipTrigger asChild tabIndex={!ignoreTabIndex ? 0 : -1}>
+					<TooltipTrigger asChild tabIndex={!ignoreTabIndex ? 0 : -1} onBlur={() => setOpen(false)}>
 						<button
 							{...attrs}
 							type="button"
 							className={cn(
-								`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''} cursor-default select-text`,
+								`sm:w-[3.7rem] w-[3rem] sm:h-[3.7rem] h-[3rem] ${bgColor} rounded-sm transition-colors ${isLarge ? 'flex-1' : ''} cursor-default select-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring`,
 								className
 							)}
 							onClick={() => setOpen(!open)}
