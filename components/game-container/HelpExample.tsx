@@ -10,7 +10,7 @@ const data: RowData = {
 
 export default function HelpExample() {
 	return (
-		<div className="flex flex-col gap-2">
+		<div className="flex flex-col gap-2 mt-2">
 			<p className="text-base tracking-normal">The first row could look like this after making your first guess:</p>
 			<div className="w-full md:w-[60%] opacity-90">
 				<GuessRow data={data} />

@@ -1,6 +1,7 @@
 'use client';
 import type { DemoCell } from '@/components/game-container/HelpContent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { useLongPress } from '@uidotdev/usehooks';
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 type Props = {
@@ -13,43 +14,33 @@ type Props = {
 
 export default function CustomCell({ cellData, id, ignoreTabIndex, isSmall, debounceTime = 100 }: Props) {
 	const [open, setOpen] = useState(false);
-	const tooltipRef = useRef<HTMLButtonElement>(null);
-	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 	const tooltip = cellData.description;
 
-	const clearPendingTimeout = useCallback(() => {
-		if (timeoutRef.current !== null) {
-			clearTimeout(timeoutRef.current);
-			timeoutRef.current = null;
+	const attrs = useLongPress(
+		() => {
+			console.log('finished');
+			setOpen(true);
+		},
+		{
+			onCancel: (event) => setOpen(false),
+			threshold: 500,
 		}
-	}, []);
+	);
 
 	const handleOpen = useCallback(() => {
-		clearPendingTimeout();
-		timeoutRef.current = setTimeout(() => {
-			if (tooltipRef.current?.matches(':hover')) {
-				setOpen(true);
-			}
-		}, debounceTime);
-	}, [clearPendingTimeout, debounceTime]);
+		setOpen(true);
+	}, []);
 
 	const handleToggle = useCallback(() => {
-		clearPendingTimeout();
-		timeoutRef.current = setTimeout(() => {
-			setOpen((prevOpen) => !prevOpen);
-		}, debounceTime);
-	}, [clearPendingTimeout, debounceTime]);
-
-	useEffect(() => {
-		return clearPendingTimeout;
-	}, [clearPendingTimeout]);
+		setOpen((open) => !open);
+	}, []);
 
 	const ButtonContent = <p className="text-opacity-100 leading-4 text-sm">{cellData.text}</p>;
 
 	const ButtonProps = {
+		...attrs,
 		type: 'button' as const,
 		id,
-		ref: tooltipRef,
 		style: { backgroundColor: cellData.bgColor, color: cellData.color },
 		onClick: !ignoreTabIndex ? handleToggle : undefined,
 		onMouseEnter: !ignoreTabIndex ? handleOpen : undefined,
@@ -62,7 +53,7 @@ export default function CustomCell({ cellData, id, ignoreTabIndex, isSmall, debo
 	return (
 		<TooltipProvider delayDuration={0}>
 			<Tooltip open={open}>
-				<TooltipTrigger asChild tabIndex={!ignoreTabIndex ? 0 : -1}>
+				<TooltipTrigger asChild tabIndex={!ignoreTabIndex ? 0 : -1} onBlur={() => setOpen(false)}>
 					{!isSmall ? (
 						<button
 							{...ButtonProps}

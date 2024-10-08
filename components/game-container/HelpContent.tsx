@@ -167,9 +167,11 @@ export default function HelpContent({ setIsOpen }: Props) {
 						))}
 					</div>
 
-					<Accordion type="single" collapsible className="px-2">
+					<Accordion type="single" collapsible>
 						<AccordionItem value="item-1">
-							<AccordionTrigger>Full example</AccordionTrigger>
+							<AccordionTrigger className="focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 px-2">
+								Full example
+							</AccordionTrigger>
 							<AccordionContent>
 								<HelpExample />
 							</AccordionContent>
@@ -231,7 +233,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 								<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
 									<a
 										href={'https://liquipedia.net/overwatch/Overwatch_League/2018'}
-										className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]"
+										className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1"
 										target="_blank"
 										rel="noreferrer">
 										Liquipedia
@@ -243,7 +245,9 @@ export default function HelpContent({ setIsOpen }: Props) {
 								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
 									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
-										<Link href={'?showFeedback=true'} className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]">
+										<Link
+											href={'?showFeedback=true'}
+											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1">
 											send feedback/suggestions
 										</Link>
 									</EnhancedButton>
@@ -251,7 +255,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
 										<a
 											href={'https://ko-fi.com/scorer5'}
-											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]"
+											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1"
 											target="_blank"
 											rel="noreferrer">
 											buy me a coffee
@@ -261,7 +265,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
 										<a
 											href={'https://github.com/benschlegel/OWLDLE'}
-											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem]"
+											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1"
 											target="_blank"
 											rel="noreferrer">
 											Github
