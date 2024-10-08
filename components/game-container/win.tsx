@@ -107,10 +107,10 @@ export default function WinScreen({ nextReset, formattedResult, dataset }: Parti
 				<DefaultButtonContent />
 			</SwitchableButton>
 
-			<Confetti numberOfPieces={showConfetti ? 200 : 0} className="overflow-none w-full h-full" />
+			<Confetti numberOfPieces={showConfetti ? 200 : 0} className="overflow-none w-full h-full z-50 fixed top-0 left-0" />
 			<Confetti
 				numberOfPieces={showButtonConfetti ? 20 : 0}
-				className="overflow-none w-full h-full"
+				className="overflow-none w-full h-full z-50 fixed top-0 left-0"
 				onConfettiComplete={(confetti) => {
 					setShowButtonConfetti(false);
 					confetti?.reset();
