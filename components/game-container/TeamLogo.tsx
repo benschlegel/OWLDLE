@@ -6,6 +6,7 @@ import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
 import { useContext, useState, useCallback, useRef, useEffect } from 'react';
 import { DatasetContext } from '@/context/DatasetContext';
+import { useLongPress } from '@uidotdev/usehooks';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	teamName?: string;
@@ -18,48 +19,17 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 	const [open, setOpen] = useState(false);
 	const [dataset, _] = useContext(DatasetContext);
 	const team = getTeamLogo(dataset.dataset, teamName ?? '');
-	const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-	const logoRef = useRef<HTMLDivElement>(null);
 
-	const clearPendingTimeout = useCallback(() => {
-		if (timeoutRef.current !== null) {
-			clearTimeout(timeoutRef.current);
-			timeoutRef.current = null;
+	const attrs = useLongPress(
+		() => {
+			console.log('finished');
+			setOpen(true);
+		},
+		{
+			onCancel: (event) => setOpen(false),
+			threshold: 500,
 		}
-	}, []);
-
-	const handleOpen = useCallback(() => {
-		if (useTabIndex) {
-			clearPendingTimeout();
-			timeoutRef.current = setTimeout(() => {
-				if (logoRef.current?.matches(':hover')) {
-					setOpen(true);
-				}
-			}, debounceTime / 2);
-		}
-	}, [clearPendingTimeout, debounceTime, useTabIndex]);
-
-	const handleClose = useCallback(() => {
-		if (useTabIndex) {
-			clearPendingTimeout();
-			timeoutRef.current = setTimeout(() => {
-				setOpen(false);
-			}, debounceTime);
-		}
-	}, [clearPendingTimeout, debounceTime, useTabIndex]);
-
-	const handleToggle = useCallback(() => {
-		if (useTabIndex) {
-			clearPendingTimeout();
-			timeoutRef.current = setTimeout(() => {
-				setOpen((prevOpen) => !prevOpen);
-			}, debounceTime);
-		}
-	}, [clearPendingTimeout, debounceTime, useTabIndex]);
-
-	useEffect(() => {
-		return clearPendingTimeout;
-	}, [clearPendingTimeout]);
+	);
 
 	if (!teamName || !team) return <></>;
 
@@ -69,7 +39,6 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 				<TooltipTrigger asChild>
 					<div className="p-1">
 						<div
-							ref={logoRef}
 							className={cn(
 								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
 								className
@@ -79,15 +48,17 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 								paddingBottom: '100%', // This creates the 1:1 aspect ratio
 							}}
 							tabIndex={useTabIndex ? 0 : -1}
-							onFocus={handleOpen}
-							onBlur={handleClose}>
+							onFocus={() => setOpen(true)}
+							onBlur={() => setOpen(false)}>
 							<button
+								{...attrs}
 								type="button"
 								className="absolute inset-0 flex justify-center items-center p-[0.35rem] cursor-default"
-								onClick={handleToggle}
-								onMouseEnter={handleOpen}
-								onMouseLeave={handleClose}
-								onTouchStart={handleToggle}
+								onClick={() => setOpen(!open)}
+								onMouseEnter={() => setOpen(true)}
+								onMouseLeave={() => setOpen(false)}
+								// onTouchStart={() => setOpen(!open)}
+
 								aria-label="Open tooltip"
 								tabIndex={-1}>
 								<Image
