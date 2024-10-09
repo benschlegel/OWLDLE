@@ -1,6 +1,7 @@
 'use client';
 import HelpExample from '@/components/game-container/HelpExample';
 import TeamLogo from '@/components/game-container/TeamLogo';
+import LinkButton from '@/components/LinkButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import CustomCell from '@/components/ui/CustomCell';
@@ -15,7 +16,7 @@ import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'luc
 import Link from 'next/link';
 import type { Options } from 'nuqs';
 import React from 'react';
-import { useContext, useEffect, useState, useCallback } from 'react';
+import { useContext, useCallback } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
@@ -229,49 +230,17 @@ export default function HelpContent({ setIsOpen }: Props) {
 						</div>
 						<div className="flex flex-col gap-2">
 							<p className="text-base tracking-normal mt-4">
-								All player data was sourced through{' '}
-								<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
-									<a
-										href={'https://liquipedia.net/overwatch/Overwatch_League/2018'}
-										className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1"
-										target="_blank"
-										rel="noreferrer">
-										Liquipedia
-									</a>
-								</EnhancedButton>
-								. Not affiliated with Blizzard Entertainment.
+								All player data was sourced through <LinkButton href={'https://liquipedia.net/overwatch/Overwatch_League'}>Liquipedia</LinkButton>. Not
+								affiliated with Blizzard Entertainment.
 							</p>
 							<div>
 								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
-									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
-										<Link
-											href={'?showFeedback=true'}
-											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1">
-											send feedback/suggestions
-										</Link>
-									</EnhancedButton>
-									,{' '}
-									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
-										<a
-											href={'https://ko-fi.com/scorer5'}
-											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1"
-											target="_blank"
-											rel="noreferrer">
-											buy me a coffee
-										</a>
-									</EnhancedButton>{' '}
-									or check out the source code for this project on{' '}
-									<EnhancedButton variant={'linkHover1'} tabIndex={-1}>
-										<a
-											href={'https://github.com/benschlegel/OWLDLE'}
-											className="text-base tracking-normal rounded-lg px-[0.1rem] py-[0.1rem] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary-foreground focus-visible:ring-offset-1"
-											target="_blank"
-											rel="noreferrer">
-											Github
-										</a>
-									</EnhancedButton>
-									.
+									<LinkButton isInternal href={'?showFeedback=true'}>
+										send feedback/suggestions
+									</LinkButton>
+									, <LinkButton href={'https://ko-fi.com/scorer5'}>buy me a coffee</LinkButton> or check out the source code for this project on{' '}
+									<LinkButton href={'https://github.com/benschlegel/OWLDLE'}>Github</LinkButton>.
 								</p>
 							</div>
 						</div>
