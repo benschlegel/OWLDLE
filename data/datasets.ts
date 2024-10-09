@@ -4,6 +4,7 @@ import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import { z } from 'zod';
 
+export const DEFAULT_DATASET_NAME: Dataset = 'season6';
 export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
 export type Dataset = (typeof DATASETS)[number];
 
