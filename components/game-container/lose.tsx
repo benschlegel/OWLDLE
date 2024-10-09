@@ -19,7 +19,7 @@ type Props = {
 
 export default function WinScreen({ nextReset, correctPlayer, formattedResult, dataset }: Partial<Props>) {
 	const [gameState, setGameState] = useContext(GameStateContext);
-	const { setPlayerGuesses } = useGuessStorage();
+	const { setGuesses } = useGuessStorage();
 	const [showTimer, setShowTimer] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
 
@@ -58,7 +58,7 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult, d
 						onComplete={() => {
 							if (nextReset !== undefined && nextReset > new Date()) {
 								setGameState('in-progress');
-								setPlayerGuesses([]);
+								setGuesses([]);
 							}
 						}}
 					/>

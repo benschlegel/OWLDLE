@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { usePlausible } from 'next-plausible';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { Dataset } from '@/data/datasets';
+import { useGuessStorage } from '@/context/GuessStorageContext';
 
 type Props = {
 	nextReset: Date;
@@ -21,7 +22,7 @@ const confettiDuration = 7500;
 
 export default function WinScreen({ nextReset, formattedResult, dataset }: Partial<Props>) {
 	const [gameState, setGameState] = useContext(GameStateContext);
-	const [guesses, setGuesses] = useContext(GuessContext);
+	const { setGuesses } = useGuessStorage();
 	const [showTimer, setShowTimer] = useState(true);
 	const [showConfetti, setShowConfetti] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();

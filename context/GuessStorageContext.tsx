@@ -1,4 +1,4 @@
-// context/ItemsContext.js
+'use client';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import {
 	createContext,
@@ -15,8 +15,8 @@ import {
 const LOCAL_STORAGE_GUESS_KEY = 'guesses';
 
 type GuessContextType = {
-	playerGuesses: FormattedPlayer[];
-	setPlayerGuesses: Dispatch<SetStateAction<FormattedPlayer[]>>;
+	guesses: FormattedPlayer[];
+	setGuesses: Dispatch<SetStateAction<FormattedPlayer[]>>;
 	isOldState: MutableRefObject<boolean>;
 };
 
@@ -54,5 +54,5 @@ export const GuessStorageContextProvider = ({ children }: PropsWithChildren) => 
 		}
 	}, [playerGuesses]);
 
-	return <GuessStorageContext.Provider value={{ playerGuesses, setPlayerGuesses, isOldState }}>{children}</GuessStorageContext.Provider>;
+	return <GuessStorageContext.Provider value={{ guesses: playerGuesses, setGuesses: setPlayerGuesses, isOldState }}>{children}</GuessStorageContext.Provider>;
 };
