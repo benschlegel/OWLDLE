@@ -13,14 +13,13 @@ import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import type { GameState } from '@/types/client';
-import { useGuessStorage } from '@/context/GuessStorageContext';
 
 type Props = {
 	slug: string;
 };
 
 export default function useGameState({ slug }: Props) {
-	const { setGuesses: setPlayerGuesses, guesses: playerGuesses } = useGuessStorage();
+	const [playerGuesses, setPlayerGuesses] = useContext(GuessContext);
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [_, setDataset] = useContext(DatasetContext);
 	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);

@@ -2,7 +2,7 @@
 
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
 import { DatasetContext } from '@/context/DatasetContext';
-import { useGuessStorage } from '@/context/GuessStorageContext';
+import { GuessContext } from '@/context/GuessContext';
 import { type CombinedFormattedPlayer, type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
@@ -16,7 +16,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 type SearchState = 'unfocused' | 'typing' | 'submitting';
 
 export default function PlayerSearch({ className }: Props) {
-	const { setGuesses, guesses } = useGuessStorage();
+	const [guesses, setGuesses] = useContext(GuessContext);
 	const [dataset, setDataset] = useContext(DatasetContext);
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
 	const [searchState, setSearchState] = useState<SearchState>('unfocused');

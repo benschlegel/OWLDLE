@@ -3,8 +3,8 @@
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
-import { useGuessStorage } from '@/context/GuessStorageContext';
-import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+import { GuessContext } from '@/context/GuessContext';
+import { type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';
@@ -16,8 +16,8 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export default function SearchDialog({ className }: Props) {
-	const { setGuesses, guesses } = useGuessStorage();
-	const [dataset, _setDataset] = useContext(DatasetContext);
+	const [guesses, setGuesses] = useContext(GuessContext);
+	const [dataset, setDataset] = useContext(DatasetContext);
 	const [searchValue, setSearchValue] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
