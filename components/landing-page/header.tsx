@@ -1,8 +1,9 @@
-import { FeedbackDialog } from '@/components/game-container/feedback-dialog';
-import { HelpDialog } from '@/components/game-container/HelpDialog';
+import { FeedbackTriggerButton, FeedbackDialog } from '@/components/game-container/feedback-dialog';
+import { HelpDialog, HelpTriggerButton } from '@/components/game-container/HelpDialog';
 import SeasonSelector from '@/components/game-container/SeasonSelector';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Separator } from '@/components/ui/separator';
+import { Suspense } from 'react';
 
 type Props = {
 	slug: string;
@@ -13,7 +14,9 @@ export default function Header({ slug }: Props) {
 		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-[0.5rem] w-full">
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
-					<HelpDialog />
+					<Suspense fallback={HelpTriggerButton}>
+						<HelpDialog />
+					</Suspense>
 					<SeasonSelector slug={slug} />
 				</div>
 				<div className="mb-1 flex items-center">
@@ -29,7 +32,9 @@ export default function Header({ slug }: Props) {
 				</div>
 				{/* </div> */}
 				<div className="flex gap-1">
-					<FeedbackDialog />
+					<Suspense fallback={FeedbackTriggerButton}>
+						<FeedbackDialog />
+					</Suspense>
 					<ModeToggle />
 				</div>
 			</div>
