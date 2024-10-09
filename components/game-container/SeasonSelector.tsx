@@ -1,6 +1,6 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { datasetInfo } from '@/data/datasets';
+import { datasetInfo, DEFAULT_DATASET_NAME } from '@/data/datasets';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -9,7 +9,8 @@ type Props = {
 };
 export default function SeasonSelector({ slug }: Props) {
 	const router = useRouter();
-	const defaultValue = datasetToShorthand(slug);
+	const formattedSlug = slug === '/' ? DEFAULT_DATASET_NAME : slug;
+	const defaultValue = datasetToShorthand(formattedSlug);
 	const [value, setValue] = useState(defaultValue);
 
 	const reversedSeasons = useMemo(() => {
@@ -20,7 +21,7 @@ export default function SeasonSelector({ slug }: Props) {
 		(newSlug: string) => {
 			// Ensure that the browser supports view transitions
 			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-			if ((document as any).startViewTransition && newSlug !== slug) {
+			if ((document as any).startViewTransition && newSlug !== formattedSlug) {
 				// Set the animation style to "angled"
 				document.documentElement.dataset.style = 'angled';
 
@@ -32,7 +33,7 @@ export default function SeasonSelector({ slug }: Props) {
 				router.push(`/${newSlug}`);
 			}
 		},
-		[router.push, slug]
+		[router.push, formattedSlug]
 	);
 
 	const handleChange = useCallback(

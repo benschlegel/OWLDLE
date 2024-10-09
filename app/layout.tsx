@@ -9,6 +9,10 @@ import PlausibleProvider from 'next-plausible';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import DatasetContexttProvider from '@/context/DatasetContext';
 import ReactQueryProvider from '@/context/ReactQueryProvider';
+import React from 'react';
+import Header from '@/components/landing-page/header';
+import Socials from '@/components/landing-page/socials';
+import { Toaster } from '@/components/ui/toaster';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -78,11 +82,18 @@ export const metadata: Metadata = {
 	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame'],
 };
 
+const MemoizedHeader = React.memo(Header);
+const MemoizedSocials = React.memo(Socials);
+
 export default function RootLayout({
 	children,
+	params,
 }: Readonly<{
 	children: React.ReactNode;
+	params: { dataset?: string[] };
 }>) {
+	const { dataset } = params;
+	const rootSlug = dataset ? dataset[0] : '/';
 	return (
 		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 			<head>
@@ -95,7 +106,18 @@ export default function RootLayout({
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 						<GuessContextProvider>
 							<GameStateContextProvider>
-								<DatasetContexttProvider>{children}</DatasetContexttProvider>
+								<DatasetContexttProvider>
+									<>
+										<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
+											<main className="w-[32rem]">
+												<MemoizedSocials />
+												<MemoizedHeader slug={rootSlug} />
+												{children}
+											</main>
+										</div>
+										<Toaster />
+									</>
+								</DatasetContexttProvider>
 								<SpeedInsights />
 							</GameStateContextProvider>
 						</GuessContextProvider>
