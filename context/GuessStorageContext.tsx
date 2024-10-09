@@ -40,8 +40,10 @@ export const GuessStorageContextProvider = ({ children }: PropsWithChildren) => 
 	// Sync state with localStorage, only on the client side
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
+			console.log('In client.');
 			const storedPlayers = localStorage.getItem(LOCAL_STORAGE_GUESS_KEY);
 			if (storedPlayers) {
+				console.log('Stored: ', storedPlayers);
 				setPlayerGuesses(JSON.parse(storedPlayers));
 			}
 		}
@@ -50,6 +52,7 @@ export const GuessStorageContextProvider = ({ children }: PropsWithChildren) => 
 	// Update localStorage whenever items change
 	useEffect(() => {
 		if (typeof window !== 'undefined') {
+			console.log('Changed.');
 			localStorage.setItem(LOCAL_STORAGE_GUESS_KEY, JSON.stringify(playerGuesses));
 		}
 	}, [playerGuesses]);

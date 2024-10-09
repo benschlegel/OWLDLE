@@ -48,7 +48,6 @@ export default function useGameState({ slug }: Props) {
 		if (isRollbackRef.current === true) {
 			isRollbackRef.current = false;
 		} else if (playerGuesses && playerGuesses.length > 0 && playerGuesses.length <= GAME_CONFIG.maxGuesses) {
-			console.log('Player guesses: ', playerGuesses);
 			handleGuess();
 		}
 	}, [playerGuesses]);
