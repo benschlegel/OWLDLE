@@ -5,11 +5,6 @@ import { useQuery } from '@tanstack/react-query';
 
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
 
-export const LOCAL_STORAGE_CURRENT_KEY = 'current';
-export type CurrentLocalData = {
-	iteration: number;
-};
-
 async function fetchValidateDataset() {
 	const response = await fetch('/api/validate?dataset=all');
 	if (!response.ok) {
@@ -21,31 +16,7 @@ async function fetchValidateDataset() {
 		dataset: r.dataset,
 		answer: { correctPlayer: r.answer.player, iteration: r.answer.iteration, nextReset: r.answer.nextReset },
 	}));
-
-	// Get iteration from second season (season 1 had more iterations, will be normalized in the future)
-	const currentIteration = formatted[1].answer.iteration;
-	updateCurrentIteration(currentIteration);
 	return formatted;
-}
-
-/**
- * Update local storage key containing current iteration
- */
-function updateCurrentIteration(currentIteration: number) {
-	if (typeof window !== 'undefined') {
-		const storedCurrent = localStorage.getItem(LOCAL_STORAGE_CURRENT_KEY);
-		if (storedCurrent) {
-			const parsed = JSON.parse(storedCurrent) as CurrentLocalData;
-			if (parsed.iteration < currentIteration) {
-				console.log('Outdated.');
-				// Set player guesses to 0
-			} else {
-				console.log('Current iteration: ', parsed.iteration);
-			}
-		} else {
-			localStorage.setItem(LOCAL_STORAGE_CURRENT_KEY, JSON.stringify({ iteration: currentIteration } satisfies CurrentLocalData));
-		}
-	}
 }
 
 export function useAnswerQuery(dataset: Dataset) {
@@ -57,10 +28,8 @@ export function useAnswerQuery(dataset: Dataset) {
 			const found = data.find((item) => item.dataset === dataset)?.answer ?? data[0].answer;
 			return found;
 		},
-		// Stays in cache for 6 hours
-		staleTime: 6 * 60 * 60 * 1000,
-		// Disable fetching on window focus, data doesn't update that often
-		refetchOnWindowFocus: false,
+		staleTime: 6 * 60 * 60 * 1000, // Stays in cache for 6 hours
+		refetchOnWindowFocus: false, // Disable fetching on window focus, data doesn't update that often
 	});
 }
 
