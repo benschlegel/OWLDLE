@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "format": " biome format --write .",
     "test": "vitest local",
     "test:all": "vitest",
     "test:write": "WRITE_TEST_REPORT=true vitest --outputFile=./tests/report.json"

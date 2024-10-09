@@ -1,5 +1,5 @@
 import type { Vitest } from 'vitest/node';
-import type { RunnerTestFile, RunnerTask, } from 'vitest';
+import type { RunnerTestFile, RunnerTask } from 'vitest';
 import type { Reporter } from 'vitest/reporters';
 import fs from 'node:fs';
 import path from 'node:path';

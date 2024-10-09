@@ -1,7 +1,7 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import type { NextRequest } from 'next/server';
-import { addFeedback, } from '@/lib/databaseAccess';
-import type { DbFeedback, } from '@/types/database';
+import { addFeedback } from '@/lib/databaseAccess';
+import type { DbFeedback } from '@/types/database';
 import { feedbackSchema } from '@/types/server';
 
 const rateLimiter = new RateLimiterMemory({
