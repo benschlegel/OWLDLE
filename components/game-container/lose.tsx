@@ -2,6 +2,7 @@
 import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
+import { useGuessStorage } from '@/context/GuessStorageContext';
 import type { Dataset } from '@/data/datasets';
 import type { PlausibleEvents } from '@/types/plausible';
 import { CheckIcon, CopyIcon } from 'lucide-react';
@@ -18,7 +19,7 @@ type Props = {
 
 export default function WinScreen({ nextReset, correctPlayer, formattedResult, dataset }: Partial<Props>) {
 	const [gameState, setGameState] = useContext(GameStateContext);
-	const [guesses, setGuesses] = useContext(GuessContext);
+	const { setPlayerGuesses } = useGuessStorage();
 	const [showTimer, setShowTimer] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
 
@@ -57,7 +58,7 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult, d
 						onComplete={() => {
 							if (nextReset !== undefined && nextReset > new Date()) {
 								setGameState('in-progress');
-								setGuesses([]);
+								setPlayerGuesses([]);
 							}
 						}}
 					/>

@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import GuessContextProvider from '@/context/GuessContext';
 import GameStateContextProvider from '@/context/GameStateContext';
 import { GAME_CONFIG } from '@/lib/config';
 import PlausibleProvider from 'next-plausible';
@@ -13,6 +12,7 @@ import React from 'react';
 import Header from '@/components/landing-page/header';
 import Socials from '@/components/landing-page/socials';
 import { Toaster } from '@/components/ui/toaster';
+import { GuessStorageContextProvider } from '@/context/GuessStorageContext';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -104,7 +104,7 @@ export default function RootLayout({
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ReactQueryProvider>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-						<GuessContextProvider>
+						<GuessStorageContextProvider>
 							<GameStateContextProvider>
 								<DatasetContexttProvider>
 									<>
@@ -120,7 +120,7 @@ export default function RootLayout({
 								</DatasetContexttProvider>
 								<SpeedInsights />
 							</GameStateContextProvider>
-						</GuessContextProvider>
+						</GuessStorageContextProvider>
 					</ThemeProvider>
 				</ReactQueryProvider>
 			</body>
