@@ -25,3 +25,10 @@ export function FeedbackDialog() {
 		</Dialog>
 	);
 }
+
+export const FeedbackTriggerButton = (
+	<Button variant="ghost" size="icon" className="p-0">
+		<MessageSquareTextIcon className="h-[1.2rem] w-[1.2rem]" />
+		<span className="sr-only">Send feedback</span>
+	</Button>
+);

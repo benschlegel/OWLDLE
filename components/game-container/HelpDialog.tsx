@@ -48,18 +48,18 @@ export function HelpDialog() {
 		return () => document.removeEventListener('keydown', handleKeyDown);
 	}, [toggleDialogOpen]);
 
-	const TriggerButton = (
-		<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
-			<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
-		</Button>
-	);
-
 	return (
 		<Dialog open={open} onOpenChange={toggleDialogOpen} aria-describedby="Tutorial on how to play the game">
-			<DialogTrigger asChild>{TriggerButton}</DialogTrigger>
+			<DialogTrigger asChild>{HelpTriggerButton}</DialogTrigger>
 			<Suspense>
 				<LazyHelpContent setIsOpen={setOpen} />
 			</Suspense>
 		</Dialog>
 	);
 }
+
+export const HelpTriggerButton = (
+	<Button variant="ghost" size="icon" className="p-0" aria-label="Help">
+		<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+	</Button>
+);
