@@ -3,7 +3,7 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import { type Dataset, DEFAULT_DATASET, getDataset } from '@/data/datasets';
-import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+import type { CombinedFormattedPlayer, FormattedPlayer } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import type { DbSaveData } from '@/types/database';
@@ -43,7 +43,7 @@ export default function useGameState({ slug }: Props) {
 			setGameState('in-progress');
 			const guesses = evaluatedGuesses.map((e) => e.player);
 			isRollbackRef.current = true;
-			setPlayerGuesses(guesses as any);
+			setPlayerGuesses(guesses);
 		} else {
 			setGameState('in-progress');
 			isRollbackRef.current = true;
@@ -77,7 +77,7 @@ export default function useGameState({ slug }: Props) {
 
 	const handleGuess = useCallback(async () => {
 		// Get current guess
-		const currentGuess: FormattedPlayer = playerGuesses[playerGuesses.length - 1];
+		const currentGuess: CombinedFormattedPlayer = playerGuesses[playerGuesses.length - 1];
 
 		// Double-check that conditions are valid (should always be the case already)
 		if (validatedData !== undefined && gameState === 'in-progress') {
