@@ -13,6 +13,7 @@ import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import type { GameState } from '@/types/client';
+import { useEvaluatedGuesses } from '@/context/GlobalGuessContext';
 
 type Props = {
 	slug: string;
@@ -22,11 +23,12 @@ export default function useGameState({ slug }: Props) {
 	const [playerGuesses, setPlayerGuesses] = useContext(GuessContext);
 	const [gameState, setGameState] = useContext(GameStateContext);
 	const [_, setDataset] = useContext(DatasetContext);
-	const [evaluatedGuesses, setEvaluatedGuesses] = useState<RowData[]>([]);
 	const isRollbackRef = useRef(false);
 	const plausible = usePlausible<PlausibleEvents>();
 
 	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
+	const { data, isOld } = useEvaluatedGuesses(dataset.dataset);
+	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 
 	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
@@ -40,7 +42,7 @@ export default function useGameState({ slug }: Props) {
 		isRollbackRef.current = true;
 		setPlayerGuesses([]);
 		setEvaluatedGuesses([]);
-	}, [setPlayerGuesses, setGameState]);
+	}, [setPlayerGuesses, setGameState, setEvaluatedGuesses]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
@@ -99,7 +101,7 @@ export default function useGameState({ slug }: Props) {
 			isRollbackRef.current = true;
 			setPlayerGuesses((old) => old.slice(0, -1));
 		}
-	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame]);
+	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses]);
 
 	return [evaluatedGuesses, gameState, validatedData] as const;
 }
