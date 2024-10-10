@@ -13,6 +13,7 @@ import React from 'react';
 import Header from '@/components/landing-page/header';
 import Socials from '@/components/landing-page/socials';
 import { Toaster } from '@/components/ui/toaster';
+import { EvaluatedGuessProvider } from '@/context/GlobalGuessContext';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -104,23 +105,25 @@ export default function RootLayout({
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ReactQueryProvider>
 					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-						<GuessContextProvider>
-							<GameStateContextProvider>
-								<DatasetContexttProvider>
-									<>
-										<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
-											<main className="w-[32rem]">
-												<MemoizedSocials />
-												<MemoizedHeader slug={rootSlug} />
-												{children}
-											</main>
-										</div>
-										<Toaster />
-									</>
-								</DatasetContexttProvider>
-								<SpeedInsights />
-							</GameStateContextProvider>
-						</GuessContextProvider>
+						<EvaluatedGuessProvider>
+							<GuessContextProvider>
+								<GameStateContextProvider>
+									<DatasetContexttProvider>
+										<>
+											<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
+												<main className="w-[32rem]">
+													<MemoizedSocials />
+													<MemoizedHeader slug={rootSlug} />
+													{children}
+												</main>
+											</div>
+											<Toaster />
+										</>
+									</DatasetContexttProvider>
+									<SpeedInsights />
+								</GameStateContextProvider>
+							</GuessContextProvider>
+						</EvaluatedGuessProvider>
 					</ThemeProvider>
 				</ReactQueryProvider>
 			</body>

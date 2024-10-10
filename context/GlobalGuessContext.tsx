@@ -1,3 +1,4 @@
+'use client';
 import type { RowData } from '@/components/game-container/GameContainer';
 import { type Dataset, DATASETS } from '@/data/datasets';
 import type React from 'react';
