@@ -2,14 +2,14 @@
 import type { RowData } from '@/components/game-container/GameContainer';
 import { type Dataset, DATASETS } from '@/data/datasets';
 import type React from 'react';
-import { createContext, type PropsWithChildren, useCallback, useContext, useRef, useState } from 'react';
+import { createContext, type Dispatch, type PropsWithChildren, type SetStateAction, useCallback, useContext, useRef, useState } from 'react';
 
 const GUESS_LOCAL_STORAGE_KEY = 'guesses';
 
 // Define the type for the dataset's state
 interface DatasetState {
 	evaluatedGuesses: RowData[];
-	setEvaluatedGuesses: (newItems: RowData[]) => void;
+	setEvaluatedGuesses: Dispatch<SetStateAction<RowData[]>>;
 }
 
 // Modify the context value structure to include datasets and isOldRef
@@ -69,23 +69,20 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 		for (const dataset of DATASETS) {
 			initialState[dataset] = {
 				evaluatedGuesses: initialData[dataset].evaluatedGuesses,
-				setEvaluatedGuesses: (newRows: RowData[]) => {
+				setEvaluatedGuesses: (newRowsOrUpdater) => {
 					setDatasets((prev) => {
+						const updatedEvaluatedGuesses =
+							typeof newRowsOrUpdater === 'function'
+								? newRowsOrUpdater(prev[dataset].evaluatedGuesses) // Handle functional update
+								: newRowsOrUpdater;
+
 						const updatedDatasets = {
 							...prev,
-							[dataset]: { ...prev[dataset], evaluatedGuesses: newRows },
+							[dataset]: { ...prev[dataset], evaluatedGuesses: updatedEvaluatedGuesses },
 						};
 
-						// Update localStorage with the new dataset
-						const localStorageData = DATASETS.reduce(
-							(acc, datasetKey) => {
-								acc[datasetKey] = { evaluatedGuesses: updatedDatasets[datasetKey].evaluatedGuesses };
-								return acc;
-							},
-							{} as Record<Dataset, { evaluatedGuesses: RowData[] }>
-						);
-
-						localStorage.setItem(GUESS_LOCAL_STORAGE_KEY, JSON.stringify(localStorageData));
+						// Update localStorage with the new state
+						localStorage.setItem(GUESS_LOCAL_STORAGE_KEY, JSON.stringify(updatedDatasets));
 
 						return updatedDatasets;
 					});
