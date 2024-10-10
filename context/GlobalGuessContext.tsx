@@ -27,26 +27,27 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 
 	// * Load state from localStorage
 	const loadInitialData = useCallback(() => {
-		const storageData = localStorage.getItem(GUESS_LOCAL_STORAGE_KEY);
-		if (storageData) {
-			// Data was loaded from localStorage
-			isOldRef.current = true;
+		if (typeof window !== 'undefined') {
+			const storageData = localStorage.getItem(GUESS_LOCAL_STORAGE_KEY);
+			if (storageData) {
+				// Data was loaded from localStorage
+				isOldRef.current = true;
 
-			// Parsing and creating initial state from localStorage
-			const parsedData = JSON.parse(storageData) as Record<Dataset, { evaluatedGuesses: RowData[] }>;
+				// Parsing and creating initial state from localStorage
+				const parsedData = JSON.parse(storageData) as Record<Dataset, { evaluatedGuesses: RowData[] }>;
 
-			return DATASETS.reduce(
-				(acc, dataset) => {
-					acc[dataset] = {
-						evaluatedGuesses: parsedData[dataset]?.evaluatedGuesses ?? [],
-						setEvaluatedGuesses: () => void 0,
-					};
-					return acc;
-				},
-				{} as Record<Dataset, DatasetState>
-			);
+				return DATASETS.reduce(
+					(acc, dataset) => {
+						acc[dataset] = {
+							evaluatedGuesses: parsedData[dataset]?.evaluatedGuesses ?? [],
+							setEvaluatedGuesses: () => void 0,
+						};
+						return acc;
+					},
+					{} as Record<Dataset, DatasetState>
+				);
+			}
 		}
-
 		// Return default empty state if nothing in localStorage
 		return DATASETS.reduce(
 			(acc, dataset) => {
