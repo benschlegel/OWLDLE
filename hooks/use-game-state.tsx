@@ -30,6 +30,7 @@ export default function useGameState({ slug }: Props) {
 	const { data, isOld } = useEvaluatedGuesses(dataset.dataset);
 	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
+	// TODO: compare lastPlayer to validatedData
 
 	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
 	useEffect(() => {
@@ -38,11 +39,18 @@ export default function useGameState({ slug }: Props) {
 	}, [dataset, setDataset]);
 
 	const resetGuesses = useCallback(() => {
-		setGameState('in-progress');
-		isRollbackRef.current = true;
-		setPlayerGuesses([]);
-		setEvaluatedGuesses([]);
-	}, [setPlayerGuesses, setGameState, setEvaluatedGuesses]);
+		if (evaluatedGuesses.length > 0) {
+			setGameState('in-progress');
+			const guesses = evaluatedGuesses.map((e) => e.player);
+			isRollbackRef.current = true;
+			setPlayerGuesses(guesses as any);
+		} else {
+			setGameState('in-progress');
+			isRollbackRef.current = true;
+			setPlayerGuesses([]);
+			setEvaluatedGuesses([]);
+		}
+	}, [setPlayerGuesses, setGameState, setEvaluatedGuesses, evaluatedGuesses]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
@@ -73,27 +81,29 @@ export default function useGameState({ slug }: Props) {
 
 		// Double-check that conditions are valid (should always be the case already)
 		if (validatedData !== undefined && gameState === 'in-progress') {
+			console.log(`Applying...`, currentGuess);
 			// Validate data
 			const correctPlayer = validatedData.correctPlayer;
 			const guessResult: GuessResponse = validateGuess(currentGuess, correctPlayer);
 
 			// Add guess response to row
 			const newRow: RowData = { guessResult: guessResult, player: currentGuess };
-			const newGuesses = [...evaluatedGuesses, newRow];
-			setEvaluatedGuesses(newGuesses);
+			setEvaluatedGuesses((prevEvaluatedGuesses) => [...prevEvaluatedGuesses, newRow]);
+			const newData = [...evaluatedGuesses, newRow];
 
+			// TODO: refactor game over logic in callback and use while reading old one
 			// Determine game state
 			let result: GameState = 'in-progress';
 			if (guessResult.isNameCorrect === true) {
 				result = 'won';
-			} else if (playerGuesses.length === GAME_CONFIG.maxGuesses) {
+			} else if (newData.length === GAME_CONFIG.maxGuesses) {
 				result = 'lost';
 			}
 
 			// Save result and update game state
 			if (result !== 'in-progress') {
 				setGameState(result);
-				const data: DbSaveData = { gameData: newGuesses, gameResult: result };
+				const data: DbSaveData = { gameData: [...evaluatedGuesses, newRow], gameResult: result };
 				saveGame(data);
 			}
 		} else {
