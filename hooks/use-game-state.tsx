@@ -27,9 +27,9 @@ export default function useGameState({ slug }: Props) {
 	const plausible = usePlausible<PlausibleEvents>();
 
 	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
-	const { data, isOld } = useEvaluatedGuesses(dataset.dataset);
-	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
+	const { data, isOld } = useEvaluatedGuesses(dataset.dataset, validatedData?.iteration);
+	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 	// TODO: compare lastPlayer to validatedData
 
 	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
@@ -113,5 +113,5 @@ export default function useGameState({ slug }: Props) {
 		}
 	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses]);
 
-	return [evaluatedGuesses, gameState, validatedData] as const;
+	return [evaluatedGuesses, gameState, validatedData, isOld] as const;
 }
