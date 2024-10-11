@@ -28,7 +28,7 @@ export default function useGameState({ slug }: Props) {
 
 	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
-	const { data, isOld } = useEvaluatedGuesses(dataset.dataset, validatedData?.iteration);
+	const { data, isOld } = useEvaluatedGuesses(dataset.dataset);
 	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 	// TODO: compare lastPlayer to validatedData
 
