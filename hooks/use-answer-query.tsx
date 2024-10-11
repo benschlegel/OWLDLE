@@ -1,14 +1,15 @@
 import type { DatasetAnswer } from '@/app/api/validate/route';
-import { GUESS_LOCAL_STORAGE_KEY } from '@/context/GlobalGuessContext';
 import type { Dataset } from '@/data/datasets';
-import { LOCAL_STORAGE_STATE_KEY } from '@/hooks/use-game-state';
 import type { ValidateResponse } from '@/types/server';
-import { type QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
+
+const LOCAL_STORAGE_LATEST_ITERATION = 'latestIteration';
+const DEFAULT_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 export const LOCAL_STORAGE_STALE_KEY = 'isStale';
 
-async function fetchValidateDataset(queryClient: QueryClient) {
+async function fetchValidateDataset() {
 	const response = await fetch('/api/validate?dataset=all');
 	if (!response.ok) {
 		throw new Error('Network response was not ok');
@@ -20,56 +21,58 @@ async function fetchValidateDataset(queryClient: QueryClient) {
 		answer: { correctPlayer: r.answer.player, iteration: r.answer.iteration, nextReset: r.answer.nextReset },
 	}));
 
-	// Extract first answer data to check cache invalidation timing
-	const { nextReset } = formatted[0].answer;
-
-	// Calculate time until the next reset
+	const nextReset = formatted[0].answer.nextReset;
 	const currentTime = new Date().getTime();
-	const resetTime = new Date(nextReset).getTime();
-	const timeUntilReset = resetTime - currentTime;
+	const resetTime = nextReset ? new Date(nextReset).getTime() : currentTime + DEFAULT_STALE_TIME;
+	const timeUntilReset = Math.max(resetTime - currentTime, 0);
 
-	// * Invalidate query if data is outdated (nextReset time has passed)
-	if (timeUntilReset <= 0) {
-		if (typeof window !== 'undefined') {
-			console.log('Query data outdated.');
-			localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
-		}
-		queryClient.invalidateQueries({ queryKey: ['all'], exact: true });
-	} else {
-		// Update query cache data and dynamically set staleTime based on nextReset
-		console.log(`Cache will persist for ${timeUntilReset / 1000} seconds.`);
-		queryClient.setQueryData(['all'], formatted);
-		queryClient.setQueryDefaults(['all'], {
-			staleTime: timeUntilReset, // Dynamic stale time until next reset
-		});
-	}
+	// Update highest iteration
+	const highestIteration = Math.max(...formatted.map((item) => item.answer.iteration));
+	localStorage.setItem(LOCAL_STORAGE_LATEST_ITERATION, highestIteration.toString());
 
-	return formatted;
+	console.log(`Cache will persist for ${timeUntilReset / 1000} seconds.`);
+
+	return { data: formatted, timeUntilReset, fetchedAt: currentTime };
 }
 
 export function useAnswerQuery(dataset: Dataset) {
-	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: ['all'],
-		queryFn: () => fetchValidateDataset(queryClient),
-		select: (data: DatasetValidatedResponse[]) => {
-			// Find and return the specific dataset from the array
-			const found = data.find((item) => item.dataset === dataset)?.answer ?? data[0].answer;
-			return found;
+		queryFn: () => fetchValidateDataset(),
+		select: (result: { data: DatasetValidatedResponse[]; timeUntilReset: number; fetchedAt: number }) => {
+			const found = result.data.find((item) => item.dataset === dataset)?.answer ?? result.data[0].answer;
+			const currentTime = new Date().getTime();
+			const elapsedTime = currentTime - result.fetchedAt;
+
+			// Check if data is stale
+			const isStale = elapsedTime >= (result.timeUntilReset ?? DEFAULT_STALE_TIME);
+
+			// Set localStorage key if data is stale on initial load
+			if (isStale) {
+				localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
+			} else {
+				localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
+			}
+
+			return { ...found, fetchedAt: result.fetchedAt, timeUntilReset: result.timeUntilReset };
 		},
-		staleTime: 6 * 60 * 60 * 1000, // Stays in cache for 6 hours
-		refetchOnWindowFocus: false, // Disable fetching on window focus, data doesn't update that often
+		staleTime: (oldData) => {
+			if (!oldData?.state?.data) return DEFAULT_STALE_TIME;
+			const timeUntilReset = oldData.state.data.timeUntilReset ?? DEFAULT_STALE_TIME;
+			const fetchedAt = oldData.state.data.fetchedAt ?? Date.now();
+			const currentTime = new Date().getTime();
+			const elapsedTime = currentTime - fetchedAt;
+			return Math.max(timeUntilReset - elapsedTime, 0);
+		},
+		refetchInterval: (data) => {
+			if (!data) return DEFAULT_STALE_TIME;
+			const timeUntilReset = data.state.data?.timeUntilReset ?? DEFAULT_STALE_TIME;
+			const fetchedAt = data.state.data?.fetchedAt ?? Date.now();
+			const currentTime = new Date().getTime();
+			const elapsedTime = currentTime - fetchedAt;
+			return Math.max(timeUntilReset - elapsedTime, 0);
+		},
+		refetchOnMount: true,
+		refetchOnWindowFocus: true,
 	});
 }
-
-// (query) => {
-//   const data = query.state.data;
-//   if (data) {
-//     const responseDate = new Date(data.nextReset);
-//     const now = new Date();
-//     const diffInHours = (now.getTime() - responseDate.getTime()) / (1000 * 60 * 60);
-//     return diffInHours >= 1 ? 0 : undefined; // Refetch if more than 1 hour has passed
-//   }
-//   return undefined;
-// },
-// });
