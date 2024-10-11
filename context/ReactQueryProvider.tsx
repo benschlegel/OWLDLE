@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import { type Persister, PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
 import { QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 const createPersister = (): Persister => {
 	return createSyncStoragePersister({
@@ -25,6 +26,7 @@ function ReactQueryProviderComponent({ children }: { children: React.ReactNode }
 	return (
 		<PersistQueryClientProvider persistOptions={{ persister }} client={queryClient}>
 			{children}
+			<ReactQueryDevtools initialIsOpen={false} />
 		</PersistQueryClientProvider>
 	);
 }
