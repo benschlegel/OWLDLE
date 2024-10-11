@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
-import { useContext, useState, useCallback, useRef, useEffect } from 'react';
+import { useContext, useState } from 'react';
 import { DatasetContext } from '@/context/DatasetContext';
 import { useLongPress } from '@uidotdev/usehooks';
 
@@ -39,6 +39,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 				<TooltipTrigger asChild>
 					<div className="p-1">
 						<div
+							{...attrs}
 							className={cn(
 								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
 								className
@@ -49,18 +50,13 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 							}}
 							tabIndex={useTabIndex ? 0 : -1}
 							onFocus={() => setOpen(true)}
-							onBlur={() => setOpen(false)}>
-							<button
-								{...attrs}
-								type="button"
-								className="absolute inset-0 flex justify-center items-center p-[0.35rem] cursor-default"
-								onClick={() => setOpen(!open)}
-								onMouseEnter={() => setOpen(true)}
-								onMouseLeave={() => setOpen(false)}
-								// onTouchStart={() => setOpen(!open)}
-
-								aria-label="Open tooltip"
-								tabIndex={-1}>
+							onBlur={() => setOpen(false)}
+							onClick={() => setOpen(!open)}
+							onMouseEnter={() => setOpen(true)}
+							onMouseLeave={() => setOpen(false)}
+							role="button"
+							aria-label="Open tooltip">
+							<div className="absolute inset-0 flex justify-center items-center p-[0.35rem] cursor-default">
 								<Image
 									src={team.imgUrl}
 									alt={`Logo for ${team.displayName}`}
@@ -68,9 +64,9 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 									quality={100}
 									width={64}
 									height={64}
-									className=" h-auto w-auto max-h-full max-w-full object-contain"
+									className="h-auto w-auto max-h-full max-w-full object-contain"
 								/>
-							</button>
+							</div>
 						</div>
 					</div>
 				</TooltipTrigger>
