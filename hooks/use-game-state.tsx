@@ -46,7 +46,13 @@ export default function useGameState({ slug }: Props) {
 				const gameStateOld = localStorage.getItem(LOCAL_STORAGE_STATE_KEY);
 				if (gameStateOld) {
 					const parsedOldState = JSON.parse(gameStateOld) as SavedState;
-					setGameState(parsedOldState[dataset.dataset]);
+					const oldStateRaw = parsedOldState[dataset.dataset] as GameState;
+					if (oldStateRaw === 'won' || oldStateRaw === 'lost') {
+						// Set game state to "won-old"/"lost-old" to avoid playing particle effects if read from storage
+						setGameState(`${oldStateRaw}-old`);
+					} else {
+						setGameState(oldStateRaw);
+					}
 				} else {
 					const defaultValues = getDefaultGameState();
 					localStorage.setItem(LOCAL_STORAGE_STATE_KEY, JSON.stringify(defaultValues));
@@ -103,7 +109,6 @@ export default function useGameState({ slug }: Props) {
 			const newData = [...evaluatedGuesses, newRow];
 			console.log('Curr guesses: ', newData.length);
 
-			// TODO: refactor game over logic in callback and use while reading old one
 			// Determine game state
 			let result: GameState = 'in-progress';
 			if (guessResult.isNameCorrect === true) {
