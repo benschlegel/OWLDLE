@@ -1,11 +1,11 @@
 import type { DatasetAnswer } from '@/app/api/validate/route';
 import type { Dataset } from '@/data/datasets';
 import type { ValidateResponse } from '@/types/server';
-import { useQuery } from '@tanstack/react-query';
+import { type QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
 
-async function fetchValidateDataset() {
+async function fetchValidateDataset(queryClient: QueryClient) {
 	const response = await fetch('/api/validate?dataset=all');
 	if (!response.ok) {
 		throw new Error('Network response was not ok');
@@ -16,13 +16,36 @@ async function fetchValidateDataset() {
 		dataset: r.dataset,
 		answer: { correctPlayer: r.answer.player, iteration: r.answer.iteration, nextReset: r.answer.nextReset },
 	}));
+
+	// Extract first answer data to check cache invalidation timing
+	const { nextReset } = formatted[0].answer;
+
+	// Calculate time until the next reset
+	const currentTime = new Date().getTime();
+	const resetTime = new Date(nextReset).getTime();
+	const timeUntilReset = resetTime - currentTime;
+
+	// * Invalidate query if data is outdated (nextReset time has passed)
+	if (timeUntilReset <= 0) {
+		console.log('Outdated (react query)');
+		queryClient.invalidateQueries({ queryKey: ['all'], exact: true });
+	} else {
+		// Update query cache data and dynamically set staleTime based on nextReset
+		console.log(`Cache will persist for ${timeUntilReset / 1000} seconds.`);
+		queryClient.setQueryData(['all'], formatted);
+		queryClient.setQueryDefaults(['all'], {
+			staleTime: timeUntilReset, // Dynamic stale time until next reset
+		});
+	}
+
 	return formatted;
 }
 
 export function useAnswerQuery(dataset: Dataset) {
+	const queryClient = useQueryClient();
 	return useQuery({
 		queryKey: ['all'],
-		queryFn: () => fetchValidateDataset(),
+		queryFn: () => fetchValidateDataset(queryClient),
 		select: (data: DatasetValidatedResponse[]) => {
 			// Find and return the specific dataset from the array
 			const found = data.find((item) => item.dataset === dataset)?.answer ?? data[0].answer;
