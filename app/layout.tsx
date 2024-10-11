@@ -88,7 +88,6 @@ export default function RootLayout({
 	params: { dataset?: string[] };
 }>) {
 	const { dataset } = params;
-	const rootSlug = dataset ? dataset[0] : '/';
 	return (
 		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 			<head>
@@ -99,19 +98,21 @@ export default function RootLayout({
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
 					<ReactQueryProvider>
-						<GuessContextProvider>
-							<GameStateContextProvider>
-								<DatasetContexttProvider>
-									<>
-										<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
-											<main className="w-[32rem]">{children}</main>
-										</div>
-										<Toaster />
-									</>
-								</DatasetContexttProvider>
-								<SpeedInsights />
-							</GameStateContextProvider>
-						</GuessContextProvider>
+						<EvaluatedGuessProvider>
+							<GuessContextProvider>
+								<GameStateContextProvider>
+									<DatasetContexttProvider>
+										<>
+											<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
+												<main className="w-[32rem]">{children}</main>
+											</div>
+											<Toaster />
+										</>
+									</DatasetContexttProvider>
+									<SpeedInsights />
+								</GameStateContextProvider>
+							</GuessContextProvider>
+						</EvaluatedGuessProvider>
 					</ReactQueryProvider>
 				</ThemeProvider>
 			</body>

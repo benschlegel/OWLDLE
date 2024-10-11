@@ -1,6 +1,7 @@
 'use client';
 import type { RowData } from '@/components/game-container/GameContainer';
 import { type Dataset, DATASETS } from '@/data/datasets';
+import { LOCAL_STORAGE_STALE_KEY } from '@/hooks/use-answer-query';
 import type React from 'react';
 import { createContext, type Dispatch, type PropsWithChildren, type SetStateAction, useCallback, useContext, useRef, useState } from 'react';
 
@@ -99,7 +100,7 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 }
 
 // Create a custom hook to use items based on the dataset key
-export const useEvaluatedGuesses = (dataset: Dataset, currIteration = -1) => {
+export const useEvaluatedGuesses = (dataset: Dataset) => {
 	const context = useContext(EvaluatedGuessContext);
 
 	if (!context) {
@@ -109,19 +110,15 @@ export const useEvaluatedGuesses = (dataset: Dataset, currIteration = -1) => {
 	const { evaluatedGuesses, setEvaluatedGuesses } = context.datasets[dataset];
 
 	const isOldRef = context.isOldRef;
-	if (typeof window !== 'undefined' && currIteration !== -1) {
-		const storedIteration = localStorage.getItem(ITERATION_LOCAL_STORAGE_KEY);
-		if (storedIteration) {
-			const lastIteration = Number.parseInt(storedIteration);
-			if (currIteration > lastIteration) {
-				// reset guesses if stale (newer iteration available, evaluatedGuesses get reset in use-game-state automatically since empty/isOld = false)
-				setEvaluatedGuesses([]);
-				isOldRef.current = false;
-				console.log('Is old.');
-			}
+	if (typeof window !== 'undefined') {
+		const isStale = localStorage.getItem(LOCAL_STORAGE_STALE_KEY);
+		if (isStale && isStale === 'true') {
+			// TODO: clear other guesses
+			setEvaluatedGuesses([]);
+			isOldRef.current = false;
+			console.log('Is old.');
+			localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
 		}
-		// Save new iteration to localStorage (if it doesn't exist or is outdated)
-		localStorage.setItem(ITERATION_LOCAL_STORAGE_KEY, currIteration.toString());
 	}
 	return {
 		data: { evaluatedGuesses, setEvaluatedGuesses },

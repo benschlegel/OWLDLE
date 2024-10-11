@@ -4,7 +4,7 @@ import type { ValidateResponse } from '@/types/server';
 import { type QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
-
+export const LOCAL_STORAGE_STALE_KEY = 'isStale';
 async function fetchValidateDataset(queryClient: QueryClient) {
 	const response = await fetch('/api/validate?dataset=all');
 	if (!response.ok) {
@@ -27,7 +27,9 @@ async function fetchValidateDataset(queryClient: QueryClient) {
 
 	// * Invalidate query if data is outdated (nextReset time has passed)
 	if (timeUntilReset <= 0) {
-		console.log('Outdated (react query)');
+		if (typeof window !== 'undefined') {
+			localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
+		}
 		queryClient.invalidateQueries({ queryKey: ['all'], exact: true });
 	} else {
 		// Update query cache data and dynamically set staleTime based on nextReset
