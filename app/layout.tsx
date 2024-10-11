@@ -96,8 +96,8 @@ export default function RootLayout({
 				<PlausibleProvider domain="www.owldle.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} trackOutboundLinks />
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<ReactQueryProvider>
-					<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+					<ReactQueryProvider>
 						<GuessContextProvider>
 							<GameStateContextProvider>
 								<DatasetContexttProvider>
@@ -111,8 +111,8 @@ export default function RootLayout({
 								<SpeedInsights />
 							</GameStateContextProvider>
 						</GuessContextProvider>
-					</ThemeProvider>
-				</ReactQueryProvider>
+					</ReactQueryProvider>
+				</ThemeProvider>
 			</body>
 		</html>
 	);
