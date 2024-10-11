@@ -1,10 +1,13 @@
 import type { DatasetAnswer } from '@/app/api/validate/route';
+import { GUESS_LOCAL_STORAGE_KEY } from '@/context/GlobalGuessContext';
 import type { Dataset } from '@/data/datasets';
+import { LOCAL_STORAGE_STATE_KEY } from '@/hooks/use-game-state';
 import type { ValidateResponse } from '@/types/server';
 import { type QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
 export const LOCAL_STORAGE_STALE_KEY = 'isStale';
+
 async function fetchValidateDataset(queryClient: QueryClient) {
 	const response = await fetch('/api/validate?dataset=all');
 	if (!response.ok) {
@@ -28,6 +31,7 @@ async function fetchValidateDataset(queryClient: QueryClient) {
 	// * Invalidate query if data is outdated (nextReset time has passed)
 	if (timeUntilReset <= 0) {
 		if (typeof window !== 'undefined') {
+			console.log('Query data outdated.');
 			localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
 		}
 		queryClient.invalidateQueries({ queryKey: ['all'], exact: true });

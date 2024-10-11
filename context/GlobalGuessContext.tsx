@@ -1,12 +1,13 @@
 'use client';
 import type { RowData } from '@/components/game-container/GameContainer';
+import { GameStateContext } from '@/context/GameStateContext';
 import { type Dataset, DATASETS } from '@/data/datasets';
 import { LOCAL_STORAGE_STALE_KEY } from '@/hooks/use-answer-query';
+import { LOCAL_STORAGE_STATE_KEY } from '@/hooks/use-game-state';
 import type React from 'react';
-import { createContext, type Dispatch, type PropsWithChildren, type SetStateAction, useCallback, useContext, useRef, useState } from 'react';
+import { createContext, type Dispatch, type PropsWithChildren, type SetStateAction, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-const GUESS_LOCAL_STORAGE_KEY = 'guesses';
-const ITERATION_LOCAL_STORAGE_KEY = 'lastPlayedIteration';
+export const GUESS_LOCAL_STORAGE_KEY = 'guesses';
 
 // Define the type for the dataset's state
 interface DatasetState {
@@ -102,24 +103,33 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 // Create a custom hook to use items based on the dataset key
 export const useEvaluatedGuesses = (dataset: Dataset) => {
 	const context = useContext(EvaluatedGuessContext);
+	const [_gameState, setGameState] = useContext(GameStateContext);
 
 	if (!context) {
 		throw new Error('useEvaluatedGuesses must be used within an EvaluatedGuessProvider');
 	}
 
 	const { evaluatedGuesses, setEvaluatedGuesses } = context.datasets[dataset];
-
 	const isOldRef = context.isOldRef;
-	if (typeof window !== 'undefined') {
-		const isStale = localStorage.getItem(LOCAL_STORAGE_STALE_KEY);
-		if (isStale && isStale === 'true') {
-			// TODO: clear other guesses
-			setEvaluatedGuesses([]);
-			isOldRef.current = false;
-			console.log('Is old.');
-			localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
+
+	const handleStale = useCallback(() => {
+		if (typeof window !== 'undefined') {
+			const isStale = localStorage.getItem(LOCAL_STORAGE_STALE_KEY);
+			if (isStale && isStale === 'true') {
+				setEvaluatedGuesses([]);
+				setGameState('in-progress');
+				isOldRef.current = false;
+				console.log('Is old.');
+				localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
+				localStorage.removeItem(LOCAL_STORAGE_STATE_KEY);
+				localStorage.removeItem(GUESS_LOCAL_STORAGE_KEY);
+			}
 		}
-	}
+	}, [isOldRef, setEvaluatedGuesses, setGameState]);
+
+	useEffect(() => {
+		handleStale();
+	});
 	return {
 		data: { evaluatedGuesses, setEvaluatedGuesses },
 		isOld: isOldRef,
