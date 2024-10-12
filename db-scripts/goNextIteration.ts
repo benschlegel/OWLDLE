@@ -1,3 +1,4 @@
+import { DATASETS } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 import { goNextIteration } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
@@ -7,7 +8,9 @@ console.time('test');
 // const popped = await popBacklog();
 // console.log('Popped item: ', popped);
 try {
-	await goNextIteration(GAME_CONFIG.nextResetHours, 'season6', GAME_CONFIG.backlogMaxSize);
+	for (const dataset of DATASETS) {
+		await goNextIteration(GAME_CONFIG.nextResetHours, dataset, GAME_CONFIG.backlogMaxSize);
+	}
 } catch (e) {
 	console.error('Failed to roll over iteration: ', e);
 }
