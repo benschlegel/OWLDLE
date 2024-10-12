@@ -24,7 +24,11 @@ function ReactQueryProviderComponent({ children }: { children: React.ReactNode }
 	const persister = createPersister();
 
 	return (
-		<PersistQueryClientProvider persistOptions={{ persister }} client={queryClient}>
+		<PersistQueryClientProvider
+			persistOptions={{
+				persister,
+			}}
+			client={queryClient}>
 			{children}
 			<ReactQueryDevtools initialIsOpen={false} />
 		</PersistQueryClientProvider>

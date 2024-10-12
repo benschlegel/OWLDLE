@@ -21,7 +21,7 @@ import { exit } from 'node:process';
 // ! By default, sets to midnight UTC (when timezone is Europe/Vienna)
 const now = new Date();
 // const nextReset = trimDate(new Date(Date.UTC(2024, now.getMonth(), now.getDate(), 22, 00, 0)));
-const nextReset = new Date(Date.UTC(2024, now.getMonth(), now.getDate(), 21, 8, 0));
+const nextReset = new Date(Date.UTC(2024, now.getMonth(), now.getDate(), 11, 6, 0));
 const nextNextReset = new Date(nextReset);
 nextNextReset.setDate(nextNextReset.getDate() + 1);
 // const nextReset = getFormattedMidnightTmrw();
