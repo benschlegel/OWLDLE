@@ -1,22 +1,21 @@
 import type { DatasetAnswer } from '@/app/api/validate/route';
 import type { Dataset } from '@/data/datasets';
 import type { ValidateResponse } from '@/types/server';
-import { type QueryClient, useQuery, useQueryClient } from '@tanstack/react-query';
-import type { PersistedClient } from '@tanstack/react-query-persist-client';
-import { useEffect, useRef, useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
+import { useRef } from 'react';
 
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
 
-const ITERATION_KEY = 'latestIteration';
+const LOCAL_STORAGE_ITERATION_KEY = 'latestIteration';
 export const LOCAL_STORAGE_STALE_KEY = 'isStale';
-const DEFAULT_STALE_TIME = 5 * 60 * 1000; // 5 minutes
 export const QUERY_KEY = 'all';
 
 export type FetchResult = {
 	data: DatasetValidatedResponse[];
-	nextReset: Date;
-	iteration: number;
+	isStale: boolean;
 };
+
+const defaultDatasetIndex = 1;
 
 async function fetchValidateDataset(): Promise<FetchResult> {
 	const response = await fetch('/api/validate?dataset=all');
@@ -30,58 +29,45 @@ async function fetchValidateDataset(): Promise<FetchResult> {
 		answer: { correctPlayer: r.answer.player, iteration: r.answer.iteration, nextReset: r.answer.nextReset },
 	}));
 
-	// TODO: just save iteration to localStorage here and cross reference, set isStale if newer
+	let isStale = false;
 
-	return { data: formatted, nextReset: formatted[0].answer.nextReset, iteration: formatted[0].answer.iteration };
+	if (typeof window !== 'undefined') {
+		const lastIteration = localStorage.getItem(LOCAL_STORAGE_ITERATION_KEY);
+		const newIteration = formatted[defaultDatasetIndex].answer.iteration;
+		console.log('New iteration: ', newIteration);
+		if (lastIteration) {
+			// If new answer iteration is higher, mark data as stale and set new latestIteration key
+			if (newIteration > Number.parseInt(lastIteration)) {
+				isStale = true;
+				console.log('Writing iteration (stale): ', newIteration);
+				localStorage.setItem(LOCAL_STORAGE_ITERATION_KEY, newIteration.toString());
+			}
+		} else {
+			// Set entry if it does not exist yet
+			console.log('Writing iteration (not existing): ', newIteration);
+			localStorage.setItem(LOCAL_STORAGE_ITERATION_KEY, newIteration.toString());
+		}
+	}
+
+	return { data: formatted, isStale };
 }
 
 export function useAnswerQuery(dataset: Dataset) {
-	const initialFetchRef = useRef(false);
-	// TODO: rev saying if query was old, also return that
-	const queryClient = useQueryClient();
+	const isStaleRef = useRef(false);
 	const query = useQuery({
 		queryKey: [QUERY_KEY],
-		queryFn: fetchValidateDataset,
+		queryFn: async () => {
+			const data = await fetchValidateDataset();
+			isStaleRef.current = data.isStale;
+			return data;
+		},
 		select: (result) => {
 			const found = result.data.find((item) => item.dataset === dataset)?.answer ?? result.data[0].answer;
 			return found;
 		},
-		staleTime: (data) => {
-			if (data.state.data) {
-				const nextReset = new Date(data.state.data.nextReset).getTime();
-				const now = Date.now();
-				const staleTime = Math.max(0, nextReset - now);
-				return staleTime;
-			}
-			return 0;
-		},
+		staleTime: 60 * 60 * 1000, // 6 hours, gets reset at reload
 		refetchOnWindowFocus: false,
 	});
 
-	useEffect(() => {
-		if (!initialFetchRef.current && query.data) {
-			initialFetchRef.current = true;
-			const currentIteration = query.data.iteration;
-
-			// Check if there's persisted data and update the iteration
-			const persistedCache = localStorage.getItem('REACT_QUERY_OFFLINE_CACHE');
-			if (persistedCache) {
-				try {
-					const cache = JSON.parse(persistedCache) as PersistedClient;
-					const queries = cache.clientState.queries;
-					const latestQuery = queries[queries.length - 1];
-					const storedData = latestQuery.state.data as FetchResult;
-
-					if (currentIteration > storedData.iteration) {
-						localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
-						queryClient.invalidateQueries({ queryKey: [QUERY_KEY] });
-					}
-				} catch (error) {
-					console.error('Error parsing persisted cache:', error);
-				}
-			}
-		}
-	}, [query.data, queryClient.invalidateQueries]);
-
-	return query;
+	return { data: query.data, isStale: isStaleRef };
 }
