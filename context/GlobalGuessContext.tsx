@@ -37,8 +37,9 @@ const EvaluatedGuessContext = createContext<EvaluatedGuessContextType | undefine
 // The provider will manage the states for different datasets
 export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 	// * Load state from localStorage
+	// TODO: maybe just useEffect after all
 	const loadInitialData = useCallback(() => {
-		if (typeof window !== 'undefined') {
+		if (typeof window !== 'undefined' && localStorage.getItem(LOCAL_STORAGE_STALE_KEY) !== 'true') {
 			const storageData = localStorage.getItem(GUESS_LOCAL_STORAGE_KEY);
 			if (storageData) {
 				// Parsing and creating initial state from localStorage
@@ -120,16 +121,16 @@ export const useEvaluatedGuesses = (dataset: Dataset, isStale: MutableRefObject<
 		if (isStale) {
 			if (isStale.current === true) {
 				isStale.current = false;
-				// localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
-				localStorage.removeItem(LOCAL_STORAGE_STATE_KEY);
 
+				localStorage.removeItem(LOCAL_STORAGE_STATE_KEY);
+				localStorage.removeItem(GUESS_LOCAL_STORAGE_KEY);
 				// Update localStorage state
 				const initialState = {} as Record<Dataset, { evaluatedGuesses: number[] }>;
 				for (const dataset of DATASETS) {
 					initialState[dataset] = { evaluatedGuesses: [] };
 				}
-				console.log('Writing: ', initialState);
 				try {
+					console.log('Writing: ', initialState);
 					localStorage.setItem(GUESS_LOCAL_STORAGE_KEY, JSON.stringify(initialState));
 				} catch (e) {
 					console.error('Could not write to localStorage: ', e);

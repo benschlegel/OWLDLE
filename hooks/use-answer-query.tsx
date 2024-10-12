@@ -41,6 +41,7 @@ async function fetchValidateDataset(): Promise<FetchResult> {
 				isStale = true;
 				console.log('Writing iteration (stale): ', newIteration);
 				localStorage.setItem(LOCAL_STORAGE_ITERATION_KEY, newIteration.toString());
+				localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
 			}
 		} else {
 			// Set entry if it does not exist yet
