@@ -120,7 +120,7 @@ export const useEvaluatedGuesses = (dataset: Dataset) => {
 				setGameState('in-progress');
 				isOldRef.current = false;
 				console.log('Is old.');
-				localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
+				// localStorage.removeItem(LOCAL_STORAGE_STALE_KEY);
 				localStorage.removeItem(LOCAL_STORAGE_STATE_KEY);
 				localStorage.removeItem(GUESS_LOCAL_STORAGE_KEY);
 			}
