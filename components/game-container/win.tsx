@@ -15,16 +15,22 @@ type Props = {
 	nextReset: Date;
 	formattedResult: string;
 	dataset: Dataset;
+	/**
+	 * Indicates wether state is old/came from local storage (e.g. dont play confetti if old)
+	 */
+	isOldState: boolean;
 };
 
-const confettiDuration = 7500;
+const DEFAULT_CONFETTI_DURATION = 7500;
+const OLD_CONFETTI_DURATION = 500;
 
-export default function WinScreen({ nextReset, formattedResult, dataset }: Partial<Props>) {
+export default function WinScreen({ nextReset, formattedResult, dataset, isOldState }: Partial<Props>) {
 	const [gameState, setGameState] = useContext(GameStateContext);
-	const [guesses, setGuesses] = useContext(GuessContext);
+	const [_guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
 	const [showConfetti, setShowConfetti] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
+	const confettiDuration = isOldState ? OLD_CONFETTI_DURATION : DEFAULT_CONFETTI_DURATION;
 
 	const [showButtonConfetti, setShowButtonConfetti] = useState(false);
 
@@ -52,7 +58,7 @@ export default function WinScreen({ nextReset, formattedResult, dataset }: Parti
 
 		// Cleanup timeout on unmount
 		return () => clearTimeout(timer);
-	}, [showConfetti]);
+	}, [showConfetti, confettiDuration]);
 
 	const handleConfettiButton = useCallback(() => {
 		plausible('clickConfetti', { props: { state: 'won' } });

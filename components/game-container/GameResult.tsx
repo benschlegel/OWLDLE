@@ -17,7 +17,7 @@ type Props = {
 };
 
 export default function GameResult({ results, iteration, validatedResponse }: Props) {
-	const [gameState, setGameState] = useContext(GameStateContext);
+	const [gameState, _setGameState] = useContext(GameStateContext);
 	const [dataset, _] = useContext(DatasetContext);
 
 	// Memoize clipboard content
@@ -34,6 +34,15 @@ export default function GameResult({ results, iteration, validatedResponse }: Pr
 		return formatted;
 	}, [results, iteration, dataset]);
 
+	const EvaluatedLossScreen = (
+		<LossScreen
+			correctPlayer={validatedResponse?.correctPlayer.name}
+			formattedResult={formattedResult}
+			nextReset={validatedResponse?.nextReset}
+			dataset={dataset.dataset}
+		/>
+	);
+
 	// Win/LossScreen automatically reset game state if timer hits 0/next game starts
 	switch (gameState) {
 		case 'in-progress':
@@ -41,13 +50,10 @@ export default function GameResult({ results, iteration, validatedResponse }: Pr
 		case 'won':
 			return <WinScreen nextReset={validatedResponse?.nextReset} formattedResult={formattedResult} dataset={dataset.dataset} />;
 		case 'lost':
-			return (
-				<LossScreen
-					correctPlayer={validatedResponse?.correctPlayer.name}
-					formattedResult={formattedResult}
-					nextReset={validatedResponse?.nextReset}
-					dataset={dataset.dataset}
-				/>
-			);
+			return EvaluatedLossScreen;
+		case 'won-old':
+			return <WinScreen nextReset={validatedResponse?.nextReset} formattedResult={formattedResult} dataset={dataset.dataset} isOldState />;
+		case 'lost-old':
+			return EvaluatedLossScreen;
 	}
 }

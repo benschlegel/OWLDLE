@@ -1,36 +1,18 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-import { type Persister, PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
-import { createSyncStoragePersister } from '@tanstack/query-sync-storage-persister';
-import { QueryClient } from '@tanstack/react-query';
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { useState } from 'react';
 
-const createPersister = (): Persister => {
-	return createSyncStoragePersister({
-		storage: window.localStorage,
-	});
-};
-
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			gcTime: 1000 * 60 * 60 * 24, // 24 hours
-		},
-	},
-});
-
-function ReactQueryProviderComponent({ children }: { children: React.ReactNode }) {
-	const persister = createPersister();
+const ReactQueryProvider = ({ children }: { children: React.ReactNode }) => {
+	const [queryClient] = useState(() => new QueryClient());
 
 	return (
-		<PersistQueryClientProvider persistOptions={{ persister }} client={queryClient}>
+		<QueryClientProvider client={queryClient}>
 			{children}
-		</PersistQueryClientProvider>
+			<ReactQueryDevtools initialIsOpen={false} />
+		</QueryClientProvider>
 	);
-}
-
-const ReactQueryProvider = dynamic(() => Promise.resolve(ReactQueryProviderComponent), {
-	ssr: false,
-});
+};
 
 export default ReactQueryProvider;
