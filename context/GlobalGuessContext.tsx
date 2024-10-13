@@ -2,7 +2,6 @@
 import type { RowData } from '@/components/game-container/GameContainer';
 import { GameStateContext } from '@/context/GameStateContext';
 import { type Dataset, DATASETS } from '@/data/datasets';
-import { LOCAL_STORAGE_STALE_KEY } from '@/hooks/use-answer-query';
 import { LOCAL_STORAGE_STATE_KEY } from '@/hooks/use-game-state';
 import type React from 'react';
 import {
@@ -19,6 +18,7 @@ import {
 } from 'react';
 
 export const GUESS_LOCAL_STORAGE_KEY = 'guesses';
+export const LOCAL_STORAGE_NEXT_RESET_KEY = 'nextReset';
 
 // Define the type for the dataset's state
 interface DatasetState {
@@ -34,16 +34,19 @@ interface EvaluatedGuessContextType {
 // Create a context with an empty initial value
 const EvaluatedGuessContext = createContext<EvaluatedGuessContextType | undefined>(undefined);
 
+// 1. load initial values from localStorage
+// 2. sync every subsequent write to localStorage
 // The provider will manage the states for different datasets
 export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 	// * Load state from localStorage
-	// TODO: maybe just useEffect after all
 	const loadInitialData = useCallback(() => {
-		if (typeof window !== 'undefined' && localStorage.getItem(LOCAL_STORAGE_STALE_KEY) !== 'true') {
+		const now = new Date();
+		if (typeof window !== 'undefined' && now < new Date(localStorage.getItem(LOCAL_STORAGE_NEXT_RESET_KEY) ?? Number.POSITIVE_INFINITY)) {
 			const storageData = localStorage.getItem(GUESS_LOCAL_STORAGE_KEY);
 			if (storageData) {
 				// Parsing and creating initial state from localStorage
 				const parsedData = JSON.parse(storageData) as Record<Dataset, { evaluatedGuesses: RowData[] }>;
+				console.log('Returning localStorage init data');
 
 				return DATASETS.reduce(
 					(acc, dataset) => {
@@ -57,6 +60,8 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 				);
 			}
 		}
+
+		console.log('Returning default init data.');
 		// Return default empty state if nothing in localStorage
 		return DATASETS.reduce(
 			(acc, dataset) => {
@@ -107,7 +112,7 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 }
 
 // Create a custom hook to use items based on the dataset key
-export const useEvaluatedGuesses = (dataset: Dataset, isStale: MutableRefObject<boolean>) => {
+export const useEvaluatedGuesses = (dataset: Dataset, nextReset?: Date) => {
 	const context = useContext(EvaluatedGuessContext);
 	const [_gameState, setGameState] = useContext(GameStateContext);
 
@@ -117,34 +122,36 @@ export const useEvaluatedGuesses = (dataset: Dataset, isStale: MutableRefObject<
 
 	const { evaluatedGuesses, setEvaluatedGuesses } = context.datasets[dataset];
 
-	const handleStale = useCallback(() => {
-		if (isStale) {
-			if (isStale.current === true) {
-				isStale.current = false;
+	// TODO: convert isStale to state or do in answer-query
+	const handleStale = useCallback(
+		(nextReset: Date) => {
+			const now = new Date();
+			if (now > nextReset) {
+				console.log('Removing stale data...');
 
+				// Update localStorage state
 				localStorage.removeItem(LOCAL_STORAGE_STATE_KEY);
 				localStorage.removeItem(GUESS_LOCAL_STORAGE_KEY);
-				// Update localStorage state
 				const initialState = {} as Record<Dataset, { evaluatedGuesses: number[] }>;
 				for (const dataset of DATASETS) {
 					initialState[dataset] = { evaluatedGuesses: [] };
 				}
-				try {
-					console.log('Writing: ', initialState);
-					localStorage.setItem(GUESS_LOCAL_STORAGE_KEY, JSON.stringify(initialState));
-				} catch (e) {
-					console.error('Could not write to localStorage: ', e);
-				}
+				localStorage.setItem(GUESS_LOCAL_STORAGE_KEY, JSON.stringify(initialState));
+
+				// Set current state (so it updates without another reload)
 				setEvaluatedGuesses([]);
 				setGameState('in-progress');
-				console.log('Is old.');
 			}
-		}
-	}, [setEvaluatedGuesses, setGameState, isStale]);
+			localStorage.setItem(LOCAL_STORAGE_NEXT_RESET_KEY, nextReset.toString());
+		},
+		[setEvaluatedGuesses, setGameState]
+	);
 
 	useEffect(() => {
-		handleStale();
-	});
+		if (nextReset !== undefined) {
+			handleStale(nextReset);
+		}
+	}, [handleStale, nextReset]);
 	return {
 		data: { evaluatedGuesses, setEvaluatedGuesses },
 	};

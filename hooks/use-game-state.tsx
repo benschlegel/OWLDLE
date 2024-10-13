@@ -30,7 +30,7 @@ export default function useGameState({ slug }: Props) {
 
 	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
 	const { data: validatedData, isStale } = useAnswerQuery(dataset.dataset);
-	const { data } = useEvaluatedGuesses(dataset.dataset, isStale);
+	const { data } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
 	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 
 	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
