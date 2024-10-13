@@ -9,9 +9,11 @@ import type { GuessResponse } from '@/types/server';
  * @param correct the correct player
  * @returns Object containing what entries are correct/incorrect
  */
-export function validateGuess(guess: CombinedFormattedPlayer, correct: DbPlayer): GuessResponse {
+export function validateGuess(guess: CombinedFormattedPlayer, correct?: DbPlayer): GuessResponse {
 	// TODO: make clean
 	const response: GuessResponse = { isRegionCorrect: false, isCountryCorrect: false, isNameCorrect: false, isRoleCorrect: false, isTeamCorrect: false };
+
+	if (!correct) return response;
 
 	if (guess.country === correct.country) {
 		response.isCountryCorrect = true;

@@ -1,5 +1,7 @@
 import type { DatasetAnswer } from '@/app/api/validate/route';
+import { GUESS_LOCAL_STORAGE_KEY } from '@/context/GlobalGuessContext';
 import type { Dataset } from '@/data/datasets';
+import { LOCAL_STORAGE_STATE_KEY } from '@/hooks/use-game-state';
 import type { ValidateResponse } from '@/types/server';
 import { useQuery } from '@tanstack/react-query';
 import { useRef } from 'react';
@@ -7,7 +9,6 @@ import { useRef } from 'react';
 type DatasetValidatedResponse = { dataset: Dataset; answer: Required<ValidateResponse> };
 
 const LOCAL_STORAGE_ITERATION_KEY = 'latestIteration';
-export const LOCAL_STORAGE_STALE_KEY = 'isStale';
 export const QUERY_KEY = 'all';
 
 export type FetchResult = {
@@ -34,14 +35,12 @@ async function fetchValidateDataset(): Promise<FetchResult> {
 	if (typeof window !== 'undefined') {
 		const lastIteration = localStorage.getItem(LOCAL_STORAGE_ITERATION_KEY);
 		const newIteration = formatted[defaultDatasetIndex].answer.iteration;
-		console.log('New iteration: ', newIteration);
 		if (lastIteration) {
 			// If new answer iteration is higher, mark data as stale and set new latestIteration key
 			if (newIteration > Number.parseInt(lastIteration)) {
 				isStale = true;
 				console.log('Writing iteration (stale): ', newIteration);
 				localStorage.setItem(LOCAL_STORAGE_ITERATION_KEY, newIteration.toString());
-				localStorage.setItem(LOCAL_STORAGE_STALE_KEY, 'true');
 			}
 		} else {
 			// Set entry if it does not exist yet
@@ -70,5 +69,5 @@ export function useAnswerQuery(dataset: Dataset) {
 		refetchOnWindowFocus: false,
 	});
 
-	return { data: query.data, isStale: isStaleRef };
+	return { ...query, isStale: isStaleRef };
 }
