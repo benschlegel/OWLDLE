@@ -32,12 +32,12 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 			// Basic redirect
 			{
 				source: '/',
-				destination: '/play',
+				destination: '/play?season=6',
 				permanent: true,
 			},
 			{
 				source: '/season6',
-				destination: '/play',
+				destination: '/play?season=6',
 				permanent: true,
 			},
 			{
