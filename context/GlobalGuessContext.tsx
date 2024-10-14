@@ -60,8 +60,6 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 				);
 			}
 		}
-
-		console.log('Returning default init data.');
 		// Return default empty state if nothing in localStorage
 		return DATASETS.reduce(
 			(acc, dataset) => {
