@@ -77,6 +77,18 @@ export const metadata: Metadata = {
 		],
 		card: 'summary_large_image',
 	},
+	robots: {
+		index: false,
+		follow: true,
+		nocache: true,
+		googleBot: {
+			index: true,
+			follow: false,
+			noimageindex: true,
+			'max-video-preview': -1,
+			'max-snippet': -1,
+		},
+	},
 	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame'],
 };
 
