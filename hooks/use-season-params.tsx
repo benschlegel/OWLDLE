@@ -6,7 +6,7 @@ import { createParser, useQueryState } from 'nuqs';
 const KEY_NAME = 'season';
 
 export function useSeasonParams() {
-	return useQueryState(KEY_NAME, parseSeasons.withDefault(DEFAULT_DATASET_NAME));
+	return useQueryState(KEY_NAME, parseSeasons.withDefault(DEFAULT_DATASET_NAME).withOptions({ history: 'push' }));
 }
 
 const parseSeasons = createParser({
