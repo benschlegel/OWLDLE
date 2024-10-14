@@ -19,6 +19,7 @@ export default function SeasonSelector({ slug }: Props) {
 
 	const handleThemeSwitch = useCallback(
 		(newSlug: string) => {
+			console.log('Redirecting in theme switcher...');
 			// Ensure that the browser supports view transitions
 			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
 			if ((document as any).startViewTransition && newSlug !== formattedSlug) {
