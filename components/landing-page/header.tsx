@@ -17,7 +17,7 @@ export default function Header({ slug }: Props) {
 					<Suspense fallback={HelpTriggerButton}>
 						<HelpDialog />
 					</Suspense>
-					<SeasonSelector slug={slug} />
+					<SeasonSelector />
 				</div>
 				<div className="mb-1 flex items-center">
 					{/* <div className="absolute left-1/2 transform -translate-x-1/2 text-center"> */}

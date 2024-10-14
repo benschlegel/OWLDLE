@@ -1,14 +1,11 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { datasetInfo, DEFAULT_DATASET_NAME } from '@/data/datasets';
-import { useRouter } from 'next/navigation';
+import { useSeasonParams } from '@/hooks/use-season-params';
 import { useCallback, useMemo, useState } from 'react';
 
-type Props = {
-	slug: string;
-};
-export default function SeasonSelector({ slug }: Props) {
-	const router = useRouter();
+export default function SeasonSelector() {
+	const [slug, setSeason] = useSeasonParams();
 	const formattedSlug = slug === '/' ? DEFAULT_DATASET_NAME : slug;
 	const defaultValue = datasetToShorthand(formattedSlug);
 	const [value, setValue] = useState(defaultValue);
@@ -28,13 +25,13 @@ export default function SeasonSelector({ slug }: Props) {
 
 				// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
 				(document as any).startViewTransition(() => {
-					router.push(`/${newSlug}`);
+					setSeason(newSlug);
 				});
 			} else {
-				router.push(`/${newSlug}`);
+				setSeason(newSlug);
 			}
 		},
-		[router.push, formattedSlug]
+		[formattedSlug, setSeason]
 	);
 
 	const handleChange = useCallback(
