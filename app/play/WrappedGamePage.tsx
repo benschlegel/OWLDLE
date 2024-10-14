@@ -1,4 +1,5 @@
 'use client';
+import UpdateMetadata from '@/app/play/UpdateMetadata';
 import GamePage from '@/components/landing-page/game-page';
 import Header from '@/components/landing-page/header';
 import Socials from '@/components/landing-page/socials';
@@ -20,6 +21,7 @@ export default function SeasonPageWrapper() {
 	if (validSeasons.includes(season as unknown as Dataset)) {
 		return (
 			<>
+				<UpdateMetadata />
 				<MemoizedSocials />
 				<MemoizedHeader slug={season} />
 				<GamePage slug={season} />

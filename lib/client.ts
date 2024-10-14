@@ -117,3 +117,7 @@ export async function fetchAnswer(dataset: Dataset): Promise<ValidateResponse> {
 	}
 	return response.json();
 }
+
+export function formatDataset(dataset: string) {
+	return `${dataset.charAt(0).toUpperCase() + dataset.slice(1, -1)} ${dataset.slice(-1)}`;
+}

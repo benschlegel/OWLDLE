@@ -4,9 +4,12 @@ import { DEFAULT_DATASET_NAME } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
+import { formatDataset } from '@/lib/client';
+
+const DEFAULT_SEASON_NUMBER = DEFAULT_DATASET_NAME.slice(-1);
 
 export async function generateMetadata({ searchParams }: { searchParams: { season?: string } }): Promise<Metadata> {
-	if (!searchParams || searchParams.season === '6') {
+	if (!searchParams || searchParams.season === DEFAULT_SEASON_NUMBER) {
 		return {
 			...prevMetadata,
 			title: `${DEFAULT_TITLE} - Season 6`,
@@ -18,10 +21,10 @@ export async function generateMetadata({ searchParams }: { searchParams: { seaso
 	const { season } = searchParams;
 
 	// Query param only contains number, e.g. "6" -> season6
-	const formattedSeason = `season${season}`;
+	const formattedSeason = `season${season ?? DEFAULT_SEASON_NUMBER}`;
 
 	// Format dataset (e.g. "season1" to "Season 1")
-	const formattedDataset = `${formattedSeason.charAt(0).toUpperCase() + formattedSeason.slice(1, -1)} ${formattedSeason.slice(-1)}`;
+	const formattedDataset = formatDataset(formattedSeason);
 	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
 	const formattedDescritpion = DEFAULT_DESCRIPTION;
 	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
