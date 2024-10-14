@@ -5,11 +5,7 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
 
-type Props = {
-	slug: string;
-};
-
-export default function Header({ slug }: Props) {
+export default function Header() {
 	return (
 		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-[0.5rem] w-full">
 			<div className="flex flex-row justify-between items-center w-full">

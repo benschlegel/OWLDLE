@@ -23,7 +23,7 @@ export default function SeasonPageWrapper() {
 			<>
 				<UpdateMetadata />
 				<MemoizedSocials />
-				<MemoizedHeader slug={season} />
+				<MemoizedHeader />
 				<GamePage slug={season} />
 			</>
 		);
