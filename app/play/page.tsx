@@ -1,32 +1,79 @@
-'use client';
-import GamePage from '@/components/landing-page/game-page';
-import Header from '@/components/landing-page/header';
-import Socials from '@/components/landing-page/socials';
-import { type Dataset, DATASETS } from '@/data/datasets';
-import { useSeasonParams } from '@/hooks/use-season-params';
-import { notFound } from 'next/navigation';
-import React, { Suspense, useEffect } from 'react';
+import SeasonPageWrapper from '@/app/play/WrappedGamePage';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, OgConfig, metadata as prevMetadata } from '@/app/layout';
+import { DEFAULT_DATASET_NAME } from '@/data/datasets';
+import { GAME_CONFIG } from '@/lib/config';
+import type { Metadata } from 'next';
+import { Suspense } from 'react';
 
-// Predefined valid seasons
-const validSeasons = DATASETS;
+export async function generateMetadata({ searchParams }: { searchParams: { season?: string } }): Promise<Metadata> {
+	if (!searchParams || searchParams.season === '6') {
+		return {
+			...prevMetadata,
+			title: `${DEFAULT_TITLE} - Season 6`,
+			alternates: {
+				canonical: '/play?season=6',
+			},
+		};
+	}
+	const { season } = searchParams;
 
-const MemoizedHeader = React.memo(Header);
-const MemoizedSocials = React.memo(Socials);
+	// Query param only contains number, e.g. "6" -> season6
+	const formattedSeason = `season${season}`;
+
+	// Format dataset (e.g. "season1" to "Season 1")
+	const formattedDataset = `${formattedSeason.charAt(0).toUpperCase() + formattedSeason.slice(1, -1)} ${formattedSeason.slice(-1)}`;
+	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
+	const formattedDescritpion = DEFAULT_DESCRIPTION;
+	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
+
+	const ogImagePath = `/open-graph/${formattedSeason}.png?new=true`;
+
+	return {
+		...prevMetadata,
+		title: formattedTitle,
+		description: formattedDescritpion,
+		alternates: {
+			canonical: `/play?season=${season}`,
+		},
+		openGraph: {
+			title: openGraphTitle,
+			description: formattedDescritpion,
+			url: GAME_CONFIG.siteUrl,
+			images: [
+				{
+					alt: openGraphTitle,
+					url: ogImagePath,
+					width: OgConfig.ogImageWidth,
+					height: OgConfig.ogImageHeight,
+					type: 'image/png',
+				},
+			],
+			type: 'website',
+			siteName: 'owldle',
+		},
+		twitter: {
+			title: openGraphTitle,
+			description: DEFAULT_DESCRIPTION,
+			site: GAME_CONFIG.siteUrl,
+			siteId: 'owldle',
+			images: [
+				{
+					url: `https://www.owldle.com${ogImagePath}`,
+					alt: formattedTitle,
+					width: OgConfig.ogImageWidth,
+					height: OgConfig.ogImageHeight,
+					type: 'image/png',
+				},
+			],
+			card: 'summary_large_image',
+		},
+	};
+}
 
 export default function SeasonPage() {
-	const [season, _setSeason] = useSeasonParams();
-
-	// Check if valid season was provided
-	if (validSeasons.includes(season as unknown as Dataset)) {
-		return (
-			<>
-				<MemoizedSocials />
-				<MemoizedHeader slug={season} />
-				<GamePage slug={season} />
-			</>
-		);
-	}
-
-	// If none of the conditions match, return 404
-	notFound();
+	return (
+		<Suspense>
+			<SeasonPageWrapper />
+		</Suspense>
+	);
 }
