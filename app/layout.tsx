@@ -11,6 +11,8 @@ import DatasetContexttProvider from '@/context/DatasetContext';
 import ReactQueryProvider from '@/context/ReactQueryProvider';
 import { Toaster } from '@/components/ui/toaster';
 import { EvaluatedGuessProvider } from '@/context/GlobalGuessContext';
+import PlausibleWrapper from '@/context/PlausibleWrapper';
+import { Suspense } from 'react';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -105,7 +107,9 @@ export default function RootLayout({
 			<head>
 				<meta name="twitter:card" content="summary_large_image" />
 				{/* Add your own plausible config (if you want to set up analytics) */}
-				<PlausibleProvider domain="www.owldle.com" customDomain="https://plausible.global.bschlegel.com" selfHosted={true} trackOutboundLinks />
+				<Suspense>
+					<PlausibleWrapper />
+				</Suspense>
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
 				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
