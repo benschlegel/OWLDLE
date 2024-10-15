@@ -14,6 +14,7 @@ import { atlanticPacificTeams, getAtlantic, getPacific } from '@/data/teams/team
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import type { Options } from 'nuqs';
 import React from 'react';
 import { useContext, useCallback } from 'react';
@@ -63,6 +64,7 @@ const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
 export default function HelpContent({ setIsOpen }: Props) {
 	const [dataset, _] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
+	const params = useSearchParams();
 
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
@@ -236,7 +238,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div>
 								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
-									<LinkButton isInternal href={'?showFeedback=true'}>
+									<LinkButton isInternal href={`/play?season=${params.get('season')}&showFeedback=true`}>
 										send feedback/suggestions
 									</LinkButton>
 									, <LinkButton href={'https://ko-fi.com/scorer5'}>buy me a coffee</LinkButton> or check out the source code for this project on{' '}
