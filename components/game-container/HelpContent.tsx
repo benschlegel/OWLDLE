@@ -75,6 +75,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 	const trimmedAtlantic = atlanticPacificTeams.includes(dataset.dataset) ? atlanticText.slice(0, -10) : 'Eastern';
 	const trimmedPacific = atlanticPacificTeams.includes(dataset.dataset) ? pacificText.slice(0, -10) : 'Western';
 
+	const seasonParam = params.get('season');
+
 	// Memoize the setIsOpen function to prevent unnecessary re-renders
 	const handleClose = useCallback(() => {
 		setIsOpen(null);
@@ -238,7 +240,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<div>
 								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
-									<LinkButton isInternal href={`/play?season=${params.get('season')}&showFeedback=true`}>
+									<LinkButton isInternal href={`/play${seasonParam !== null ? `?season=${seasonParam}&showFeedback=true` : '?showFeedback=true'}`}>
 										send feedback/suggestions
 									</LinkButton>
 									, <LinkButton href={'https://ko-fi.com/scorer5'}>buy me a coffee</LinkButton> or check out the source code for this project on{' '}
