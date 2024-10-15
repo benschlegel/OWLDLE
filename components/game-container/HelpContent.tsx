@@ -98,8 +98,8 @@ export default function HelpContent({ setIsOpen }: Props) {
 				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
 					{/* Description section */}
 					<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
-						Guess the correct Overwatch League player within 8 attempts to win. After each guess, you will receive hints based on attributes like the player's
-						role, team, region and nationality to help you get closer to the right answer.
+						Guess the correct Overwatch League player within 8 attempts to win (inspired by wordle). After each guess, you will receive hints based on
+						attributes like the player's role, team, region and nationality to help you get closer to the right answer.
 					</blockquote>
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
