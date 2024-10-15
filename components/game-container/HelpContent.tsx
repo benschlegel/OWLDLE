@@ -114,7 +114,7 @@ export default function HelpContent({ setIsOpen }: Props) {
 							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 								{trimmedPacific}
 							</code>
-							. {dataset.name} had the following teams:
+							. <span className="text-primary-foreground">{dataset.name}</span> had the following teams:
 						</p>
 						<div className="flex flex-col gap-3">
 							<div className="flex flex-col">
