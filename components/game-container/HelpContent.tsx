@@ -11,7 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { atlanticPacificTeams, getAtlantic, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
-import { DEFAULT_DIALOG_VALUE, type DialogKey } from '@/hooks/use-dialog-param';
+import { DEFAULT_DIALOG_VALUE, useDialogParams, type DialogKey } from '@/hooks/use-dialog-param';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import type { Options } from 'nuqs';
@@ -63,7 +63,7 @@ const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
 export default function HelpContent({ setOpen }: Props) {
 	const [dataset, _] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
-	const params = useSearchParams();
+	const [_dialog, setDialog] = useDialogParams();
 
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
@@ -73,8 +73,6 @@ export default function HelpContent({ setOpen }: Props) {
 
 	const trimmedAtlantic = atlanticPacificTeams.includes(dataset.dataset) ? atlanticText.slice(0, -10) : 'Eastern';
 	const trimmedPacific = atlanticPacificTeams.includes(dataset.dataset) ? pacificText.slice(0, -10) : 'Western';
-
-	const seasonParam = params.get('season');
 
 	// Memoize the setDialog function to prevent unnecessary re-renders
 	const handleClose = useCallback(() => {
@@ -239,7 +237,7 @@ export default function HelpContent({ setOpen }: Props) {
 							<div>
 								<p className="scroll-m-20 text-base leading-7">
 									If you like this project, you can{' '}
-									<LinkButton isInternal href={`/play${seasonParam !== null ? `?season=${seasonParam}&showFeedback=true` : '?showFeedback=true'}`}>
+									<LinkButton type="button" href="" onClick={() => setDialog('feedback')}>
 										send feedback/suggestions
 									</LinkButton>
 									, <LinkButton href={'https://ko-fi.com/scorer5'}>buy me a coffee</LinkButton> or check out the source code for this project on{' '}
