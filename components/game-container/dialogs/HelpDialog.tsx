@@ -4,7 +4,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { CircleHelpIcon } from 'lucide-react';
 import { type DialogKey, useDialogState } from '@/hooks/use-dialog-param';
-const LazyHelpContent = lazy(() => import('@/components/game-container/HelpContent'));
+const LazyHelpContent = lazy(() => import('@/components/game-container/dialogs/HelpContent'));
 
 const LOCAL_STORAGE_KEY = 'sawHelp';
 const DIALOG_KEY = 'help' satisfies DialogKey;
