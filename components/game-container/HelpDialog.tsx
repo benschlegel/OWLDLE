@@ -1,20 +1,17 @@
 'use client';
 import { useEffect, useCallback, useState, lazy, Suspense } from 'react';
-import { useQueryState, parseAsBoolean } from 'nuqs';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { CircleHelpIcon } from 'lucide-react';
-import { DEFAULT_DIALOG_VALUE, type DialogKey, useDialogParams } from '@/hooks/use-dialog-param';
-// import HelpContent from '@/components/game-container/HelpContent';
+import { type DialogKey, useDialogState } from '@/hooks/use-dialog-param';
 const LazyHelpContent = lazy(() => import('@/components/game-container/HelpContent'));
 
 const LOCAL_STORAGE_KEY = 'sawHelp';
 const DIALOG_KEY = 'help' satisfies DialogKey;
 
 export function HelpDialog() {
-	const [dialog, setDialog] = useDialogParams();
+	const { open, setOpen } = useDialogState(DIALOG_KEY);
 	const [shouldOpenOnMount, setShouldOpenOnMount] = useState(false);
-	const open = dialog === DIALOG_KEY;
 
 	useEffect(() => {
 		// Check localStorage on mount
@@ -27,17 +24,15 @@ export function HelpDialog() {
 	useEffect(() => {
 		// Open dialog after initial render if needed
 		if (shouldOpenOnMount) {
-			setDialog(DIALOG_KEY);
+			setOpen(true);
 			setShouldOpenOnMount(false);
 			localStorage.setItem(LOCAL_STORAGE_KEY, String(true));
 		}
-	}, [shouldOpenOnMount, setDialog]);
+	}, [shouldOpenOnMount, setOpen]);
 
 	const toggleDialogOpen = useCallback(() => {
-		setDialog((prevDialog) => {
-			return prevDialog === DEFAULT_DIALOG_VALUE ? DIALOG_KEY : DEFAULT_DIALOG_VALUE;
-		});
-	}, [setDialog]);
+		setOpen(open !== true);
+	}, [open, setOpen]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -55,7 +50,7 @@ export function HelpDialog() {
 		<Dialog open={open} onOpenChange={toggleDialogOpen} aria-describedby="Tutorial on how to play the game">
 			<DialogTrigger asChild>{HelpTriggerButton}</DialogTrigger>
 			<Suspense>
-				<LazyHelpContent setDialog={setDialog} />
+				<LazyHelpContent setOpen={setOpen} />
 			</Suspense>
 		</Dialog>
 	);

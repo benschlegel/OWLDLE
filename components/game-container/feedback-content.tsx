@@ -5,7 +5,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import StarRating from '@/components/ui/rate-stars';
 import { Textarea } from '@/components/ui/textarea';
-import { DEFAULT_DIALOG_VALUE, type DialogKey } from '@/hooks/use-dialog-param';
 import { useToast } from '@/hooks/use-toast';
 import type { Feedback } from '@/types/server';
 import type React from 'react';
@@ -14,10 +13,10 @@ import { useCallback, useState } from 'react';
 const initialRating = -1;
 
 type Props = {
-	setDialog: (value: DialogKey) => Promise<URLSearchParams>;
+	setOpen: (value: boolean) => void;
 };
 
-export default function FeedbackContent({ setDialog }: Props) {
+export default function FeedbackContent({ setOpen }: Props) {
 	const [rating, setRating] = useState(initialRating);
 	const [name, setName] = useState('');
 	const [feedback, setFeedback] = useState('');
@@ -36,7 +35,7 @@ export default function FeedbackContent({ setDialog }: Props) {
 				if (res.status === 200) {
 					setFeedback('');
 					setRating(initialRating);
-					setDialog(DEFAULT_DIALOG_VALUE);
+					setOpen(false);
 					toast({
 						title: 'Feedback sent!',
 						description: 'Thanks for your feedback ❤️',
@@ -56,7 +55,7 @@ export default function FeedbackContent({ setDialog }: Props) {
 					variant: 'destructive',
 				});
 			});
-	}, [rating, name, feedback, setDialog, toast]);
+	}, [rating, name, feedback, setOpen, toast]);
 
 	const handleTextAreaSubmit = useCallback(
 		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
