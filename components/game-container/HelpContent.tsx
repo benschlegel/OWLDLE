@@ -6,14 +6,13 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button';
 import CustomCell from '@/components/ui/CustomCell';
 import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { EnhancedButton } from '@/components/ui/enhanced.button';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { atlanticPacificTeams, getAtlantic, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
+import { DEFAULT_DIALOG_VALUE, type DialogKey } from '@/hooks/use-dialog-param';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
-import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { Options } from 'nuqs';
 import React from 'react';
@@ -21,7 +20,7 @@ import { useContext, useCallback } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
-	setIsOpen: <Shallow>(value: boolean | ((old: boolean) => boolean | null) | null, options?: Options<Shallow> | undefined) => Promise<URLSearchParams>;
+	setDialog: (value: DialogKey) => Promise<URLSearchParams>;
 };
 
 export type DemoCell = {
@@ -61,7 +60,7 @@ const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
 	</Button>
 ));
 
-export default function HelpContent({ setIsOpen }: Props) {
+export default function HelpContent({ setDialog }: Props) {
 	const [dataset, _] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
 	const params = useSearchParams();
@@ -77,10 +76,10 @@ export default function HelpContent({ setIsOpen }: Props) {
 
 	const seasonParam = params.get('season');
 
-	// Memoize the setIsOpen function to prevent unnecessary re-renders
+	// Memoize the setDialog function to prevent unnecessary re-renders
 	const handleClose = useCallback(() => {
-		setIsOpen(null);
-	}, [setIsOpen]);
+		setDialog(DEFAULT_DIALOG_VALUE);
+	}, [setDialog]);
 
 	return (
 		<DialogContent
