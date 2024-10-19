@@ -1,5 +1,5 @@
-import { FeedbackTriggerButton, FeedbackDialog } from '@/components/game-container/feedback-dialog';
-import { HelpDialog, HelpTriggerButton } from '@/components/game-container/HelpDialog';
+import { FeedbackTriggerButton, FeedbackDialog } from '@/components/game-container/dialogs/feedback-dialog';
+import { HelpDialog, HelpTriggerButton } from '@/components/game-container/dialogs/HelpDialog';
 import SeasonSelector from '@/components/game-container/SeasonSelector';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Separator } from '@/components/ui/separator';
