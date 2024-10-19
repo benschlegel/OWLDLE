@@ -20,7 +20,7 @@ import { useContext, useCallback } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
-	setDialog: (value: DialogKey) => Promise<URLSearchParams>;
+	setOpen: (value: boolean) => void;
 };
 
 export type DemoCell = {
@@ -60,7 +60,7 @@ const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
 	</Button>
 ));
 
-export default function HelpContent({ setDialog }: Props) {
+export default function HelpContent({ setOpen }: Props) {
 	const [dataset, _] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
 	const params = useSearchParams();
@@ -78,8 +78,8 @@ export default function HelpContent({ setDialog }: Props) {
 
 	// Memoize the setDialog function to prevent unnecessary re-renders
 	const handleClose = useCallback(() => {
-		setDialog(DEFAULT_DIALOG_VALUE);
-	}, [setDialog]);
+		setOpen(false);
+	}, [setOpen]);
 
 	return (
 		<DialogContent
