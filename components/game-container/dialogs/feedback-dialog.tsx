@@ -1,5 +1,5 @@
 'use client';
-import FeedbackContent from '@/components/game-container/feedback-content';
+import FeedbackContent from '@/components/game-container/dialogs/feedback-content';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { type DialogKey, useDialogState } from '@/hooks/use-dialog-param';

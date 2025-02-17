@@ -1,5 +1,5 @@
 'use client';
-import type { DemoCell } from '@/components/game-container/HelpContent';
+import type { DemoCell } from '@/components/game-container/dialogs/HelpContent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLongPress } from '@uidotdev/usehooks';
 import { useState, useEffect, useCallback, useRef } from 'react';
