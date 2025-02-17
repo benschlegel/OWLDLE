@@ -1,5 +1,5 @@
 'use client';
-import HelpExample from '@/components/game-container/HelpExample';
+import HelpExample from '@/components/game-container/dialogs/HelpExample';
 import TeamLogo from '@/components/game-container/TeamLogo';
 import LinkButton from '@/components/LinkButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
