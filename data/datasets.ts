@@ -5,7 +5,7 @@ import { ALL_TEAMS } from '@/data/teams/teams';
 import { z } from 'zod';
 
 export const DEFAULT_DATASET_NAME: Dataset = 'season6';
-export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6'] as const;
+export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2'] as const;
 export type Dataset = (typeof DATASETS)[number];
 
 export const datasetSchema = z.enum(DATASETS);
@@ -26,7 +26,8 @@ export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season3'>
 	| DatasetMetadata<'season4'>
 	| DatasetMetadata<'season5'>
-	| DatasetMetadata<'season6'>;
+	| DatasetMetadata<'season6'>
+	| DatasetMetadata<'owcs-s2'>;
 
 type BaseDatasetMetadata = {
 	dataset: Dataset;
@@ -78,6 +79,13 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 6',
 		year: '2023',
 		shorthand: 'S6',
+	},
+	{
+		dataset: 'owcs-s2',
+		formattedName: 'OWCS S2 (2025)',
+		name: 'OWCS S2',
+		year: '2025',
+		shorthand: 'owcs',
 	},
 ] as const;
 
