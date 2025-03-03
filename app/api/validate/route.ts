@@ -31,88 +31,88 @@ const getLimiter = new RateLimiterMemory({
  * @returns ({nextReset: Date, correctPlayer: Player, iteration: number})
  */
 export async function GET(req: NextRequest) {
-	try {
-		await getLimiter.consume(req.ip ?? 'anonymous');
-		// Get query parameter
-		const searchParams = req.nextUrl.searchParams;
-		const dataset = searchParams.get('dataset') ?? 'season1';
+	// try {
+	// 	await getLimiter.consume(req.ip ?? 'anonymous');
+	// Get query parameter
+	const searchParams = req.nextUrl.searchParams;
+	const dataset = searchParams.get('dataset') ?? 'season1';
 
-		const now = new Date();
+	const now = new Date();
 
-		// * Handle get for all datasets
-		if (dataset === 'all') {
-			// Check if all answers exist (and fetch them if they dont)
-			for (const answer of currentAnswers) {
-				if (answer.answer === undefined || now >= answer.answer.nextReset) {
-					console.log(`re-fetching... (${answer.dataset})`);
-					const res = await updateLocalAnswer(answer.dataset);
-					// res only contains error, return error response if it exists
-					if (res) {
-						return res;
-					}
+	// * Handle get for all datasets
+	if (dataset === 'all') {
+		// Check if all answers exist (and fetch them if they dont)
+		for (const answer of currentAnswers) {
+			if (answer.answer === undefined || now >= answer.answer.nextReset) {
+				console.log(`re-fetching... (${answer.dataset})`);
+				const res = await updateLocalAnswer(answer.dataset);
+				// res only contains error, return error response if it exists
+				if (res) {
+					return res;
 				}
 			}
-
-			// Calculate seconds until next reset (based on season1, same for all datasets. Default to next reset in 0 seconds if undefined)
-			const secondsUntilNextReset =
-				currentAnswers[0].answer === undefined ? 0 : Math.floor((currentAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000);
-			return new Response(JSON.stringify(currentAnswers), {
-				status: 200,
-				headers: {
-					'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
-				},
-			});
 		}
 
-		// * zod error handling for dataset
-		const datasetParsed = datasetSchema.safeParse(dataset);
-		// Error handling
-		if (!datasetParsed.success) {
-			const errMessage = datasetParsed.error.errors.map((err) => `${err.path}: ${err.message},`);
-			return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
-		}
-		const currentAnswer = getLocalCurrentAnswer(datasetParsed.data);
-
-		if (!currentAnswer || currentAnswer === undefined) {
-			// fetch current data
-			console.log(`Updating cache (${dataset})`);
-			const res = await updateLocalAnswer(datasetParsed.data);
-			if (res) {
-				// Update failed, return error response
-				return res;
-			}
-		}
-		const validatedCurrAnswer = getLocalCurrentAnswer(datasetParsed.data);
-		// Will always be valid, answers were initialized + dataset was validated
-		if (!validatedCurrAnswer) {
-			return;
-		}
-
-		if (now >= validatedCurrAnswer.nextReset) {
-			// fetch updated data
-			const res = await updateLocalAnswer(datasetParsed.data);
-			if (res) {
-				// Update failed, return error response
-				return res;
-			}
-		}
-
-		const res: ValidateResponse = {
-			nextReset: validatedCurrAnswer.nextReset,
-			correctPlayer: validatedCurrAnswer.player,
-			iteration: validatedCurrAnswer.iteration,
-		};
-
-		const secondsUntilNextReset = Math.floor((validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000);
-		return new Response(JSON.stringify(res), {
+		// Calculate seconds until next reset (based on season1, same for all datasets. Default to next reset in 0 seconds if undefined)
+		const secondsUntilNextReset =
+			currentAnswers[0].answer === undefined ? 0 : Math.floor((currentAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000);
+		return new Response(JSON.stringify(currentAnswers), {
 			status: 200,
 			headers: {
 				'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
 			},
 		});
-	} catch (error) {
-		return new Response(JSON.stringify({ message: `Too Many Requests: ${error}` }), { status: 429 });
 	}
+
+	// * zod error handling for dataset
+	const datasetParsed = datasetSchema.safeParse(dataset);
+	// Error handling
+	if (!datasetParsed.success) {
+		const errMessage = datasetParsed.error.errors.map((err) => `${err.path}: ${err.message},`);
+		return new Response(`Invalid input. Errors: {\n${errMessage.join('\n')}\n}`, { status: 400 });
+	}
+	const currentAnswer = getLocalCurrentAnswer(datasetParsed.data);
+
+	if (!currentAnswer || currentAnswer === undefined) {
+		// fetch current data
+		console.log(`Updating cache (${dataset})`);
+		const res = await updateLocalAnswer(datasetParsed.data);
+		if (res) {
+			// Update failed, return error response
+			return res;
+		}
+	}
+	const validatedCurrAnswer = getLocalCurrentAnswer(datasetParsed.data);
+	// Will always be valid, answers were initialized + dataset was validated
+	if (!validatedCurrAnswer) {
+		return;
+	}
+
+	if (now >= validatedCurrAnswer.nextReset) {
+		// fetch updated data
+		const res = await updateLocalAnswer(datasetParsed.data);
+		if (res) {
+			// Update failed, return error response
+			return res;
+		}
+	}
+
+	const res: ValidateResponse = {
+		nextReset: validatedCurrAnswer.nextReset,
+		correctPlayer: validatedCurrAnswer.player,
+		iteration: validatedCurrAnswer.iteration,
+	};
+
+	const secondsUntilNextReset = Math.floor((validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000);
+	return new Response(JSON.stringify(res), {
+		status: 200,
+		headers: {
+			'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
+		},
+	});
+	// } catch (error) {
+	// 	return new Response(JSON.stringify({ message: `Too Many Requests: ${error}` }), { status: 429 });
+	// }
 }
 
 export async function PATCH(req: NextRequest) {
