@@ -9,7 +9,8 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
-import { atlanticPacificTeams, getAtlantic, getPacific } from '@/data/teams/teams';
+import { type CombinedDatasetMetadata, Dataset } from '@/data/datasets';
+import { atlanticPacificTeams, getAtlantic, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { DEFAULT_DIALOG_VALUE, useDialogParams, type DialogKey } from '@/hooks/use-dialog-param';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
@@ -65,15 +66,6 @@ export default function HelpContent({ setOpen }: Props) {
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
 	const [_dialog, setDialog] = useDialogParams();
 
-	const atlanticTeams = getAtlantic(dataset.dataset);
-	const pacificTeams = getPacific(dataset.dataset);
-
-	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
-	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
-
-	const trimmedAtlantic = atlanticPacificTeams.includes(dataset.dataset) ? atlanticText.slice(0, -10) : 'Eastern';
-	const trimmedPacific = atlanticPacificTeams.includes(dataset.dataset) ? pacificText.slice(0, -10) : 'Western';
-
 	// Memoize the setDialog function to prevent unnecessary re-renders
 	const handleClose = useCallback(() => {
 		setOpen(false);
@@ -94,55 +86,14 @@ export default function HelpContent({ setOpen }: Props) {
 			<ScrollArea type="scroll" className="h-[440px]">
 				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
 					{/* Description section */}
-					<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
-						Guess the correct Overwatch League player within 8 attempts to win (inspired by wordle). After each guess, you will receive hints based on
-						attributes like the player's role, team, region and nationality to help you get closer to the right answer.
-					</blockquote>
+					{dataset.dataset !== 'owcs-s2' ? <OWLHeaderText /> : <OWCSHeaderText />}
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Gamepad className="opacity-80" />
 							<h2 className=" ">Teams</h2>
 						</div>
-						<p className="scroll-m-20 text-base tracking-normal">
-							Teams are divided into{' '}
-							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								{trimmedAtlantic}
-							</code>{' '}
-							and{' '}
-							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								{trimmedPacific}
-							</code>
-							. <span className="text-primary-foreground">{dataset.name}</span> had the following teams:
-						</p>
-						<div className="flex flex-col gap-3">
-							<div className="flex flex-col">
-								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-									{/* <Compass className="opacity-80 w-5 h-5" /> */}
-									<h3 className="">{atlanticText}</h3>
-								</div>
-								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-									{atlanticTeams?.map((team) => (
-										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-											<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-										</div>
-									))}
-								</div>
-							</div>
-							<div className="flex flex-col w-full">
-								<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-									{/* <Compass className="opacity-80 w-5 h-5" /> */}
-									<h3 className="">{pacificText}</h3>
-								</div>
-								<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-									{pacificTeams?.map((team) => (
-										<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-											<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-										</div>
-									))}
-								</div>
-							</div>
-						</div>
+						{dataset.dataset !== 'owcs-s2' ? <OWLTeams dataset={dataset} /> : <OWCSTeams dataset={dataset} />}
 						<blockquote className="leading-7 tracking-wide opacity-90 border-primary-foreground border-l-[3px] pl-4 mt-1">
 							Check back here when switching to a different season to see updated teams. You can switch seasons using the dropdown next to the help icon.
 						</blockquote>
@@ -252,5 +203,145 @@ export default function HelpContent({ setOpen }: Props) {
 				<MemoizedButton onClick={handleClose} />
 			</DialogFooter>
 		</DialogContent>
+	);
+}
+
+function OWLTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
+	const atlanticTeams = getAtlantic(dataset.dataset);
+	const pacificTeams = getPacific(dataset.dataset);
+
+	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
+	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
+
+	const trimmedAtlantic = atlanticPacificTeams.includes(dataset.dataset) ? atlanticText.slice(0, -10) : 'Eastern';
+	const trimmedPacific = atlanticPacificTeams.includes(dataset.dataset) ? pacificText.slice(0, -10) : 'Western';
+	return (
+		<>
+			<p className="scroll-m-20 text-base tracking-normal">
+				Teams are divided into{' '}
+				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+					{trimmedAtlantic}
+				</code>{' '}
+				and{' '}
+				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+					{trimmedPacific}
+				</code>
+				. <span className="text-primary-foreground">{dataset.name}</span> had the following teams:
+			</p>
+			<div className="flex flex-col gap-3">
+				<div className="flex flex-col">
+					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+						{/* <Compass className="opacity-80 w-5 h-5" /> */}
+						<h3 className="">{atlanticText}</h3>
+					</div>
+					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
+						{atlanticTeams?.map((team) => (
+							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+							</div>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-col w-full">
+					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+						{/* <Compass className="opacity-80 w-5 h-5" /> */}
+						<h3 className="">{pacificText}</h3>
+					</div>
+					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
+						{pacificTeams?.map((team) => (
+							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		</>
+	);
+}
+
+function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
+	const emeaTeams = getEmea('owcs-s2');
+	const naTeams = getNa('owcs-s2');
+	const koreaTeams = getKr('owcs-s2');
+
+	return (
+		<>
+			<p className="scroll-m-20 text-base tracking-normal">
+				Teams are divided into{' '}
+				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+					EMEA
+				</code>{' '}
+				,
+				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+					North America
+				</code>{' '}
+				and{' '}
+				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+					Korea
+				</code>
+				. <span className="text-primary-foreground">{dataset.name}</span> had the following teams:
+			</p>
+			<div className="flex flex-col gap-3">
+				<div className="flex flex-col">
+					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+						{/* <Compass className="opacity-80 w-5 h-5" /> */}
+						<h3 className="">EMEA</h3>
+					</div>
+					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
+						{emeaTeams?.map((team) => (
+							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+							</div>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-col w-full">
+					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+						{/* <Compass className="opacity-80 w-5 h-5" /> */}
+						<h3 className="">North America</h3>
+					</div>
+					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
+						{naTeams?.map((team) => (
+							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+							</div>
+						))}
+					</div>
+				</div>
+				<div className="flex flex-col w-full">
+					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
+						{/* <Compass className="opacity-80 w-5 h-5" /> */}
+						<h3 className="">Korea</h3>
+					</div>
+					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
+						{koreaTeams?.map((team) => (
+							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+							</div>
+						))}
+					</div>
+				</div>
+			</div>
+		</>
+	);
+}
+
+function OWLHeaderText() {
+	return (
+		<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
+			Guess the correct Overwatch League player within 8 attempts to win (inspired by wordle). After each guess, you will receive hints based on attributes like
+			the player's role, team, region and nationality to help you get closer to the right answer.
+		</blockquote>
+	);
+}
+
+function OWCSHeaderText() {
+	return (
+		<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
+			Guess the correct <LinkButton href={'https://esports.overwatch.com/'}>Overwatch Champion Series</LinkButton> (OWCS) player within 8 attempts to win
+			(inspired by wordle). After each guess, you will receive hints based on attributes like the player's role, team, region and nationality to help you get
+			closer to the right answer.
+		</blockquote>
 	);
 }
