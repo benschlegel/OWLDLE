@@ -3,7 +3,7 @@ import { DATASETS } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 import { goNextIteration } from '@/lib/databaseAccess';
 import { NextURL } from 'next/dist/server/web/next-url';
-import type { NextRequest } from 'next/server';
+import { NextRequest } from 'next/server';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -24,12 +24,20 @@ export async function GET(request: Request) {
 	try {
 		for (const dataset of DATASETS) {
 			await goNextIteration(GAME_CONFIG.nextResetHours, dataset, GAME_CONFIG.backlogMaxSize);
-			await RoutePatch({
+			const url = `https://www.owldle.com?dataset=${dataset}`;
+			const headers = new Headers({
+				'Content-Type': 'application/json',
+				// Add other headers as needed
+			});
+
+			// Create a new NextRequest
+			const request = new NextRequest(url, {
 				method: 'PATCH',
-				ip: 'fake.ip.abc.de',
-				nextUrl: new NextURL(`https://www.owldle.com?dataset=${dataset}`),
 				headers: headers,
-			} as NextRequest);
+			});
+
+			// Call your route handler
+			await RoutePatch(request);
 		}
 		return new Response('Successfully set next iteration and re-fetched on server', { status: 200 });
 	} catch (e) {
