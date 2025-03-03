@@ -164,11 +164,11 @@ export function getRegion<T extends Dataset = 'season1'>(team: TeamName<T>, data
 	const na = ALL_NA.find((t) => t.dataset === dataset);
 	const kr = ALL_KR.find((t) => t.dataset === dataset);
 	// if (!eastern || !western) return undefined;
-	if ((eastern?.data as ReadonlyArray<string>).includes(team)) return 'AtlanticDivison';
-	if ((western?.data as ReadonlyArray<string>).includes(team)) return 'PacificDivision';
-	if ((emea?.data as ReadonlyArray<string>).includes(team)) return 'EMEA';
-	if ((na?.data as ReadonlyArray<string>).includes(team)) return 'NA';
-	if ((kr?.data as ReadonlyArray<string>).includes(team)) return 'Korea';
+	if ((eastern?.data as ReadonlyArray<string>)?.includes(team)) return 'AtlanticDivison';
+	if ((western?.data as ReadonlyArray<string>)?.includes(team)) return 'PacificDivision';
+	if ((emea?.data as ReadonlyArray<string>)?.includes(team)) return 'EMEA';
+	if ((na?.data as ReadonlyArray<string>)?.includes(team)) return 'NA';
+	if ((kr?.data as ReadonlyArray<string>)?.includes(team)) return 'Korea';
 	return undefined;
 }
 

@@ -1014,5 +1014,14 @@ export const s6Players: Player<'season6'>[] = [
 	{ name: 'Teru', country: 'KR', role: 'Support', team: 'WashingtonJustice' },
 ] as const;
 
-export type CombinedPlayers = Player<'season1'>[] | Player<'season2'>[] | Player<'season3'>[] | Player<'season4'>[] | Player<'season5'>[] | Player<'season6'>[];
-export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players];
+export const owcsS2Players: Player<'owcs-s2'>[] = [{ name: 'Shu', country: 'KR', role: 'Support', team: 'CrazyRaccoon' }];
+
+export type CombinedPlayers =
+	| Player<'season1'>[]
+	| Player<'season2'>[]
+	| Player<'season3'>[]
+	| Player<'season4'>[]
+	| Player<'season5'>[]
+	| Player<'season6'>[]
+	| Player<'owcs-s2'>[];
+export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players, owcsS2Players];
