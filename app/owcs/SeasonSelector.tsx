@@ -1,15 +1,17 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { datasetInfo, DEFAULT_DATASET_NAME } from '@/data/datasets';
+import { type Dataset, datasetInfo } from '@/data/datasets';
 import { useSeasonParams } from '@/hooks/use-season-params';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 
+const DEFAULT_DATASET: Dataset = 'owcs-s2';
+
 export default function SeasonSelector() {
 	const [slug, setSeason] = useSeasonParams();
 	const router = useRouter();
-	const formattedSlug = slug === '/' ? DEFAULT_DATASET_NAME : slug;
+	const formattedSlug = slug === '/' ? DEFAULT_DATASET : slug;
 	const defaultValue = datasetToShorthand(formattedSlug);
 	const [value, setValue] = useState(defaultValue);
 
