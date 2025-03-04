@@ -37,18 +37,37 @@ export default function SeasonSelector() {
 		[formattedSlug, setSeason]
 	);
 
+	const handleOwcsSwitch = useCallback(() => {
+		console.log('Redirecting in theme switcher...');
+		// Ensure that the browser supports view transitions
+		// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+		if ((document as any).startViewTransition) {
+			// Set the animation style to "angled"
+			document.documentElement.dataset.style = 'angled';
+
+			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+			(document as any).startViewTransition(() => {
+				router.push('/owcs');
+				setValue('CS');
+			});
+		} else {
+			router.push('/owcs');
+			setValue('CS');
+		}
+	}, [router.push]);
+
 	const handleChange = useCallback(
 		(value: string) => {
-			console.log('Value: ', value);
 			if (value.startsWith('owcs')) {
-				router.push('/owcs');
+				handleOwcsSwitch();
+				// handleThemeSwitch(value);
 				return;
 			}
 			const newDataset = datasetToShorthand(value);
 			setValue(newDataset);
 			handleThemeSwitch(value);
 		},
-		[handleThemeSwitch, router.push]
+		[handleThemeSwitch, handleOwcsSwitch]
 	);
 
 	return (
@@ -58,17 +77,25 @@ export default function SeasonSelector() {
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
-					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Select season</SelectLabel>
-					<Link href="/owcs" prefetch>
-						<SelectItem value="owcs-s2" key="owcs-s2">
-							OWCS Season 2
-						</SelectItem>
-					</Link>
-					{reversedSeasons.slice(1).map((dataset) => (
-						<SelectItem value={dataset.dataset} key={dataset.dataset}>
-							{dataset.formattedName}
-						</SelectItem>
-					))}
+					{/* <SelectLabel className="px-2 py-1.5 text-sm font-semibold">Select season</SelectLabel>
+					<Separator /> */}
+					<SelectGroup>
+						<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Champion Series</SelectLabel>
+
+						<Link href="/owcs" prefetch>
+							<SelectItem value="owcs-s2" key="owcs-s2">
+								OWCS Season 2
+							</SelectItem>
+						</Link>
+					</SelectGroup>
+					<SelectGroup>
+						<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Overwatch League</SelectLabel>
+						{reversedSeasons.slice(1).map((dataset) => (
+							<SelectItem value={dataset.dataset} key={dataset.dataset}>
+								{dataset.formattedName}
+							</SelectItem>
+						))}
+					</SelectGroup>
 				</SelectGroup>
 			</SelectContent>
 		</Select>
