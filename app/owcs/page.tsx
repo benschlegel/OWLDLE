@@ -36,6 +36,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 				},
 			],
 		},
+		metadataBase: new URL(`${GAME_CONFIG.siteUrl}/owcs`),
 		openGraph: {
 			title: openGraphTitle,
 			description: formattedDescritpion,
