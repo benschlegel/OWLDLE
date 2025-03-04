@@ -23,6 +23,7 @@ export default function GuessRow({ data }: Props) {
 	if (atlanticPacificTeams.includes(dataset.dataset)) {
 		useAtlanticPacificImage = true;
 	}
+	console.log('Region: ', data?.player.region);
 
 	let region = undefined;
 	let regionTooltip = undefined;
@@ -33,6 +34,15 @@ export default function GuessRow({ data }: Props) {
 		} else if (data.player.region === 'PacificDivision') {
 			region = 'W';
 			regionTooltip = 'West';
+		} else if (data.player.region === 'EMEA') {
+			region = 'EMEA';
+			regionTooltip = 'EMEA';
+		} else if (data.player.region === 'NA') {
+			region = 'NA';
+			regionTooltip = 'North America';
+		} else if (data.player.region === 'Korea') {
+			region = 'KR';
+			regionTooltip = 'Korea';
 		}
 	}
 	return (
@@ -57,13 +67,23 @@ export default function GuessRow({ data }: Props) {
 				<RoleCell role={data?.player.role} />
 			</GameCell>
 			{/* Region */}
-			<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
-				{useAtlanticPacificImage ? (
-					<ImageCell imgSrc={data?.player.regionImg} />
-				) : (
-					<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90">{region}</p>
-				)}
-			</GameCell>
+			{dataset.dataset !== 'owcs-s2' ? (
+				<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
+					{useAtlanticPacificImage ? (
+						<ImageCell imgSrc={data?.player.regionImg} />
+					) : (
+						<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90">{region}</p>
+					)}
+				</GameCell>
+			) : (
+				<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
+					{region === 'EMEA' ? (
+						<p className="text-sm sm:text-xl font-bold sm:tracking-tighter text-white opacity-90">{region}</p>
+					) : (
+						<p className="text-xl sm:text-2xl font-bold tracking-tight text-white opacity-90">{region}</p>
+					)}
+				</GameCell>
+			)}
 			{/* Team */}
 			<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={data?.player.team}>
 				<TeamLogo teamName={data?.player.team} />
