@@ -23,7 +23,6 @@ export default function GuessRow({ data }: Props) {
 	if (atlanticPacificTeams.includes(dataset.dataset)) {
 		useAtlanticPacificImage = true;
 	}
-	console.log('Region: ', data?.player.region);
 
 	let region = undefined;
 	let regionTooltip = undefined;

@@ -44,7 +44,8 @@ const demoCells: DemoCell[] = [
 function countdownRenderer({ days, hours, minutes, seconds, milliseconds, completed }: CountdownRenderProps) {
 	if (completed) {
 		// Render a completed state
-		return <></>;
+		return <p>Soon</p>;
+		// return <></>;
 	}
 	// Render a countdown
 	return (
@@ -64,6 +65,10 @@ const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
 export default function HelpContent({ setOpen }: Props) {
 	const [dataset, _] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
+	// console.log('Data: ', validatedData);
+	// if (validatedData) {
+	// 	console.log('Next reset: ', new Date(validatedData?.nextReset));
+	// }
 	const [_dialog, setDialog] = useDialogParams();
 
 	// Memoize the setDialog function to prevent unnecessary re-renders
@@ -167,8 +172,8 @@ export default function HelpContent({ setOpen }: Props) {
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
 							<div className="w-full gap-2 flex flex-row">
 								<p className="scroll-m-20 text-base tracking-tight">Start of next game:</p>
-								{isSuccess ? (
-									<Countdown key="countdown" date={validatedData?.nextReset ?? new Date()} renderer={countdownRenderer} autoStart />
+								{isSuccess && validatedData ? (
+									<Countdown key="countdown" date={validatedData.nextReset} renderer={countdownRenderer} autoStart />
 								) : (
 									<p className="text-muted-foreground">loading...</p>
 								)}
