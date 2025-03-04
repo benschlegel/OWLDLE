@@ -72,7 +72,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 				</TooltipTrigger>
 				{useTabIndex && (
 					<TooltipContent style={{ backgroundColor: team.backgroundColor, color: team.useDarkForeground ? '#1a1a1e' : '#dfdfd7' }}>
-						<p>{splitCapitalization(teamName)}</p>
+						<p>{team.displayName}</p>
 					</TooltipContent>
 				)}
 			</Tooltip>
