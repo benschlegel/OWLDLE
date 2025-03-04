@@ -163,6 +163,143 @@ const teamLogosS6: TeamLogoData<'season6'>[] = [
 	},
 ];
 
+const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
+	/**
+	 * EMEA
+	 */
+	{
+		teamName: 'GenG',
+		displayName: 'Gen.G',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'TwistedMinds',
+		displayName: 'Twisted Minds',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'VirtusPro',
+		displayName: 'Virtus.pro',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'TheUltimates',
+		displayName: 'The Ultimates',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'SakuraEsports',
+		displayName: 'Sakura Esports',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'TeamPeps',
+		displayName: 'Team Peps',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'AlQadsiah',
+		displayName: 'Al Qadsiah',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'TeamVision',
+		displayName: 'Team Vision',
+		backgroundColor: '#202127',
+	},
+	/**
+	 * NA
+	 */
+	{
+		teamName: 'SpacestationGaming',
+		displayName: 'Spacestation Gaming',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'TeamLiquid',
+		displayName: 'Team Liquid',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'Timeless',
+		displayName: 'Timeless',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'Avidity',
+		displayName: 'Avidity',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'RadEsports',
+		displayName: 'Rad Esports',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'NTMR',
+		displayName: 'NTMR',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'Shikigami',
+		displayName: 'Shikigami',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'Amplify',
+		displayName: 'Amplify',
+		backgroundColor: '#202127',
+	},
+	/**
+	 * Korea
+	 */
+	{
+		teamName: 'CrazyRaccoon',
+		displayName: 'Crazy Raccoon',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'T1',
+		displayName: 'T1',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'TeamFalcons',
+		displayName: 'Team Falcons',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'ZETADIVISION',
+		displayName: 'ZETA DIVISION',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'PokerFace',
+		displayName: 'Poker Face',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'WAY',
+		displayName: 'WAY',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'VEC',
+		displayName: 'VEC',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'NewEra',
+		displayName: 'New Era',
+		backgroundColor: '#202127',
+	},
+	{
+		teamName: 'FromTheGamer',
+		displayName: 'From The Gamer',
+		backgroundColor: '#202127',
+	},
+];
+
 export const TEAM_LOGOS_S1: TeamLogoData[] = teamLogosS1.map(
 	(team) => ({ ...team, imgUrl: `/teams/s1/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData
 );
@@ -199,6 +336,10 @@ const TEAM_LOGOS_S6 = teamLogosS6Raw.filter((l) => l.teamName !== ('Philadelphia
 TEAM_LOGOS_S6.push(teamLogosS6[0]);
 TEAM_LOGOS_S6.push(teamLogosS6[1]);
 
+export const TEAM_LOGOS_OWCS_S2: TeamLogoData<'owcs-s2'>[] = teamLogosOWCS_S2.map(
+	(team) => ({ ...team, imgUrl: `/teams/owcs-s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData<'owcs-s2'>
+);
+
 type LogoData<T extends Dataset> = {
 	dataset: T;
 	data: TeamLogoData<T>[];
@@ -210,7 +351,8 @@ export type CombinedLogoData =
 	| LogoData<'season3'>
 	| LogoData<'season4'>
 	| LogoData<'season5'>
-	| LogoData<'season6'>;
+	| LogoData<'season6'>
+	| LogoData<'owcs-s2'>;
 
 export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },
@@ -219,6 +361,7 @@ export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season4', data: TEAM_LOGOS_S3 as unknown[] as TeamLogoData<'season4'>[] },
 	{ dataset: 'season5', data: TEAM_LOGOS_S5 as unknown[] as TeamLogoData<'season5'>[] },
 	{ dataset: 'season6', data: TEAM_LOGOS_S6 },
+	{ dataset: 'owcs-s2', data: TEAM_LOGOS_OWCS_S2 },
 ] as const;
 
 export function getTeamLogos(dataset: Dataset) {

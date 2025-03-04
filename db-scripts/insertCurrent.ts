@@ -5,8 +5,8 @@ import type { DbAnswerPrefix } from '@/types/database';
 import { exit } from 'node:process';
 
 // * config
-const season: Dataset = 'season3';
-const newPlayerName = 'jjonak';
+const season: Dataset = 'owcs-s2';
+const newPlayerName = 'PEPPI';
 const answer: DbAnswerPrefix = 'current';
 
 console.time('setCurrent');
