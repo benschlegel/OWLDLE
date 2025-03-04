@@ -285,7 +285,7 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 					Korea
 				</code>
-				. <span className="text-primary-foreground">{dataset.name}</span> had the following teams:
+				. <span className="text-primary-foreground">{dataset.name}</span> has the following teams:
 			</p>
 			<div className="flex flex-col gap-3">
 				<div className="flex flex-col">
