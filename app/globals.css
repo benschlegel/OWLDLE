@@ -155,9 +155,9 @@
     */
 }
 
-html {
+/* html {
   @apply scrollbar-stable;
-}
+} */
 
 @keyframes unclip {
   0% {
