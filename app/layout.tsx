@@ -94,14 +94,14 @@ export const metadata: Metadata = {
 	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame'],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 	params,
 }: Readonly<{
 	children: React.ReactNode;
-	params: { dataset?: string[] };
+	params: Promise<{ dataset?: string[] }>;
 }>) {
-	const { dataset } = params;
+	const { dataset } = await params;
 	return (
 		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 			<head>

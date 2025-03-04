@@ -8,8 +8,9 @@ import { formatDataset } from '@/lib/client';
 
 const DEFAULT_SEASON_NUMBER = DEFAULT_DATASET_NAME.slice(-1);
 
-export async function generateMetadata({ searchParams }: { searchParams: { season?: string } }): Promise<Metadata> {
-	if (!searchParams || searchParams.season === DEFAULT_SEASON_NUMBER) {
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ season?: string }> }): Promise<Metadata> {
+	const { season } = await searchParams;
+	if (!season || season === DEFAULT_SEASON_NUMBER) {
 		return {
 			...prevMetadata,
 			title: `${DEFAULT_TITLE} - Season 6`,
@@ -18,7 +19,6 @@ export async function generateMetadata({ searchParams }: { searchParams: { seaso
 			},
 		};
 	}
-	const { season } = searchParams;
 
 	// Query param only contains number, e.g. "6" -> season6
 	const formattedSeason = `season${season ?? DEFAULT_SEASON_NUMBER}`;

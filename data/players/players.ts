@@ -1014,5 +1014,204 @@ export const s6Players: Player<'season6'>[] = [
 	{ name: 'Teru', country: 'KR', role: 'Support', team: 'WashingtonJustice' },
 ] as const;
 
-export type CombinedPlayers = Player<'season1'>[] | Player<'season2'>[] | Player<'season3'>[] | Player<'season4'>[] | Player<'season5'>[] | Player<'season6'>[];
-export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players];
+export const owcsS2Players: Player<'owcs-s2'>[] = [
+	/**
+	 *
+	 *
+	 *
+	 *
+	 * EMEA
+	 *
+	 *
+	 *
+	 *
+	 */
+	{ name: 'Sauna', country: 'FI', role: 'Damage', team: 'GenG' },
+	{ name: 'TOPDRAGON', country: 'KR', role: 'Damage', team: 'GenG' },
+	{ name: 'Mag', country: 'KR', role: 'Tank', team: 'GenG' },
+	{ name: 'crispy', country: 'UK', role: 'Support', team: 'GenG' },
+	{ name: 'Khenail', country: 'ES', role: 'Support', team: 'GenG' },
+	{ name: 'Quartz', country: 'SA', role: 'Damage', team: 'TwistedMinds' },
+	{ name: 'Youbi', country: 'SA', role: 'Damage', team: 'TwistedMinds' },
+	{ name: 'Seicoe', country: 'AT', role: 'Damage', team: 'TwistedMinds' },
+	{ name: 'Hadi', country: 'DE', role: 'Tank', team: 'TwistedMinds' },
+	{ name: 'TVNT', country: 'SA', role: 'Tank', team: 'TwistedMinds' },
+	{ name: 'FunnyAstro', country: 'UK', role: 'Support', team: 'TwistedMinds' },
+	{ name: 'irony', country: 'KR', role: 'Support', team: 'TwistedMinds' },
+	{ name: 'sHockWave', country: 'DK', role: 'Damage', team: 'VirtusPro' },
+	{ name: 'JaeWoo', country: 'KR', role: 'Damage', team: 'VirtusPro' },
+	{ name: 'Vestola', country: 'FI', role: 'Tank', team: 'VirtusPro' },
+	{ name: 'Galaa', country: 'ES', role: 'Support', team: 'VirtusPro' },
+	{ name: 'FiXa', country: 'KR', role: 'Support', team: 'VirtusPro' },
+	{ name: 'Kai', country: 'UK', role: 'Damage', team: 'TheUltimates' },
+	{ name: 'kevster', country: 'SE', role: 'Damage', team: 'TheUltimates' },
+	{ name: 'Chase', country: 'UA', role: 'Tank', team: 'TheUltimates' },
+	{ name: 'KSAA', country: 'SA', role: 'Tank', team: 'TheUltimates' },
+	{ name: 'Faith', country: 'KR', role: 'Support', team: 'TheUltimates' },
+	{ name: 'SKAI', country: 'RO', role: 'Support', team: 'TheUltimates' },
+	{ name: 'Twilight', country: 'KR', role: 'Support', team: 'TheUltimates' },
+	{ name: 'China', country: 'PL', role: 'Damage', team: 'SakuraEsports' },
+	{ name: 'Zorrow', country: 'SE', role: 'Damage', team: 'SakuraEsports' },
+	{ name: 'Hitori', country: 'DE', role: 'Tank', team: 'SakuraEsports' },
+	{ name: 'Prota', country: 'US', role: 'Support', team: 'SakuraEsports' },
+	{ name: 'Strebor', country: 'UK', role: 'Support', team: 'SakuraEsports' },
+	// { name: 'Juno', country: 'SE', role: 'Support', team: 'SakuraEsports' },
+	{ name: 'SoOn', country: 'FR', role: 'Damage', team: 'TeamPeps' },
+	{ name: 'xzodyal', country: 'ES', role: 'Damage', team: 'TeamPeps' },
+	{ name: 'Ken', country: 'BE', role: 'Damage', team: 'TeamPeps' },
+	{ name: 'eisgnom', country: 'DE', role: 'Tank', team: 'TeamPeps' },
+	{ name: 'Xeriongdh', country: 'FR', role: 'Support', team: 'TeamPeps' },
+	{ name: 'FDGod', country: 'FR', role: 'Support', team: 'TeamPeps' },
+	{ name: 'LBBD7', country: 'SA', role: 'Damage', team: 'AlQadsiah' },
+	{ name: 'CheckMate', country: 'KR', role: 'Damage', team: 'AlQadsiah' },
+	{ name: 'Qlm', country: 'SA', role: 'Damage', team: 'AlQadsiah' },
+	{ name: 'Tred', country: 'UK', role: 'Tank', team: 'AlQadsiah' },
+	{ name: 'ZIYAD', country: 'SA', role: 'Tank', team: 'AlQadsiah' },
+	{ name: 'Haku', country: 'SA', role: 'Support', team: 'AlQadsiah' },
+	{ name: 'Landon', country: 'US', role: 'Support', team: 'AlQadsiah' },
+	{ name: 'slowdive', country: 'SA', role: 'Damage', team: 'TeamVision' },
+	{ name: 'Taejong', country: 'KR', role: 'Damage', team: 'TeamVision' },
+	{ name: 'iMOH97', country: 'SA', role: 'Tank', team: 'TeamVision' },
+	{ name: 'One', country: 'SA', role: 'Support', team: 'TeamVision' },
+	{ name: 'AOY', country: 'SA', role: 'Support', team: 'TeamVision' },
+	{ name: 'Simple', country: 'KR', role: 'Support', team: 'TeamVision' },
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * North america
+	 *
+	 *
+	 *
+	 *
+	 */
+	{ name: 'seeker', country: 'CA', role: 'Damage', team: 'SpacestationGaming' },
+	{ name: 'Sugarfree', country: 'US', role: 'Damage', team: 'SpacestationGaming' },
+	{ name: 'Kellan', country: 'KR', role: 'Tank', team: 'SpacestationGaming' },
+	{ name: 'Bliss', country: 'KR', role: 'Support', team: 'SpacestationGaming' },
+	{ name: 'Cjay', country: 'US', role: 'Support', team: 'SpacestationGaming' },
+	{ name: 'KNIFE', country: 'KR', role: 'Damage', team: 'TeamLiquid' },
+	{ name: 'TR33', country: 'US', role: 'Damage', team: 'TeamLiquid' },
+	{ name: 'Infekted', country: 'US', role: 'Tank', team: 'TeamLiquid' },
+	{ name: 'Rupal', country: 'US', role: 'Support', team: 'TeamLiquid' },
+	{ name: 'Vega', country: 'US', role: 'Support', team: 'TeamLiquid' },
+	{ name: 'Chopper', country: 'US', role: 'Damage', team: 'Timeless' },
+	{ name: 'Rokit', country: 'US', role: 'Damage', team: 'Timeless' },
+	{ name: 'Raikker', country: 'US', role: 'Tank', team: 'Timeless' },
+	{ name: 'Lukemino', country: 'US', role: 'Support', team: 'Timeless' },
+	{ name: 'squid', country: 'US', role: 'Support', team: 'Timeless' },
+	{ name: 'xomba', country: 'US', role: 'Damage', team: 'Avidity' },
+	{ name: 'nvm', country: 'US', role: 'Damage', team: 'Avidity' },
+	{ name: 'wub', country: 'US', role: 'Damage', team: 'Avidity' },
+	{ name: 'TwolzZ', country: 'NL', role: 'Tank', team: 'Avidity' },
+	{ name: 'pela', country: 'US', role: 'Tank', team: 'Avidity' },
+	{ name: 'NenWhy', country: 'US', role: 'Support', team: 'Avidity' },
+	{ name: 'scuffed', country: 'US', role: 'Support', team: 'Avidity' },
+	{ name: 'k1ng', country: 'US', role: 'Damage', team: 'RadEsports' },
+	{ name: 'Kronik', country: 'US', role: 'Damage', team: 'RadEsports' },
+	{ name: 'peace', country: 'US', role: 'Damage', team: 'RadEsports' },
+	{ name: 'Zeb', country: 'US', role: 'Tank', team: 'RadEsports' },
+	{ name: 'Painkiller', country: 'US', role: 'Tank', team: 'RadEsports' },
+	{ name: 'Lep', country: 'US', role: 'Support', team: 'RadEsports' },
+	{ name: 'zzz', country: 'US', role: 'Support', team: 'RadEsports' },
+	{ name: 'Lethal', country: 'TR', role: 'Damage', team: 'NTMR' },
+	{ name: 'zeruhh', country: 'US', role: 'Damage', team: 'NTMR' },
+	{ name: 'Vision', country: 'US', role: 'Damage', team: 'NTMR' },
+	{ name: 'CLEAR', country: 'US', role: 'Tank', team: 'NTMR' },
+	{ name: 'cuFFa', country: 'AU', role: 'Tank', team: 'NTMR' },
+	{ name: 'UltraViolet', country: 'US', role: 'Support', team: 'NTMR' },
+	{ name: 'Admiral', country: 'EE', role: 'Support', team: 'NTMR' },
+	{ name: 'Arise', country: 'KR', role: 'Damage', team: 'Shikigami' },
+	{ name: 'Drunk', country: 'CN', role: 'Damage', team: 'Shikigami' },
+	{ name: 'Danny', country: 'US', role: 'Damage', team: 'Shikigami' },
+	{ name: 'Solo', country: 'CA', role: 'Tank', team: 'Shikigami' },
+	{ name: 'Graveyard', country: 'CA', role: 'Support', team: 'Shikigami' },
+	{ name: 'Rajeem', country: 'IN', role: 'Support', team: 'Shikigami' },
+	// { name: 'Chicken', country: 'US', role: 'Damage', team: 'Amplify' },
+	{ name: 'Fone', country: 'US', role: 'Damage', team: 'Amplify' },
+	{ name: 'Winter', country: 'US', role: 'Damage', team: 'Amplify' },
+	{ name: 'GAP', country: 'US', role: 'Tank', team: 'Amplify' },
+	{ name: 'CrazyCat', country: 'US', role: 'Support', team: 'Amplify' },
+	{ name: 'SoloZen', country: 'US', role: 'Support', team: 'Amplify' },
+	{ name: 'Ewan', country: 'US', role: 'Support', team: 'Amplify' },
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 * Korea
+	 *
+	 *
+	 *
+	 */
+	{ name: 'LIP', country: 'KR', role: 'Damage', team: 'CrazyRaccoon' },
+	{ name: 'HeeSang', country: 'KR', role: 'Damage', team: 'CrazyRaccoon' },
+	{ name: 'Junbin', country: 'KR', role: 'Tank', team: 'CrazyRaccoon' },
+	{ name: 'MAX', country: 'KR', role: 'Tank', team: 'CrazyRaccoon' },
+	{ name: 'CH0R0NG', country: 'KR', role: 'Support', team: 'CrazyRaccoon' },
+	{ name: 'Shu', country: 'KR', role: 'Support', team: 'CrazyRaccoon' },
+	{ name: 'Proud', country: 'KR', role: 'Damage', team: 'T1' },
+	{ name: 'Viper', country: 'KR', role: 'Damage', team: 'T1' },
+	{ name: 'ZEST', country: 'KR', role: 'Damage', team: 'T1' },
+	{ name: 'D0NGHAK', country: 'KR', role: 'Tank', team: 'T1' },
+	{ name: 'OPENER', country: 'KR', role: 'Support', team: 'T1' },
+	{ name: 'skewed', country: 'KR', role: 'Support', team: 'T1' },
+	{ name: 'Proper', country: 'KR', role: 'Damage', team: 'TeamFalcons' },
+	{ name: 'Stalk3r', country: 'KR', role: 'Damage', team: 'TeamFalcons' },
+	{ name: 'Hanbin', country: 'KR', role: 'Tank', team: 'TeamFalcons' },
+	{ name: 'ChiYo', country: 'KR', role: 'Support', team: 'TeamFalcons' },
+	{ name: 'Fielder', country: 'KR', role: 'Support', team: 'TeamFalcons' },
+	{ name: 'SirMajed', country: 'SA', role: 'Support', team: 'TeamFalcons' },
+	{ name: 'Flora', country: 'KR', role: 'Damage', team: 'ZETADIVISION' },
+	{ name: 'AlphaYi', country: 'KR', role: 'Damage', team: 'ZETADIVISION' },
+	{ name: 'Pelican', country: 'KR', role: 'Damage', team: 'ZETADIVISION' },
+	{ name: 'BERNAR', country: 'KR', role: 'Tank', team: 'ZETADIVISION' },
+	{ name: 'Viol2t', country: 'KR', role: 'Support', team: 'ZETADIVISION' },
+	{ name: 'FiNN', country: 'KR', role: 'Support', team: 'ZETADIVISION' },
+	{ name: 'A1IEN', country: 'KR', role: 'Damage', team: 'PokerFace' },
+	{ name: 'D4RT', country: 'KR', role: 'Damage', team: 'PokerFace' },
+	{ name: 'SP1NT', country: 'KR', role: 'Damage', team: 'PokerFace' },
+	{ name: 'HEISER', country: 'KR', role: 'Tank', team: 'PokerFace' },
+	{ name: 'Gur3um', country: 'KR', role: 'Tank', team: 'PokerFace' },
+	{ name: 'D0nghun', country: 'KR', role: 'Support', team: 'PokerFace' },
+	{ name: 'Misin', country: 'KR', role: 'Support', team: 'PokerFace' },
+	{ name: 'Ade', country: 'KR', role: 'Damage', team: 'WAY' },
+	{ name: 'WhoRU', country: 'KR', role: 'Damage', team: 'WAY' },
+	{ name: 'Mealgaru', country: 'KR', role: 'Tank', team: 'WAY' },
+	{ name: 'PEPPI', country: 'KR', role: 'Tank', team: 'WAY' },
+	{ name: 'LeeSooMin', country: 'KR', role: 'Support', team: 'WAY' },
+	{ name: 'MAKA', country: 'KR', role: 'Support', team: 'WAY' },
+	{ name: 'M1NUT2', country: 'KR', role: 'Damage', team: 'VEC' },
+	{ name: 'Architect', country: 'KR', role: 'Damage', team: 'VEC' },
+	{ name: 'F1nally', country: 'KR', role: 'Damage', team: 'VEC' },
+	{ name: 'FARMER', country: 'KR', role: 'Tank', team: 'VEC' },
+	{ name: 'Sp1nel', country: 'KR', role: 'Support', team: 'VEC' },
+	{ name: 'JINSUNG', country: 'KR', role: 'Support', team: 'VEC' },
+	{ name: 'WoochaN', country: 'KR', role: 'Support', team: 'VEC' },
+	{ name: 'ARCHE', country: 'KR', role: 'Damage', team: 'NewEra' },
+	{ name: 'D0D0', country: 'KR', role: 'Damage', team: 'NewEra' },
+	{ name: 'Fearful', country: 'KR', role: 'Tank', team: 'NewEra' },
+	{ name: 'RULER', country: 'KR', role: 'Tank', team: 'NewEra' },
+	{ name: 'search', country: 'KR', role: 'Support', team: 'NewEra' },
+	{ name: 'MCD', country: 'KR', role: 'Support', team: 'NewEra' },
+	{ name: 'KIVIS', country: 'KR', role: 'Support', team: 'NewEra' },
+	{ name: 'Prophet', country: 'KR', role: 'Damage', team: 'FromTheGamer' },
+	{ name: 'SeonJun', country: 'KR', role: 'Damage', team: 'FromTheGamer' },
+	{ name: 'HEESUNG', country: 'KR', role: 'Tank', team: 'FromTheGamer' },
+	{ name: 'Vindaim', country: 'KR', role: 'Support', team: 'FromTheGamer' },
+	{ name: 'vigilante', country: 'KR', role: 'Support', team: 'FromTheGamer' },
+];
+
+export type CombinedPlayers =
+	| Player<'season1'>[]
+	| Player<'season2'>[]
+	| Player<'season3'>[]
+	| Player<'season4'>[]
+	| Player<'season5'>[]
+	| Player<'season6'>[]
+	| Player<'owcs-s2'>[];
+export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players, owcsS2Players];
