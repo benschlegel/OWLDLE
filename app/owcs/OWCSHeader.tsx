@@ -9,11 +9,11 @@ export default function Header() {
 	return (
 		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-[0.5rem] w-full">
 			<p
-				className="sm:text-xl text-lg font-bold text-center tracking-widest"
+				className="sm:text-xl text-base font-bold text-center  sm:ml-[0.75rem] ml-[1.5rem] "
 				style={{
 					fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 				}}>
-				<span className="text-primary-foreground">OWCS</span> Edition
+				<span className="text-primary-foreground">OWCS Edition</span>
 			</p>
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
