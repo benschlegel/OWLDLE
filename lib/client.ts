@@ -38,6 +38,9 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (dataset !== undefined) {
 		datasetPostfix = dataset;
 	}
+	if (dataset === 'owcs-s2') {
+		datasetPostfix = 'owcs';
+	}
 	const seasonText = dataset !== undefined ? `${dataset.charAt(0).toUpperCase()}${dataset.slice(1, -1)} ${dataset.slice(-1)}` : '';
 
 	if (guesses.length === 0 || guesses === undefined) return '';
