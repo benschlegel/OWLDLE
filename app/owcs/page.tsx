@@ -15,7 +15,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 	const formattedDescritpion = 'Guess the correct Overwatch Champion Series player within 8 tries to win.';
 	const openGraphTitle = formattedTitle;
 
-	const ogImagePath = `/open-graph/owcs-s2.png`;
+	const ogImagePath = `/open-graph/owcs-s2.png?new=true`;
 	return {
 		...prevMetadata,
 		title: formattedTitle,
@@ -55,7 +55,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 		twitter: {
 			title: openGraphTitle,
 			description: DEFAULT_DESCRIPTION,
-			site: GAME_CONFIG.siteUrl,
+			site: `${GAME_CONFIG.siteUrl}/owcs`,
 			siteId: 'owldle',
 			images: [
 				{
