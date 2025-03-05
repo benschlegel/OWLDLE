@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { usePlausible } from 'next-plausible';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { Dataset } from '@/data/datasets';
+import FooterText from '@/components/footer-text';
 
 type Props = {
 	nextReset: Date;
@@ -123,6 +124,7 @@ export default function WinScreen({ nextReset, formattedResult, dataset, isOldSt
 				}}
 				recycle={false}
 			/>
+			<FooterText />
 		</div>
 	);
 }
