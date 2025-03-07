@@ -268,7 +268,7 @@ export async function setBacklog(backlog: DbFormattedPlayers) {
  * @param dataset what dataset to generate backlog for
  * @param session (optional), pass transaction session if used during transaction
  */
-export async function generateBacklog(size: number, dataset: Dataset, session?: ClientSession) {
+export async function generateBacklog(size: number, dataset: Dataset, session?: ClientSession, invalidPlayers: string[] = []) {
 	// Error if player collection is emtpy
 	const playerCount = await playerCollection.countDocuments();
 	if (playerCount === 0) throw new Error("players collection empty, can't generate backlog");
@@ -287,6 +287,9 @@ export async function generateBacklog(size: number, dataset: Dataset, session?: 
 			invalidPlayerNames.push(answer.player.name);
 		}
 	}
+
+	// * Remove manually invalidated players (to avoid duplicates from old backlog)
+	invalidPlayerNames.push(...invalidPlayers);
 	const dedupedPlayers = seasonPlayers.players.filter((player) => !invalidPlayerNames.includes(player.name));
 
 	// Apply Fisher-Yates shuffle
