@@ -40,3 +40,8 @@ export async function GET() {
 		}
 	);
 }
+
+/* <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0rem', flexDirection: 'column', letterSpacing: '-0.025em' }}>
+				<div style={{ display: 'flex', marginBottom: '-6rem' }}>OWL</div>
+				<div style={{ display: 'flex', color: '#dfdfd6' }}>DLE</div>
+			</div> */
