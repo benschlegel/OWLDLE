@@ -24,7 +24,7 @@ export const FORMATTED_PLAYERS: PlayerDataset[] = [];
 
 // Countries that are not supported by vectorflags api
 // ! Add unsupported countries here
-const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL'];
+const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL', 'KH'];
 const unsupportedCountries: CustomFlag[] = unsupportedCountryCodes.map((c) => ({ country: c, customImg: `https://flagsapi.com/${c}/flat/64.png` }));
 
 // TODO: find out why using DATASETS causes "cant use before initialization"
