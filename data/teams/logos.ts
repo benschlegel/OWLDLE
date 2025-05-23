@@ -189,7 +189,7 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 	},
 	{
 		teamName: 'FrostTailsEsports',
-		displayName: 'Frost Tails Esports',
+		displayName: 'Frost Tails Esport',
 		backgroundColor: '#202127',
 	},
 	{
