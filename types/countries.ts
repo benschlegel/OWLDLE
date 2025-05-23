@@ -204,6 +204,7 @@ export const countries = [
 	'YE', // Yemen
 	'ZM', // Zambia
 	'ZW', // Zimbabwe
+	'GB-WLS', // wales
 ] as const;
 
 // The list of country codes and names as an object
