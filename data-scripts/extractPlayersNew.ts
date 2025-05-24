@@ -29,7 +29,7 @@ const mappedDatasets: MappedDataset[] = [
 	{ dataset: 'season6', url: 'https://liquipedia.net/overwatch/Overwatch_League/2023' },
 	// { dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/EMEA/Stage_1' },
 	// { dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/NA/Stage_1' },
-	{ dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/Asia/Stage_1/Korea' },
+	{ dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/Asia/Stage_2/Korea' },
 ];
 
 // ! Change this value for different script output

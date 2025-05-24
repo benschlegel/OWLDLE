@@ -188,8 +188,8 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'SakuraEsports',
-		displayName: 'Sakura Esports',
+		teamName: 'FrostTailsEsports',
+		displayName: 'Frost Tails Esport',
 		backgroundColor: '#202127',
 	},
 	{
@@ -203,8 +203,8 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'TeamVision',
-		displayName: 'Team Vision',
+		teamName: 'QuickEsports',
+		displayName: 'Quick Esports',
 		backgroundColor: '#202127',
 	},
 	/**
@@ -221,18 +221,18 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'Timeless',
-		displayName: 'Timeless',
+		teamName: 'GeekayEsports',
+		displayName: 'Geekay Esports',
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'Avidity',
-		displayName: 'Avidity',
+		teamName: 'Extinction',
+		displayName: 'Extinction',
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'RadEsports',
-		displayName: 'Rad Esports',
+		teamName: 'SakuraEsports',
+		displayName: 'Sakura Esports',
 		backgroundColor: '#202127',
 	},
 	{
@@ -241,13 +241,13 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'Shikigami',
-		displayName: 'Shikigami',
+		teamName: 'Supernova',
+		displayName: 'Supernova',
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'Amplify',
-		displayName: 'Amplify',
+		teamName: 'DhillDucks',
+		displayName: 'DhillDucks',
 		backgroundColor: '#202127',
 	},
 	/**
@@ -279,8 +279,8 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'WAY',
-		displayName: 'WAY',
+		teamName: 'OnsideGaming',
+		displayName: 'ONSIDE Gaming',
 		backgroundColor: '#202127',
 	},
 	{
@@ -289,13 +289,13 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'NewEra',
-		displayName: 'New Era',
+		teamName: 'AllGamersGlobal',
+		displayName: 'All Gamers Global',
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'FromTheGamer',
-		displayName: 'From The Gamer',
+		teamName: 'OldOcean',
+		displayName: 'Old Ocean',
 		backgroundColor: '#202127',
 	},
 ];
