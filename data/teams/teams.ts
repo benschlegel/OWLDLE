@@ -108,9 +108,9 @@ const WESTERN_S6 = [
 	'WashingtonJustice',
 ] as const;
 
-const EMEA_OWCS_S2 = ['GenG', 'TwistedMinds', 'VirtusPro', 'TheUltimates', 'SakuraEsports', 'TeamPeps', 'AlQadsiah', 'TeamVision'] as const;
-const NA_OWCS_S2 = ['SpacestationGaming', 'TeamLiquid', 'Timeless', 'Avidity', 'RadEsports', 'NTMR', 'Shikigami', 'Amplify'] as const;
-const KR_OWCS_S2 = ['CrazyRaccoon', 'T1', 'TeamFalcons', 'ZETADIVISION', 'PokerFace', 'WAY', 'VEC', 'NewEra', 'FromTheGamer'] as const;
+const EMEA_OWCS_S2 = ['GenG', 'TwistedMinds', 'VirtusPro', 'TheUltimates', 'FrostTailsEsports', 'TeamPeps', 'AlQadsiah', 'QuickEsports'] as const;
+const NA_OWCS_S2 = ['SpacestationGaming', 'TeamLiquid', 'GeekayEsports', 'Extinction', 'SakuraEsports', 'NTMR', 'Supernova', 'DhillDucks'] as const;
+const KR_OWCS_S2 = ['CrazyRaccoon', 'T1', 'TeamFalcons', 'ZETADIVISION', 'PokerFace', 'AllGamersGlobal', 'VEC', 'OnsideGaming', 'OldOcean'] as const;
 
 // * Combine data
 

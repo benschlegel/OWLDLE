@@ -24,7 +24,7 @@ export const FORMATTED_PLAYERS: PlayerDataset[] = [];
 
 // Countries that are not supported by vectorflags api
 // ! Add unsupported countries here
-const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL'];
+const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL', 'KH'];
 const unsupportedCountries: CustomFlag[] = unsupportedCountryCodes.map((c) => ({ country: c, customImg: `https://flagsapi.com/${c}/flat/64.png` }));
 
 // TODO: find out why using DATASETS causes "cant use before initialization"
@@ -41,6 +41,11 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 		const unsupportedCountry = unsupportedCountries.find((unsupported) => unsupported.country === player.country);
 		if (unsupportedCountry) {
 			countryImg = unsupportedCountry.customImg;
+		}
+
+		// Special case for wales (was not in unsupported api either)
+		if (player.country === 'GB-WLS') {
+			countryImg = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Flag_of_Wales.svg/1200px-Flag_of_Wales.svg.png';
 		}
 
 		// Set player region

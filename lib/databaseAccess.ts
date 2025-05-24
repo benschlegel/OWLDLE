@@ -446,6 +446,35 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
 }
 
 /**
+ * Migrates the dataset of iterations (e.g. when new stage comes out, migrate "owcs-s2" to "owcs-s2-stage1")
+ */
+export async function migrateIterationDataset(datasetOld: Dataset | string, datasetNew: Dataset | string) {
+	await iterationCollection.updateMany({ dataset: datasetOld as Dataset }, { $set: { dataset: datasetNew as Dataset } });
+}
+
+/**
+ * Migrates data set of game logs (e.g. when new stage comes out, migrate "owcs-s2" to "owcs-s2-stage1")
+ */
+export async function migrateGameLogDataset(datasetOld: Dataset | string, datasetNew: Dataset | string) {
+	await gameLogCollection.updateMany({ dataset: datasetOld as Dataset }, { $set: { dataset: datasetNew as Dataset } });
+}
+
+/**
+ * Deletes and inserts new document to update player dataset
+ */
+export async function migratePlayerDataset(datasetOld: Dataset | string, datasetNew: Dataset | string) {
+	const doc = await playerCollection.findOne({ _id: datasetOld as Dataset });
+	if (doc) {
+		// Update id, insert with new id
+		doc._id = datasetNew as Dataset;
+		await playerCollection.insertOne(doc);
+
+		// Delete doc with old id
+		await playerCollection.deleteOne({ _id: datasetOld as Dataset });
+	}
+}
+
+/**
  * Wrapper that handles going to the next iteration (if resetDate was reached)
  * Works as a transaction, either everything gets rolled over to next iteration or everything fails
  * @param nextResetHours hours until next reset
