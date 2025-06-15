@@ -45,7 +45,7 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 
 		// Special case for wales (was not in unsupported api either)
 		if (player.country === 'GB-WLS') {
-			countryImg = 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Flag_of_Wales.svg/1200px-Flag_of_Wales.svg.png';
+			countryImg = '/countries/wales.avif';
 		}
 
 		// Set player region
