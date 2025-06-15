@@ -58,7 +58,8 @@ export default function GuessRow({ data }: Props) {
 			<GameCell
 				isCorrect={data?.guessResult.isCountryCorrect}
 				tooltipDescription="Country"
-				tooltipValue={data ? regionNames.of(data?.player.country) : undefined}>
+				// Special case for wales, otherwise use INT regionNames or undefined if no data exists
+				tooltipValue={data ? (data.player.country === 'GB-WLS' ? 'Wales' : regionNames.of(data.player.country)) : undefined}>
 				<ImageCell imgSrc={data?.player.countryImg} />
 			</GameCell>
 			{/* Role */}
