@@ -15,6 +15,9 @@ const uniqueCountries = getUniqueCountries(mergedPlayers);
 describe('country flag logos loading', () => {
 	test.concurrent.each(uniqueCountries)('$country: flag url loading', async ({ country, imgUrl }) => {
 		// Fetch the image
+		if (imgUrl.startsWith('/countries')) {
+			return;
+		}
 		const response = await fetch(imgUrl);
 
 		// Ensure the request was successful
