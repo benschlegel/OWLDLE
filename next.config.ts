@@ -1,7 +1,8 @@
 // import MillionLint from '@million/lint';
+import type { NextConfig } from 'next';
 import { withPlausibleProxy } from 'next-plausible';
-/** @type {import('next').NextConfig} */
-const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
+
+const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
 	images: {
 		// TODO: remove to disable nextjs image optimizations/caching
 		remotePatterns: [
@@ -19,15 +20,13 @@ const nextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.
 			},
 		],
 		formats: ['image/avif'],
+		qualities: [100, 75],
 		unoptimized: true,
 	},
 	compiler: {
 		removeConsole: process.env.NODE_ENV === 'production',
 	},
-	experimental: {
-		reactCompiler: true,
-		// instrumentationHook: true,
-	},
+	reactCompiler: true,
 	async redirects() {
 		return [
 			// Basic redirect
