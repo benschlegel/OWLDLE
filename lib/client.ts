@@ -1,4 +1,4 @@
-import type { Dataset } from '@/data/datasets';
+import { type Dataset, datasetInfo, isOwcsDataset } from '@/data/datasets';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 
 export type FormatConfig = {
@@ -34,18 +34,11 @@ export type FormatConfig = {
  * @returns a string formatted using emojis (🟥 🟩) + stats
  */
 export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl, dataset }: FormatConfig): string {
-	let datasetPostfix = '';
-	if (dataset !== undefined) {
-		datasetPostfix = dataset;
-	}
-	if (dataset === 'owcs-s2') {
+	let datasetPostfix = dataset ?? '';
+	if (dataset && isOwcsDataset(dataset)) {
 		datasetPostfix = 'owcs';
 	}
-	let seasonText = dataset !== undefined ? `${dataset.charAt(0).toUpperCase()}${dataset.slice(1, -1)} ${dataset.slice(-1)}` : '';
-
-	if (dataset === 'owcs-s2') {
-		seasonText = 'OWCS S2';
-	}
+	const seasonText = dataset ? (datasetInfo.find((d) => d.dataset === dataset)?.name ?? '') : '';
 
 	if (guesses.length === 0 || guesses === undefined) return '';
 	// Add header

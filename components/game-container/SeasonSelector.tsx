@@ -1,8 +1,7 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { datasetInfo, DEFAULT_DATASET_NAME } from '@/data/datasets';
+import { DEFAULT_DATASET_NAME, OWL_DATASETS, OWCS_DATASETS } from '@/data/datasets';
 import { useSeasonParams } from '@/hooks/use-season-params';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 
@@ -13,61 +12,35 @@ export default function SeasonSelector() {
 	const defaultValue = datasetToShorthand(formattedSlug);
 	const [value, setValue] = useState(defaultValue);
 
-	const reversedSeasons = useMemo(() => {
-		return datasetInfo.toReversed();
-	}, []);
-
-	const handleThemeSwitch = useCallback(
-		(newSlug: string) => {
-			console.log('Redirecting in theme switcher...');
-			// Ensure that the browser supports view transitions
-			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-			if ((document as any).startViewTransition && newSlug !== formattedSlug) {
-				// Set the animation style to "angled"
-				document.documentElement.dataset.style = 'angled';
-
-				// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-				(document as any).startViewTransition(() => {
-					setSeason(newSlug);
-				});
-			} else {
-				setSeason(newSlug);
-			}
-		},
-		[formattedSlug, setSeason]
-	);
-
-	const handleOwcsSwitch = useCallback(() => {
-		console.log('Redirecting in theme switcher...');
-		// Ensure that the browser supports view transitions
-		// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-		if ((document as any).startViewTransition) {
-			// Set the animation style to "angled"
-			document.documentElement.dataset.style = 'angled';
-
-			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-			(document as any).startViewTransition(() => {
-				router.push('/owcs');
-				setValue('CS');
-			});
-		} else {
-			router.push('/owcs');
-			setValue('CS');
-		}
-	}, [router.push]);
+	const reversedOwlSeasons = useMemo(() => OWL_DATASETS.toReversed(), []);
+	const reversedOwcsSeasons = useMemo(() => OWCS_DATASETS.toReversed(), []);
 
 	const handleChange = useCallback(
 		(value: string) => {
+			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+			const transition = (document as any).startViewTransition?.bind(document);
 			if (value.startsWith('owcs')) {
-				handleOwcsSwitch();
-				// handleThemeSwitch(value);
+				// Navigate to OWCS page with the selected season
+				const owcsSeason = value.slice('owcs-'.length);
+				setValue('CS');
+				if (transition) {
+					document.documentElement.dataset.style = 'angled';
+					transition(() => router.push(`/owcs?season=${owcsSeason}`));
+				} else {
+					router.push(`/owcs?season=${owcsSeason}`);
+				}
 				return;
 			}
 			const newDataset = datasetToShorthand(value);
 			setValue(newDataset);
-			handleThemeSwitch(value);
+			if (transition && value !== formattedSlug) {
+				document.documentElement.dataset.style = 'angled';
+				transition(() => setSeason(value));
+			} else {
+				setSeason(value);
+			}
 		},
-		[handleThemeSwitch, handleOwcsSwitch]
+		[formattedSlug, setSeason, router.push]
 	);
 
 	return (
@@ -77,25 +50,18 @@ export default function SeasonSelector() {
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
-					{/* <SelectLabel className="px-2 py-1.5 text-sm font-semibold">Select season</SelectLabel>
-					<Separator /> */}
-					<SelectGroup>
-						<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Champion Series</SelectLabel>
-
-						<Link href="/owcs" prefetch>
-							<SelectItem value="owcs-s2" key="owcs-s2">
-								OWCS Season 2
-							</SelectItem>
-						</Link>
-					</SelectGroup>
-					<SelectGroup>
-						<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Overwatch League</SelectLabel>
-						{reversedSeasons.slice(1).map((dataset) => (
-							<SelectItem value={dataset.dataset} key={dataset.dataset}>
-								{dataset.formattedName}
-							</SelectItem>
-						))}
-					</SelectGroup>
+					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Champion Series</SelectLabel>
+					{reversedOwcsSeasons.map((dataset) => (
+						<SelectItem value={dataset.dataset} key={dataset.dataset}>{dataset.formattedName}</SelectItem>
+					))}
+				</SelectGroup>
+				<SelectGroup>
+					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Overwatch League</SelectLabel>
+					{reversedOwlSeasons.map((dataset) => (
+						<SelectItem value={dataset.dataset} key={dataset.dataset}>
+							{dataset.formattedName}
+						</SelectItem>
+					))}
 				</SelectGroup>
 			</SelectContent>
 		</Select>

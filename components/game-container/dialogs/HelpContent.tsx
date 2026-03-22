@@ -9,7 +9,7 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
-import { type CombinedDatasetMetadata, Dataset } from '@/data/datasets';
+import { type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams, getAtlantic, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { DEFAULT_DIALOG_VALUE, useDialogParams, type DialogKey } from '@/hooks/use-dialog-param';
@@ -91,14 +91,14 @@ export default function HelpContent({ setOpen }: Props) {
 			<ScrollArea type="scroll" className="h-[440px]">
 				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
 					{/* Description section */}
-					{dataset.dataset !== 'owcs-s2' ? <OWLHeaderText /> : <OWCSHeaderText />}
+					{!isOwcsDataset(dataset.dataset) ? <OWLHeaderText /> : <OWCSHeaderText />}
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Gamepad className="opacity-80" />
 							<h2 className=" ">Teams</h2>
 						</div>
-						{dataset.dataset !== 'owcs-s2' ? <OWLTeams dataset={dataset} /> : <OWCSTeams dataset={dataset} />}
+						{!isOwcsDataset(dataset.dataset) ? <OWLTeams dataset={dataset} /> : <OWCSTeams dataset={dataset} />}
 						<blockquote className="leading-7 tracking-wide opacity-90 border-primary-foreground border-l-[3px] pl-4 mt-1">
 							Check back here when switching to a different season to see updated teams. You can switch seasons using the dropdown next to the help icon.
 						</blockquote>
@@ -266,9 +266,9 @@ function OWLTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 }
 
 function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
-	const emeaTeams = getEmea('owcs-s2');
-	const naTeams = getNa('owcs-s2');
-	const koreaTeams = getKr('owcs-s2');
+	const emeaTeams = getEmea(dataset.dataset);
+	const naTeams = getNa(dataset.dataset);
+	const koreaTeams = getKr(dataset.dataset);
 
 	return (
 		<>
