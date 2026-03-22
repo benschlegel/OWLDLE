@@ -27,6 +27,9 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 		removeConsole: process.env.NODE_ENV === 'production',
 	},
 	reactCompiler: true,
+	experimental: {
+		viewTransition: true,
+	},
 	async redirects() {
 		return [
 			// Basic redirect
