@@ -109,13 +109,20 @@ export default async function RootLayout({
 		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 			<head>
 				<meta name="twitter:card" content="summary_large_image" />
+				{/* Blocking script: sets theme class before first paint to prevent flash */}
+				<script
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: needed to prevent theme flash
+					dangerouslySetInnerHTML={{
+						__html: `(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');}catch(e){}})()`,
+					}}
+				/>
 				{/* Add your own plausible config (if you want to set up analytics) */}
 				<Suspense>
 					<PlausibleWrapper />
 				</Suspense>
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
 					<ReactQueryProvider>
 						<EvaluatedGuessProvider>
 							<GuessContextProvider>
