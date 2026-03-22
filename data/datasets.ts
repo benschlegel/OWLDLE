@@ -7,6 +7,7 @@ import { z } from 'zod';
 export const DEFAULT_DATASET_NAME: Dataset = 'season6';
 export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2'] as const;
 export type Dataset = (typeof DATASETS)[number];
+export type League = 'owl' | 'owcs';
 
 export const datasetSchema = z.enum(DATASETS);
 export type DatasetMetadata<T extends Dataset> = {
@@ -18,6 +19,7 @@ export type DatasetMetadata<T extends Dataset> = {
 	year: string;
 	formattedName: string;
 	shorthand: string;
+	league: League;
 };
 
 export type CombinedDatasetMetadata =
@@ -35,6 +37,7 @@ type BaseDatasetMetadata = {
 	name: string;
 	year: string;
 	shorthand: string;
+	league: League;
 };
 
 export const datasetInfo: BaseDatasetMetadata[] = [
@@ -44,6 +47,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 1',
 		year: '2018',
 		shorthand: 'S1',
+		league: 'owl',
 	},
 	{
 		dataset: 'season2',
@@ -51,6 +55,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 2',
 		year: '2019',
 		shorthand: 'S2',
+		league: 'owl',
 	},
 	{
 		dataset: 'season3',
@@ -58,6 +63,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 3',
 		year: '2020',
 		shorthand: 'S3',
+		league: 'owl',
 	},
 	{
 		dataset: 'season4',
@@ -65,6 +71,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 4',
 		year: '2021',
 		shorthand: 'S4',
+		league: 'owl',
 	},
 	{
 		dataset: 'season5',
@@ -72,6 +79,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 5',
 		year: '2022',
 		shorthand: 'S5',
+		league: 'owl',
 	},
 	{
 		dataset: 'season6',
@@ -79,15 +87,25 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		name: 'Season 6',
 		year: '2023',
 		shorthand: 'S6',
+		league: 'owl',
 	},
 	{
 		dataset: 'owcs-s2',
 		formattedName: 'OWCS S2 (2025)',
 		name: 'OWCS S2',
 		year: '2025',
-		shorthand: 'owcs',
+		shorthand: 'S2',
+		league: 'owcs',
 	},
 ] as const;
+
+export const OWL_DATASETS = datasetInfo.filter((d) => d.league === 'owl');
+export const OWCS_DATASETS = datasetInfo.filter((d) => d.league === 'owcs');
+export const DEFAULT_OWCS_DATASET_NAME: Dataset = OWCS_DATASETS[OWCS_DATASETS.length - 1].dataset;
+
+export function isOwcsDataset(dataset: Dataset): boolean {
+	return datasetInfo.find((d) => d.dataset === dataset)?.league === 'owcs';
+}
 
 export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = datasetInfo.map(
 	(dataset, index) =>

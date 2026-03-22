@@ -4,7 +4,7 @@ import type { RowData } from '@/components/game-container/GameContainer';
 import RoleCell from '@/components/game-container/RoleCell';
 import TeamLogo from '@/components/game-container/TeamLogo';
 import { DatasetContext } from '@/context/DatasetContext';
-import type { Dataset } from '@/data/datasets';
+import { isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams } from '@/data/teams/teams';
 import { regionNames } from '@/lib/client';
 import { useContext } from 'react';
@@ -67,7 +67,7 @@ export default function GuessRow({ data }: Props) {
 				<RoleCell role={data?.player.role} />
 			</GameCell>
 			{/* Region */}
-			{dataset.dataset !== 'owcs-s2' ? (
+			{!isOwcsDataset(dataset.dataset) ? (
 				<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
 					{useAtlanticPacificImage ? (
 						<ImageCell imgSrc={data?.player.regionImg} />
