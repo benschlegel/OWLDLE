@@ -108,7 +108,7 @@ export function Navbar() {
 			</div>
 
 			{/* Right section */}
-			<div className="flex items-center sm:block">
+			<div className="items-center sm:flex hidden">
 				<NavButton isRightSkewed>Feedback</NavButton>
 				<NavButton isRightSkewed>Contact</NavButton>
 				<NavButton isRightSkewed className="-mr-2 pr-6">
