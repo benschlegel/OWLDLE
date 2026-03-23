@@ -13,6 +13,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { EvaluatedGuessProvider } from '@/context/GlobalGuessContext';
 import PlausibleWrapper from '@/context/PlausibleWrapper';
 import { Suspense } from 'react';
+import { Navbar } from '@/components/game-container/nav-bar';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -129,7 +130,8 @@ export default async function RootLayout({
 								<GameStateContextProvider>
 									<DatasetContexttProvider>
 										<>
-											<div className="px-2 pt-8 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
+											<Navbar />
+											<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
 												<main className="w-[32rem]">{children}</main>
 											</div>
 											<Toaster />
