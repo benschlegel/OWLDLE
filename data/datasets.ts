@@ -101,6 +101,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 
 export const OWL_DATASETS = datasetInfo.filter((d) => d.league === 'owl');
 export const OWCS_DATASETS = datasetInfo.filter((d) => d.league === 'owcs');
+export const OWL_DATASETS_REVERSED = OWL_DATASETS.toReversed();
+export const OWCS_DATASETS_REVERSED = OWCS_DATASETS.toReversed();
 export const DEFAULT_OWCS_DATASET_NAME: Dataset = OWCS_DATASETS[OWCS_DATASETS.length - 1].dataset;
 
 export function isOwcsDataset(dataset: Dataset): boolean {

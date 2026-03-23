@@ -1,18 +1,15 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { type Dataset, OWL_DATASETS, OWCS_DATASETS } from '@/data/datasets';
+import { type Dataset, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { useOwcsParams } from '@/hooks/use-owcs-params';
 import { useRouter } from 'next/navigation';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 export default function SeasonSelector() {
 	const [slug, setSeason] = useOwcsParams();
 	const router = useRouter();
 
 	const currentShorthand = slug.slice('owcs-'.length).toUpperCase();
-
-	const reversedOwlSeasons = useMemo(() => OWL_DATASETS.toReversed(), []);
-	const reversedOwcsSeasons = useMemo(() => OWCS_DATASETS.toReversed(), []);
 
 	const handleChange = useCallback(
 		(value: string) => {
@@ -37,7 +34,7 @@ export default function SeasonSelector() {
 				}
 			}
 		},
-		[setSeason, router.push]
+		[setSeason, router]
 	);
 
 	return (
@@ -48,13 +45,13 @@ export default function SeasonSelector() {
 			<SelectContent>
 				<SelectGroup>
 					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Champion Series</SelectLabel>
-					{reversedOwcsSeasons.map((dataset) => (
+					{OWCS_DATASETS_REVERSED.map((dataset) => (
 						<SelectItem value={dataset.dataset} key={dataset.dataset}>{dataset.formattedName}</SelectItem>
 					))}
 				</SelectGroup>
 				<SelectGroup>
 					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Overwatch League</SelectLabel>
-					{reversedOwlSeasons.map((dataset) => (
+					{OWL_DATASETS_REVERSED.map((dataset) => (
 						<SelectItem value={dataset.dataset} key={dataset.dataset}>{dataset.formattedName}</SelectItem>
 					))}
 				</SelectGroup>
