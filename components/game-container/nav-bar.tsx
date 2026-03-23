@@ -10,7 +10,7 @@ export function Navbar() {
 			<div className="flex items-center">
 				<Button
 					variant={'ghost'}
-					className="w-full py-6 bg-secondary/50 text-foreground transition-colors rounded-none"
+					className="w-full py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
 					style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-6px', paddingRight: '24px' }}>
 					<Home className="h-5 w-5" />
 				</Button>
@@ -62,7 +62,7 @@ function NavButton({
 			variant={'ghost'}
 			className={`
         relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors
-        ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground hover:text-cyan-400'}
+        ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}
       `}
 			style={{
 				transform: 'skewX(-14deg)',
