@@ -102,12 +102,12 @@ function NavSelect({
 		<Select onValueChange={onValueChange}>
 			<SelectTrigger
 				className={cn(
-					'relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap',
-					'h-auto w-auto border-none shadow-none',
+					'relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap bg-card',
+					' hover:bg-secondary w-auto border-none shadow-none',
 					'focus:ring-0 focus:ring-offset-0 focus:outline-none',
 					'[&>svg]:hidden [&>span]:line-clamp-none',
 					highlight
-						? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white'
+						? 'bg-primary-foreground hover:bg-primary-foreground/70 hover:text-white text-white'
 						: 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'
 				)}
 				style={{ transform: 'skewX(-14deg)' }}>
@@ -135,7 +135,7 @@ function NavButton({
 		<Button
 			variant={'ghost'}
 			className={`
-        relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors
+        relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors
         ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}
       `}
 			style={{
