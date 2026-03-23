@@ -32,12 +32,6 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 	},
 	async redirects() {
 		return [
-			// Basic redirect
-			{
-				source: '/',
-				destination: '/play',
-				permanent: true,
-			},
 			{
 				source: '/season6',
 				destination: '/play',
