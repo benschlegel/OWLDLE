@@ -1,6 +1,7 @@
 import { FeedbackTriggerButton, FeedbackDialog } from '@/components/game-container/dialogs/feedback-dialog';
 import { HelpDialog, HelpTriggerButton } from '@/components/game-container/dialogs/HelpDialog';
 import SeasonSelector from '@/components/game-container/SeasonSelector';
+import SeasonTitle from '@/components/landing-page/SeasonTitle';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Separator } from '@/components/ui/separator';
 import { Suspense } from 'react';
@@ -8,6 +9,13 @@ import { Suspense } from 'react';
 export default function Header() {
 	return (
 		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-[0.5rem] w-full">
+			<p
+				className="sm:text-xl text-base font-bold text-center  sm:ml-[0.75rem] ml-[1.5rem] "
+				style={{
+					fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+				}}>
+				<span className="text-primary-foreground">Overwatch League</span>
+			</p>
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
 					<Suspense fallback={HelpTriggerButton}>
@@ -22,8 +30,9 @@ export default function Header() {
 						style={{
 							fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 						}}>
-						<span className="text-primary-foreground">OWL</span>
-						DLE
+						<Suspense fallback="Season 1">
+							<SeasonTitle />
+						</Suspense>
 					</h1>
 				</div>
 				{/* </div> */}

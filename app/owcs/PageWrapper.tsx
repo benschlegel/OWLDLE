@@ -12,7 +12,9 @@ export default function SeasonPageWrapper() {
 	const [slug] = useOwcsParams();
 	return (
 		<>
-			<MemoizedSocials />
+			<div className="sm:hidden block">
+				<MemoizedSocials />
+			</div>
 			<MemoizedHeader />
 			<GamePage slug={slug} />
 		</>
