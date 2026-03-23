@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Home } from 'lucide-react';
+import Link from 'next/link';
 
 export function Navbar() {
 	return (
@@ -9,10 +10,13 @@ export function Navbar() {
 			{/* Left section*/}
 			<div className="flex items-center">
 				<Button
+					asChild
 					variant={'ghost'}
 					className="w-full py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
 					style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-6px', paddingRight: '24px' }}>
-					<Home className="h-5 w-5" />
+					<Link href={'/'}>
+						<Home className="h-5 w-5" />
+					</Link>
 				</Button>
 
 				{/* Slanted nav buttons */}
@@ -26,21 +30,27 @@ export function Navbar() {
 			</div>
 
 			<div className="absolute left-1/2 -translate-x-1/2">
-				<Button
-					variant={'ghost'}
-					className="group relative flex h-full items-center justify-center gap-2 bg-secondary font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors shadow-sm px-11"
+				<div
+					className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
 					style={{
 						clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 					}}>
-					<h1
-						className="sm:text-4xl text-3xl font-bold text-center w-full"
+					<Button
+						variant={'ghost'}
+						className="group relative flex h-full items-center justify-center gap-2 bg-secondary font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors px-11 "
 						style={{
-							fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 						}}>
-						<span className="text-primary-foreground">OWL</span>
-						<span>DLE</span>
-					</h1>
-				</Button>
+						<h1
+							className="sm:text-4xl text-3xl font-bold text-center w-full"
+							style={{
+								fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
+							}}>
+							<span className="text-primary-foreground">OWL</span>
+							<span>DLE</span>
+						</h1>
+					</Button>
+				</div>
 			</div>
 
 			{/* Right section */}
