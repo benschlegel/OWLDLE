@@ -14,7 +14,7 @@ interface GameHeaderProps {
 
 export default function GameHeader({ leagueLabel, seasonSelector, seasonTitle }: GameHeaderProps) {
 	return (
-		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-2 w-full">
+		<div className="sticky sm:static top-0 bg-background sm:bg-inherit z-10 pt-4 w-full">
 			<p className="sm:text-xl text-base font-bold text-center sm:ml-[0.75rem] ml-[1.5rem]" style={{ fontFamily: OWL_FONT }}>
 				<span className="text-primary-foreground">{leagueLabel}</span>
 			</p>
