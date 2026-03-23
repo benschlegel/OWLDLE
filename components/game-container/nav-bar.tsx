@@ -65,14 +65,18 @@ export function Navbar() {
 				</Button>
 
 				{/* Slanted nav buttons */}
-				<div className="flex items-center">
-					<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect} value={owlValue} highlight={pathname === '/play'}>
-						<span className="sm:block hidden">Overwatch League</span>
-						<span className="sm:hidden block">OWL</span>
-					</NavSelect>
-					<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
-						OWCS
-					</NavSelect>
+				<div className="flex items-center self-stretch">
+					<NavigationMenu className="self-stretch flex-none">
+						<NavigationMenuList className="h-full gap-0">
+							<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect} value={owlValue} highlight={pathname === '/play'}>
+								<span className="sm:block hidden">Overwatch League</span>
+								<span className="sm:hidden block">OWL</span>
+							</NavSelect>
+							<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
+								OWCS
+							</NavSelect>
+						</NavigationMenuList>
+					</NavigationMenu>
 					<NavButton>Arcade</NavButton>
 					{/* <NavButton>SHOP</NavButton>
 					<NavButton>STORY</NavButton> */}
@@ -131,46 +135,42 @@ function NavSelect({
 	value: string;
 }) {
 	return (
-		<NavigationMenu className="self-stretch flex-none">
-			<NavigationMenuList className="h-full">
-				<NavigationMenuItem className="h-full">
-					<NavigationMenuTrigger
-						className={cn(
-							'relative uppercase rounded-none px-4 h-full text-sm flex flex-row items-center gap-2 font-semibold tracking-wide transition-colors whitespace-nowrap',
-							'w-auto shadow-none border-none',
-							'focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0',
-							'[&>svg]:skew-x-12 ',
-							highlight
-								? 'bg-primary-foreground hover:bg-primary-foreground data-popup-open:bg-primary-foreground data-open:bg-primary-foreground text-white hover:text-white'
-								: 'bg-card hover:bg-secondary text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 data-popup-open:bg-secondary data-open:bg-secondary'
-						)}
-						style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
-						<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
-					</NavigationMenuTrigger>
-					<NavigationMenuContent>
-						<ul className="flex flex-col w-48 p-1">
-							{items.map((dataset) => (
-								<li key={dataset.dataset}>
-									<NavigationMenuLink
-										onClick={() => onValueChange(dataset.dataset)}
-										className={cn(
-											'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none',
-											value === dataset.dataset && 'font-medium'
-										)}>
-										{value === dataset.dataset && (
-											<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-												<Check className="h-4 w-4" />
-											</span>
-										)}
-										{dataset.formattedName}
-									</NavigationMenuLink>
-								</li>
-							))}
-						</ul>
-					</NavigationMenuContent>
-				</NavigationMenuItem>
-			</NavigationMenuList>
-		</NavigationMenu>
+		<NavigationMenuItem className="h-full">
+			<NavigationMenuTrigger
+				className={cn(
+					'relative uppercase rounded-none px-4 h-full text-sm flex flex-row items-center gap-2 font-semibold tracking-wide transition-colors whitespace-nowrap hover:bg-secondary!',
+					'w-auto shadow-none border-none',
+					'focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0',
+					'[&>svg]:skew-x-12',
+					highlight
+						? 'bg-primary-foreground hover:bg-primary-foreground/70! data-popup-open:bg-primary-foreground data-open:bg-primary-foreground text-white hover:text-white'
+						: 'bg-card text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 data-popup-open:bg-secondary data-open:bg-secondary'
+				)}
+				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
+				<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
+			</NavigationMenuTrigger>
+			<NavigationMenuContent>
+				<ul className="flex flex-col w-48 p-1">
+					{items.map((dataset) => (
+						<li key={dataset.dataset}>
+							<NavigationMenuLink
+								onClick={() => onValueChange(dataset.dataset)}
+								className={cn(
+									'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none',
+									value === dataset.dataset && 'font-medium'
+								)}>
+								{value === dataset.dataset && (
+									<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+										<Check className="h-4 w-4" />
+									</span>
+								)}
+								{dataset.formattedName}
+							</NavigationMenuLink>
+						</li>
+					))}
+				</ul>
+			</NavigationMenuContent>
+		</NavigationMenuItem>
 	);
 }
 
