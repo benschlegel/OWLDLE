@@ -17,10 +17,17 @@ import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { usePlausible } from 'next-plausible';
+import { SocialPopoverContent } from '@/components/landing-page/socials';
+import { useDialogState } from '@/hooks/use-dialog-param';
 
 export function Navbar() {
 	const router = useRouter();
 	const pathname = usePathname();
+	const plausible = usePlausible();
+	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
+	const { setOpen: setHelpOpen } = useDialogState('help');
 	const searchParams = useSearchParams();
 
 	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
@@ -78,11 +85,10 @@ export function Navbar() {
 						</NavigationMenuList>
 					</NavigationMenu>
 					<NavButton>Arcade</NavButton>
-					{/* <NavButton>SHOP</NavButton>
-					<NavButton>STORY</NavButton> */}
 				</div>
 			</div>
 
+			{/* Center Button */}
 			<div className="absolute sm:block hidden left-1/2 -translate-x-1/2">
 				<div
 					className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
@@ -91,6 +97,7 @@ export function Navbar() {
 					}}>
 					<Button
 						variant={'ghost'}
+						onClick={() => setHelpOpen(true)}
 						className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors px-11 "
 						style={{
 							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
@@ -109,8 +116,22 @@ export function Navbar() {
 
 			{/* Right section */}
 			<div className="items-center sm:flex hidden">
-				<NavButton isRightSkewed>Feedback</NavButton>
-				<NavButton isRightSkewed>Contact</NavButton>
+				<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
+					Feedback
+				</NavButton>
+				<NavButton isRightSkewed>Twitter</NavButton>
+				<NavButton isRightSkewed>Donate</NavButton>
+				{/* Contact button popover */}
+				<Popover>
+					<PopoverTrigger asChild>
+						<NavButton isRightSkewed name="Show socials" onClick={() => plausible('openSocials')}>
+							Contact
+						</NavButton>
+					</PopoverTrigger>
+					<PopoverContent className="w-80 mr-4 sm:mr-0">
+						<SocialPopoverContent />
+					</PopoverContent>
+				</Popover>
 				<NavButton isRightSkewed className="-mr-2 pr-6">
 					Test
 				</NavButton>
@@ -180,7 +201,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	isRightSkewed?: boolean;
 }
 
-function NavButton({ children, highlight = false, isRightSkewed = false, className }: ButtonProps) {
+function NavButton({ children, highlight = false, isRightSkewed = false, className, ...props }: ButtonProps) {
 	return (
 		<Button
 			variant={'ghost'}
@@ -191,7 +212,8 @@ function NavButton({ children, highlight = false, isRightSkewed = false, classNa
       `,
 				className
 			)}
-			style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
+			style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}
+			{...props}>
 			<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
 		</Button>
 	);
