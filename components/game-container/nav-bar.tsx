@@ -7,8 +7,9 @@ import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Home } from 'lucide-react';
 import Link from 'next/link';
+import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 
 export function Navbar() {
 	const router = useRouter();
@@ -17,6 +18,14 @@ export function Navbar() {
 
 	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
 	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
+
+	useEffect(() => {
+		if (pathname === '/play' || pathname === '/owcs') {
+			const qs = searchParams.toString();
+			const url = qs ? `${pathname}?${qs}` : pathname;
+			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+		}
+	}, [pathname, searchParams]);
 
 	const handleOwlSelect = useCallback(
 		(value: string) => {
