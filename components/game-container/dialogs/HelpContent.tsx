@@ -12,11 +12,9 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams, getAtlantic, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
-import { DEFAULT_DIALOG_VALUE, useDialogParams, type DialogKey } from '@/hooks/use-dialog-param';
+import { useDialogParams } from '@/hooks/use-dialog-param';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import type { Options } from 'nuqs';
-import React from 'react';
+import type React from 'react';
 import { useContext, useCallback } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
@@ -41,13 +39,16 @@ const demoCells: DemoCell[] = [
 	{ bgColor: '#8aadf4', color: '#3b3b44', description: 'Team', text: '4', detailText: 'Team (represented by logo)' },
 ];
 
-function countdownRenderer({ days, hours, minutes, seconds, milliseconds, completed }: CountdownRenderProps) {
+const hotkeys = [
+	{ keys: 'ctrl + y', description: 'Jump to search input' },
+	{ keys: 'ctrl + k', description: 'Open search in popup dialog' },
+	{ keys: 'ctrl + e', description: 'Open/close help dialog' },
+];
+
+function countdownRenderer({ hours, minutes, seconds, completed }: CountdownRenderProps) {
 	if (completed) {
-		// Render a completed state
 		return <p>Soon</p>;
-		// return <></>;
 	}
-	// Render a countdown
 	return (
 		<p className="gap-2 font-mono font-bold">
 			<span>{zeroPad(hours)}</span>:<span>{zeroPad(minutes)}</span>:<span>{zeroPad(seconds)}</span>
@@ -55,23 +56,34 @@ function countdownRenderer({ days, hours, minutes, seconds, milliseconds, comple
 	);
 }
 
-// Memoized Button component to prevent unnecessary re-renders
-const MemoizedButton = React.memo(({ onClick }: { onClick: () => void }) => (
-	<Button type="submit" variant="outline" autoFocus onClick={onClick}>
-		Close
-	</Button>
-));
+function InlineCode({ children }: { children: React.ReactNode }) {
+	return (
+		<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
+			{children}
+		</code>
+	);
+}
+
+function TeamGroup({ title, teams }: { title: string; teams: string[] }) {
+	return (
+		<div className="flex flex-col">
+			<h3 className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">{title}</h3>
+			<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
+				{teams?.map((team) => (
+					<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
+						<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+					</div>
+				))}
+			</div>
+		</div>
+	);
+}
 
 export default function HelpContent({ setOpen }: Props) {
-	const [dataset, _] = useContext(DatasetContext);
+	const [dataset] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
-	// console.log('Data: ', validatedData);
-	// if (validatedData) {
-	// 	console.log('Next reset: ', new Date(validatedData?.nextReset));
-	// }
 	const [_dialog, setDialog] = useDialogParams();
 
-	// Memoize the setDialog function to prevent unnecessary re-renders
 	const handleClose = useCallback(() => {
 		setOpen(false);
 	}, [setOpen]);
@@ -79,7 +91,6 @@ export default function HelpContent({ setOpen }: Props) {
 	return (
 		<DialogContent
 			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
-			// onOpenAutoFocus={(e) => e.preventDefault()}
 			aria-describedby="Tutorial on how to play the game">
 			<DialogHeader>
 				<DialogTitle className="flex flex-row gap-2 items-center text-left">
@@ -91,7 +102,7 @@ export default function HelpContent({ setOpen }: Props) {
 			<ScrollArea type="scroll" className="h-[440px]">
 				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
 					{/* Description section */}
-					{!isOwcsDataset(dataset.dataset) ? <OWLHeaderText /> : <OWCSHeaderText />}
+					<HeaderText isOwcs={isOwcsDataset(dataset.dataset)} />
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
@@ -149,24 +160,14 @@ export default function HelpContent({ setOpen }: Props) {
 								Most elements on this website have tooltips, so when you need more info, try hovering it (or pressing on mobile). The website also has some
 								hotkeys:
 							</p>
-							<div className="flex items-center gap-6 mt-1">
-								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-									<span className="text-xs">ctrl + y</span>
-								</kbd>
-								<p className="opacity-90 tracking-tight">Jump to search input</p>
-							</div>
-							<div className="flex items-center gap-6">
-								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-									<span className="text-xs">ctrl + k</span>
-								</kbd>
-								<p className="opacity-90 tracking-tight">Open search in popup dialog</p>
-							</div>
-							<div className="flex items-center gap-6">
-								<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-									<span className="text-xs">ctrl + e</span>
-								</kbd>
-								<p className="opacity-90 tracking-tight">Open/close help dialog</p>
-							</div>
+							{hotkeys.map(({ keys, description }) => (
+								<div key={keys} className="flex items-center gap-6 mt-1">
+									<kbd className="pointer-events-none inline-flex h-5 select-none items-center rounded border bg-muted px-1.5 py-2 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+										<span className="text-xs">{keys}</span>
+									</kbd>
+									<p className="opacity-90 tracking-tight">{description}</p>
+								</div>
+							))}
 						</div>
 						<div className="flex flex-col gap-2 mt-4">
 							<p className="scroll-m-20 text-base tracking-normal">The correct answer for this game resets every day.</p>
@@ -205,7 +206,9 @@ export default function HelpContent({ setOpen }: Props) {
 				</main>
 			</ScrollArea>
 			<DialogFooter>
-				<MemoizedButton onClick={handleClose} />
+				<Button type="submit" variant="outline" autoFocus onClick={handleClose}>
+					Close
+				</Button>
 			</DialogFooter>
 		</DialogContent>
 	);
@@ -223,43 +226,12 @@ function OWLTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 	return (
 		<>
 			<p className="scroll-m-20 text-base tracking-normal">
-				Teams are divided into{' '}
-				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-					{trimmedAtlantic}
-				</code>{' '}
-				and{' '}
-				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-					{trimmedPacific}
-				</code>
-				. <span className="text-primary-foreground">{dataset.name}</span> had the following teams:
+				Teams are divided into <InlineCode>{trimmedAtlantic}</InlineCode> and <InlineCode>{trimmedPacific}</InlineCode>.{' '}
+				<span className="text-primary-foreground">{dataset.name}</span> had the following teams:
 			</p>
 			<div className="flex flex-col gap-3">
-				<div className="flex flex-col">
-					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-						{/* <Compass className="opacity-80 w-5 h-5" /> */}
-						<h3 className="">{atlanticText}</h3>
-					</div>
-					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-						{atlanticTeams?.map((team) => (
-							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-							</div>
-						))}
-					</div>
-				</div>
-				<div className="flex flex-col w-full">
-					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-						{/* <Compass className="opacity-80 w-5 h-5" /> */}
-						<h3 className="">{pacificText}</h3>
-					</div>
-					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-						{pacificTeams?.map((team) => (
-							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-							</div>
-						))}
-					</div>
-				</div>
+				<TeamGroup title={atlanticText} teams={atlanticTeams ?? []} />
+				<TeamGroup title={pacificText} teams={pacificTeams ?? []} />
 			</div>
 		</>
 	);
@@ -273,80 +245,29 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 	return (
 		<>
 			<p className="scroll-m-20 text-base tracking-normal">
-				Teams are divided into{' '}
-				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-					EMEA
-				</code>{' '}
-				,
-				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-					North America
-				</code>{' '}
-				and{' '}
-				<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-					Korea
-				</code>
-				. <span className="text-primary-foreground">{dataset.name}</span> has the following teams:
+				Teams are divided into <InlineCode>EMEA</InlineCode>, <InlineCode>North America</InlineCode> and <InlineCode>Korea</InlineCode>.{' '}
+				<span className="text-primary-foreground">{dataset.name}</span> has the following teams:
 			</p>
 			<div className="flex flex-col gap-3">
-				<div className="flex flex-col">
-					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-						{/* <Compass className="opacity-80 w-5 h-5" /> */}
-						<h3 className="">EMEA</h3>
-					</div>
-					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-						{emeaTeams?.map((team) => (
-							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-							</div>
-						))}
-					</div>
-				</div>
-				<div className="flex flex-col w-full">
-					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-						{/* <Compass className="opacity-80 w-5 h-5" /> */}
-						<h3 className="">North America</h3>
-					</div>
-					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-						{naTeams?.map((team) => (
-							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-							</div>
-						))}
-					</div>
-				</div>
-				<div className="flex flex-col w-full">
-					<div className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">
-						{/* <Compass className="opacity-80 w-5 h-5" /> */}
-						<h3 className="">Korea</h3>
-					</div>
-					<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-						{koreaTeams?.map((team) => (
-							<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-								<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
-							</div>
-						))}
-					</div>
-				</div>
+				<TeamGroup title="EMEA" teams={emeaTeams ?? []} />
+				<TeamGroup title="North America" teams={naTeams ?? []} />
+				<TeamGroup title="Korea" teams={koreaTeams ?? []} />
 			</div>
 		</>
 	);
 }
 
-function OWLHeaderText() {
+function HeaderText({ isOwcs }: { isOwcs: boolean }) {
 	return (
 		<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
-			Guess the correct Overwatch League player within 8 attempts to win (inspired by wordle). After each guess, you will receive hints based on attributes like
-			the player's role, team, region and nationality to help you get closer to the right answer.
-		</blockquote>
-	);
-}
-
-function OWCSHeaderText() {
-	return (
-		<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
-			Guess the correct <LinkButton href={'https://esports.overwatch.com/'}>Overwatch Champion Series</LinkButton> (OWCS) player within 8 attempts to win
-			(inspired by wordle). After each guess, you will receive hints based on attributes like the player's role, team, region and nationality to help you get
-			closer to the right answer.
+			Guess the correct{' '}
+			{isOwcs ? (
+				<><LinkButton href={'https://esports.overwatch.com/'}>Overwatch Champion Series</LinkButton> (OWCS)</>
+			) : (
+				'Overwatch League'
+			)}{' '}
+			player within 8 attempts to win (inspired by wordle). After each guess, you will receive hints based on attributes like the player's role, team, region
+			and nationality to help you get closer to the right answer.
 		</blockquote>
 	);
 }
