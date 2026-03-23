@@ -1,6 +1,7 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DEFAULT_DATASET_NAME, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED, datasetInfo } from '@/data/datasets';
+import { viewTransition } from '@/lib/view-transition';
 import { useSeasonParams } from '@/hooks/use-season-params';
 import { useRouter } from 'next/navigation';
 import { useCallback } from 'react';
@@ -13,21 +14,13 @@ export default function SeasonSelector() {
 
 	const handleChange = useCallback(
 		(value: string) => {
-			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
-			const transition = (document as any).startViewTransition?.bind(document);
 			if (value.startsWith('owcs')) {
 				const owcsSeason = value.slice('owcs-'.length);
-				if (transition) {
-					document.documentElement.dataset.style = 'angled';
-					transition(() => router.push(`/owcs?season=${owcsSeason}`));
-				} else {
-					router.push(`/owcs?season=${owcsSeason}`);
-				}
+				viewTransition(() => router.push(`/owcs?season=${owcsSeason}`));
 				return;
 			}
-			if (transition && value !== formattedSlug) {
-				document.documentElement.dataset.style = 'angled';
-				transition(() => setSeason(value));
+			if (value !== formattedSlug) {
+				viewTransition(() => setSeason(value));
 			} else {
 				setSeason(value);
 			}
