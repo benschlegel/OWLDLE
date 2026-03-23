@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
-import { Home } from 'lucide-react';
+import { ChevronDown, Home } from 'lucide-react';
 import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -60,7 +60,8 @@ export function Navbar() {
 				{/* Slanted nav buttons */}
 				<div className="flex items-center">
 					<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect} value={owlValue} highlight={pathname === '/play'}>
-						Overwatch League
+						<span className="sm:block hidden">Overwatch League</span>
+						<span className="sm:hidden block">OWL</span>
 					</NavSelect>
 					<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
 						OWCS
@@ -79,7 +80,7 @@ export function Navbar() {
 					}}>
 					<Button
 						variant={'ghost'}
-						className="group relative flex h-full items-center justify-center gap-2 bg-secondary font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors px-11 "
+						className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors px-11 "
 						style={{
 							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 						}}>
@@ -96,7 +97,13 @@ export function Navbar() {
 			</div>
 
 			{/* Right section */}
-			<div className="flex items-center gap-4" />
+			<div className="flex items-center sm:block">
+				<NavButton isRightSkewed>Feedback</NavButton>
+				<NavButton isRightSkewed>Contact</NavButton>
+				<NavButton isRightSkewed className="-mr-2 pr-6">
+					Test
+				</NavButton>
+			</div>
 		</nav>
 	);
 }
@@ -107,27 +114,29 @@ function NavSelect({
 	items,
 	onValueChange,
 	value,
+	isRightSkewed = false,
 }: {
 	children: React.ReactNode;
 	highlight?: boolean;
 	items: ReadonlyArray<{ dataset: string; formattedName: string }>;
 	onValueChange: (value: string) => void;
+	isRightSkewed?: boolean;
 	value: string;
 }) {
 	return (
 		<Select onValueChange={onValueChange} value={value}>
 			<SelectTrigger
 				className={cn(
-					'relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap bg-card',
+					'relative uppercase rounded-none px-4  py-6 text-sm flex flex-row items-center gap-2 font-semibold tracking-wide transition-colors whitespace-nowrap bg-card',
 					' hover:bg-secondary w-auto border-none shadow-none',
 					'focus:ring-0 focus:ring-offset-0 focus:outline-none',
-					'[&>svg]:hidden [&>span]:line-clamp-none',
+					'[&>svg]:skew-x-12 [&>span]:line-clamp-none',
 					highlight
 						? 'bg-primary-foreground hover:bg-primary-foreground/70 hover:text-white text-white'
 						: 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'
 				)}
-				style={{ transform: 'skewX(-14deg)' }}>
-				<span style={{ display: 'inline-block', transform: 'skewX(14deg)' }}>{children}</span>
+				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
+				<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
 			</SelectTrigger>
 			<SelectContent>
 				{items.map((dataset) => (
@@ -140,24 +149,25 @@ function NavSelect({
 	);
 }
 
-function NavButton({
-	children,
-	highlight = false,
-}: {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode;
 	highlight?: boolean;
-}) {
+	isRightSkewed?: boolean;
+}
+
+function NavButton({ children, highlight = false, isRightSkewed = false, className }: ButtonProps) {
 	return (
 		<Button
 			variant={'ghost'}
-			className={`
+			className={cn(
+				`
         relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors
         ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}
-      `}
-			style={{
-				transform: 'skewX(-14deg)',
-			}}>
-			<span style={{ display: 'inline-block', transform: 'skewX(14deg)' }}>{children}</span>
+      `,
+				className
+			)}
+			style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
+			<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
 		</Button>
 	);
 }
