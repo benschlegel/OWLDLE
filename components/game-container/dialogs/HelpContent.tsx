@@ -13,6 +13,7 @@ import { type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams, getAtlantic, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { useDialogParams } from '@/hooks/use-dialog-param';
+import { useHelpDialogStore } from '@/store/help-dialog-store';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import type React from 'react';
 import { useContext, useCallback } from 'react';
@@ -57,11 +58,7 @@ function countdownRenderer({ hours, minutes, seconds, completed }: CountdownRend
 }
 
 function InlineCode({ children }: { children: React.ReactNode }) {
-	return (
-		<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">
-			{children}
-		</code>
-	);
+	return <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">{children}</code>;
 }
 
 function TeamGroup({ title, teams }: { title: string; teams: string[] }) {
@@ -83,26 +80,34 @@ export default function HelpContent({ setOpen }: Props) {
 	const [dataset] = useContext(DatasetContext);
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
 	const [_dialog, setDialog] = useDialogParams();
+	const { tutorialOpen, setTutorialOpen } = useHelpDialogStore();
 
 	const handleClose = useCallback(() => {
 		setOpen(false);
 	}, [setOpen]);
 
 	return (
-		<DialogContent
-			className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7"
-			aria-describedby="Tutorial on how to play the game">
+		<DialogContent className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7" aria-describedby="Tutorial on how to play the game">
 			<DialogHeader>
 				<DialogTitle className="flex flex-row gap-2 items-center text-left">
 					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
-					How to play
+					Help
 				</DialogTitle>
-				<DialogDescription className="mt-2 text-left mb-0">Tutorial</DialogDescription>
+				{/* <DialogDescription className="mt-2 text-left mb-0">Tutorial</DialogDescription> */}
 			</DialogHeader>
-			<ScrollArea type="scroll" className="h-[440px]">
-				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap break-words ">
+			<ScrollArea type="scroll" className="h-128">
+				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap wrap-break-word ">
 					{/* Description section */}
-					<HeaderText isOwcs={isOwcsDataset(dataset.dataset)} />
+					<Accordion type="single" collapsible value={tutorialOpen ? 'tutorial' : ''} onValueChange={(v) => setTutorialOpen(v === 'tutorial')}>
+						<AccordionItem value="tutorial" className="border-none">
+							<AccordionTrigger className="mt-1 focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 px-2 py-1">
+								How to play
+							</AccordionTrigger>
+							<AccordionContent>
+								<HeaderText isOwcs={isOwcsDataset(dataset.dataset)} />
+							</AccordionContent>
+						</AccordionItem>
+					</Accordion>
 					<div className="flex flex-col gap-5">
 						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
@@ -262,7 +267,9 @@ function HeaderText({ isOwcs }: { isOwcs: boolean }) {
 		<blockquote className="sm:leading-7 tracking-wide opacity-90 border-l-[3px] pl-4 mt-1">
 			Guess the correct{' '}
 			{isOwcs ? (
-				<><LinkButton href={'https://esports.overwatch.com/'}>Overwatch Champion Series</LinkButton> (OWCS)</>
+				<>
+					<LinkButton href={'https://esports.overwatch.com/'}>Overwatch Champion Series</LinkButton> (OWCS)
+				</>
 			) : (
 				'Overwatch League'
 			)}{' '}
