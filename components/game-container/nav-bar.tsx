@@ -71,7 +71,7 @@ export function Navbar() {
 				</div>
 			</div>
 
-			<div className="absolute left-1/2 -translate-x-1/2">
+			<div className="absolute sm:block hidden left-1/2 -translate-x-1/2">
 				<div
 					className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
 					style={{

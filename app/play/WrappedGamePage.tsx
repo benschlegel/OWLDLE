@@ -22,7 +22,9 @@ export default function SeasonPageWrapper() {
 		return (
 			<>
 				<UpdateMetadata />
-				<MemoizedSocials />
+				<div className="sm:hidden block">
+					<MemoizedSocials />
+				</div>
 				<MemoizedHeader />
 				<GamePage slug={season} />
 			</>

@@ -1,4 +1,5 @@
 import SeasonSelector from '@/app/owcs/SeasonSelector';
+import SeasonTitle from '@/app/owcs/SeasonTitle';
 import { FeedbackTriggerButton, FeedbackDialog } from '@/components/game-container/dialogs/feedback-dialog';
 import { HelpDialog, HelpTriggerButton } from '@/components/game-container/dialogs/HelpDialog';
 import { ModeToggle } from '@/components/theme-switcher';
@@ -13,7 +14,7 @@ export default function Header() {
 				style={{
 					fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 				}}>
-				<span className="text-primary-foreground">OWCS Edition</span>
+				<span className="text-primary-foreground">OWCS</span>
 			</p>
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
@@ -29,8 +30,9 @@ export default function Header() {
 						style={{
 							fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 						}}>
-						<span className="text-primary-foreground">OWL</span>
-						DLE
+						<Suspense fallback="Season 1">
+							<SeasonTitle />
+						</Suspense>
 					</h1>
 				</div>
 				{/* </div> */}
