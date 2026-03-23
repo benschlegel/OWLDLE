@@ -28,13 +28,12 @@ export function Navbar() {
 			<div className="absolute left-1/2 -translate-x-1/2">
 				<Button
 					variant={'ghost'}
-					className="group relative flex h-full items-center justify-center gap-2 bg-secondary font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors"
+					className="group relative flex h-full items-center justify-center gap-2 bg-secondary font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors shadow-sm px-11"
 					style={{
-						width: '200px',
 						clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 					}}>
 					<h1
-						className="sm:text-3xl text-3xl font-bold text-center w-full"
+						className="sm:text-4xl text-3xl font-bold text-center w-full"
 						style={{
 							fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
 						}}>
