@@ -1,10 +1,34 @@
 'use client';
 
+import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
+import { viewTransition } from '@/lib/view-transition';
+import { cn } from '@/lib/utils';
 import { Home } from 'lucide-react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 
 export function Navbar() {
+	const router = useRouter();
+
+	const handleOwlSelect = useCallback(
+		(value: string) => {
+			const season = value.slice('season'.length);
+			viewTransition(() => router.push(`/play?season=${season}`));
+		},
+		[router]
+	);
+
+	const handleOwcsSelect = useCallback(
+		(value: string) => {
+			const season = value.slice('owcs-'.length);
+			viewTransition(() => router.push(`/owcs?season=${season}`));
+		},
+		[router]
+	);
+
 	return (
 		<nav className="sticky top-0 flex items-center justify-between bg-card shadow-sm">
 			{/* Left section*/}
@@ -21,8 +45,12 @@ export function Navbar() {
 
 				{/* Slanted nav buttons */}
 				<div className="flex items-center">
-					<NavButton>Overwatch League</NavButton>
-					<NavButton highlight>OWCS</NavButton>
+					<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect}>
+						Overwatch League
+					</NavSelect>
+					<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} highlight>
+						OWCS
+					</NavSelect>
 					<NavButton>Arcade</NavButton>
 					{/* <NavButton>SHOP</NavButton>
 					<NavButton>STORY</NavButton> */}
@@ -56,6 +84,43 @@ export function Navbar() {
 			{/* Right section */}
 			<div className="flex items-center gap-4" />
 		</nav>
+	);
+}
+
+function NavSelect({
+	children,
+	highlight = false,
+	items,
+	onValueChange,
+}: {
+	children: React.ReactNode;
+	highlight?: boolean;
+	items: ReadonlyArray<{ dataset: string; formattedName: string }>;
+	onValueChange: (value: string) => void;
+}) {
+	return (
+		<Select onValueChange={onValueChange}>
+			<SelectTrigger
+				className={cn(
+					'relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap',
+					'h-auto w-auto border-none shadow-none',
+					'focus:ring-0 focus:ring-offset-0 focus:outline-none',
+					'[&>svg]:hidden [&>span]:line-clamp-none',
+					highlight
+						? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white'
+						: 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'
+				)}
+				style={{ transform: 'skewX(-14deg)' }}>
+				<span style={{ display: 'inline-block', transform: 'skewX(14deg)' }}>{children}</span>
+			</SelectTrigger>
+			<SelectContent>
+				{items.map((dataset) => (
+					<SelectItem key={dataset.dataset} value={dataset.dataset}>
+						{dataset.formattedName}
+					</SelectItem>
+				))}
+			</SelectContent>
+		</Select>
 	);
 }
 
