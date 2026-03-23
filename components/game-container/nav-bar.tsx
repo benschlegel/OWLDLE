@@ -7,11 +7,16 @@ import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Home } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback } from 'react';
 
 export function Navbar() {
 	const router = useRouter();
+	const pathname = usePathname();
+	const searchParams = useSearchParams();
+
+	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
+	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
 
 	const handleOwlSelect = useCallback(
 		(value: string) => {
@@ -45,10 +50,10 @@ export function Navbar() {
 
 				{/* Slanted nav buttons */}
 				<div className="flex items-center">
-					<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect}>
+					<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect} value={owlValue} highlight={pathname === '/play'}>
 						Overwatch League
 					</NavSelect>
-					<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} highlight>
+					<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
 						OWCS
 					</NavSelect>
 					<NavButton>Arcade</NavButton>
@@ -92,14 +97,16 @@ function NavSelect({
 	highlight = false,
 	items,
 	onValueChange,
+	value,
 }: {
 	children: React.ReactNode;
 	highlight?: boolean;
 	items: ReadonlyArray<{ dataset: string; formattedName: string }>;
 	onValueChange: (value: string) => void;
+	value: string;
 }) {
 	return (
-		<Select onValueChange={onValueChange}>
+		<Select onValueChange={onValueChange} value={value}>
 			<SelectTrigger
 				className={cn(
 					'relative uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors whitespace-nowrap bg-card',
