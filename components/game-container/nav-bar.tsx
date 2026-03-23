@@ -51,7 +51,7 @@ export function Navbar() {
 	);
 
 	return (
-		<nav className="sticky top-0 flex items-center justify-between bg-card shadow-sm">
+		<nav className="sm:sticky relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 			{/* Left section*/}
 			<div className="flex items-center">
 				<Button

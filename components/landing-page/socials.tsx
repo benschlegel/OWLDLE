@@ -43,7 +43,7 @@ const projectGithubLink = 'https://github.com/benschlegel/OWLDLE';
 export default function Socials() {
 	const plausible = usePlausible<PlausibleEvents>();
 	return (
-		<div className="flex justify-center items-center opacity-60 sm:ml-[0.75rem]">
+		<div className="flex justify-center items-center opacity-60 sm:text-xs">
 			<div className="text-sm font-medium leading-none">
 				Made with ❤️ by{' '}
 				<Popover>
@@ -55,46 +55,50 @@ export default function Socials() {
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="w-80 mr-4 sm:mr-0">
-						<div className="grid gap-4">
-							<div className="space-y-2">
-								<h4 className="font-medium leading-none">My Socials</h4>
-								<p className="text-sm text-muted-foreground">Check me out here</p>
-							</div>
-							<div className="grid gap-2">
-								{socials.map((socialEntry) =>
-									socialEntry.isCopyable ? (
-										<SocialsRowCopy key={socialEntry.socialName} socialValue={socialEntry.socialValue} socialName={socialEntry.socialName}>
-											{socialEntry.children}
-										</SocialsRowCopy>
-									) : (
-										<SocialsRow
-											key={socialEntry.socialName}
-											socialLink={socialEntry.socialLink}
-											socialName={socialEntry.socialName}
-											socialValue={socialEntry.socialValue}
-											isCopyable={socialEntry.isCopyable}>
-											{socialEntry.children}
-										</SocialsRow>
-									)
-								)}
-							</div>
-							<Separator />
-							<div className="text-sm text-muted-foreground">
-								You can also find this project on{' '}
-								<Link target="_blank" href={projectGithubLink} rel="noopener noreferrer" className="border-md">
-									<Button variant="link" className="p-0 h-auto" tabIndex={-1} aria-label="View on Github">
-										<code
-											className="relative rounded bg-background px-[0.3rem] py-[0.2rem] text-sm font-semibold"
-											style={{ fontFamily: 'var(--font-geist-mono)' }}>
-											Github
-										</code>
-									</Button>
-								</Link>
-								!
-							</div>
-						</div>
+						<SocialPopoverContent />
 					</PopoverContent>
 				</Popover>
+			</div>
+		</div>
+	);
+}
+
+export function SocialPopoverContent() {
+	return (
+		<div className="grid gap-4">
+			<div className="space-y-2">
+				<h4 className="font-medium leading-none">My Socials</h4>
+				<p className="text-sm text-muted-foreground">Check me out here</p>
+			</div>
+			<div className="grid gap-2">
+				{socials.map((socialEntry) =>
+					socialEntry.isCopyable ? (
+						<SocialsRowCopy key={socialEntry.socialName} socialValue={socialEntry.socialValue} socialName={socialEntry.socialName}>
+							{socialEntry.children}
+						</SocialsRowCopy>
+					) : (
+						<SocialsRow
+							key={socialEntry.socialName}
+							socialLink={socialEntry.socialLink}
+							socialName={socialEntry.socialName}
+							socialValue={socialEntry.socialValue}
+							isCopyable={socialEntry.isCopyable}>
+							{socialEntry.children}
+						</SocialsRow>
+					)
+				)}
+			</div>
+			<Separator />
+			<div className="text-sm text-muted-foreground">
+				You can also find this project on{' '}
+				<Link target="_blank" href={projectGithubLink} rel="noopener noreferrer" className="border-md">
+					<Button variant="link" className="p-0 h-auto" tabIndex={-1} aria-label="View on Github">
+						<code className="relative rounded bg-background px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+							Github
+						</code>
+					</Button>
+				</Link>
+				!
 			</div>
 		</div>
 	);
