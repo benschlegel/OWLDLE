@@ -1,11 +1,18 @@
 'use client';
 
-import { Select, SelectContent, SelectItem, SelectTrigger } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import {
+	NavigationMenu,
+	NavigationMenuContent,
+	NavigationMenuItem,
+	NavigationMenuLink,
+	NavigationMenuList,
+	NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
 import { OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
-import { ChevronDown, Home } from 'lucide-react';
+import { Check, Home } from 'lucide-react';
 import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -124,28 +131,46 @@ function NavSelect({
 	value: string;
 }) {
 	return (
-		<Select onValueChange={onValueChange} value={value}>
-			<SelectTrigger
-				className={cn(
-					'relative uppercase rounded-none px-4  py-6 text-sm flex flex-row items-center gap-2 font-semibold tracking-wide transition-colors whitespace-nowrap bg-card',
-					' hover:bg-secondary w-auto border-none shadow-none',
-					'focus:ring-0 focus:ring-offset-0 focus:outline-none',
-					'[&>svg]:skew-x-12 [&>span]:line-clamp-none',
-					highlight
-						? 'bg-primary-foreground hover:bg-primary-foreground/70 hover:text-white text-white'
-						: 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'
-				)}
-				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
-				<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
-			</SelectTrigger>
-			<SelectContent>
-				{items.map((dataset) => (
-					<SelectItem key={dataset.dataset} value={dataset.dataset}>
-						{dataset.formattedName}
-					</SelectItem>
-				))}
-			</SelectContent>
-		</Select>
+		<NavigationMenu className="self-stretch flex-none">
+			<NavigationMenuList className="h-full">
+				<NavigationMenuItem className="h-full">
+					<NavigationMenuTrigger
+						className={cn(
+							'relative uppercase rounded-none px-4 h-full text-sm flex flex-row items-center gap-2 font-semibold tracking-wide transition-colors whitespace-nowrap',
+							'w-auto shadow-none border-none',
+							'focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0',
+							'[&>svg]:skew-x-12 ',
+							highlight
+								? 'bg-primary-foreground hover:bg-primary-foreground data-popup-open:bg-primary-foreground data-open:bg-primary-foreground text-white hover:text-white'
+								: 'bg-card hover:bg-secondary text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 data-popup-open:bg-secondary data-open:bg-secondary'
+						)}
+						style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
+						<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
+					</NavigationMenuTrigger>
+					<NavigationMenuContent>
+						<ul className="flex flex-col w-48 p-1">
+							{items.map((dataset) => (
+								<li key={dataset.dataset}>
+									<NavigationMenuLink
+										onClick={() => onValueChange(dataset.dataset)}
+										className={cn(
+											'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none',
+											value === dataset.dataset && 'font-medium'
+										)}>
+										{value === dataset.dataset && (
+											<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+												<Check className="h-4 w-4" />
+											</span>
+										)}
+										{dataset.formattedName}
+									</NavigationMenuLink>
+								</li>
+							))}
+						</ul>
+					</NavigationMenuContent>
+				</NavigationMenuItem>
+			</NavigationMenuList>
+		</NavigationMenu>
 	);
 }
 
