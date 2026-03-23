@@ -105,6 +105,7 @@ export default function PlayerSearch({ className }: Props) {
 			<CustomCommandInput
 				onButtonClick={handleSubmit}
 				placeholder="Search for player..."
+				className="sm:text-base text-sm"
 				value={searchValue}
 				onChangeCapture={handleTyping}
 				onFocus={() => setSearchState('typing')}
