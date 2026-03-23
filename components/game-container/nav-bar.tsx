@@ -7,8 +7,11 @@ export function Navbar() {
 	return (
 		<nav className="sticky top-0 flex items-center justify-between bg-card shadow-sm">
 			{/* Left section*/}
-			<div className="flex items-center gap-1">
-				<Button variant={'ghost'} className="w-full py-6 bg-secondary/50 text-foreground transition-colors rounded-none">
+			<div className="flex items-center">
+				<Button
+					variant={'ghost'}
+					className="w-full py-6 bg-secondary/50 text-foreground transition-colors rounded-none"
+					style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-6px', paddingRight: '24px' }}>
 					<Home className="h-5 w-5" />
 				</Button>
 
