@@ -16,14 +16,17 @@ import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { useCallback, useEffect } from 'react';
+import { lazy, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import type { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
 
 const TWITTER_LINK = 'https://x.com/owldle';
+
+const LazySheetContent = lazy(() => import('@/components/sheet-content'));
 
 export function Navbar() {
 	const router = useRouter();
@@ -33,6 +36,7 @@ export function Navbar() {
 	const { setOpen: setHelpOpen } = useDialogState('help');
 	const searchParams = useSearchParams();
 	const { setOpen: setSettingsOpen } = useDialogState('settings');
+	const [sheetOpen, setSheetOpen] = useState(false);
 
 	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
 	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
@@ -44,6 +48,17 @@ export function Navbar() {
 			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
 		}
 	}, [pathname, searchParams]);
+
+	useEffect(() => {
+		const handleKeyDown = (e: KeyboardEvent) => {
+			if (e.ctrlKey && e.key === 'b') {
+				e.preventDefault();
+				setSheetOpen((prev) => !prev);
+			}
+		};
+		window.addEventListener('keydown', handleKeyDown);
+		return () => window.removeEventListener('keydown', handleKeyDown);
+	}, []);
 
 	const handleOwlSelect = useCallback(
 		(value: string) => {
@@ -62,105 +77,108 @@ export function Navbar() {
 	);
 
 	return (
-		<nav className="sm:sticky relaxed top-0 flex items-center justify-between bg-card shadow-sm">
-			{/* Left section*/}
-			<div className="flex items-center sm:flex-none flex-1">
+		<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+			<nav className="sm:sticky relaxed top-0 flex items-center justify-between bg-card shadow-sm">
+				{/* Left section*/}
+				<div className="flex items-center sm:flex-none flex-1">
+					<Button
+						asChild
+						variant={'ghost'}
+						className="w-full sm:flex hidden py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
+						style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-7px', paddingRight: '24px' }}>
+						<Link href={'/'}>
+							<Home className="h-5 w-5" />
+						</Link>
+					</Button>
+
+					{/* Slanted nav buttons */}
+					<div className="flex items-center self-stretch">
+						<NavigationMenu className="self-stretch flex-none">
+							<NavigationMenuList className="h-full gap-0">
+								<NavSelect
+									items={OWL_DATASETS_REVERSED}
+									onValueChange={handleOwlSelect}
+									value={owlValue}
+									highlight={pathname === '/play'}
+									className={'2xl:ml-0 2xl:pl-5 -ml-1 pl-6'}>
+									<span className="2xl:block hidden">Overwatch League</span>
+									<span className="2xl:hidden block">OWL</span>
+								</NavSelect>
+								<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
+									OWCS
+								</NavSelect>
+							</NavigationMenuList>
+						</NavigationMenu>
+						<NavButton>Arcade</NavButton>
+						<NavButton className="hidden navbar-hidden:flex">Statistics</NavButton>
+					</div>
+				</div>
+
+				{/* Mobile hamburger menu (opens sheet)*/}
 				<Button
-					asChild
 					variant={'ghost'}
-					className="w-full sm:flex hidden py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
-					style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-7px', paddingRight: '24px' }}>
-					<Link href={'/'}>
-						<Home className="h-5 w-5" />
-					</Link>
+					className="py-6 flex lg:hidden bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
+					style={{ clipPath: 'polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%)', marginLeft: '-6px', paddingLeft: '24px' }}
+					onClick={() => setSheetOpen(true)}>
+					<MenuIcon className="h-5 w-5" />
 				</Button>
 
-				{/* Slanted nav buttons */}
-				<div className="flex items-center self-stretch">
-					<NavigationMenu className="self-stretch flex-none">
-						<NavigationMenuList className="h-full gap-0">
-							<NavSelect
-								items={OWL_DATASETS_REVERSED}
-								onValueChange={handleOwlSelect}
-								value={owlValue}
-								highlight={pathname === '/play'}
-								className={'2xl:ml-0 2xl:pl-5 -ml-1 pl-6'}>
-								<span className="2xl:block hidden">Overwatch League</span>
-								<span className="2xl:hidden block">OWL</span>
-							</NavSelect>
-							<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
-								OWCS
-							</NavSelect>
-						</NavigationMenuList>
-					</NavigationMenu>
-					<NavButton>Arcade</NavButton>
-					<NavButton className="hidden navbar-hidden:flex">Statistics</NavButton>
-					{/* Mobile hamburger menu button */}
-				</div>
-			</div>
-			<Button
-				asChild
-				variant={'ghost'}
-				className="py-6 flex lg:hidden bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
-				style={{ clipPath: 'polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%)', marginLeft: '-6px', paddingLeft: '24px' }}>
-				<Link href={'/'}>
-					<MenuIcon className="h-5 w-5" />
-				</Link>
-			</Button>
-
-			{/* Center Button */}
-			<div className="absolute z-10 lg:block hidden left-1/2 -translate-x-1/2">
-				<div
-					className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
-					style={{
-						clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
-					}}>
-					<Button
-						variant={'ghost'}
-						onClick={() => setHelpOpen(true)}
-						className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-secondary/60 transition-colors px-11 "
+				{/* Center Button */}
+				<div className="absolute z-10 lg:block hidden left-1/2 -translate-x-1/2">
+					<div
+						className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
 						style={{
 							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 						}}>
-						<h1 className="sm:text-4xl text-3xl font-bold text-center w-full font-owl">
-							<span className="text-primary-foreground">OWL</span>
-							<span>DLE</span>
-						</h1>
-					</Button>
+						<Button
+							variant={'ghost'}
+							onClick={() => setHelpOpen(true)}
+							className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-secondary/60 transition-colors px-11 "
+							style={{
+								clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
+							}}>
+							<h1 className="sm:text-4xl text-3xl font-bold text-center w-full font-owl">
+								<span className="text-primary-foreground">OWL</span>
+								<span>DLE</span>
+							</h1>
+						</Button>
+					</div>
 				</div>
-			</div>
 
-			{/* Right section */}
-			<div className="items-center lg:flex hidden">
-				<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
-					Feedback
-				</NavButton>
-				{/* Contact button popover */}
-				<Popover>
-					<PopoverTrigger asChild>
-						<NavButton isRightSkewed name="Show socials" onClick={() => plausible('openSocials')}>
-							Contact
-						</NavButton>
-					</PopoverTrigger>
-					<PopoverContent className="w-80 mr-4 sm:mr-0">
-						<SocialPopoverContent />
-					</PopoverContent>
-				</Popover>
-				<NavButton isRightSkewed href={DONATION_LINK} isExternal>
-					Donate
-				</NavButton>
+				{/* Right section */}
+				<div className="items-center lg:flex hidden">
+					<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
+						Feedback
+					</NavButton>
+					{/* Contact button popover */}
+					<Popover>
+						<PopoverTrigger asChild>
+							<NavButton isRightSkewed name="Show socials" onClick={() => plausible('openSocials')}>
+								Contact
+							</NavButton>
+						</PopoverTrigger>
+						<PopoverContent className="w-80 mr-4 sm:mr-0">
+							<SocialPopoverContent />
+						</PopoverContent>
+					</Popover>
+					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
+						Donate
+					</NavButton>
 
-				<NavButton isRightSkewed href={TWITTER_LINK} isExternal className="hidden navbar-hidden:flex">
-					Twitter
-				</NavButton>
-				<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
-					<SettingsIcon className="size-5" />
-				</NavButton>
-				<NavButton isRightSkewed className="-mr-2 pr-6 flex navbar-hidden:hidden" onClick={() => setSettingsOpen(true)}>
-					<MenuIcon className="size-5" />
-				</NavButton>
-			</div>
-		</nav>
+					<NavButton isRightSkewed href={TWITTER_LINK} isExternal className="hidden navbar-hidden:flex">
+						Twitter
+					</NavButton>
+					<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
+						<SettingsIcon className="size-5" />
+					</NavButton>
+					{/* desktop overflow hamburger menu */}
+					<NavButton isRightSkewed className="-mr-2 pr-6 flex navbar-hidden:hidden" onClick={() => setSheetOpen(true)}>
+						<MenuIcon className="size-5" />
+					</NavButton>
+				</div>
+			</nav>
+			<LazySheetContent />
+		</Sheet>
 	);
 }
 
