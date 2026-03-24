@@ -1,12 +1,13 @@
 'use client';
-import { type LucideIcon, SettingsIcon } from 'lucide-react';
-import { type ComponentProps, useCallback, useState } from 'react';
+import { ComputerIcon, type LucideIcon, MoonIcon, SettingsIcon, SunIcon } from 'lucide-react';
+import { type ComponentProps, type ReactNode, useCallback, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useSettings } from '@/store/settings-store';
 import { Switch } from '@/components/ui/switch';
+import { useTheme } from 'next-themes';
 
 type Props = {
 	setOpen: (value: boolean) => void;
@@ -31,6 +32,7 @@ export default function SettingsContent({ setOpen }: Props) {
 function SettingsEntries() {
 	const isBackgroundEnabled = useSettings((s) => s.isBackgroundEnabled);
 	const setIsBackgroundEnabled = useSettings((s) => s.setIsBackgroundEnabled);
+	const { setTheme, theme } = useTheme();
 
 	const onBackgroundSwitch = useCallback(
 		(newState: boolean) => {
@@ -38,6 +40,38 @@ function SettingsEntries() {
 		},
 		[setIsBackgroundEnabled]
 	);
+
+	const handleThemeSwitch = useCallback(
+		(newTheme: string) => {
+			// Ensure that the browser supports view transitions
+			// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+			if ((document as any).startViewTransition && newTheme !== theme) {
+				// Set the animation style to "angled"
+				document.documentElement.dataset.style = 'angled';
+
+				// biome-ignore lint/suspicious/noExplicitAny: startViewTransition doesnt have full browser sup yet
+				(document as any).startViewTransition(() => {
+					setTheme(newTheme);
+				});
+			} else {
+				setTheme(newTheme);
+			}
+		},
+		[setTheme, theme]
+	);
+
+	const onThemeSelect = useCallback(
+		(value: string) => {
+			handleThemeSwitch(value);
+		},
+		[handleThemeSwitch]
+	);
+
+	const themes: SelectEntry[] = [
+		{ name: 'Light', value: 'light', icon: <SunIcon className="w-4 h-4" /> },
+		{ name: 'Dark', value: 'dark', icon: <MoonIcon className="w-4 h-4" /> },
+		{ name: 'System', value: 'system', icon: <ComputerIcon className="w-4 h-4" /> },
+	];
 
 	return (
 		<>
@@ -48,6 +82,7 @@ function SettingsEntries() {
 				initialChecked={isBackgroundEnabled}
 				description="Whether to show background or not."
 			/>
+			<SettingsSelectEntry entries={themes} initialValue={theme} id="theme" onSelect={onThemeSelect} label="Theme" description="Set page theme." />
 		</>
 	);
 }
@@ -103,6 +138,7 @@ type SelectEntryProps = {
 type SelectEntry = {
 	value: string;
 	name: string;
+	icon?: ReactNode;
 };
 
 function SettingsSelectEntry({ id, description, label, entries, initialValue, onSelect, placeholder = label, disabled = false }: SelectEntryProps) {
@@ -128,13 +164,14 @@ function SettingsSelectEntry({ id, description, label, entries, initialValue, on
 				{description && <div className="text-xs text-muted-foreground">{description}</div>}
 			</div>
 			<Select defaultValue={initialValue} value={value} onValueChange={onValueSelect}>
-				<SelectTrigger className="bg-background">
+				<SelectTrigger className="bg-background w-auto [&>span]:flex [&>span]:flex-row [&>span]:gap-1 [&>span]:items-center ">
 					<SelectValue placeholder={placeholder} />
 				</SelectTrigger>
 				<SelectContent>
 					{entries.map((e) => (
-						<SelectItem value={e.value} key={`difficulty-item-${e.value}`}>
-							{e.name}
+						<SelectItem value={e.value} key={`difficulty-item-${e.value}`} className="[&>span]:flex [&>span]:flex-row [&>span]:gap-1 [&>span]:items-center">
+							<div>{e.icon}</div>
+							<div>{e.name}</div>
 						</SelectItem>
 					))}
 				</SelectContent>
