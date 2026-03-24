@@ -120,10 +120,7 @@ export function Navbar() {
 							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 						}}>
 						<h1
-							className="sm:text-4xl text-3xl font-bold text-center w-full"
-							style={{
-								fontFamily: 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji',
-							}}>
+							className="sm:text-4xl text-3xl font-bold text-center w-full font-owl">
 							<span className="text-primary-foreground">OWL</span>
 							<span>DLE</span>
 						</h1>
