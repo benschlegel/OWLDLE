@@ -29,19 +29,25 @@ export default function SeasonSelector() {
 	return (
 		<Select value={slug} onValueChange={handleChange}>
 			<SelectTrigger className="w-auto max-w-[7rem] px-3 pr-2 h-9 py-1 text-left text-sm leading-tight gap-1" aria-label="Select season">
-				<SelectValue placeholder={currentShorthand}>{currentShorthand}</SelectValue>
+				<SelectValue placeholder={currentShorthand} className="">
+					<span className="opacity-90 font-semibold">{currentShorthand}</span>
+				</SelectValue>
 			</SelectTrigger>
 			<SelectContent>
 				<SelectGroup>
 					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Champion Series</SelectLabel>
 					{OWCS_DATASETS_REVERSED.map((dataset) => (
-						<SelectItem value={dataset.dataset} key={dataset.dataset}>{dataset.formattedName}</SelectItem>
+						<SelectItem value={dataset.dataset} key={dataset.dataset}>
+							{dataset.formattedName}
+						</SelectItem>
 					))}
 				</SelectGroup>
 				<SelectGroup>
 					<SelectLabel className="px-2 py-1.5 text-sm font-semibold">Overwatch League</SelectLabel>
 					{OWL_DATASETS_REVERSED.map((dataset) => (
-						<SelectItem value={dataset.dataset} key={dataset.dataset}>{dataset.formattedName}</SelectItem>
+						<SelectItem value={dataset.dataset} key={dataset.dataset}>
+							{dataset.formattedName}
+						</SelectItem>
 					))}
 				</SelectGroup>
 			</SelectContent>
