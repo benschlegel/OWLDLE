@@ -47,7 +47,7 @@ export default function GuessRow({ data }: Props) {
 	return (
 		<div className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] h-[3rem] transition-colors`}>
 			{/* Player name */}
-			<GameCell isLarge isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player name" tooltipValue={data?.player.name}>
+			<GameCell isLarge isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player" tooltipValue={data?.player.name}>
 				<div className="rounded-md h-full flex justify-center sm:px-4 px-2 items-center">
 					<p className={`text-white opacity-90 font-extrabold text-center tracking-tight ${useSmallerFont ? 'text-sm' : 'text-xl'} md:text-2xl`}>
 						{data?.player.name}
