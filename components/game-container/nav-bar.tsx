@@ -182,8 +182,8 @@ function NavSelect({
 					'focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0',
 					'[&>svg]:skew-x-12',
 					highlight
-						? 'bg-primary-foreground hover:bg-primary-foreground/70! data-popup-open:bg-primary-foreground data-open:bg-primary-foreground text-white hover:text-white'
-						: 'bg-card text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 data-popup-open:bg-secondary data-open:bg-secondary',
+						? 'bg-primary-foreground hover:bg-primary-foreground/80! data-popup-open:bg-primary-foreground data-open:bg-primary-foreground text-white hover:text-white focus:bg-primary-foreground'
+						: 'bg-card text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 focus:bg-card data-popup-open:bg-secondary data-open:bg-secondary',
 					className
 				)}
 				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
