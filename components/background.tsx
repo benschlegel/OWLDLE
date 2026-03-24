@@ -1,6 +1,10 @@
-import React from 'react';
+'use client';
+
+import { useSettings } from '@/store/settings-store';
 
 export default function Background() {
+	const isBackgroundEnabled = useSettings((s) => s.isBackgroundEnabled);
+	if (!isBackgroundEnabled) return null;
 	return (
 		<div className="h-full w-full -z-1 absolute bg-background overflow-hidden ">
 			<div className="h-[200vh] w-[150vw] origin-left relative rotate-[-27.4deg] sm:block opacity-20 *:absolute *:skew-x-[-28deg]">

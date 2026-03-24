@@ -30,6 +30,7 @@ export function Navbar() {
 	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
 	const { setOpen: setHelpOpen } = useDialogState('help');
 	const searchParams = useSearchParams();
+	const { setOpen: setSettingsOpen } = useDialogState('settings');
 
 	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
 	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
@@ -145,7 +146,7 @@ export function Navbar() {
 						<SocialPopoverContent />
 					</PopoverContent>
 				</Popover>
-				<NavButton isRightSkewed className="-mr-2 pr-6">
+				<NavButton isRightSkewed className="-mr-2 pr-6" onClick={() => setSettingsOpen(true)}>
 					<SettingsIcon className="size-5" />
 				</NavButton>
 			</div>
