@@ -19,9 +19,11 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useEffect } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { usePlausible } from 'next-plausible';
-import { SocialPopoverContent } from '@/components/landing-page/socials';
+import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import type { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
+
+const TWITTER_LINK = 'https://x.com/owldle';
 
 export function Navbar() {
 	const router = useRouter();
@@ -133,8 +135,12 @@ export function Navbar() {
 				<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
 					Feedback
 				</NavButton>
-				<NavButton isRightSkewed>Twitter</NavButton>
-				<NavButton isRightSkewed>Donate</NavButton>
+				<NavButton isRightSkewed href={TWITTER_LINK} isExternal>
+					Twitter
+				</NavButton>
+				<NavButton isRightSkewed href={DONATION_LINK} isExternal>
+					Donate
+				</NavButton>
 				{/* Contact button popover */}
 				<Popover>
 					<PopoverTrigger asChild>
@@ -215,22 +221,37 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	children: React.ReactNode;
 	highlight?: boolean;
 	isRightSkewed?: boolean;
+	href?: string;
+	isExternal?: boolean;
 }
 
-function NavButton({ children, highlight = false, isRightSkewed = false, className, ...props }: ButtonProps) {
+function NavButton({ children, highlight = false, isRightSkewed = false, className, href, isExternal: external, ...props }: ButtonProps) {
+	const buttonClass = cn(
+		`relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors font-owl
+        ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}`,
+		className
+	);
+	const inner = <span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>;
+
+	if (href) {
+		return (
+			<Button asChild variant={'ghost'} className={buttonClass} style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
+				{external ? (
+					<a href={href} target="_blank" rel="noopener noreferrer" {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
+						{inner}
+					</a>
+				) : (
+					<Link href={href} {...(props as React.AnchorHTMLAttributes<HTMLAnchorElement>)}>
+						{inner}
+					</Link>
+				)}
+			</Button>
+		);
+	}
+
 	return (
-		<Button
-			variant={'ghost'}
-			className={cn(
-				`
-        relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors font-owl
-        ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}
-      `,
-				className
-			)}
-			style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}
-			{...props}>
-			<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
+		<Button variant={'ghost'} className={buttonClass} style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }} {...props}>
+			{inner}
 		</Button>
 	);
 }
