@@ -130,7 +130,9 @@ export default async function RootLayout({
 								<GameStateContextProvider>
 									<DatasetContexttProvider>
 										<>
-											<Navbar />
+											<Suspense>
+												<Navbar />
+											</Suspense>
 											<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
 												<main className="w-[32rem]">{children}</main>
 											</div>
