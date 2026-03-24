@@ -19,17 +19,26 @@ type Props = {
 export default function FeedbackContent({ setOpen }: Props) {
 	const [rating, setRating] = useState(initialRating);
 	const [name, setName] = useState('');
+	const [contactInfo, setContactInfo] = useState('');
 	const [feedback, setFeedback] = useState('');
 	const trimmedFeedback = feedback.trim();
 	const { toast } = useToast();
 
-	const handleChildValueChange = useCallback((newValue: number) => {
-		setRating(newValue);
-	}, []);
+	const showErrorToast = useCallback(() => {
+		toast({
+			title: 'Server error',
+			description: "Can't reach server or invalid data.",
+			variant: 'destructive',
+		});
+	}, [toast]);
 
 	const handleSubmit = useCallback(() => {
-		// Format feedback content
-		const feedbackContent: Feedback = { rating: rating >= 0.5 ? rating : undefined, name: name === '' ? undefined : name, feedback };
+		const feedbackContent: Feedback = {
+			rating: rating >= 0.5 ? rating : undefined,
+			name: name === '' ? undefined : name,
+			contactInfo: contactInfo === '' ? undefined : contactInfo,
+			feedback,
+		};
 		fetch('/api/feedback', { method: 'POST', body: JSON.stringify(feedbackContent) })
 			.then((res) => {
 				if (res.status === 200) {
@@ -41,21 +50,11 @@ export default function FeedbackContent({ setOpen }: Props) {
 						description: 'Thanks for your feedback ❤️',
 					});
 				} else {
-					toast({
-						title: 'Server error',
-						description: "Can't reach server or invalid data.",
-						variant: 'destructive',
-					});
+					showErrorToast();
 				}
 			})
-			.catch((e) => {
-				toast({
-					title: 'Server error',
-					description: "Can't reach server or invalid data.",
-					variant: 'destructive',
-				});
-			});
-	}, [rating, name, feedback, setOpen, toast]);
+			.catch(showErrorToast);
+	}, [rating, name, contactInfo, feedback, setOpen, toast, showErrorToast]);
 
 	const handleTextAreaSubmit = useCallback(
 		(event: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -76,11 +75,23 @@ export default function FeedbackContent({ setOpen }: Props) {
 				</DialogDescription>
 			</DialogHeader>
 			<div className="grid gap-6 py-4">
-				<div className="grid grid-cols-4 items-center gap-4 grid-flow-row">
+				<div className="grid grid-cols-4 items-center gap-4">
 					<Label htmlFor="name" className="text-left w-full col-span-4">
 						Name <span className="opacity-60">(optional)</span>
 					</Label>
-					<Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-4 " />
+					<Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-4" placeholder="your name (optional)" />
+				</div>
+				<div className="grid grid-cols-4 items-center gap-4">
+					<Label htmlFor="contactInfo" className="text-left w-full col-span-4">
+						Contact info <span className="opacity-60">(optional)</span>
+					</Label>
+					<Input
+						id="contactInfo"
+						value={contactInfo}
+						onChange={(e) => setContactInfo(e.target.value)}
+						className="col-span-4"
+						placeholder="discord, email, etc (if you want a response, optional)"
+					/>
 				</div>
 				<div className="grid grid-cols-4 items-start gap-4">
 					<Label htmlFor="feedback" className="text-left w-full col-span-4">
@@ -95,11 +106,11 @@ export default function FeedbackContent({ setOpen }: Props) {
 						className="col-span-4 max-h-52 h-24 md:h-32"
 					/>
 				</div>
-				<div className="grid grid-cols-4 items-center gap-[0.6rem] grid-flow-row">
-					<Label htmlFor="name" className="text-left w-full col-span-4">
+				<div className="grid grid-cols-4 items-center gap-[0.6rem]">
+					<Label htmlFor="rating" className="text-left w-full col-span-4">
 						Rating <span className="opacity-60">(optional)</span>
 					</Label>
-					<StarRating onChange={handleChildValueChange} />
+					<StarRating onChange={setRating} />
 				</div>
 			</div>
 			<DialogFooter>
