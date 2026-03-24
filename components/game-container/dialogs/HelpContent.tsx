@@ -64,7 +64,7 @@ function InlineCode({ children }: { children: React.ReactNode }) {
 function TeamGroup({ title, teams }: { title: string; teams: string[] }) {
 	return (
 		<div className="flex flex-col">
-			<h3 className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight">{title}</h3>
+			<h3 className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight font-owl opacity-90">{title}</h3>
 			<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 				{teams?.map((team) => (
 					<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
@@ -89,7 +89,7 @@ export default function HelpContent({ setOpen }: Props) {
 	return (
 		<DialogContent className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7" aria-describedby="Tutorial on how to play the game">
 			<DialogHeader>
-				<DialogTitle className="flex flex-row gap-2 items-center text-left">
+				<DialogTitle className="flex flex-row gap-2 items-center text-left font-owl">
 					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
 					Help
 				</DialogTitle>
@@ -100,7 +100,7 @@ export default function HelpContent({ setOpen }: Props) {
 					{/* Description section */}
 					<Accordion type="single" collapsible value={tutorialOpen ? 'tutorial' : ''} onValueChange={(v) => setTutorialOpen(v === 'tutorial')}>
 						<AccordionItem value="tutorial" className="border-none">
-							<AccordionTrigger className="mt-1 focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 px-2 py-1">
+							<AccordionTrigger className="mt-1 focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 px-2 py-1 font-owl">
 								How to play
 							</AccordionTrigger>
 							<AccordionContent>
@@ -112,7 +112,7 @@ export default function HelpContent({ setOpen }: Props) {
 						{/* Teams section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Gamepad className="opacity-80" />
-							<h2 className=" ">Teams</h2>
+							<h2 className="font-owl">Teams</h2>
 						</div>
 						{!isOwcsDataset(dataset.dataset) ? <OWLTeams dataset={dataset} /> : <OWCSTeams dataset={dataset} />}
 						<blockquote className="leading-7 tracking-wide opacity-90 border-primary-foreground border-l-[3px] pl-4 mt-1">
@@ -123,7 +123,7 @@ export default function HelpContent({ setOpen }: Props) {
 						{/* Guesses section */}
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Dices className="opacity-80" />
-							<h2 className="">Guesses</h2>
+							<h2 className="font-owl">Guesses</h2>
 						</div>
 						<p className="scroll-m-20 text-base tracking-normal mb-3 mt-5">This is what a row looks like after you made a guess:</p>
 						<div className="flex flex-row sm:gap-2 gap-1 w-full md:w-[60%]">
@@ -158,7 +158,7 @@ export default function HelpContent({ setOpen }: Props) {
 					<div>
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<LightbulbIcon className="opacity-80" />
-							<h2 className="">Tips</h2>
+							<h2 className="font-owl">Tips</h2>
 						</div>
 						<div className="flex flex-col gap-2">
 							<p className="scroll-m-20 text-base tracking-normal mt-4">
@@ -189,7 +189,7 @@ export default function HelpContent({ setOpen }: Props) {
 					<div>
 						<div className="flex gap-2 items-center first:mt-0 scroll-m-20 border-b pb-2 text-2xl font-semibold tracking-tight">
 							<Clapperboard className="opacity-80" />
-							<h2 className="">Credits</h2>
+							<h2 className="font-owl">Credits</h2>
 						</div>
 						<div className="flex flex-col gap-2">
 							<p className="text-base tracking-normal mt-4">

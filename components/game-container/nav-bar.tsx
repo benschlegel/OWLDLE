@@ -116,7 +116,7 @@ export function Navbar() {
 					<Button
 						variant={'ghost'}
 						onClick={() => setHelpOpen(true)}
-						className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-cyan-400 transition-colors px-11 "
+						className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-secondary/60 transition-colors px-11 "
 						style={{
 							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 						}}>
@@ -174,7 +174,7 @@ function NavSelect({
 		<NavigationMenuItem className="h-full">
 			<NavigationMenuTrigger
 				className={cn(
-					'relative uppercase rounded-none px-4 h-full text-sm flex flex-row items-center gap-2 font-semibold tracking-wide transition-colors whitespace-nowrap hover:bg-secondary!',
+					'relative uppercase rounded-none px-4 h-full text-sm flex flex-row items-center gap-2 font-semibold tracking-wide font-owl transition-colors whitespace-nowrap hover:bg-secondary!',
 					'w-auto shadow-none border-none',
 					'focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0',
 					'[&>svg]:skew-x-12',
@@ -223,7 +223,7 @@ function NavButton({ children, highlight = false, isRightSkewed = false, classNa
 			variant={'ghost'}
 			className={cn(
 				`
-        relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors
+        relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors font-owl
         ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}
       `,
 				className
