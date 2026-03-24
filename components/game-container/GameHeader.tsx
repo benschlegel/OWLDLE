@@ -4,8 +4,6 @@ import { ModeToggle } from '@/components/theme-switcher';
 import { Separator } from '@/components/ui/separator';
 import { Suspense, type ReactNode } from 'react';
 
-const OWL_FONT = 'var(--font-owl-bold), ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji';
-
 interface GameHeaderProps {
 	leagueLabel: string;
 	seasonSelector: ReactNode;
@@ -15,7 +13,7 @@ interface GameHeaderProps {
 export default function GameHeader({ leagueLabel, seasonSelector, seasonTitle }: GameHeaderProps) {
 	return (
 		<div className="sticky sm:static top-0 bg-transparent sm:bg-inherit z-10 pt-4 w-full">
-			<p className="sm:text-xl text-base font-bold text-center sm:ml-[0.75rem] ml-[1.5rem]" style={{ fontFamily: OWL_FONT }}>
+			<p className="sm:text-xl text-base font-bold text-center sm:ml-[0.75rem] ml-[1.5rem] font-owl">
 				<span className="text-primary-foreground">{leagueLabel}</span>
 			</p>
 			<div className="flex flex-row justify-between items-center w-full">
@@ -26,7 +24,7 @@ export default function GameHeader({ leagueLabel, seasonSelector, seasonTitle }:
 					{seasonSelector}
 				</div>
 				<div className="mb-1 flex items-center">
-					<h1 className="sm:text-3xl text-2xl font-bold text-center sm:ml-[-1rem]" style={{ fontFamily: OWL_FONT }}>
+					<h1 className="sm:text-3xl text-2xl font-bold text-center sm:ml-[-1rem] font-owl">
 						<Suspense fallback="Season 1">{seasonTitle}</Suspense>
 					</h1>
 				</div>
