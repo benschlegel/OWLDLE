@@ -155,6 +155,10 @@
   }
   body {
     @apply bg-background text-foreground transition-colors duration-300;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: clip;
   }
 }
 

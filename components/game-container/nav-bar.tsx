@@ -81,9 +81,9 @@ export function Navbar() {
 								onValueChange={handleOwlSelect}
 								value={owlValue}
 								highlight={pathname === '/play'}
-								className={'sm:ml-0 sm:pl-5 -ml-1 pl-6'}>
-								<span className="sm:block hidden">Overwatch League</span>
-								<span className="sm:hidden block">OWL</span>
+								className={'2xl:ml-0 2xl:pl-5 -ml-1 pl-6'}>
+								<span className="2xl:block hidden">Overwatch League</span>
+								<span className="2xl:hidden block">OWL</span>
 							</NavSelect>
 							<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
 								OWCS

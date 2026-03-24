@@ -3,7 +3,7 @@ import React from 'react';
 export default function Background() {
 	return (
 		<div className="h-full w-full -z-1 absolute bg-background overflow-hidden ">
-			<div className="h-[200vh] w-[150vw] origin-left relative rotate-[-27.4deg] opacity-25 *:absolute *:skew-x-[-28deg]">
+			<div className="h-[200vh] w-[150vw] origin-left relative rotate-[-27.4deg] opacity-20 *:absolute *:skew-x-[-28deg]">
 				<div className="top-[25%] left-[5%] w-75 h-[15px] bg-primary-foreground opacity-90" />
 				<div className="top-[25%] left-[5%] w-75 h-[15px] bg-primary-foreground opacity-90" />
 				<div className="top-[57%] left-[10%] w-120 h-5 bg-foreground opacity-60" />
