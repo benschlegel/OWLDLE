@@ -14,6 +14,7 @@ import { EvaluatedGuessProvider } from '@/context/GlobalGuessContext';
 import PlausibleWrapper from '@/context/PlausibleWrapper';
 import { Suspense } from 'react';
 import { Navbar } from '@/components/game-container/nav-bar';
+import Background from '@/components/background';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -129,6 +130,7 @@ export default async function RootLayout({
 							<GuessContextProvider>
 								<GameStateContextProvider>
 									<DatasetContexttProvider>
+										<Background />
 										<>
 											<Suspense>
 												<Navbar />
