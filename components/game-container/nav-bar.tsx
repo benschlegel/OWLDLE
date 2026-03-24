@@ -12,7 +12,7 @@ import {
 import { OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
-import { Check, Home, MenuIcon } from 'lucide-react';
+import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -119,8 +119,7 @@ export function Navbar() {
 						style={{
 							clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
 						}}>
-						<h1
-							className="sm:text-4xl text-3xl font-bold text-center w-full font-owl">
+						<h1 className="sm:text-4xl text-3xl font-bold text-center w-full font-owl">
 							<span className="text-primary-foreground">OWL</span>
 							<span>DLE</span>
 						</h1>
@@ -147,7 +146,7 @@ export function Navbar() {
 					</PopoverContent>
 				</Popover>
 				<NavButton isRightSkewed className="-mr-2 pr-6">
-					Test
+					<SettingsIcon className="size-5" />
 				</NavButton>
 			</div>
 		</nav>

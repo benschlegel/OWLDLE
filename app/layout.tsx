@@ -15,6 +15,7 @@ import PlausibleWrapper from '@/context/PlausibleWrapper';
 import { Suspense } from 'react';
 import { Navbar } from '@/components/game-container/nav-bar';
 import Background from '@/components/background';
+import { SettingsDialog } from '@/components/game-container/dialogs/settings-dialog';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -132,6 +133,7 @@ export default async function RootLayout({
 									<DatasetContexttProvider>
 										<Background />
 										<>
+											<SettingsDialog />
 											<Suspense>
 												<Navbar />
 											</Suspense>
