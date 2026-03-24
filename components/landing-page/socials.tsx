@@ -9,24 +9,26 @@ import { BotMessageSquareIcon, CoffeeIcon, Github, TwitterIcon } from 'lucide-re
 import { usePlausible } from 'next-plausible';
 import Link from 'next/link';
 
+export const DONATION_LINK = 'https://ko-fi.com/scorer5';
+
 const socials: SocialProps[] = [
 	{
 		socialName: 'Twitter',
-		socialLink: 'https://x.com/scorer5_',
-		socialValue: '@scorer5_',
+		socialLink: 'https://x.com/thalindore',
+		socialValue: '@thalindore',
 		children: <TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
 	},
 	{
 		socialName: 'Discord',
 		socialLink: '',
-		socialValue: 'scorer5',
+		socialValue: 'thalindore',
 		isCopyable: true,
 		children: <BotMessageSquareIcon className="w-[1.1rem] h-[1.1rem] mb-1" />,
 	},
 	// { socialName: 'Battle.net', socialLink: '', socialValue: 'scorer5#21277', isCopyable: true, children: <Swords className="w-[1.1rem] h-[1.1rem] mb-1" /> },
 	{
 		socialName: 'Ko-fi',
-		socialLink: 'https://ko-fi.com/scorer5',
+		socialLink: DONATION_LINK,
 		socialValue: 'scorer5',
 		children: <CoffeeIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
 	},

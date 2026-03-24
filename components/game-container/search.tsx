@@ -99,7 +99,7 @@ export default function PlayerSearch({ className }: Props) {
 	return (
 		<Command
 			loop
-			className={cn('rounded-lg border border-secondary shadow-sm md:min-w-[450px] mb-4 transition-colors duration-300 ', className)}
+			className={cn('rounded-lg border border-secondary md:min-w-[450px] mb-4 transition-colors duration-300 ', className)}
 			onBlur={closeSearch}
 			filter={filterSearch}>
 			<CustomCommandInput
