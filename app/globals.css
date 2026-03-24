@@ -42,6 +42,10 @@
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+@theme {
+  --breakpoint-navbar-hidden: 70rem;
+}
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;

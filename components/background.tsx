@@ -7,7 +7,7 @@ export default function Background() {
 	if (!isBackgroundEnabled) return null;
 	return (
 		<div className="h-full w-full -z-1 absolute bg-background overflow-hidden ">
-			<div className="absolute inset-0 h-full w-full bg-[radial-gradient(var(--secondary)_1px,transparent_1px)] bg-size-[20px_20px] opacity-100 dark:opacity-40" />
+			<div className="absolute inset-0 h-full w-full bg-[radial-gradient(var(--secondary)_1px,transparent_1px)] bg-size-[20px_20px] opacity-100 dark:opacity-35" />
 			<div className="h-[200vh] w-[150vw] origin-left relative rotate-[-27.4deg] sm:block opacity-20 dark:opacity-15 *:absolute *:skew-x-[-28deg]">
 				<div className="top-[25%] left-[5%] w-75 h-[15px] bg-primary-foreground opacity-90" />
 				<div className="top-[25%] left-[5%] w-75 h-[15px] bg-primary-foreground opacity-90" />
