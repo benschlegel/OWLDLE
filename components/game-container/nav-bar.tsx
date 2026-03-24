@@ -94,14 +94,14 @@ export function Navbar() {
 						</NavigationMenuList>
 					</NavigationMenu>
 					<NavButton>Arcade</NavButton>
-					<NavButton className="sm:flex hidden">Statistics</NavButton>
+					<NavButton className="hidden navbar-hidden:flex">Statistics</NavButton>
 					{/* Mobile hamburger menu button */}
 				</div>
 			</div>
 			<Button
 				asChild
 				variant={'ghost'}
-				className="py-6 flex sm:hidden bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
+				className="py-6 flex lg:hidden bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
 				style={{ clipPath: 'polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%)', marginLeft: '-6px', paddingLeft: '24px' }}>
 				<Link href={'/'}>
 					<MenuIcon className="h-5 w-5" />
@@ -109,7 +109,7 @@ export function Navbar() {
 			</Button>
 
 			{/* Center Button */}
-			<div className="absolute z-10 sm:block hidden left-1/2 -translate-x-1/2">
+			<div className="absolute z-10 lg:block hidden left-1/2 -translate-x-1/2">
 				<div
 					className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
 					style={{
@@ -131,15 +131,9 @@ export function Navbar() {
 			</div>
 
 			{/* Right section */}
-			<div className="items-center sm:flex hidden">
+			<div className="items-center lg:flex hidden">
 				<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
 					Feedback
-				</NavButton>
-				<NavButton isRightSkewed href={TWITTER_LINK} isExternal>
-					Twitter
-				</NavButton>
-				<NavButton isRightSkewed href={DONATION_LINK} isExternal>
-					Donate
 				</NavButton>
 				{/* Contact button popover */}
 				<Popover>
@@ -152,8 +146,18 @@ export function Navbar() {
 						<SocialPopoverContent />
 					</PopoverContent>
 				</Popover>
-				<NavButton isRightSkewed className="-mr-2 pr-6" onClick={() => setSettingsOpen(true)}>
+				<NavButton isRightSkewed href={DONATION_LINK} isExternal>
+					Donate
+				</NavButton>
+
+				<NavButton isRightSkewed href={TWITTER_LINK} isExternal className="hidden navbar-hidden:flex">
+					Twitter
+				</NavButton>
+				<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
 					<SettingsIcon className="size-5" />
+				</NavButton>
+				<NavButton isRightSkewed className="-mr-2 pr-6 flex navbar-hidden:hidden" onClick={() => setSettingsOpen(true)}>
+					<MenuIcon className="size-5" />
 				</NavButton>
 			</div>
 		</nav>
