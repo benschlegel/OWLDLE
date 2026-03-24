@@ -79,7 +79,7 @@ export default function FeedbackContent({ setOpen }: Props) {
 					<Label htmlFor="name" className="text-left w-full col-span-4">
 						Name <span className="opacity-60">(optional)</span>
 					</Label>
-					<Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-4" placeholder="your name (optional)" />
+					<Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-4" placeholder="Cole Cassidy" />
 				</div>
 				<div className="grid grid-cols-4 items-center gap-4">
 					<Label htmlFor="contactInfo" className="text-left w-full col-span-4">
@@ -90,7 +90,7 @@ export default function FeedbackContent({ setOpen }: Props) {
 						value={contactInfo}
 						onChange={(e) => setContactInfo(e.target.value)}
 						className="col-span-4"
-						placeholder="discord, email, etc (if you want a response, optional)"
+						placeholder="discord, email, etc (if you want a response)"
 					/>
 				</div>
 				<div className="grid grid-cols-4 items-start gap-4">
