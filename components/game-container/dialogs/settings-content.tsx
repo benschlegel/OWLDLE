@@ -79,7 +79,7 @@ function SettingsSwitchEntry({ label, description, id, onSwitch, initialChecked 
 		<Label
 			htmlFor={`settings-${id}-switch`}
 			data-disabled={disabled}
-			className="flex text-foreground/80 data-[disabled=true]:opacity-60 data-[disabled=true]:cursor-not-allowed cursor-pointer flex-row items-center justify-between rounded-sm bg-muted py-3 px-4">
+			className="flex text-foreground/80 data-[disabled=true]:opacity-60 data-[disabled=true]:cursor-not-allowed cursor-pointer flex-row items-center justify-between rounded-sm bg-card py-3 px-4">
 			<div className="flex flex-col gap-1">
 				<div>{label}</div>
 				{description && <div className="text-xs text-muted-foreground">{description}</div>}
@@ -122,7 +122,7 @@ function SettingsSelectEntry({ id, description, label, entries, initialValue, on
 		<Label
 			htmlFor={`settings-${id}-select`}
 			data-disabled={disabled}
-			className="flex text-foreground/80 data-[disabled=true]:opacity-60 data-[disabled=true]:cursor-not-allowed flex-row items-center justify-between rounded-sm bg-muted py-3 px-4">
+			className="flex text-foreground/80 data-[disabled=true]:opacity-60 data-[disabled=true]:cursor-not-allowed flex-row items-center justify-between rounded-sm bg-card py-3 px-4">
 			<div className="flex flex-col gap-1">
 				<div>{label}</div>
 				{description && <div className="text-xs text-muted-foreground">{description}</div>}
@@ -167,7 +167,7 @@ function SettingsButtonEntry(props: ButtonEntryProps) {
 	return (
 		<div
 			data-disabled={disabled}
-			className="flex text-foreground/80 data-[disabled=true]:opacity-60 data-[disabled=true]:cursor-not-allowed flex-row items-center justify-between rounded-sm bg-muted py-3 px-4">
+			className="flex text-foreground/80 data-[disabled=true]:opacity-60 data-[disabled=true]:cursor-not-allowed flex-row items-center justify-between rounded-sm bg-card py-3 px-4">
 			<div className="flex flex-col gap-1">
 				<Label htmlFor={`settings-${id}-button`}>{label}</Label>
 				{description && <div className="text-xs text-muted-foreground">{description}</div>}
