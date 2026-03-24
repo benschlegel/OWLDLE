@@ -12,7 +12,7 @@ import {
 import { OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
-import { Check, Home } from 'lucide-react';
+import { Check, Home, MenuIcon } from 'lucide-react';
 import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
@@ -21,6 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { usePlausible } from 'next-plausible';
 import { SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
+import type { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
 
 export function Navbar() {
 	const router = useRouter();
@@ -60,12 +61,12 @@ export function Navbar() {
 	return (
 		<nav className="sm:sticky relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 			{/* Left section*/}
-			<div className="flex items-center">
+			<div className="flex items-center sm:flex-none flex-1">
 				<Button
 					asChild
 					variant={'ghost'}
-					className="w-full py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
-					style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-6px', paddingRight: '24px' }}>
+					className="w-full sm:flex hidden py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
+					style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-7px', paddingRight: '24px' }}>
 					<Link href={'/'}>
 						<Home className="h-5 w-5" />
 					</Link>
@@ -75,7 +76,12 @@ export function Navbar() {
 				<div className="flex items-center self-stretch">
 					<NavigationMenu className="self-stretch flex-none">
 						<NavigationMenuList className="h-full gap-0">
-							<NavSelect items={OWL_DATASETS_REVERSED} onValueChange={handleOwlSelect} value={owlValue} highlight={pathname === '/play'}>
+							<NavSelect
+								items={OWL_DATASETS_REVERSED}
+								onValueChange={handleOwlSelect}
+								value={owlValue}
+								highlight={pathname === '/play'}
+								className={'sm:ml-0 sm:pl-5 -ml-1 pl-6'}>
 								<span className="sm:block hidden">Overwatch League</span>
 								<span className="sm:hidden block">OWL</span>
 							</NavSelect>
@@ -85,11 +91,22 @@ export function Navbar() {
 						</NavigationMenuList>
 					</NavigationMenu>
 					<NavButton>Arcade</NavButton>
+					<NavButton className="sm:flex hidden">Statistics</NavButton>
+					{/* Mobile hamburger menu button */}
 				</div>
 			</div>
+			<Button
+				asChild
+				variant={'ghost'}
+				className="py-6 flex sm:hidden bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
+				style={{ clipPath: 'polygon(12px 0%, 100% 0%, 100% 100%, 0% 100%)', marginLeft: '-6px', paddingLeft: '24px' }}>
+				<Link href={'/'}>
+					<MenuIcon className="h-5 w-5" />
+				</Link>
+			</Button>
 
 			{/* Center Button */}
-			<div className="absolute sm:block hidden left-1/2 -translate-x-1/2">
+			<div className="absolute z-10 sm:block hidden left-1/2 -translate-x-1/2">
 				<div
 					className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
 					style={{
@@ -147,6 +164,7 @@ function NavSelect({
 	onValueChange,
 	value,
 	isRightSkewed = false,
+	className,
 }: {
 	children: React.ReactNode;
 	highlight?: boolean;
@@ -154,7 +172,7 @@ function NavSelect({
 	onValueChange: (value: string) => void;
 	isRightSkewed?: boolean;
 	value: string;
-}) {
+} & NavigationMenuPrimitive.Trigger.Props) {
 	return (
 		<NavigationMenuItem className="h-full">
 			<NavigationMenuTrigger
@@ -165,7 +183,8 @@ function NavSelect({
 					'[&>svg]:skew-x-12',
 					highlight
 						? 'bg-primary-foreground hover:bg-primary-foreground/70! data-popup-open:bg-primary-foreground data-open:bg-primary-foreground text-white hover:text-white'
-						: 'bg-card text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 data-popup-open:bg-secondary data-open:bg-secondary'
+						: 'bg-card text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 data-popup-open:bg-secondary data-open:bg-secondary',
+					className
 				)}
 				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
 				<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
