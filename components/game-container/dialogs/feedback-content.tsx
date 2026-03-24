@@ -75,13 +75,13 @@ export default function FeedbackContent({ setOpen }: Props) {
 				</DialogDescription>
 			</DialogHeader>
 			<div className="grid gap-6 py-4">
-				<div className="grid grid-cols-4 items-center gap-4">
+				<div className="grid grid-cols-4 items-center gap-3">
 					<Label htmlFor="name" className="text-left w-full col-span-4">
 						Name <span className="opacity-60">(optional)</span>
 					</Label>
 					<Input id="name" value={name} onChange={(e) => setName(e.target.value)} className="col-span-4" placeholder="Cole Cassidy" />
 				</div>
-				<div className="grid grid-cols-4 items-center gap-4">
+				<div className="grid grid-cols-4 items-center gap-3">
 					<Label htmlFor="contactInfo" className="text-left w-full col-span-4">
 						Contact info <span className="opacity-60">(optional)</span>
 					</Label>
@@ -93,7 +93,7 @@ export default function FeedbackContent({ setOpen }: Props) {
 						placeholder="discord, email, etc (if you want a response)"
 					/>
 				</div>
-				<div className="grid grid-cols-4 items-start gap-4">
+				<div className="grid grid-cols-4 items-start gap-3">
 					<Label htmlFor="feedback" className="text-left w-full col-span-4">
 						Feedback<span className="text-primary-foreground">*</span>
 					</Label>
@@ -107,7 +107,7 @@ export default function FeedbackContent({ setOpen }: Props) {
 					/>
 				</div>
 				<div className="grid grid-cols-4 items-center gap-[0.6rem]">
-					<Label htmlFor="rating" className="text-left w-full col-span-4">
+					<Label htmlFor="rating" className="text-left w-full col-span-4 -mb-2">
 						Rating <span className="opacity-60">(optional)</span>
 					</Label>
 					<StarRating onChange={setRating} />
