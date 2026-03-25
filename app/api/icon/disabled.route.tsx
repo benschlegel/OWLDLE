@@ -9,8 +9,9 @@ const emptyColor = '#e6e5e5';
 const cubeSize = '52px';
 export async function GET() {
 	return new ImageResponse(
-		// Modified based on https://tailwindui.com/components/marketing/sections/cta-sections
-		<div tw="flex flex-col w-full h-full items-center justify-center bg-white">
+		// Maybe add white background back
+		<div tw="flex flex-col w-full h-full items-center justify-center">
+			{/* size-[98%] for almost fullscreen */}
 			<div tw="flex w-full w-[400px] h-[400px]" style={{ backgroundColor: 'transparent' }}>
 				<div
 					tw="flex w-full rounded-sm p-[20px] flex-col"
