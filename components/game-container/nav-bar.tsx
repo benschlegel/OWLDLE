@@ -80,7 +80,7 @@ export function Navbar() {
 
 	return (
 		<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-			<nav className="sm:sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
+			<nav className="sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 				{/* Left section*/}
 				<div className="flex items-center sm:flex-none flex-1">
 					<Button
