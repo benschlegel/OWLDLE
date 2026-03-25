@@ -7,22 +7,20 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { SheetClose, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { SheetLinkButton } from '@/components/ui/sheet-link-button';
+import { OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { usePathname } from 'next/navigation';
-
-const NAV_SECTIONS = [
-	{ value: 'owl', label: 'Overwatch League', content: 'Test' },
-	{ value: 'owcs', label: 'OWCS', content: 'Test' },
-	{ value: 'arcade', label: 'Arcade', content: 'Test' },
-] as const;
 
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
 	'/play': 'owl',
 	'/owcs': 'owcs',
 	'/arcade': 'arcade',
 };
+
+const triggerClass =
+	'mt-1 text-foreground focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 py-1 font-owl sm:text-lg text-base opacity-90 data-[state=open]:text-primary-foreground data-[state=open]:opacity-100';
 
 type Props = {
 	setSheetOpen: (value: React.SetStateAction<boolean>) => void;
@@ -60,19 +58,47 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 					</h1>
 				</div>
 			</div>
-			<div className="flex flex-col gap-4 px-4">
+			<div className="flex flex-col gap-4 px-4 overflow-y-auto">
 				<div className="flex flex-col">
 					<h1 className="font-bold sm:text-2xl text-xl font-owl text-foreground">Navigation</h1>
 					<div className="mt-2 flex flex-col gap-2 justify-center">
 						<Accordion type="single" defaultValue={defaultAccordion} collapsible>
-							{NAV_SECTIONS.map(({ value, label, content }) => (
-								<AccordionItem key={value} value={value} className="border-none px-2">
-									<AccordionTrigger className="mt-1 text-foreground focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 py-1 font-owl sm:text-lg text-base opacity-90 data-[state=open]:text-primary-foreground data-[state=open]:opacity-100">
-										{label}
-									</AccordionTrigger>
-									<AccordionContent>{content}</AccordionContent>
-								</AccordionItem>
-							))}
+							<AccordionItem value="owl" className="border-none px-2">
+								<AccordionTrigger className={triggerClass}>Overwatch League</AccordionTrigger>
+								<AccordionContent>
+									<div className="flex flex-col">
+										{OWL_DATASETS_REVERSED.map((dataset) => (
+											<SheetLinkButton
+												key={dataset.dataset}
+												text={dataset.formattedName}
+												href={`/play?season=${dataset.dataset.slice('season'.length)}`}
+												onClick={() => setSheetOpen(false)}
+												className="font-mono font-semibold text-foreground sm:py-2.5"
+											/>
+										))}
+									</div>
+								</AccordionContent>
+							</AccordionItem>
+							<AccordionItem value="owcs" className="border-none px-2">
+								<AccordionTrigger className={triggerClass}>OWCS</AccordionTrigger>
+								<AccordionContent>
+									<div className="flex flex-col">
+										{OWCS_DATASETS_REVERSED.map((dataset) => (
+											<SheetLinkButton
+												key={dataset.dataset}
+												text={dataset.formattedName}
+												href={`/owcs?season=${dataset.dataset.slice('owcs-'.length)}`}
+												onClick={() => setSheetOpen(false)}
+												className="font-mono font-semibold text-foreground sm:py-2.5"
+											/>
+										))}
+									</div>
+								</AccordionContent>
+							</AccordionItem>
+							<AccordionItem value="arcade" className="border-none px-2">
+								<AccordionTrigger className={triggerClass}>Arcade</AccordionTrigger>
+								<AccordionContent />
+							</AccordionItem>
 						</Accordion>
 						<SheetLinkButton text="Statistics" className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base" />
 					</div>
@@ -92,7 +118,6 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 								<SocialPopoverContent />
 							</PopoverContent>
 						</Popover>
-
 						<Separator />
 						<SheetLinkButton text="Donate" href={DONATION_LINK} isExternal />
 						<Separator />

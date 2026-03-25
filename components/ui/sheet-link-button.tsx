@@ -9,7 +9,7 @@ interface SheetLinkButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElem
 	isExternal?: boolean;
 }
 
-export function SheetLinkButton({ text, href, isExternal, className, ...props }: SheetLinkButtonProps) {
+export function SheetLinkButton({ text, href, isExternal, className, onClick, ...props }: SheetLinkButtonProps) {
 	const inner = (
 		<>
 			<span className="flex-1 text-left group-hover:text-primary-foreground">{text}</span>
@@ -21,7 +21,7 @@ export function SheetLinkButton({ text, href, isExternal, className, ...props }:
 
 	if (href) {
 		return (
-			<Button asChild variant={'ghost'} className={buttonClass}>
+			<Button asChild variant={'ghost'} className={buttonClass} onClick={onClick}>
 				{isExternal ? (
 					<a href={href} target="_blank" rel="noopener noreferrer">
 						{inner}
