@@ -22,7 +22,8 @@ import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
-const TWITTER_LINK = 'https://x.com/owldle';
+
+export const TWITTER_LINK = 'https://x.com/owldle';
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 const skewStyle = (skewRight: boolean) => ({ transform: `skewX(${skewRight ? '' : '-'}12deg)` });
@@ -140,7 +141,7 @@ export function Navbar() {
 							}}>
 							<h1 className="sm:text-4xl text-3xl font-bold text-center w-full font-owl">
 								<span className="text-primary-foreground">OWL</span>
-								<span>DLE</span>
+								<span className="text-foreground">DLE</span>
 							</h1>
 						</Button>
 					</div>
