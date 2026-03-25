@@ -16,6 +16,7 @@ import { Suspense } from 'react';
 import { Navbar } from '@/components/game-container/nav-bar';
 import Background from '@/components/background';
 import { SettingsDialog } from '@/components/game-container/dialogs/settings-dialog';
+import Socials from '@/components/landing-page/socials';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -141,6 +142,9 @@ export default async function RootLayout({
 												<main className="w-[32rem]">{children}</main>
 											</div>
 											<Toaster />
+											<div className="sm:block hidden pointer-events-none absolute bottom-6 left-1/2 transform -translate-x-1/2">
+												<Socials />
+											</div>
 										</>
 									</DatasetContexttProvider>
 									<SpeedInsights />
