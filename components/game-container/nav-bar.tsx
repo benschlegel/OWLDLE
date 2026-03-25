@@ -224,8 +224,8 @@ function NavSelect({
 							<NavigationMenuLink
 								onClick={() => onValueChange(dataset.dataset)}
 								className={cn(
-									'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none',
-									value === dataset.dataset && 'font-medium'
+									'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+									value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
 								)}>
 								{value === dataset.dataset && (
 									<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
