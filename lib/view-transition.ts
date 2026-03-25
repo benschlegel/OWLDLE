@@ -1,4 +1,8 @@
-export function viewTransition(updateDOM: () => void) {
+import { startTransition } from 'react';
+
+export function viewTransition(navigate: () => void) {
 	document.documentElement.dataset.style = 'angled';
-	document.startViewTransition(updateDOM);
+	document.startViewTransition(() => {
+		startTransition(navigate);
+	});
 }
