@@ -14,7 +14,7 @@ import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
-import { LAST_GAME_COOKIE } from '@/proxy';
+import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -22,7 +22,6 @@ import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import { Separator } from '@/components/ui/separator';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
@@ -45,7 +44,7 @@ export function Navbar() {
 	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
 
 	useEffect(() => {
-		if (pathname === '/play' || pathname === '/owcs') {
+		if (ALLOWED_PATHS.includes(pathname)) {
 			const qs = searchParams.toString();
 			const url = qs ? `${pathname}?${qs}` : pathname;
 			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
@@ -103,11 +102,17 @@ export function Navbar() {
 									onValueChange={handleOwlSelect}
 									value={owlValue}
 									highlight={pathname === '/play'}
+									label="Overwatch League"
 									className={'2xl:ml-0 2xl:pl-5 -ml-1 pl-6'}>
 									<span className="2xl:block hidden">Overwatch League</span>
 									<span className="2xl:hidden block">OWL</span>
 								</NavSelect>
-								<NavSelect items={OWCS_DATASETS_REVERSED} onValueChange={handleOwcsSelect} value={owcsValue} highlight={pathname === '/owcs'}>
+								<NavSelect
+									label="Champion Series"
+									items={OWCS_DATASETS_REVERSED}
+									onValueChange={handleOwcsSelect}
+									value={owcsValue}
+									highlight={pathname === '/owcs'}>
 									OWCS
 								</NavSelect>
 								<NavSelect
@@ -115,7 +120,8 @@ export function Navbar() {
 									value={owcsValue}
 									highlight={pathname === '/endless'}
 									menuContent={<EndlessNavContent value="test" />}>
-									Endless Mode
+									<span className="2xl:block hidden">Endless Mode</span>
+									<span className="2xl:hidden block">Endless</span>
 								</NavSelect>
 							</NavigationMenuList>
 						</NavigationMenu>
@@ -202,8 +208,10 @@ function NavSelect({
 	isRightSkewed = false,
 	className,
 	menuContent,
+	label,
 }: {
 	children: React.ReactNode;
+	label?: string;
 	highlight?: boolean;
 	items?: ReadonlyArray<{ dataset: string; formattedName: string }>;
 	onValueChange: (value: string) => void;
@@ -232,26 +240,29 @@ function NavSelect({
 				<NavigationMenuContent>{menuContent}</NavigationMenuContent>
 			) : (
 				<NavigationMenuContent>
-					<ul className="flex flex-col w-48 p-1">
-						{items?.map((dataset) => (
-							<li key={dataset.dataset}>
-								<NavigationMenuLink
-									closeOnClick
-									onClick={() => onValueChange(dataset.dataset)}
-									className={cn(
-										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
-										value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
-									)}>
-									{value === dataset.dataset && (
-										<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-											<Check className="h-4 w-4" />
-										</span>
-									)}
-									{dataset.formattedName}
-								</NavigationMenuLink>
-							</li>
-						))}
-					</ul>
+					<div className="flex flex-col gap-0 items-center">
+						{label && <h1 className={cn('font-owl text-foreground text-sm mt-1.5', highlight && 'text-primary-foreground')}>{label}</h1>}
+						<ul className="flex flex-col w-48 p-1">
+							{items?.map((dataset) => (
+								<li key={dataset.dataset}>
+									<NavigationMenuLink
+										closeOnClick
+										onClick={() => onValueChange(dataset.dataset)}
+										className={cn(
+											'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+											value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
+										)}>
+										{value === dataset.dataset && (
+											<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+												<Check className="h-4 w-4" />
+											</span>
+										)}
+										{dataset.formattedName}
+									</NavigationMenuLink>
+								</li>
+							))}
+						</ul>
+					</div>
 				</NavigationMenuContent>
 			)}
 		</NavigationMenuItem>
@@ -304,7 +315,7 @@ type EndlessProps = {
 function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 	return (
 		<div className="flex flex-row mt-2">
-			<div className="flex flex-col gap-1 items-center">
+			<div className="flex flex-col gap-0 items-center">
 				<h1 className="font-owl text-foreground text-sm">Overwatch League</h1>
 				<ul className="flex flex-col w-42 p-1">
 					{OWL_DATASETS_REVERSED?.map((dataset) => (
@@ -322,7 +333,7 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 					))}
 				</ul>
 			</div>
-			<div className="flex flex-col gap-1 items-center">
+			<div className="flex flex-col gap-0 items-center">
 				<h1 className="font-owl text-foreground text-sm">Champion Series</h1>
 				<ul className="flex flex-col w-42 p-1">
 					{OWCS_DATASETS_REVERSED?.map((dataset) => (
