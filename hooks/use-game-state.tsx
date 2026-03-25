@@ -33,10 +33,14 @@ export default function useGameState({ slug }: Props) {
 	const { data } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
 	const { evaluatedGuesses, setEvaluatedGuesses } = data;
 
-	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
+	// tracks last dataset that resetGuesses ran for. Used to prevent confetti from firing when navigating after winning a game
+	const syncedDatasetRef = useRef<string | null>(null);
+
+	// update dataset and reset guesses when dataset changes
 	useEffect(() => {
 		setDataset(dataset);
 		resetGuesses();
+		syncedDatasetRef.current = dataset.dataset;
 	}, [dataset, setDataset]);
 
 	const resetGuesses = useCallback(() => {
@@ -133,7 +137,8 @@ export default function useGameState({ slug }: Props) {
 		}
 	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses, dataset.dataset]);
 
-	return [evaluatedGuesses, gameState, validatedData] as const;
+	const isDatasetSynced = syncedDatasetRef.current === dataset.dataset;
+	return [evaluatedGuesses, isDatasetSynced ? gameState : 'in-progress', validatedData] as const;
 }
 
 type SavedState = { [key: string]: GameState };
