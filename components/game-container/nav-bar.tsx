@@ -22,9 +22,10 @@ import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import type { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
-
 const TWITTER_LINK = 'https://x.com/owldle';
+const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
+
+const skewStyle = (skewRight: boolean) => ({ transform: `skewX(${skewRight ? '' : '-'}12deg)` });
 
 const LazySheetContent = lazy(() => import('@/components/sheet-content'));
 
@@ -45,7 +46,7 @@ export function Navbar() {
 		if (pathname === '/play' || pathname === '/owcs') {
 			const qs = searchParams.toString();
 			const url = qs ? `${pathname}?${qs}` : pathname;
-			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`;
+			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
 		}
 	}, [pathname, searchParams]);
 
@@ -78,7 +79,7 @@ export function Navbar() {
 
 	return (
 		<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-			<nav className="sm:sticky relaxed top-0 flex items-center justify-between bg-card shadow-sm">
+			<nav className="sm:sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 				{/* Left section*/}
 				<div className="flex items-center sm:flex-none flex-1">
 					<Button
@@ -124,7 +125,7 @@ export function Navbar() {
 				</Button>
 
 				{/* Center Button */}
-				<div className="absolute z-10 lg:block hidden left-1/2 -translate-x-1/2">
+				<div className="absolute z-10  drop-shadow-sm lg:block hidden left-1/2 -translate-x-1/2">
 					<div
 						className="origin-top bg-background px-1.5 scale-[115%] shadow-sm"
 						style={{
@@ -197,7 +198,8 @@ function NavSelect({
 	onValueChange: (value: string) => void;
 	isRightSkewed?: boolean;
 	value: string;
-} & NavigationMenuPrimitive.Trigger.Props) {
+	className?: string;
+}) {
 	return (
 		<NavigationMenuItem className="h-full">
 			<NavigationMenuTrigger

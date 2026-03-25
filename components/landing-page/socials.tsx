@@ -45,7 +45,7 @@ const projectGithubLink = 'https://github.com/benschlegel/OWLDLE';
 export default function Socials() {
 	const plausible = usePlausible<PlausibleEvents>();
 	return (
-		<div className="flex justify-center items-center opacity-60 sm:text-xs">
+		<div className="pointer-events-auto flex relative justify-center items-center opacity-60 sm:text-xs">
 			<div className="text-sm font-medium leading-none">
 				Made with ❤️ by{' '}
 				<Popover>

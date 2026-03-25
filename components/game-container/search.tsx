@@ -132,7 +132,7 @@ export default function PlayerSearch({ className }: Props) {
 								value={JSON.stringify(player)}
 								key={`${player.name}-${player.team}`}
 								onSelect={handleItemSubmit}
-								className="text-[16px] sm:text-[16px] sm:py-[0.43rem]">
+								className="text-[16px] sm:text-[16px] sm:py-[0.43rem] z-10">
 								<UserIcon className="mr-2 h-4 w-4" />
 								<span>{player.name}</span>
 							</CommandItem>
