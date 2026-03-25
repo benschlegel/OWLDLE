@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 export const LAST_GAME_COOKIE = 'last-game';
-const ALLOWED_PATHS = ['/play', '/owcs'];
+export const ALLOWED_PATHS = ['/play', '/owcs'];
 
 export function proxy(request: NextRequest) {
 	const raw = request.cookies.get(LAST_GAME_COOKIE)?.value;
