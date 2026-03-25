@@ -11,7 +11,7 @@ import { OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
 	'/play': 'owl',
@@ -27,6 +27,9 @@ type Props = {
 };
 export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 	const pathname = usePathname();
+	const searchParams = useSearchParams();
+	const activeOwlDataset = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
+	const activeOwcsDataset = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
 	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
 	const { setOpen: setHelpOpen } = useDialogState('help');
 	const { setOpen: setSettingsOpen } = useDialogState('settings');
@@ -74,6 +77,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 												href={`/play?season=${dataset.dataset.slice('season'.length)}`}
 												onClick={() => setSheetOpen(false)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
+												active={dataset.dataset === activeOwlDataset}
 											/>
 										))}
 									</div>
@@ -90,6 +94,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 												href={`/owcs?season=${dataset.dataset.slice('owcs-'.length)}`}
 												onClick={() => setSheetOpen(false)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
+												active={dataset.dataset === activeOwcsDataset}
 											/>
 										))}
 									</div>

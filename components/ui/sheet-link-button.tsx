@@ -7,13 +7,14 @@ interface SheetLinkButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElem
 	text: string;
 	href?: string;
 	isExternal?: boolean;
+	active?: boolean;
 }
 
-export function SheetLinkButton({ text, href, isExternal, className, onClick, ...props }: SheetLinkButtonProps) {
+export function SheetLinkButton({ text, href, isExternal, active, className, onClick, ...props }: SheetLinkButtonProps) {
 	const inner = (
 		<>
-			<span className="flex-1 text-left group-hover:text-primary-foreground">{text}</span>
-			<ChevronRight className="size-5 text-foreground group-hover:text-primary-foreground" />
+			<span className={cn('flex-1 text-left group-hover:text-primary-foreground', active && 'text-primary-foreground')}>{text}</span>
+			<ChevronRight className={cn('size-5 text-foreground group-hover:text-primary-foreground', active && 'text-primary-foreground')} />
 		</>
 	);
 
