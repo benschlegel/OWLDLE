@@ -1,6 +1,7 @@
 'use client';
 import { TWITTER_LINK } from '@/components/game-container/nav-bar';
 import { DONATION_LINK, GITHUB_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
@@ -43,8 +44,32 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 				</div>
 			</div>
 			<div className="flex flex-col gap-4 px-4">
-				<div className="flex">
+				<div className="flex flex-col">
 					<h1 className="font-bold sm:text-2xl text-xl font-owl text-foreground">Navigation</h1>
+					<div className="mt-2 flex flex-col gap-2 justify-center">
+						<Accordion type="single" defaultValue="" collapsible>
+							<AccordionItem value="owl" className="border-none px-2">
+								<AccordionTrigger className="mt-1 text-foreground focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 py-1 font-owl sm:text-lg text-base opacity-90">
+									Overwatch League
+								</AccordionTrigger>
+								<AccordionContent>Test</AccordionContent>
+							</AccordionItem>
+							<AccordionItem value="owcs" className="border-none  px-2 ">
+								<AccordionTrigger className="mt-1 text-foreground focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 py-1 font-owl sm:text-lg text-base opacity-90">
+									OWCS
+								</AccordionTrigger>
+								<AccordionContent>Test</AccordionContent>
+							</AccordionItem>
+							<AccordionItem value="arcade" className="border-none  px-2 ">
+								<AccordionTrigger className="mt-1 text-foreground focus-visible:outline-none rounded focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 py-1 font-owl sm:text-lg text-base opacity-90">
+									Arcade
+								</AccordionTrigger>
+								<AccordionContent>Test</AccordionContent>
+							</AccordionItem>
+						</Accordion>
+						{/* <Separator /> */}
+						<SheetLinkButton text="Statistics" className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base" />
+					</div>
 				</div>
 				<div className="flex flex-col">
 					<h1 className="font-bold sm:text-2xl text-xl font-owl text-foreground">Links</h1>
