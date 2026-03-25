@@ -17,7 +17,7 @@ export function SheetLinkButton({ text, href, isExternal, className, ...props }:
 		</>
 	);
 
-	const buttonClass = cn('justify-start group hover:bg-inherit *:transition-colors py-1', className);
+	const buttonClass = cn('justify-start group hover:bg-inherit *:transition-colors sm:py-3 py-1.5  h-auto', className);
 
 	if (href) {
 		return (
