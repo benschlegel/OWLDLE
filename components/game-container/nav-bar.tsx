@@ -178,7 +178,7 @@ export function Navbar() {
 					</NavButton>
 				</div>
 			</nav>
-			<LazySheetContent />
+			<LazySheetContent setSheetOpen={setSheetOpen} />
 		</Sheet>
 	);
 }

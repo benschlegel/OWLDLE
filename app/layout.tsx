@@ -142,7 +142,7 @@ export default async function RootLayout({
 												<main className="w-[32rem]">{children}</main>
 											</div>
 											<Toaster />
-											<div className="sm:block hidden pointer-events-none absolute bottom-6 left-1/2 transform -translate-x-1/2">
+											<div className="sm:block hidden pointer-events-none absolute bottom-8 left-1/2 transform -translate-x-1/2">
 												<Socials />
 											</div>
 										</>
