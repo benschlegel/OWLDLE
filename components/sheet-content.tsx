@@ -16,7 +16,7 @@ import { usePathname, useSearchParams } from 'next/navigation';
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
 	'/play': 'owl',
 	'/owcs': 'owcs',
-	'/arcade': 'arcade',
+	'/endless': 'endless',
 };
 
 const triggerClass =
@@ -100,8 +100,8 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 									</div>
 								</AccordionContent>
 							</AccordionItem>
-							<AccordionItem value="arcade" className="border-none px-2">
-								<AccordionTrigger className={triggerClass}>Arcade</AccordionTrigger>
+							<AccordionItem value="endless" className="border-none px-2">
+								<AccordionTrigger className={triggerClass}>Endless Mode</AccordionTrigger>
 								<AccordionContent />
 							</AccordionItem>
 						</Accordion>
