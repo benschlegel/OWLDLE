@@ -16,7 +16,7 @@ import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 import { LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { lazy, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
@@ -179,7 +179,9 @@ export function Navbar() {
 					</NavButton>
 				</div>
 			</nav>
-			<LazySheetContent setSheetOpen={setSheetOpen} />
+			<Suspense>
+				<LazySheetContent setSheetOpen={setSheetOpen} />
+			</Suspense>
 		</Sheet>
 	);
 }

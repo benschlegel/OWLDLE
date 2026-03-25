@@ -134,7 +134,9 @@ export default async function RootLayout({
 									<DatasetContexttProvider>
 										<Background />
 										<>
-											<SettingsDialog />
+											<Suspense>
+												<SettingsDialog />
+											</Suspense>
 											<Suspense>
 												<Navbar />
 											</Suspense>
