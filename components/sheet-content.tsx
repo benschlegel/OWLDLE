@@ -1,9 +1,13 @@
 'use client';
+import { TWITTER_LINK } from '@/components/game-container/nav-bar';
+import { DONATION_LINK, GITHUB_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
 import { SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { SheetLinkButton } from '@/components/ui/sheet-link-button';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import { ChevronRight, SettingsIcon } from 'lucide-react';
+import { SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
 
 type Props = {
@@ -45,12 +49,25 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 				<div className="flex flex-col">
 					<h1 className="font-bold sm:text-2xl text-xl font-owl text-foreground">Links</h1>
 					<div className="mt-2 flex flex-col gap-2 justify-center">
+						<SheetLinkButton text="Help" onClick={onHelpClick} />
 						<Separator />
-						<Button variant={'ghost'} className="justify-start group hover:bg-inherit *:transition-colors" onClick={onFeedbackClick}>
-							<span className="flex-1 text-left group-hover:text-primary-foreground">Feedback</span>
-							<ChevronRight className="size-5 text-foreground group-hover:text-primary-foreground" />
-						</Button>
+						<SheetLinkButton text="Feedback" onClick={onFeedbackClick} />
 						<Separator />
+						<Popover>
+							<PopoverTrigger asChild>
+								<SheetLinkButton text="Contact" />
+							</PopoverTrigger>
+							<PopoverContent className="w-80 mr-4 sm:mr-0">
+								<SocialPopoverContent />
+							</PopoverContent>
+						</Popover>
+
+						<Separator />
+						<SheetLinkButton text="Donate" href={DONATION_LINK} isExternal />
+						<Separator />
+						<SheetLinkButton text="Twitter" href={TWITTER_LINK} isExternal />
+						<Separator />
+						<SheetLinkButton text="Github" href={GITHUB_LINK} isExternal />
 					</div>
 				</div>
 			</div>

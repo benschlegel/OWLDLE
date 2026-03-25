@@ -40,7 +40,7 @@ const socials: SocialProps[] = [
 	},
 ];
 
-const projectGithubLink = 'https://github.com/benschlegel/OWLDLE';
+export const GITHUB_LINK = 'https://github.com/benschlegel/OWLDLE';
 
 export default function Socials() {
 	const plausible = usePlausible<PlausibleEvents>();
@@ -93,7 +93,7 @@ export function SocialPopoverContent() {
 			<Separator />
 			<div className="text-sm text-muted-foreground">
 				You can also find this project on{' '}
-				<Link target="_blank" href={projectGithubLink} rel="noopener noreferrer" className="border-md">
+				<Link target="_blank" href={GITHUB_LINK} rel="noopener noreferrer" className="border-md">
 					<Button variant="link" className="p-0 h-auto" tabIndex={-1} aria-label="View on Github">
 						<code className="relative rounded bg-background px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
 							Github
