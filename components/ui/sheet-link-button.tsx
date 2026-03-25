@@ -35,7 +35,7 @@ export function SheetLinkButton({ text, href, isExternal, active, className, onC
 	}
 
 	return (
-		<Button variant={'ghost'} className={buttonClass} {...props}>
+		<Button variant={'ghost'} className={buttonClass} onClick={onClick} {...props}>
 			{inner}
 		</Button>
 	);
