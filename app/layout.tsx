@@ -53,8 +53,8 @@ export const OgConfig = {
 
 export const viewport: Viewport = {
 	themeColor: [
-		{ media: '(prefers-color-scheme: dark)', color: '#1a1a1e' },
-		{ media: '(prefers-color-scheme: light)', color: '#ffffff' },
+		{ media: '(prefers-color-scheme: dark)', color: '#00ffff' },
+		{ media: '(prefers-color-scheme: light)', color: '#00ffff' },
 	],
 };
 

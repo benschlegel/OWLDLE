@@ -6,7 +6,7 @@ export default function manifest(): MetadataRoute.Manifest {
 		name: DEFAULT_TITLE,
 		short_name: DEFAULT_TITLE,
 		description: DEFAULT_DESCRIPTION,
-		start_url: '/play',
+		start_url: '/',
 		display: 'standalone',
 		background_color: '#ffffff',
 		theme_color: '#3c3c44',
@@ -37,10 +37,16 @@ export default function manifest(): MetadataRoute.Manifest {
 				purpose: 'maskable',
 			},
 			{
-				src: '/icons/pwa-favicon_192x192.png',
-				sizes: '192x192',
+				src: '/icons/pwa-favicon_512x512.png',
+				sizes: '512x512',
 				type: 'image/png',
 			},
+			// Seems to use the low res image on android splash screen, ignored for now.
+			// {
+			// 	src: '/icons/pwa-favicon_192x192.png',
+			// 	sizes: '192x192',
+			// 	type: 'image/png',
+			// },
 		],
 	};
 }
