@@ -8,17 +8,13 @@ interface GameHeaderProps {
 	modeLabel: string;
 	seasonSelector: ReactNode;
 	seasonTitle: ReactNode;
-	topLabel?: string;
+	topLabel?: ReactNode;
 }
 
 export default function GameHeader({ modeLabel, seasonSelector, seasonTitle, topLabel }: GameHeaderProps) {
 	return (
 		<div className=" top-0 bg-transparent sm:bg-inherit z-10 pt-4 w-full">
-			{topLabel && (
-				<p className="text-sm font-bold text-center font-owl">
-					<span className="text-foreground opacity-70">{topLabel}</span>
-				</p>
-			)}
+			{topLabel}
 			<p className="sm:text-xl text-base font-bold text-center sm:ml-[0.75rem] ml-[1.5rem] font-owl">
 				<span className="text-primary-foreground">{modeLabel}</span>
 			</p>

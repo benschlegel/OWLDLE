@@ -133,8 +133,9 @@ export function Navbar() {
 									menuContent={
 										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''} />
 									}>
-									<span className="2xl:block hidden">Endless Mode</span>
-									<span className="2xl:hidden block">Endless</span>
+									{/* <span className="2xl:block hidden">Endless Mode</span> */}
+									{/* <span className="2xl:hidden block">Endless</span> */}
+									<span className="">Endless</span>
 								</NavSelect>
 							</NavigationMenuList>
 						</NavigationMenu>
