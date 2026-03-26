@@ -116,6 +116,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 							<AccordionItem value="endless" className="border-none px-2">
 								<AccordionTrigger className={triggerClass}>Endless Mode</AccordionTrigger>
 								<AccordionContent>
+									<Separator className="mb-2" />
 									<div className="flex flex-col">
 										<p className="text-xs font-owl text-muted-foreground mb-1 ml-1">Overwatch League</p>
 										{OWL_DATASETS_REVERSED.map((dataset) => (
@@ -127,6 +128,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 												active={dataset.dataset === activeEndlessDataset}
 											/>
 										))}
+										<Separator className="mb-1" />
 										<p className="text-xs font-owl text-muted-foreground mb-1 ml-1 mt-2">Champion Series</p>
 										{OWCS_DATASETS_REVERSED.map((dataset) => (
 											<SheetLinkButton
