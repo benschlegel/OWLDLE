@@ -9,9 +9,11 @@ import { SheetClose, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { SheetLinkButton } from '@/components/ui/sheet-link-button';
 import { OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import { SettingsIcon } from 'lucide-react';
+import { DownloadIcon, SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePWAInstall } from '@/hooks/use-pwa-install';
+import { usePWA } from '@/components/pwa-provider';
 
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
 	'/play': 'owl',
@@ -26,6 +28,7 @@ type Props = {
 	setSheetOpen: (value: React.SetStateAction<boolean>) => void;
 };
 export default function HamburgerSheetContent({ setSheetOpen }: Props) {
+	const { isInstalled } = usePWA();
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -64,10 +67,11 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 		[router, setSheetOpen]
 	);
 
+	const { canInstall, install } = usePWAInstall();
 	const defaultAccordion = PATHNAME_TO_ACCORDION[pathname] ?? '';
 
 	return (
-		<SheetContent side="right" showCloseButton={false}>
+		<SheetContent side="right" showCloseButton={false} className={'sm:gap-2.5 gap-4'}>
 			<div className="w-full h-12 bg-card shadow-sm sticky top-0 flex items-center justify-center">
 				<div className="bg-background shadow-sm sm:px-10 px-6 h-full flex items-center -skew-x-12">
 					<h1 className="sm:text-4xl text-3xl font-bold text-center w-full font-owl skew-x-12">
@@ -170,8 +174,14 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 					</div>
 				</div>
 			</div>
-			<SheetFooter>
-				<Button variant={'default'} className="h-auto py-1.5 gap-1" onClick={onSettingsClick}>
+			<SheetFooter className="py-3.5">
+				{!isInstalled && (
+					<Button variant={'default'} className="h-auto py-1.5 gap-1 sm:hidden flex" onClick={install}>
+						<DownloadIcon className="size-4" />
+						Install App
+					</Button>
+				)}
+				<Button variant={'outline'} className="h-auto py-1.5 gap-1" onClick={onSettingsClick}>
 					<SettingsIcon className="size-4" />
 					Settings
 				</Button>

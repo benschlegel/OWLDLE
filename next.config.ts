@@ -1,4 +1,5 @@
 // import MillionLint from '@million/lint';
+import { withSerwist } from '@serwist/turbopack';
 import type { NextConfig } from 'next';
 import { withPlausibleProxy } from 'next-plausible';
 
@@ -68,4 +69,4 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 // export default MillionLint.next({
 // 	rsc: true,
 // })(nextConfig);
-export default nextConfig;
+export default withSerwist(nextConfig);

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -17,6 +17,10 @@ import { Navbar } from '@/components/game-container/nav-bar';
 import Background from '@/components/background';
 import { SettingsDialog } from '@/components/game-container/dialogs/settings-dialog';
 import Socials from '@/components/landing-page/socials';
+import { SerwistProvider } from './serwist-provider';
+import { PWAProvider } from '@/components/pwa-provider';
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
+import { OfflineToast } from '@/components/offline-toast';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -47,9 +51,25 @@ export const OgConfig = {
 	ogImageHeight: 630,
 };
 
+export const viewport: Viewport = {
+	themeColor: [
+		{ media: '(prefers-color-scheme: dark)', color: '#1a1a1e' },
+		{ media: '(prefers-color-scheme: light)', color: '#ffffff' },
+	],
+};
+
 export const metadata: Metadata = {
+	applicationName: DEFAULT_TITLE,
 	title: DEFAULT_TITLE,
 	description: DEFAULT_DESCRIPTION,
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: 'default',
+		title: DEFAULT_TITLE,
+	},
+	formatDetection: {
+		telephone: false,
+	},
 	metadataBase: new URL(GAME_CONFIG.siteUrl),
 	alternates: {
 		canonical: '/play',
@@ -126,35 +146,41 @@ export default async function RootLayout({
 				</Suspense>
 			</head>
 			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-					<ReactQueryProvider>
-						<EvaluatedGuessProvider>
-							<GuessContextProvider>
-								<GameStateContextProvider>
-									<DatasetContexttProvider>
-										<Background />
-										<>
-											<Suspense>
-												<SettingsDialog />
-											</Suspense>
-											<Suspense>
-												<Navbar />
-											</Suspense>
-											<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
-												<main className="w-[32rem]">{children}</main>
-											</div>
-											<Toaster />
-											<div className="sm:block hidden pointer-events-none absolute bottom-8 left-1/2 transform -translate-x-1/2">
-												<Socials />
-											</div>
-										</>
-									</DatasetContexttProvider>
-									<SpeedInsights />
-								</GameStateContextProvider>
-							</GuessContextProvider>
-						</EvaluatedGuessProvider>
-					</ReactQueryProvider>
-				</ThemeProvider>
+				<SerwistProvider swUrl="/serwist/sw.js">
+					<PWAProvider>
+						<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+							<ReactQueryProvider>
+								<EvaluatedGuessProvider>
+									<GuessContextProvider>
+										<GameStateContextProvider>
+											<DatasetContexttProvider>
+												<Background />
+												<>
+													<Suspense>
+														<SettingsDialog />
+													</Suspense>
+													<Suspense>
+														<Navbar />
+													</Suspense>
+													<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
+														<main className="w-[32rem]">{children}</main>
+													</div>
+													<Toaster />
+													<div className="sm:block hidden pointer-events-none absolute bottom-8 left-1/2 transform -translate-x-1/2">
+														<Socials />
+													</div>
+												</>
+											</DatasetContexttProvider>
+											<SpeedInsights />
+										</GameStateContextProvider>
+									</GuessContextProvider>
+								</EvaluatedGuessProvider>
+							</ReactQueryProvider>
+						</ThemeProvider>
+						<PWAInstallPrompt />
+						<OfflineToast />
+					</PWAProvider>
+				</SerwistProvider>
 			</body>
 		</html>
 	);
