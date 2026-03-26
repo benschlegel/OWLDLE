@@ -1,7 +1,7 @@
 'use client';
 
 import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import GameContainer from '@/components/game-container/GameContainer';
+import GameContainer, { FLIP_OUT_DURATION, ROW_DISMISS_STAGGER } from '@/components/game-container/GameContainer';
 import PlayerSearch from '@/components/game-container/search';
 import EndlessResult from '@/components/endless/endless-result';
 import { StreakDisplay } from '@/components/endless/streak-display';
@@ -11,6 +11,7 @@ import { GuessContext } from '@/context/GuessContext';
 import { DatasetContext } from '@/context/DatasetContext';
 import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
 import { useSettings } from '@/store/settings-store';
+import { useReducedMotion } from 'motion/react';
 
 const SearchDialog = lazy(() => import('@/components/game-container/search-dialog'));
 const MemoizedPlayerSearch = React.memo(PlayerSearch);
@@ -24,6 +25,33 @@ type Props = {
 export default function EndlessGame({ dataset: datasetName }: Props) {
 	const { evaluatedGuesses, guessedPlayers, gameState, correctPlayer, stats, dataset, submitGuess, handlePlayAgain, handleNextGame } =
 		useEndlessGame(datasetName);
+
+	const prefersReducedMotion = useReducedMotion();
+	const [isDismissing, setIsDismissing] = useState(false);
+
+	const handleDismissAndReset = useCallback(
+		(resetFn: () => void) => {
+			if (prefersReducedMotion || evaluatedGuesses.length === 0) {
+				resetFn();
+				return;
+			}
+			setIsDismissing(true);
+			const duration = (evaluatedGuesses.length - 1) * ROW_DISMISS_STAGGER * 1000 + FLIP_OUT_DURATION;
+			setTimeout(() => {
+				setIsDismissing(false);
+				resetFn();
+			}, duration);
+		},
+		[evaluatedGuesses.length, prefersReducedMotion]
+	);
+
+	const dismissAndPlayAgain = useCallback(() => {
+		handleDismissAndReset(handlePlayAgain);
+	}, [handleDismissAndReset, handlePlayAgain]);
+
+	const dismissAndNextGame = useCallback(() => {
+		handleDismissAndReset(handleNextGame);
+	}, [handleDismissAndReset, handleNextGame]);
 
 	const playerSearchClassName = useMemo(() => 'mt-6', []);
 
@@ -82,8 +110,8 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 				<div className="pb-2">
 					<StreakDisplay stats={stats} />
 					{process.env.NODE_ENV === 'development' && <DevAnswer correctPlayer={correctPlayer} />}
-					<GameContainer guesses={evaluatedGuesses} />
-					{gameState === 'in-progress' ? (
+					<GameContainer guesses={evaluatedGuesses} isDismissing={isDismissing} />
+					{gameState === 'in-progress' || isDismissing ? (
 						<>
 							<MemoizedPlayerSearch className={playerSearchClassName} />
 							<Suspense fallback={<div className="aria-hidden hidden" />}>
@@ -95,8 +123,8 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 							state={gameState}
 							correctPlayer={correctPlayer}
 							stats={stats}
-							onRestart={handlePlayAgain}
-							onNextGame={handleNextGame}
+							onRestart={dismissAndPlayAgain}
+							onNextGame={dismissAndNextGame}
 							isNewResult={isNewResult}
 						/>
 					)}
