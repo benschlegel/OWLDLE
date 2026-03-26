@@ -13,14 +13,11 @@ export function ThemeColorSync() {
 
 	useEffect(() => {
 		const color = THEME_COLORS[resolvedTheme as keyof typeof THEME_COLORS] ?? THEME_COLORS.light;
-		// Remove any existing theme-color meta tags (from viewport export)
+		// Update existing server-rendered theme-color meta tags in place
 		const existing = document.querySelectorAll('meta[name="theme-color"]');
-		for (const el of existing) el.remove();
-		// Insert a single meta tag with the resolved color
-		const meta = document.createElement('meta');
-		meta.name = 'theme-color';
-		meta.content = color;
-		document.head.appendChild(meta);
+		for (const el of existing) {
+			el.setAttribute('content', color);
+		}
 	}, [resolvedTheme]);
 
 	return null;
