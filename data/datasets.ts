@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const DEFAULT_DATASET_NAME: Dataset = 'season6';
 export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2'] as const;
 export type Dataset = (typeof DATASETS)[number];
-export type League = 'owl' | 'owcs';
+export type DatasetMode = 'owl' | 'owcs';
 
 export const datasetSchema = z.enum(DATASETS);
 export type DatasetMetadata<T extends Dataset> = {
@@ -19,7 +19,7 @@ export type DatasetMetadata<T extends Dataset> = {
 	year: string;
 	formattedName: string;
 	shorthand: string;
-	league: League;
+	league: DatasetMode;
 };
 
 export type CombinedDatasetMetadata =
@@ -37,7 +37,7 @@ type BaseDatasetMetadata = {
 	name: string;
 	year: string;
 	shorthand: string;
-	league: League;
+	league: DatasetMode;
 };
 
 export const datasetInfo: BaseDatasetMetadata[] = [

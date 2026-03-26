@@ -32,6 +32,8 @@ export default function SettingsContent({ setOpen }: Props) {
 function SettingsEntries() {
 	const isBackgroundEnabled = useSettings((s) => s.isBackgroundEnabled);
 	const setIsBackgroundEnabled = useSettings((s) => s.setIsBackgroundEnabled);
+	const isDevAnswerVisible = useSettings((s) => s.isDevAnswerVisible);
+	const setIsDevAnswerVisible = useSettings((s) => s.setIsDevAnswerVisible);
 	const { setTheme, theme } = useTheme();
 
 	const onBackgroundSwitch = useCallback(
@@ -39,6 +41,13 @@ function SettingsEntries() {
 			setIsBackgroundEnabled(newState);
 		},
 		[setIsBackgroundEnabled]
+	);
+
+	const onDevAnswerSwitch = useCallback(
+		(newState: boolean) => {
+			setIsDevAnswerVisible(newState);
+		},
+		[setIsDevAnswerVisible]
 	);
 
 	const handleThemeSwitch = useCallback(
@@ -75,6 +84,15 @@ function SettingsEntries() {
 
 	return (
 		<>
+			{process.env.NODE_ENV === 'development' && (
+				<SettingsSwitchEntry
+					label="Show answer"
+					id="dev-answer"
+					onSwitch={onDevAnswerSwitch}
+					initialChecked={isDevAnswerVisible}
+					description="Show the correct answer in endless mode."
+				/>
+			)}
 			<SettingsSwitchEntry
 				label="Show background"
 				id="background"

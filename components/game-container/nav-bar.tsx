@@ -42,6 +42,8 @@ export function Navbar() {
 
 	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
 	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
+	const endlessMode = pathname === '/endless' ? searchParams.get('mode') ?? 'owcs' : '';
+	const endlessSeason = pathname === '/endless' ? searchParams.get('season') ?? 's2' : '';
 
 	useEffect(() => {
 		if (ALLOWED_PATHS.includes(pathname)) {
@@ -74,6 +76,15 @@ export function Navbar() {
 		(value: string) => {
 			const season = value.slice('owcs-'.length);
 			viewTransition(() => router.push(`/owcs?season=${season}`));
+		},
+		[router]
+	);
+
+	const handleEndlessSelect = useCallback(
+		(value: string) => {
+			// value format: "owl:6" or "owcs:s2"
+			const [mode, season] = value.split(':');
+			viewTransition(() => router.push(`/endless?mode=${mode}&season=${season}`));
 		},
 		[router]
 	);
@@ -116,10 +127,12 @@ export function Navbar() {
 									OWCS
 								</NavSelect>
 								<NavSelect
-									onValueChange={handleOwcsSelect}
-									value={owcsValue}
+									onValueChange={handleEndlessSelect}
+									value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''}
 									highlight={pathname === '/endless'}
-									menuContent={<EndlessNavContent value="test" />}>
+									menuContent={
+										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''} />
+									}>
 									<span className="2xl:block hidden">Endless Mode</span>
 									<span className="2xl:hidden block">Endless</span>
 								</NavSelect>
@@ -257,7 +270,7 @@ function NavSelect({
 												<Check className="h-4 w-4" />
 											</span>
 										)}
-										{dataset.formattedName}
+										<span className="opacity-75">{dataset.formattedName}</span>
 									</NavigationMenuLink>
 								</li>
 							))}
@@ -312,43 +325,66 @@ type EndlessProps = {
 	onValueChange?: (value: string) => void;
 	value: string;
 };
+
+/** Converts a dataset identifier to the "league:season" format used by endless URL params */
+function toEndlessValue(dataset: string): string {
+	if (dataset.startsWith('owcs-')) return `owcs:${dataset.slice('owcs-'.length)}`;
+	return `owl:${dataset.slice('season'.length)}`;
+}
+
 function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 	return (
 		<div className="flex flex-row mt-1.5">
 			<div className="flex flex-col gap-0 items-center">
 				<h1 className="font-owl text-foreground text-sm">Overwatch League</h1>
 				<ul className="flex flex-col w-42 p-1">
-					{OWL_DATASETS_REVERSED?.map((dataset) => (
-						<li key={dataset.dataset}>
-							<NavigationMenuLink
-								closeOnClick
-								onClick={() => onValueChange?.(dataset.dataset)}
-								className={cn(
-									'cursor-pointer relative py-1.5 px-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
-									value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
-								)}>
-								<span className="text-center w-full">{dataset.formattedName}</span>
-							</NavigationMenuLink>
-						</li>
-					))}
+					{OWL_DATASETS_REVERSED?.map((dataset) => {
+						const ev = toEndlessValue(dataset.dataset);
+						return (
+							<li key={dataset.dataset}>
+								<NavigationMenuLink
+									closeOnClick
+									onClick={() => onValueChange?.(ev)}
+									className={cn(
+										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+										value === ev && 'font-semibold text-primary-foreground font-mono'
+									)}>
+									{value === ev && (
+										<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+											<Check className="h-4 w-4" />
+										</span>
+									)}
+									<span className="opacity-75">{dataset.formattedName}</span>
+								</NavigationMenuLink>
+							</li>
+						);
+					})}
 				</ul>
 			</div>
 			<div className="flex flex-col gap-0 items-center">
 				<h1 className="font-owl text-foreground text-sm">Champion Series</h1>
 				<ul className="flex flex-col w-42 p-1">
-					{OWCS_DATASETS_REVERSED?.map((dataset) => (
-						<li key={dataset.dataset}>
-							<NavigationMenuLink
-								closeOnClick
-								onClick={() => onValueChange?.(dataset.dataset)}
-								className={cn(
-									'cursor-pointer relative py-1.5 px-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
-									value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
-								)}>
-								<span className="text-center w-full">{dataset.formattedName}</span>
-							</NavigationMenuLink>
-						</li>
-					))}
+					{OWCS_DATASETS_REVERSED?.map((dataset) => {
+						const ev = toEndlessValue(dataset.dataset);
+						return (
+							<li key={dataset.dataset}>
+								<NavigationMenuLink
+									closeOnClick
+									onClick={() => onValueChange?.(ev)}
+									className={cn(
+										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+										value === ev && 'font-semibold text-primary-foreground font-mono'
+									)}>
+									{value === ev && (
+										<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+											<Check className="h-4 w-4" />
+										</span>
+									)}
+									<span className="opacity-75">{dataset.formattedName}</span>
+								</NavigationMenuLink>
+							</li>
+						);
+					})}
 				</ul>
 			</div>
 		</div>

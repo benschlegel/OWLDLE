@@ -5,16 +5,22 @@ import { Separator } from '@/components/ui/separator';
 import { Suspense, type ReactNode } from 'react';
 
 interface GameHeaderProps {
-	leagueLabel: string;
+	modeLabel: string;
 	seasonSelector: ReactNode;
 	seasonTitle: ReactNode;
+	topLabel?: string;
 }
 
-export default function GameHeader({ leagueLabel, seasonSelector, seasonTitle }: GameHeaderProps) {
+export default function GameHeader({ modeLabel, seasonSelector, seasonTitle, topLabel }: GameHeaderProps) {
 	return (
 		<div className=" top-0 bg-transparent sm:bg-inherit z-10 pt-4 w-full">
+			{topLabel && (
+				<p className="text-sm font-bold text-center font-owl">
+					<span className="text-foreground opacity-70">{topLabel}</span>
+				</p>
+			)}
 			<p className="sm:text-xl text-base font-bold text-center sm:ml-[0.75rem] ml-[1.5rem] font-owl">
-				<span className="text-primary-foreground">{leagueLabel}</span>
+				<span className="text-primary-foreground">{modeLabel}</span>
 			</p>
 			<div className="flex flex-row justify-between items-center w-full">
 				<div className="flex gap-2 items-center">
