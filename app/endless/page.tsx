@@ -18,6 +18,20 @@ export const metadata: Metadata = {
 		type: 'website',
 		siteName: 'owldle',
 	},
+	icons: {
+		icon: [
+			{
+				media: '(prefers-color-scheme: light)',
+				url: '/images/icon-light.png',
+				href: '/owcs_favicon.ico',
+			},
+			{
+				media: '(prefers-color-scheme: dark)',
+				url: '/images/icon.png',
+				href: '/owcs_favicon.ico',
+			},
+		],
+	},
 };
 
 export default function EndlessPage() {
