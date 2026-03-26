@@ -15,7 +15,7 @@ export default function GameHeader({ modeLabel, seasonSelector, seasonTitle, top
 	return (
 		<div className=" top-0 bg-transparent sm:bg-inherit z-10 pt-4 w-full">
 			{topLabel}
-			<p className="sm:text-xl text-base font-bold text-center sm:ml-[0.75rem] ml-[1.5rem] font-owl">
+			<p className="sm:text-xl text-base font-bold text-center sm:ml-0 ml-[1.5rem] font-owl">
 				<span className="text-primary-foreground">{modeLabel}</span>
 			</p>
 			<div className="flex flex-row justify-between items-center w-full">
