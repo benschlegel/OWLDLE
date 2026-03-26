@@ -18,12 +18,19 @@ export type EndlessGame = {
 	state: GameState;
 };
 
+export type SessionGameEntry = {
+	guessCount: number;
+	result: 'won' | 'lost';
+};
+
 export type DatasetStats = {
 	currentStreak: number;
 	highestStreak: number;
 	wins: number;
 	games: number;
 	current: EndlessGame | null;
+	/** per-game summary for the current streak, persisted so partial streaks survive page reloads */
+	sessionHistory: SessionGameEntry[];
 };
 
 const defaultStats: DatasetStats = {
@@ -32,6 +39,7 @@ const defaultStats: DatasetStats = {
 	wins: 0,
 	games: 0,
 	current: null,
+	sessionHistory: [],
 };
 
 type EndlessStore = {
@@ -100,6 +108,7 @@ export const useEndlessStore = create<EndlessStore>()(
 								highestStreak: Math.max(prev.highestStreak, newStreak),
 								wins: prev.wins + 1,
 								games: prev.games + 1,
+								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'won' }],
 								current: { ...prev.current, state: 'won' },
 							},
 						},
@@ -116,6 +125,7 @@ export const useEndlessStore = create<EndlessStore>()(
 								...prev,
 								currentStreak: 0,
 								games: prev.games + 1,
+								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'lost' }],
 								current: { ...prev.current, state: 'lost' },
 							},
 						},
@@ -124,11 +134,14 @@ export const useEndlessStore = create<EndlessStore>()(
 			playAgain: (dataset, playerCount) =>
 				set((state) => {
 					const prev = state.datasets[dataset] ?? defaultStats;
+					// clear sessionHistory only after a loss (streak ended), preserve it midstreak after a win
+					const wasLost = prev.current?.state === 'lost';
 					return {
 						datasets: {
 							...state.datasets,
 							[dataset]: {
 								...prev,
+								sessionHistory: wasLost ? [] : prev.sessionHistory ?? [],
 								current: { playerIndex: randomIndex(playerCount), guesses: [], state: 'in-progress' },
 							},
 						},
