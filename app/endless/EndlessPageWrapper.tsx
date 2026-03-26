@@ -30,9 +30,9 @@ export default function EndlessPageWrapper() {
 function EndlessHeaderBadge() {
 	return (
 		<div className="w-full flex items-center justify-center mb-3 -mt-2">
-			<div className="flex items-center justify-center rounded-md dark:bg-primary-foreground/80 bg-primary-foreground/85 py-1 px-4 gap-2">
+			<div className="flex items-center justify-center rounded-md dark:bg-primary-foreground/80 bg-primary-foreground/85 py-1 sm:px-4 px-3 gap-2">
 				<GamepadIcon className="text-white/90 size-6" />
-				<span className="font-owl text-white/90 text-lg">Endless Mode</span>
+				<span className="font-owl text-white/90 sm:text-lg text-base">Endless Mode</span>
 			</div>
 		</div>
 	);
