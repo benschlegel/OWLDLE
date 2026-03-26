@@ -11,7 +11,7 @@ import { OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
 	'/play': 'owl',
@@ -26,10 +26,17 @@ type Props = {
 	setSheetOpen: (value: React.SetStateAction<boolean>) => void;
 };
 export default function HamburgerSheetContent({ setSheetOpen }: Props) {
+	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
 	const activeOwlDataset = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
 	const activeOwcsDataset = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
+	const activeEndlessDataset =
+		pathname === '/endless'
+			? (searchParams.get('mode') ?? 'owcs') === 'owcs'
+				? `owcs-${searchParams.get('season') ?? 's2'}`
+				: `season${searchParams.get('season') ?? '6'}`
+			: '';
 	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
 	const { setOpen: setHelpOpen } = useDialogState('help');
 	const { setOpen: setSettingsOpen } = useDialogState('settings');
@@ -48,6 +55,14 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 		setSettingsOpen(true);
 		setSheetOpen(false);
 	}, [setSettingsOpen, setSheetOpen]);
+
+	const navigateTo = useCallback(
+		(href: string) => {
+			setSheetOpen(false);
+			router.push(href);
+		},
+		[router, setSheetOpen]
+	);
 
 	const defaultAccordion = PATHNAME_TO_ACCORDION[pathname] ?? '';
 
@@ -74,8 +89,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											<SheetLinkButton
 												key={dataset.dataset}
 												text={dataset.formattedName}
-												href={`/play?season=${dataset.dataset.slice('season'.length)}`}
-												onClick={() => setSheetOpen(false)}
+												onClick={() => navigateTo(`/play?season=${dataset.dataset.slice('season'.length)}`)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
 												active={dataset.dataset === activeOwlDataset}
 											/>
@@ -91,8 +105,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											<SheetLinkButton
 												key={dataset.dataset}
 												text={dataset.formattedName}
-												href={`/owcs?season=${dataset.dataset.slice('owcs-'.length)}`}
-												onClick={() => setSheetOpen(false)}
+												onClick={() => navigateTo(`/owcs?season=${dataset.dataset.slice('owcs-'.length)}`)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
 												active={dataset.dataset === activeOwcsDataset}
 											/>
@@ -102,7 +115,30 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 							</AccordionItem>
 							<AccordionItem value="endless" className="border-none px-2">
 								<AccordionTrigger className={triggerClass}>Endless Mode</AccordionTrigger>
-								<AccordionContent />
+								<AccordionContent>
+									<div className="flex flex-col">
+										<p className="text-xs font-owl text-muted-foreground mb-1 ml-1">Overwatch League</p>
+										{OWL_DATASETS_REVERSED.map((dataset) => (
+											<SheetLinkButton
+												key={`endless-${dataset.dataset}`}
+												text={dataset.formattedName}
+												onClick={() => navigateTo(`/endless?mode=owl&season=${dataset.dataset.slice('season'.length)}`)}
+												className="font-mono font-semibold text-foreground sm:py-2.5"
+												active={dataset.dataset === activeEndlessDataset}
+											/>
+										))}
+										<p className="text-xs font-owl text-muted-foreground mb-1 ml-1 mt-2">Champion Series</p>
+										{OWCS_DATASETS_REVERSED.map((dataset) => (
+											<SheetLinkButton
+												key={`endless-${dataset.dataset}`}
+												text={dataset.formattedName}
+												onClick={() => navigateTo(`/endless?mode=owcs&season=${dataset.dataset.slice('owcs-'.length)}`)}
+												className="font-mono font-semibold text-foreground sm:py-2.5"
+												active={dataset.dataset === activeEndlessDataset}
+											/>
+										))}
+									</div>
+								</AccordionContent>
 							</AccordionItem>
 						</Accordion>
 						<SheetLinkButton text="Statistics" className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base" />
