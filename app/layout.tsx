@@ -21,6 +21,7 @@ import { SerwistProvider } from './serwist-provider';
 import { PWAProvider } from '@/components/pwa-provider';
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { OfflineToast } from '@/components/offline-toast';
+import { THEME_COLORS, ThemeColorSync } from '@/components/theme-color-sync';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -53,8 +54,8 @@ export const OgConfig = {
 
 export const viewport: Viewport = {
 	themeColor: [
-		{ media: '(prefers-color-scheme: dark)', color: '#00ffff' },
-		{ media: '(prefers-color-scheme: light)', color: '#00ffff' },
+		{ media: '(prefers-color-scheme: dark)', color: THEME_COLORS.dark },
+		{ media: '(prefers-color-scheme: light)', color: THEME_COLORS.dark },
 	],
 };
 
@@ -149,6 +150,7 @@ export default async function RootLayout({
 				<SerwistProvider swUrl="/serwist/sw.js">
 					<PWAProvider>
 						<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+							<ThemeColorSync />
 							<ReactQueryProvider>
 								<EvaluatedGuessProvider>
 									<GuessContextProvider>

@@ -114,7 +114,7 @@ export function Navbar() {
 									value={owlValue}
 									highlight={pathname === '/play'}
 									label="Overwatch League"
-									className={'2xl:ml-0 2xl:pl-5 -ml-1 pl-6'}>
+									className={'2xl:ml-0 2xl:pl-5 -ml-1.5 pl-6'}>
 									<span className="2xl:block hidden">Overwatch League</span>
 									<span className="2xl:hidden block">OWL</span>
 								</NavSelect>
