@@ -13,6 +13,7 @@ import type {
 	DbFeedback,
 	DbIteration,
 	DbLoggedGame,
+	DbLoggedEndlessSession,
 	DbGuess,
 	DbGameResult,
 } from '@/types/database';
@@ -55,6 +56,18 @@ const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
 
 const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
+
+const endlessLogCollection = database.collection<DbLoggedEndlessSession>('endless_game_logs');
+
+/**
+ * Log an endless session to db (called when a streak ends via a loss)
+ * @param dataset what dataset this session is for
+ * @param streakLength number of wins before the streak ended
+ * @param games simplified summary of each game in streak (including last lost game)
+ */
+export async function logEndlessSession(dataset: Dataset, streakLength: number, games: DbLoggedEndlessSession['games']) {
+	return endlessLogCollection.insertOne({ dataset, streakLength, games, finishedAt: new Date() });
+}
 
 /**
  * CAREFUL: deletes the entire player backlog from database

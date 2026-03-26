@@ -54,7 +54,16 @@ export function useEndlessGame(datasetName: Dataset) {
 			if (guessResult.isNameCorrect) {
 				winGame(datasetName);
 			} else if (currentGame.guesses.length + 1 >= GAME_CONFIG.maxGuesses) {
+				const prevStreak = useEndlessStore.getState().getStats(datasetName).currentStreak;
 				loseGame(datasetName);
+				if (prevStreak > 0) {
+					const { sessionHistory } = useEndlessStore.getState().getStats(datasetName);
+					fetch(`/api/save-endless?dataset=${datasetName}`, {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ streakLength: prevStreak, games: sessionHistory }),
+					});
+				}
 			}
 		},
 		[currentGame, correctPlayer, datasetName, addGuess, winGame, loseGame]
