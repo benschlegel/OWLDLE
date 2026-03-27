@@ -1,4 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GameStateContext } from '@/context/GameStateContext';
 import { readablePlayerStats, usePlayerStatsStore } from '@/store/player-stats-store';
@@ -18,9 +19,10 @@ export default function PersonalStats() {
 		<Card className="transition-colors animate-in fade-in duration-900">
 			<CardHeader className="p-4 pb-2">
 				<CardTitle className="text-lg font-owl">Your Stats</CardTitle>
+				<Separator />
 			</CardHeader>
 			<CardContent className="p-4 pt-0">
-				<div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
+				<div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
 					<StatCell label="Games Played" value={playerStats.gamesPlayed} />
 					<StatCell label="Games Won" value={playerStats.wins} />
 					<StatCell label="Streak" value={playerStats.currentStreak} />

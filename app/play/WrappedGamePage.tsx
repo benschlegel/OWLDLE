@@ -1,7 +1,7 @@
 'use client';
 import UpdateMetadata from '@/app/play/UpdateMetadata';
 import GamePage from '@/components/landing-page/game-page';
-import StatsPanel from '@/components/game-container/stats-panel';
+import GlobalStats from '@/components/game-container/global-stats';
 import Header from '@/components/landing-page/header';
 import Socials from '@/components/landing-page/socials';
 import { type Dataset, DATASETS } from '@/data/datasets';
