@@ -53,13 +53,6 @@ export function Navbar() {
 		}
 	}, [pathname, searchParams]);
 
-	// Prefetch game routes so navigation feels instant
-	useEffect(() => {
-		router.prefetch('/play');
-		router.prefetch('/owcs');
-		router.prefetch('/endless');
-	}, [router]);
-
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.ctrlKey && e.key === 'b') {
@@ -121,6 +114,7 @@ export function Navbar() {
 									value={owlValue}
 									highlight={pathname === '/play'}
 									label="Overwatch League"
+									prefetchRoute="/play"
 									className={'2xl:ml-0 2xl:pl-5 -ml-1.5 pl-6'}>
 									<span className="2xl:block hidden">Overwatch League</span>
 									<span className="2xl:hidden block">OWL</span>
@@ -130,13 +124,15 @@ export function Navbar() {
 									items={OWCS_DATASETS_REVERSED}
 									onValueChange={handleOwcsSelect}
 									value={owcsValue}
-									highlight={pathname === '/owcs'}>
+									highlight={pathname === '/owcs'}
+									prefetchRoute="/owcs">
 									OWCS
 								</NavSelect>
 								<NavSelect
 									onValueChange={handleEndlessSelect}
 									value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''}
 									highlight={pathname === '/endless'}
+									prefetchRoute="/endless"
 									menuContent={
 										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''} />
 									}>
@@ -230,6 +226,7 @@ function NavSelect({
 	className,
 	menuContent,
 	label,
+	prefetchRoute,
 }: {
 	children: React.ReactNode;
 	label?: string;
@@ -240,7 +237,9 @@ function NavSelect({
 	value: string;
 	className?: string;
 	menuContent?: ReactNode;
+	prefetchRoute?: string;
 }) {
+	const router = useRouter();
 	return (
 		<NavigationMenuItem className="h-full">
 			<NavigationMenuTrigger
@@ -254,6 +253,9 @@ function NavSelect({
 						: 'bg-card text-foreground dark:hover:text-cyan-400 hover:text-cyan-500 focus:bg-card data-popup-open:bg-secondary data-open:bg-secondary',
 					className
 				)}
+				onPointerEnter={() => {
+					if (prefetchRoute) router.prefetch(prefetchRoute);
+				}}
 				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
 				<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
 			</NavigationMenuTrigger>
