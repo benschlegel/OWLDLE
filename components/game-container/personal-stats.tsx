@@ -3,6 +3,7 @@ import { Separator } from '@/components/ui/separator';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GameStateContext } from '@/context/GameStateContext';
 import { readablePlayerStats, usePlayerStatsStore } from '@/store/player-stats-store';
+import { useSettings } from '@/store/settings-store';
 import { useContext } from 'react';
 
 export default function PersonalStats() {
@@ -10,10 +11,11 @@ export default function PersonalStats() {
 	const playerStatsStore = usePlayerStatsStore((s) => s.getStats(dataset.dataset));
 	const playerStats = readablePlayerStats(playerStatsStore);
 	const [gameState] = useContext(GameStateContext);
+	const areStatsVisible = useSettings((s) => s.areStatsVisible);
 
 	// Only show stats once game is finished.
 	const isFinished = gameState === 'won' || gameState === 'lost' || gameState === 'won-old' || gameState === 'lost-old';
-	if (!isFinished) return null;
+	if (!isFinished || !areStatsVisible) return null;
 
 	return (
 		<Card className="transition-colors animate-in fade-in duration-900">
