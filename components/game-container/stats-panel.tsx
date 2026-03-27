@@ -23,7 +23,7 @@ export default function StatsPanel() {
 	const didWin = gameState === 'won' || gameState === 'won-old';
 
 	return (
-		<div className="flex flex-col gap-3">
+		<div className="flex flex-col gap-3 animate-in fade-in duration-900">
 			{/* Global stats */}
 			{globalStats && (
 				<Card className="transition-colors">
