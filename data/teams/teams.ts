@@ -142,7 +142,6 @@ export const ALL_TEAMS = [
 	{ dataset: 'season3', data: [...EASTERN_S2, ...WESTERN_S2] },
 	{ dataset: 'season4', data: [...EASTERN_S4, ...WESTERN_S4] },
 	{ dataset: 'season5', data: [...EASTERN_S5, ...WESTERN_S5] },
-	{ dataset: 'season5', data: [...EASTERN_S5, ...WESTERN_S5] },
 	{ dataset: 'season6', data: [...EASTERN_S6, ...WESTERN_S6] },
 	{ dataset: 'owcs-s2', data: [...EMEA_OWCS_S2, ...NA_OWCS_S2, ...KR_OWCS_S2] },
 ] as const;
