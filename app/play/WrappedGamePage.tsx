@@ -20,14 +20,14 @@ export default function SeasonPageWrapper() {
 	// Check if valid season was provided
 	if (validSeasons.includes(season as unknown as Dataset)) {
 		return (
-			<>
+			<div className="animate-in fade-in duration-300">
 				<UpdateMetadata />
 				<div className="sm:hidden block">
 					<MemoizedSocials />
 				</div>
 				<MemoizedHeader />
 				<GamePage slug={season} />
-			</>
+			</div>
 		);
 	}
 
