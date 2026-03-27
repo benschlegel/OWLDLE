@@ -46,17 +46,22 @@ export async function GET(req: NextRequest) {
 			if (answer.answer === undefined || now >= answer.answer.nextReset) {
 				console.log(`re-fetching... (${answer.dataset})`);
 				const res = await updateLocalAnswer(answer.dataset);
-				// res only contains error, return error response if it exists
+				// Skip datasets that have no answer in the database (e.g. newly added datasets that haven't been initialized yet)
 				if (res) {
-					return res;
+					console.warn(`Skipping dataset ${answer.dataset}: no answer in database`);
 				}
 			}
 		}
 
-		// Calculate seconds until next reset (based on season1, same for all datasets. Default to next reset in 0 seconds if undefined)
-		const secondsUntilNextReset =
-			currentAnswers[0].answer === undefined ? 0 : Math.floor((currentAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000);
-		return new Response(JSON.stringify(currentAnswers), {
+		// Filter out datasets that have no answer (not yet initialized in the database)
+		const validAnswers = currentAnswers.filter((a): a is DatasetAnswer & { answer: DbAnswer } => a.answer !== undefined);
+		if (validAnswers.length === 0) {
+			return new Response('No datasets have answers in the database.', { status: 500 });
+		}
+
+		// Calculate seconds until next reset (based on first valid answer, same for all datasets. Default to next reset in 0 seconds if undefined)
+		const secondsUntilNextReset = Math.floor((validAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000);
+		return new Response(JSON.stringify(validAnswers), {
 			status: 200,
 			headers: {
 				'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
