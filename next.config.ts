@@ -31,6 +31,7 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 	experimental: {
 		viewTransition: true,
 	},
+	allowedDevOrigins: ['dev.bschlegel.com'],
 	async redirects() {
 		return [
 			{
