@@ -10,7 +10,7 @@ import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
-import { atlanticPacificTeams, getAtlantic, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
+import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { useDialogParams } from '@/hooks/use-dialog-param';
 import { useHelpDialogStore } from '@/store/help-dialog-store';
@@ -246,17 +246,26 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 	const emeaTeams = getEmea(dataset.dataset);
 	const naTeams = getNa(dataset.dataset);
 	const koreaTeams = getKr(dataset.dataset);
+	const cnTeams = getCn(dataset.dataset);
+	const hasCn = cnTeams && cnTeams.length > 0;
 
 	return (
 		<>
 			<p className="scroll-m-20 text-base tracking-normal">
-				Teams are divided into <InlineCode>EMEA</InlineCode>, <InlineCode>North America</InlineCode> and <InlineCode>Korea</InlineCode>.{' '}
-				<span className="text-primary-foreground">{dataset.name}</span> has the following teams:
+				Teams are divided into <InlineCode>EMEA</InlineCode>, <InlineCode>North America</InlineCode>, <InlineCode>Korea</InlineCode>
+				{hasCn && (
+					<>
+						{' '}
+						and <InlineCode>China</InlineCode>
+					</>
+				)}
+				. <span className="text-primary-foreground">{dataset.name}</span> has the following teams:
 			</p>
 			<div className="flex flex-col gap-3">
 				<TeamGroup title="EMEA" teams={emeaTeams ?? []} />
 				<TeamGroup title="North America" teams={naTeams ?? []} />
 				<TeamGroup title="Korea" teams={koreaTeams ?? []} />
+				{hasCn && <TeamGroup title="China" teams={cnTeams} />}
 			</div>
 		</>
 	);

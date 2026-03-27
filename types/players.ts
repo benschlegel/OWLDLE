@@ -10,7 +10,7 @@ export type Player<T extends Dataset = 'season1'> = z.infer<ReturnType<typeof pl
 
 const ROLES = ['Damage', 'Tank', 'Support'] as const;
 
-const REGIONS = ['AtlanticDivison', 'PacificDivision', 'EMEA', 'Korea', 'NA'] as const;
+const REGIONS = ['AtlanticDivison', 'PacificDivision', 'EMEA', 'Korea', 'NA', 'CN'] as const;
 
 export type Region = (typeof REGIONS)[number];
 

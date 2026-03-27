@@ -352,7 +352,10 @@ export type CombinedLogoData =
 	| LogoData<'season4'>
 	| LogoData<'season5'>
 	| LogoData<'season6'>
-	| LogoData<'owcs-s2'>;
+	| LogoData<'owcs-s2'>
+	| LogoData<'owcs-s3'>;
+
+export const TEAM_LOGOS_OWCS_S3: TeamLogoData<'owcs-s3'>[] = [];
 
 export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },
@@ -362,6 +365,7 @@ export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season5', data: TEAM_LOGOS_S5 as unknown[] as TeamLogoData<'season5'>[] },
 	{ dataset: 'season6', data: TEAM_LOGOS_S6 },
 	{ dataset: 'owcs-s2', data: TEAM_LOGOS_OWCS_S2 },
+	{ dataset: 'owcs-s3', data: TEAM_LOGOS_OWCS_S3 },
 ] as const;
 
 export function getTeamLogos(dataset: Dataset) {

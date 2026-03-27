@@ -5,7 +5,7 @@ import { ALL_TEAMS } from '@/data/teams/teams';
 import { z } from 'zod';
 
 export const DEFAULT_DATASET_NAME: Dataset = 'season6';
-export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2'] as const;
+export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2', 'owcs-s3'] as const;
 export type Dataset = (typeof DATASETS)[number];
 export type DatasetMode = 'owl' | 'owcs';
 
@@ -20,6 +20,7 @@ export type DatasetMetadata<T extends Dataset> = {
 	formattedName: string;
 	shorthand: string;
 	league: DatasetMode;
+	href: string;
 };
 
 export type CombinedDatasetMetadata =
@@ -29,7 +30,8 @@ export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season4'>
 	| DatasetMetadata<'season5'>
 	| DatasetMetadata<'season6'>
-	| DatasetMetadata<'owcs-s2'>;
+	| DatasetMetadata<'owcs-s2'>
+	| DatasetMetadata<'owcs-s3'>;
 
 type BaseDatasetMetadata = {
 	dataset: Dataset;
@@ -38,6 +40,7 @@ type BaseDatasetMetadata = {
 	year: string;
 	shorthand: string;
 	league: DatasetMode;
+	href: string;
 };
 
 export const datasetInfo: BaseDatasetMetadata[] = [
@@ -48,6 +51,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2018',
 		shorthand: 'S1',
 		league: 'owl',
+		href: 'owl?season=s1',
 	},
 	{
 		dataset: 'season2',
@@ -56,6 +60,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2019',
 		shorthand: 'S2',
 		league: 'owl',
+		href: 'owl?season=s2',
 	},
 	{
 		dataset: 'season3',
@@ -64,6 +69,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2020',
 		shorthand: 'S3',
 		league: 'owl',
+		href: 'owl?season=s3',
 	},
 	{
 		dataset: 'season4',
@@ -72,6 +78,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2021',
 		shorthand: 'S4',
 		league: 'owl',
+		href: 'owl?season=s4',
 	},
 	{
 		dataset: 'season5',
@@ -80,6 +87,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2022',
 		shorthand: 'S5',
 		league: 'owl',
+		href: 'owl?season=s5',
 	},
 	{
 		dataset: 'season6',
@@ -88,6 +96,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2023',
 		shorthand: 'S6',
 		league: 'owl',
+		href: 'owl?season=s6',
 	},
 	{
 		dataset: 'owcs-s2',
@@ -96,6 +105,16 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2025',
 		shorthand: 'S2',
 		league: 'owcs',
+		href: 'owcs?season=s2',
+	},
+	{
+		dataset: 'owcs-s3',
+		formattedName: 'OWCS S3 (2025)',
+		name: 'OWCS S3',
+		year: '2025',
+		shorthand: 'S3',
+		league: 'owcs',
+		href: 'owcs',
 	},
 ] as const;
 
