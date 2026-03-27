@@ -347,7 +347,7 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 		<div className="flex flex-row mt-1.5">
 			<div className="flex flex-col gap-0 items-center">
 				<h1 className="font-owl text-foreground text-sm">Overwatch League</h1>
-				<ul className="flex flex-col w-42 p-1">
+				<ul className="flex flex-col w-44 p-1">
 					{OWL_DATASETS_REVERSED?.map((dataset) => {
 						const ev = toEndlessValue(dataset.dataset);
 						return (
@@ -373,7 +373,7 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 			</div>
 			<div className="flex flex-col gap-0 items-center">
 				<h1 className="font-owl text-foreground text-sm">Champion Series</h1>
-				<ul className="flex flex-col w-42 p-1">
+				<ul className="flex flex-col w-44 p-1">
 					{OWCS_DATASETS_REVERSED?.map((dataset) => {
 						const ev = toEndlessValue(dataset.dataset);
 						return (

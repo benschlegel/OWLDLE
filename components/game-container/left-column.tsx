@@ -1,4 +1,7 @@
 import PersonalStats from '@/components/game-container/personal-stats';
+import { lazy } from 'react';
+
+const LazyPersonalStats = lazy(() => import('@/components/game-container/personal-stats'));
 
 export default function LeftColumn() {
 	return (
