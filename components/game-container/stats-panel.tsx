@@ -2,7 +2,6 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGameStats, type GameStatsData } from '@/hooks/use-game-stats';
-import { usePlayerStatsStore, readablePlayerStats } from '@/store/player-stats-store';
 import { GAME_CONFIG } from '@/lib/config';
 import { useContext } from 'react';
 import { GameStateContext } from '@/context/GameStateContext';
@@ -16,8 +15,6 @@ export default function StatsPanel() {
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 	const { data: guessData } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
 	const { data: globalStats } = useGameStats(dataset.dataset);
-	const playerStats = usePlayerStatsStore((s) => s.getStats(dataset.dataset));
-	const readable = readablePlayerStats(playerStats);
 
 	const isFinished = gameState === 'won' || gameState === 'lost' || gameState === 'won-old' || gameState === 'lost-old';
 	if (!isFinished) return null;
@@ -27,22 +24,6 @@ export default function StatsPanel() {
 
 	return (
 		<div className="flex flex-col gap-3">
-			{/* Player stats */}
-			<Card className="transition-colors">
-				<CardHeader className="p-4 pb-2">
-					<CardTitle className="text-base">Your Stats</CardTitle>
-				</CardHeader>
-				<CardContent className="p-4 pt-0">
-					<div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-sm">
-						<StatLine label="Played" value={readable.gamesPlayed} />
-						<StatLine label="Win Rate" value={`${readable.winRate}%`} />
-						<StatLine label="Streak" value={readable.currentStreak} />
-						<StatLine label="Best" value={readable.highestStreak} />
-						{readable.avgGuesses > 0 && <StatLine label="Avg Guesses" value={readable.avgGuesses} />}
-					</div>
-				</CardContent>
-			</Card>
-
 			{/* Global stats */}
 			{globalStats && (
 				<Card className="transition-colors">
@@ -53,24 +34,11 @@ export default function StatsPanel() {
 						<GlobalSummary stats={globalStats} />
 						<div className="mt-3">
 							<p className="text-xs text-muted-foreground mb-1.5">Guess Distribution</p>
-							<GuessDistribution
-								stats={globalStats}
-								playerGuessCount={playerGuessCount}
-								didWin={didWin}
-							/>
+							<GuessDistribution stats={globalStats} playerGuessCount={playerGuessCount} didWin={didWin} />
 						</div>
 					</CardContent>
 				</Card>
 			)}
-		</div>
-	);
-}
-
-function StatLine({ label, value }: { label: string; value: string | number }) {
-	return (
-		<div className="flex justify-between">
-			<span className="text-muted-foreground">{label}</span>
-			<span className="font-bold">{value}</span>
 		</div>
 	);
 }
@@ -95,11 +63,7 @@ function GlobalSummary({ stats }: { stats: GameStatsData }) {
 	);
 }
 
-function GuessDistribution({
-	stats,
-	playerGuessCount,
-	didWin,
-}: { stats: GameStatsData; playerGuessCount: number; didWin: boolean }) {
+function GuessDistribution({ stats, playerGuessCount, didWin }: { stats: GameStatsData; playerGuessCount: number; didWin: boolean }) {
 	const distribution = stats.guessDistribution;
 
 	// Build rows: 1 through maxGuesses + "failed"
@@ -124,12 +88,9 @@ function GuessDistribution({
 						<span className="w-3 text-right font-mono text-muted-foreground shrink-0">{label}</span>
 						<div
 							className={`rounded-sm px-1.5 py-0.5 text-right font-mono text-[11px] leading-tight transition-colors ${
-								isPlayerRow
-									? 'bg-correct text-white font-bold'
-									: 'bg-muted text-muted-foreground'
+								isPlayerRow ? 'bg-correct text-white font-bold' : 'bg-muted text-muted-foreground'
 							}`}
-							style={{ width: `${widthPercent}%`, minWidth: 'fit-content' }}
-						>
+							style={{ width: `${widthPercent}%`, minWidth: 'fit-content' }}>
 							{count}
 						</div>
 					</div>
