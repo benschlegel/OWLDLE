@@ -161,11 +161,11 @@ export default function RootLayout({
 													<Suspense>
 														<Navbar />
 													</Suspense>
-													<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full h-full flex justify-center items-center">
+													<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full flex justify-center items-center flex-1">
 														<main className="w-[32rem]">{children}</main>
 													</div>
 													<Toaster />
-													<div className="sm:block hidden pointer-events-none absolute bottom-8 left-1/2 transform -translate-x-1/2">
+													<div className="pointer-events-none flex justify-center pb-8 pt-4">
 														<Socials />
 													</div>
 												</>
