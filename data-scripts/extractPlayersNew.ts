@@ -30,10 +30,11 @@ const mappedDatasets: MappedDataset[] = [
 	// { dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/EMEA/Stage_1' },
 	// { dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/NA/Stage_1' },
 	{ dataset: 'owcs-s2', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2025/Asia/Stage_2/Korea' },
+	{ dataset: 'owcs-s1', url: 'https://liquipedia.net/overwatch/Overwatch_Champions_Series/2024/Asia/Stage_2/Korea' },
 ];
 
 // ! Change this value for different script output
-const DATASET: Dataset = 'owcs-s2';
+const DATASET: Dataset = 'owcs-s1';
 
 const url = mappedDatasets.find((d) => d.dataset === DATASET)?.url ?? mappedDatasets[0].dataset;
 const blacklist = ['sinatraa', 'Aspire'];
