@@ -9,7 +9,7 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
+import { DEFAULT_OWCS_DATASET_NAME, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
@@ -41,9 +41,9 @@ export function Navbar() {
 	const [sheetOpen, setSheetOpen] = useState(false);
 
 	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
-	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
+	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME}` : '';
 	const endlessMode = pathname === '/endless' ? searchParams.get('mode') ?? 'owcs' : '';
-	const endlessSeason = pathname === '/endless' ? searchParams.get('season') ?? 's2' : '';
+	const endlessSeason = pathname === '/endless' ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME : '';
 
 	useEffect(() => {
 		if (ALLOWED_PATHS.includes(pathname)) {
