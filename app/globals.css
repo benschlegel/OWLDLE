@@ -44,6 +44,8 @@
 
 @theme {
   --breakpoint-navbar-hidden: 70rem;
+  --spacing-layout-spacing: 2rem;
+  --spacing-layout-top: 7rem;
 }
 
 @layer utilities {

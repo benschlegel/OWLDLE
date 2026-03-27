@@ -5,7 +5,7 @@ import StatsPanel from '@/components/game-container/stats-panel';
 import Socials from '@/components/landing-page/socials';
 import { useOwcsParams } from '@/hooks/use-owcs-params';
 import React from 'react';
-import LeftColumn from '@/components/game-container/left-container';
+import LeftColumn from '@/components/game-container/left-column';
 import RightColumn from '@/components/game-container/right-column';
 
 const MemoizedHeader = React.memo(Header);

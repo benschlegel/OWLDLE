@@ -9,7 +9,7 @@ import { useSeasonParams } from '@/hooks/use-season-params';
 import { notFound } from 'next/navigation';
 import React from 'react';
 import RightColumn from '@/components/game-container/right-column';
-import LeftColumn from '@/components/game-container/left-container';
+import LeftColumn from '@/components/game-container/left-column';
 
 // Predefined valid seasons
 const validSeasons = DATASETS;
