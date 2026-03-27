@@ -1,12 +1,14 @@
 'use client';
+import { Button } from '@/components/ui/button';
 import { SwitchableButton } from '@/components/ui/switchable-button';
 import { GameStateContext } from '@/context/GameStateContext';
 import { GuessContext } from '@/context/GuessContext';
 import type { Dataset } from '@/data/datasets';
+import { useSettings } from '@/store/settings-store';
 import type { PlausibleEvents } from '@/types/plausible';
-import { CheckIcon, CopyIcon } from 'lucide-react';
+import { CheckIcon, CopyIcon, EyeIcon, EyeOffIcon } from 'lucide-react';
 import { usePlausible } from 'next-plausible';
-import { useContext, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useLayoutEffect, useState } from 'react';
 import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
@@ -21,6 +23,12 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult, d
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
+	const areStatsVisible = useSettings((s) => s.areStatsVisible);
+	const setAreStatsVisible = useSettings((s) => s.setAreStatsVisible);
+
+	const toggleStatsVisible = useCallback(() => {
+		setAreStatsVisible(!areStatsVisible);
+	}, [setAreStatsVisible, areStatsVisible]);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
@@ -72,6 +80,17 @@ export default function WinScreen({ nextReset, correctPlayer, formattedResult, d
 				switchedContent={<SwitchedButtonContent />}>
 				<DefaultButtonContent />
 			</SwitchableButton>
+			{areStatsVisible ? (
+				<Button variant={'outline'} className="mt-2 gap-2" onClick={toggleStatsVisible}>
+					Hide Stats
+					<EyeOffIcon className="size-4" />
+				</Button>
+			) : (
+				<Button variant={'outline'} className="mt-2 gap-2" onClick={toggleStatsVisible}>
+					Show Stats
+					<EyeIcon className="size-4" />
+				</Button>
+			)}
 		</div>
 	);
 }

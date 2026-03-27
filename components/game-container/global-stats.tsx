@@ -9,6 +9,7 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { useEvaluatedGuesses } from '@/context/GlobalGuessContext';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { Separator } from '@/components/ui/separator';
+import { useSettings } from '@/store/settings-store';
 
 export default function GlobalStats() {
 	const [gameState] = useContext(GameStateContext);
@@ -16,9 +17,10 @@ export default function GlobalStats() {
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
 	const { data: guessData } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
 	const { data: globalStats } = useGameStats(dataset.dataset);
+	const areStatsVisible = useSettings((s) => s.areStatsVisible);
 
 	const isFinished = gameState === 'won' || gameState === 'lost' || gameState === 'won-old' || gameState === 'lost-old';
-	if (!isFinished) return null;
+	if (!isFinished || !areStatsVisible) return null;
 
 	const playerGuessCount = guessData.evaluatedGuesses.length;
 	const didWin = gameState === 'won' || gameState === 'won-old';

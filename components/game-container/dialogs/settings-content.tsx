@@ -34,6 +34,8 @@ function SettingsEntries() {
 	const setIsBackgroundEnabled = useSettings((s) => s.setIsBackgroundEnabled);
 	const isDevAnswerVisible = useSettings((s) => s.isDevAnswerVisible);
 	const setIsDevAnswerVisible = useSettings((s) => s.setIsDevAnswerVisible);
+	const areStatsVisible = useSettings((s) => s.areStatsVisible);
+	const setAreStatsVisible = useSettings((s) => s.setAreStatsVisible);
 	const { setTheme, theme } = useTheme();
 
 	const onBackgroundSwitch = useCallback(
@@ -41,6 +43,13 @@ function SettingsEntries() {
 			setIsBackgroundEnabled(newState);
 		},
 		[setIsBackgroundEnabled]
+	);
+
+	const onStatsSwitch = useCallback(
+		(newState: boolean) => {
+			setAreStatsVisible(newState);
+		},
+		[setAreStatsVisible]
 	);
 
 	const onDevAnswerSwitch = useCallback(
@@ -94,13 +103,20 @@ function SettingsEntries() {
 				/>
 			)}
 			<SettingsSwitchEntry
+				label="Show stats"
+				id="stats-setting"
+				onSwitch={onStatsSwitch}
+				initialChecked={areStatsVisible}
+				description="Show stats at the end of the game."
+			/>
+			<SettingsSwitchEntry
 				label="Show background"
-				id="background"
+				id="background-setting"
 				onSwitch={onBackgroundSwitch}
 				initialChecked={isBackgroundEnabled}
 				description="Whether to show background or not."
 			/>
-			<SettingsSelectEntry entries={themes} initialValue={theme} id="theme" onSelect={onThemeSelect} label="Theme" description="Set page theme." />
+			<SettingsSelectEntry entries={themes} initialValue={theme} id="theme-setting" onSelect={onThemeSelect} label="Theme" description="Set page theme." />
 		</>
 	);
 }
