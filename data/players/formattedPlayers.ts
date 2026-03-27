@@ -13,7 +13,8 @@ export type CombinedFormattedPlayer =
 	| FormattedPlayer<'season4'>
 	| FormattedPlayer<'season5'>
 	| FormattedPlayer<'season6'>
-	| FormattedPlayer<'owcs-s2'>;
+	| FormattedPlayer<'owcs-s2'>
+	| FormattedPlayer<'owcs-s3'>;
 
 export type PlayerDataset = {
 	dataset: Dataset;
@@ -28,7 +29,7 @@ const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL', 'KH'];
 const unsupportedCountries: CustomFlag[] = unsupportedCountryCodes.map((c) => ({ country: c, customImg: `https://flagsapi.com/${c}/flat/64.png` }));
 
 // TODO: find out why using DATASETS causes "cant use before initialization"
-const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2'] as const;
+const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2', 'owcs-s3'] as const;
 for (let i = 0; i < ALL_PLAYERS.length; i++) {
 	const currentPlayers = ALL_PLAYERS[i];
 	const currDataset = datasets[i];

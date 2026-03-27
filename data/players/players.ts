@@ -1206,6 +1206,8 @@ export const owcsS2Players: Player<'owcs-s2'>[] = [
 	{ name: 'search', country: 'KR', role: 'Support', team: 'VEC' },
 ];
 
+export const owcsS3Players: Player<'owcs-s3'>[] = [];
+
 export type CombinedPlayers =
 	| Player<'season1'>[]
 	| Player<'season2'>[]
@@ -1213,5 +1215,6 @@ export type CombinedPlayers =
 	| Player<'season4'>[]
 	| Player<'season5'>[]
 	| Player<'season6'>[]
-	| Player<'owcs-s2'>[];
-export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players, owcsS2Players];
+	| Player<'owcs-s2'>[]
+	| Player<'owcs-s3'>[];
+export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players, owcsS2Players, owcsS3Players];
