@@ -8,8 +8,9 @@ import { GameStateContext } from '@/context/GameStateContext';
 import { DatasetContext } from '@/context/DatasetContext';
 import { useEvaluatedGuesses } from '@/context/GlobalGuessContext';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
+import { Separator } from '@/components/ui/separator';
 
-export default function StatsPanel() {
+export default function GlobalStats() {
 	const [gameState] = useContext(GameStateContext);
 	const [dataset] = useContext(DatasetContext);
 	const { data: validatedData } = useAnswerQuery(dataset.dataset);
@@ -28,7 +29,8 @@ export default function StatsPanel() {
 			{globalStats && (
 				<Card className="transition-colors">
 					<CardHeader className="p-4 pb-2">
-						<CardTitle className="text-base">Global Stats</CardTitle>
+						<CardTitle className="text-lg font-owl">Global Stats</CardTitle>
+						<Separator />
 					</CardHeader>
 					<CardContent className="p-4 pt-0">
 						<GlobalSummary stats={globalStats} />
@@ -43,22 +45,22 @@ export default function StatsPanel() {
 	);
 }
 
+function StatCell({ label, value }: { label: string; value: string | number }) {
+	return (
+		<div className="flex justify-between items-center flex-col">
+			<span className="font-bold text-xl font-owl opacity-90">{value}</span>
+			<span className="text-muted-foreground text-sm tracking-wide">{label}</span>
+		</div>
+	);
+}
+
 function GlobalSummary({ stats }: { stats: GameStatsData }) {
 	const winRate = stats.totalGames > 0 ? Math.round((stats.wins / stats.totalGames) * 100) : 0;
 	return (
 		<div className="grid grid-cols-3 gap-2 text-center">
-			<div>
-				<p className="text-lg font-bold">{stats.totalGames}</p>
-				<p className="text-xs text-muted-foreground">Played</p>
-			</div>
-			<div>
-				<p className="text-lg font-bold">{winRate}%</p>
-				<p className="text-xs text-muted-foreground">Win Rate</p>
-			</div>
-			<div>
-				<p className="text-lg font-bold">{stats.wins}</p>
-				<p className="text-xs text-muted-foreground">Wins</p>
-			</div>
+			<StatCell label="Played" value={stats.totalGames} />
+			<StatCell label="Win Rate" value={`${winRate}%`} />
+			<StatCell label="Wins" value={stats.wins} />
 		</div>
 	);
 }

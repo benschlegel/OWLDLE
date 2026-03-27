@@ -1,7 +1,7 @@
 'use client';
 import Header from '@/app/owcs/OWCSHeader';
 import GamePage from '@/components/landing-page/game-page';
-import StatsPanel from '@/components/game-container/stats-panel';
+import GlobalStats from '@/components/game-container/global-stats';
 import Socials from '@/components/landing-page/socials';
 import { useOwcsParams } from '@/hooks/use-owcs-params';
 import React from 'react';
