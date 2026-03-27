@@ -104,6 +104,11 @@ describe('format correct for all datasets', () => {
 
 function getExpectedString(config: FormatConfig, content: string) {
 	const datasetPostfix = config.dataset ?? '';
-	const seasonText = config.dataset !== undefined ? `${config.dataset.charAt(0).toUpperCase()}${config.dataset.slice(1, -1)} ${config.dataset.slice(-1)}` : '';
-	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses} [${seasonText}]\n${content}\n<${config.siteUrl}${datasetPostfix}>`;
+	const seasonText =
+		config.dataset !== undefined
+			? config.dataset === 'owcs-s2'
+				? 'OWCS S2'
+				: `${config.dataset.charAt(0).toUpperCase()}${config.dataset.slice(1, -1)} ${config.dataset.slice(-1)}`
+			: '';
+	return `${config.gameName} ${config.gameIteration} ${config.guesses.length}/${config.maxGuesses} [${seasonText}]\n${content}\n<${config.siteUrl}${config.dataset?.startsWith('owcs') ? 'owcs' : datasetPostfix}>`;
 }

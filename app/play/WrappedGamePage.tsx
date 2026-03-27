@@ -1,12 +1,15 @@
 'use client';
 import UpdateMetadata from '@/app/play/UpdateMetadata';
 import GamePage from '@/components/landing-page/game-page';
+import StatsPanel from '@/components/game-container/stats-panel';
 import Header from '@/components/landing-page/header';
 import Socials from '@/components/landing-page/socials';
 import { type Dataset, DATASETS } from '@/data/datasets';
 import { useSeasonParams } from '@/hooks/use-season-params';
 import { notFound } from 'next/navigation';
 import React from 'react';
+import RightColumn from '@/components/game-container/right-column';
+import LeftColumn from '@/components/game-container/left-container';
 
 // Predefined valid seasons
 const validSeasons = DATASETS;
@@ -20,7 +23,9 @@ export default function SeasonPageWrapper() {
 	// Check if valid season was provided
 	if (validSeasons.includes(season as unknown as Dataset)) {
 		return (
-			<div className="animate-in fade-in duration-300">
+			<div className="relative animate-in fade-in duration-300">
+				<LeftColumn />
+				<RightColumn />
 				<UpdateMetadata />
 				<div className="sm:hidden block">
 					<MemoizedSocials />

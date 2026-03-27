@@ -95,6 +95,17 @@ export const gameSaveValidator = z.object({
 	gameResult: z.enum(['won', 'lost']),
 });
 
+export type DbGameStats = {
+	_id: string;
+	dataset: Dataset;
+	iteration: number;
+	totalGames: number;
+	wins: number;
+	losses: number;
+	/** Keys are stringified guess counts ("1", "2", ...) or "failed" */
+	guessDistribution: Record<string, number>;
+};
+
 export type DbEndlessGameEntry = {
 	/** How many guesses were submitted in this game */
 	guessCount: number;

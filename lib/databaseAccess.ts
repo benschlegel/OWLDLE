@@ -16,6 +16,7 @@ import type {
 	DbLoggedEndlessSession,
 	DbGuess,
 	DbGameResult,
+	DbGameStats,
 } from '@/types/database';
 import { type ClientSession, MongoClient } from 'mongodb';
 
@@ -58,6 +59,9 @@ const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
 
 const endlessLogCollection = database.collection<DbLoggedEndlessSession>('endless_game_logs');
+
+const gameStatsCollection = database.collection<DbGameStats>('game_stats');
+gameStatsCollection.createIndex({ dataset: 1, iteration: 1 }, { unique: true });
 
 /**
  * Log an endless session to db (called when a streak ends via a loss)
@@ -553,4 +557,42 @@ export async function goNextIteration(
 	// step 5: pop backlog
 	// step 5.5: regenerate backlog, if necessary
 	// step 6: set new next answer
+}
+
+/**
+ * Atomically increment game stats for a given dataset + iteration.
+ * Creates the document on first call (upsert). Returns the updated document.
+ * @param dataset which dataset
+ * @param iteration which iteration
+ * @param gameResult 'won' or 'lost'
+ * @param guessCount number of guesses used (only meaningful for wins)
+ */
+export async function updateGameStats(dataset: Dataset, iteration: number, gameResult: DbGameResult, guessCount: number) {
+	const statsId = `stats_${dataset}_${iteration}`;
+	const distributionKey = gameResult === 'won' ? `guessDistribution.${guessCount}` : 'guessDistribution.failed';
+
+	return gameStatsCollection.findOneAndUpdate(
+		{ _id: statsId },
+		{
+			$inc: {
+				totalGames: 1,
+				wins: gameResult === 'won' ? 1 : 0,
+				losses: gameResult === 'lost' ? 1 : 0,
+				[distributionKey]: 1,
+			},
+			$setOnInsert: {
+				dataset,
+				iteration,
+			},
+		},
+		{ upsert: true, returnDocument: 'after' }
+	);
+}
+
+/**
+ * Get game stats for a given dataset + iteration
+ */
+export async function getGameStats(dataset: Dataset, iteration: number) {
+	const statsId = `stats_${dataset}_${iteration}`;
+	return gameStatsCollection.findOne({ _id: statsId });
 }
