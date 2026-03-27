@@ -53,6 +53,13 @@ export function Navbar() {
 		}
 	}, [pathname, searchParams]);
 
+	// Prefetch game routes so navigation feels instant
+	useEffect(() => {
+		router.prefetch('/play');
+		router.prefetch('/owcs');
+		router.prefetch('/endless');
+	}, [router]);
+
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.ctrlKey && e.key === 'b') {
