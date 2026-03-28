@@ -22,7 +22,7 @@ import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
-import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
+// import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -76,9 +76,7 @@ export function Navbar() {
 	const handleOwlSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('season'.length);
-			const url = `${OWCS_PATHNAME}?season=${season}`;
-			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
-			viewTransition(() => router.push(url));
+			viewTransition(() => router.push(`${OWL_PATHNAME}?season=${season}`));
 		},
 		[router]
 	);
@@ -86,9 +84,7 @@ export function Navbar() {
 	const handleOwcsSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('owcs-'.length);
-			const url = `${OWCS_PATHNAME}?season=${season}`;
-			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
-			viewTransition(() => router.push(url));
+			viewTransition(() => router.push(`${OWCS_PATHNAME}?season=${season}`));
 		},
 		[router]
 	);
