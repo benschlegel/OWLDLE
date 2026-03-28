@@ -30,6 +30,7 @@ import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
+import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/app/page';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
@@ -54,13 +55,13 @@ export function Navbar() {
 	const endlessMode = pathname === ENDLESS_PATHNAME ? searchParams.get('mode') ?? 'owcs' : '';
 	const endlessSeason = pathname === ENDLESS_PATHNAME ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME : '';
 
-	// useEffect(() => {
-	// 	if (ALLOWED_PATHS.includes(pathname)) {
-	// 		const qs = searchParams.toString();
-	// 		const url = qs ? `${pathname}?${qs}` : pathname;
-	// 		document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
-	// 	}
-	// }, [pathname, searchParams]);
+	useEffect(() => {
+		if (ALLOWED_PATHS.includes(pathname)) {
+			const qs = searchParams.toString();
+			const url = qs ? `${pathname}?${qs}` : pathname;
+			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
+		}
+	}, [pathname, searchParams]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
