@@ -1,5 +1,6 @@
 import type { GuessResponse } from '@/types/server';
 import type { Dataset } from '@/data/datasets';
+import { markGameCompleted } from '@/components/pwa-provider';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
@@ -94,7 +95,7 @@ export const useEndlessStore = create<EndlessStore>()(
 						},
 					};
 				}),
-			winGame: (dataset) =>
+			winGame: (dataset) => {
 				set((state) => {
 					const prev = state.datasets[dataset];
 					if (!prev?.current) return state;
@@ -113,8 +114,10 @@ export const useEndlessStore = create<EndlessStore>()(
 							},
 						},
 					};
-				}),
-			loseGame: (dataset) =>
+				});
+				markGameCompleted();
+			},
+			loseGame: (dataset) => {
 				set((state) => {
 					const prev = state.datasets[dataset];
 					if (!prev?.current) return state;
@@ -130,7 +133,9 @@ export const useEndlessStore = create<EndlessStore>()(
 							},
 						},
 					};
-				}),
+				});
+				markGameCompleted();
+			},
 			playAgain: (dataset, playerCount) =>
 				set((state) => {
 					const prev = state.datasets[dataset] ?? defaultStats;

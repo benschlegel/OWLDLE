@@ -8,6 +8,8 @@ type BeforeInstallPromptEvent = Event & {
 };
 
 const DISMISSED_KEY = 'pwa-install-dismissed';
+const GAME_COMPLETED_KEY = 'pwa-game-completed';
+const GAME_COMPLETED_EVENT = 'pwa-game-completed';
 
 function isDismissed(): boolean {
 	try {
@@ -15,6 +17,21 @@ function isDismissed(): boolean {
 	} catch {
 		return false;
 	}
+}
+
+function hasCompletedGameInStorage(): boolean {
+	try {
+		return localStorage.getItem(GAME_COMPLETED_KEY) === '1';
+	} catch {
+		return false;
+	}
+}
+
+export function markGameCompleted() {
+	try {
+		localStorage.setItem(GAME_COMPLETED_KEY, '1');
+	} catch {}
+	window.dispatchEvent(new Event(GAME_COMPLETED_EVENT));
 }
 
 type PWAContextValue = {
@@ -73,9 +90,11 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 	const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
 	const [canInstall, setCanInstall] = useState(false);
 	const [dismissed, setDismissed] = useState(false);
+	const [hasCompletedGame, setHasCompletedGame] = useState(false);
 
 	useEffect(() => {
 		setDismissed(isDismissed());
+		setHasCompletedGame(hasCompletedGameInStorage());
 
 		function handleBeforeInstallPrompt(e: Event) {
 			e.preventDefault();
@@ -83,8 +102,16 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 			setCanInstall(true);
 		}
 
+		function handleGameCompleted() {
+			setHasCompletedGame(true);
+		}
+
 		window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-		return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+		window.addEventListener(GAME_COMPLETED_EVENT, handleGameCompleted);
+		return () => {
+			window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+			window.removeEventListener(GAME_COMPLETED_EVENT, handleGameCompleted);
+		};
 	}, []);
 
 	const install = useCallback(async () => {
@@ -107,7 +134,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 		setDismissed(true);
 	}, []);
 
-	const showBanner = canInstall && !dismissed;
+	const showBanner = canInstall && !dismissed && hasCompletedGame;
 
 	const value = useMemo(
 		() => ({ isOnline, isInstalled, canInstall, showBanner, install, dismissBanner }),
