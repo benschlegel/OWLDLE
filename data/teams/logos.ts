@@ -1,5 +1,5 @@
 import type { Dataset } from '@/data/datasets';
-import type { TeamName } from '@/data/teams/teams';
+import { ALL_TEAMS, type TeamName } from '@/data/teams/teams';
 import { GAME_CONFIG } from '@/lib/config';
 export type TeamLogoData<T extends Dataset = 'season1'> = {
 	teamName: TeamName<T>;
@@ -355,7 +355,45 @@ export type CombinedLogoData =
 	| LogoData<'owcs-s2'>
 	| LogoData<'owcs-s3'>;
 
-export const TEAM_LOGOS_OWCS_S3: TeamLogoData<'owcs-s3'>[] = [];
+// New teams for OWCS S3 (not in S2)
+const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
+	/**
+	 * EMEA
+	 */
+	{ teamName: 'AnyonesLegend', displayName: "Anyone's Legend", backgroundColor: '#202127' },
+	/**
+	 * NA
+	 */
+	{ teamName: 'DallasFuel', displayName: 'Dallas Fuel', backgroundColor: '#202127' },
+	{ teamName: 'Disguised', displayName: 'Disguised', backgroundColor: '#202127' },
+	{ teamName: 'LuneXGaming', displayName: 'LuneX Gaming', backgroundColor: '#202127' },
+	/**
+	 * Korea
+	 */
+	{ teamName: 'NewEra', displayName: 'New Era', backgroundColor: '#202127' },
+	{ teamName: 'ZANEsports', displayName: 'ZAN Esports', backgroundColor: '#202127' },
+	{ teamName: 'Cheeseburger', displayName: 'Cheeseburger', backgroundColor: '#202127' },
+	/**
+	 * China
+	 */
+	{ teamName: 'WeiboGaming', displayName: 'Weibo Gaming', backgroundColor: '#202127' },
+	{ teamName: 'JDGaming', displayName: 'JD Gaming', backgroundColor: '#202127' },
+	{ teamName: 'AllGamers', displayName: 'All Gamers', backgroundColor: '#202127' },
+	{ teamName: 'MilkTea', displayName: 'Milk Tea', backgroundColor: '#202127' },
+	{ teamName: 'HomieE', displayName: 'Homie E', backgroundColor: '#202127' },
+	{ teamName: 'DEG', displayName: 'DEG', backgroundColor: '#202127' },
+	{ teamName: 'SolusVictorem', displayName: 'Solus Victorem', backgroundColor: '#202127' },
+	{ teamName: 'Naive Piggy', displayName: 'Naive Piggy', backgroundColor: '#202127' },
+];
+
+// Reuse S2 logos for teams that carry over to S3
+const owcsS3TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s3')?.data ?? []);
+const reusedFromS2 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS3TeamNames.has(t.teamName as string));
+
+export const TEAM_LOGOS_OWCS_S3: TeamLogoData<'owcs-s3'>[] = [
+	...(reusedFromS2.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s3'>[]),
+	...(teamLogosOWCS_S3_New.map((t) => ({ ...t, imgUrl: `/teams/owcs-s3/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s3'>[]),
+];
 
 export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },

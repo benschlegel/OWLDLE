@@ -132,10 +132,20 @@ const ALL_WESTERN = [
 	{ dataset: 'season6', data: WESTERN_S6 },
 ] as const;
 
-const EMEA_OWCS_S3: readonly string[] = [];
-const NA_OWCS_S3: readonly string[] = [];
-const KR_OWCS_S3: readonly string[] = [];
-const CN_OWCS_S3: readonly string[] = [];
+const EMEA_OWCS_S3: readonly string[] = ['TeamPeps', 'TwistedMinds', 'VirtusPro', 'GeekayEsports', 'AlQadsiah', 'AnyonesLegend'];
+const NA_OWCS_S3: readonly string[] = ['DallasFuel', 'Disguised', 'SpacestationGaming', 'TeamLiquid', 'LuneXGaming', 'Extinction'];
+const KR_OWCS_S3: readonly string[] = [
+	'T1',
+	'TeamFalcons',
+	'CrazyRaccoon',
+	'ZETADIVISION',
+	'NewEra',
+	'OnsideGaming',
+	'ZANEsports',
+	'Cheeseburger',
+	'PokerFace',
+];
+const CN_OWCS_S3: readonly string[] = ['WeiboGaming', 'JDGaming', 'AllGamers', 'MilkTea', 'HomieE', 'DEG', 'SolusVictorem', 'Naive Piggy'];
 
 const ALL_EMEA = [
 	{ dataset: 'owcs-s2', data: EMEA_OWCS_S2 },
