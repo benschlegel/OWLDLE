@@ -8,7 +8,7 @@ import TeamLogo from '@/components/game-container/TeamLogo';
 import { DatasetContext } from '@/context/DatasetContext';
 import { isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams } from '@/data/teams/teams';
-import { regionNames } from '@/lib/client';
+import { getCountryDisplayName } from '@/lib/client';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'motion/react';
 import { useContext, useEffect, useRef, useState } from 'react';
@@ -157,8 +157,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 				<GameCell
 					isCorrect={data?.guessResult.isCountryCorrect}
 					tooltipDescription="Country"
-					// Special case for wales, otherwise use INT regionNames or undefined if no data exists
-					tooltipValue={data ? (data.player.country === 'GB-WLS' ? 'Wales' : regionNames.of(data.player.country)) : undefined}>
+					tooltipValue={getCountryDisplayName(data?.player.country)}>
 					<ImageCell imgSrc={data?.player.countryImg} />
 				</GameCell>
 			</FlipCard>

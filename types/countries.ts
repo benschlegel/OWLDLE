@@ -205,6 +205,9 @@ export const countries = [
 	'ZM', // Zambia
 	'ZW', // Zimbabwe
 	'GB-WLS', // wales
+	'GB-SCT', // Scotland
+	'GB-NI', // Northern Ireland
+	'AX', // Åland
 ] as const;
 
 // The list of country codes and names as an object
@@ -418,3 +421,13 @@ const countryMap: Record<string, string> = {
 export function getCountryAbbreviation(countryName: string): string | undefined {
 	return countryMap[countryName] || undefined;
 }
+
+/**
+ * Display names for country codes not supported by Intl.DisplayNames (e.g. subdivision codes).
+ */
+export const customCountryNames: Partial<Record<CountryCode, string>> = {
+	'GB-WLS': 'Wales',
+	'GB-SCT': 'Scotland',
+	AX: 'Åland',
+	'GB-NI': 'Northern Ireland',
+};

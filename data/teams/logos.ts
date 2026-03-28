@@ -340,6 +340,56 @@ export const TEAM_LOGOS_OWCS_S2: TeamLogoData<'owcs-s2'>[] = teamLogosOWCS_S2.ma
 	(team) => ({ ...team, imgUrl: `/teams/owcs-s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData<'owcs-s2'>
 );
 
+// New teams for OWCS S1 (not in S2)
+const teamLogosOWCS_S1_New: Partial<TeamLogoData<'owcs-s1'>>[] = [
+	/**
+	 * EMEA
+	 */
+	{ teamName: 'ENCE', displayName: 'ENCE', backgroundColor: '#202127' },
+	{ teamName: 'PieceofCake', displayName: 'Piece of Cake', backgroundColor: '#202127' },
+	{ teamName: 'SrPeakCheck', displayName: 'Sr Peak Check', backgroundColor: '#202127' },
+	{ teamName: 'WASPXOHHHHNO', displayName: 'WASP X OHHHH NO', backgroundColor: '#202127' },
+	{ teamName: 'AOneManArmy', displayName: 'A One Man Army', backgroundColor: '#202127' },
+	{ teamName: 'ExOblivione', displayName: 'Ex Oblivione', backgroundColor: '#202127' },
+	{ teamName: 'TeamG4mbit', displayName: 'Team G4mbit', backgroundColor: '#202127' },
+	{ teamName: 'NegMentalAttitude', displayName: 'Neg. Mental Attitude', backgroundColor: '#202127' },
+	{ teamName: 'Hypnos', displayName: 'Hypnos', backgroundColor: '#202127' },
+	{ teamName: 'Metaboiz', displayName: 'Metaboiz', backgroundColor: '#202127' },
+	{ teamName: 'Vendetta', displayName: 'Vendetta', backgroundColor: '#202127' },
+	/**
+	 * NA
+	 */
+	{ teamName: 'TorontoDefiant', displayName: 'Toronto Defiant', backgroundColor: '#202127' },
+	{ teamName: 'NRGShock', displayName: 'NRG Shock', backgroundColor: '#202127' },
+	{ teamName: 'CitrusNation', displayName: 'Citrus Nation', backgroundColor: '#202127' },
+	{ teamName: 'TSM', displayName: 'TSM', backgroundColor: '#202127' },
+	{ teamName: 'O3Splash', displayName: 'O3 Splash', backgroundColor: '#202127' },
+	{ teamName: 'FluffyDreamland', displayName: 'Fluffy Dreamland', backgroundColor: '#202127' },
+	{ teamName: 'Shikigami', displayName: 'Shikigami', backgroundColor: '#202127' },
+	{ teamName: 'TanukiTapire', displayName: 'Tanuki Tapire', backgroundColor: '#202127' },
+	{ teamName: 'EXNZenith', displayName: 'EXN Zenith', backgroundColor: '#202127' },
+	{ teamName: 'Ramattrapunch', displayName: 'Ramattra punch', backgroundColor: '#202127' },
+	{ teamName: 'Absolution', displayName: 'Absolution', backgroundColor: '#202127' },
+	{ teamName: 'TeamZ', displayName: 'Team Z', backgroundColor: '#202127' },
+	{ teamName: 'RadxAvidity', displayName: 'Rad x Avidity', backgroundColor: '#202127' },
+	{ teamName: 'BlastOffBuds', displayName: 'Blast Off Buds', backgroundColor: '#202127' },
+	{ teamName: 'YFPGaming', displayName: 'YFP Gaming', backgroundColor: '#202127' },
+	/**
+	 * Korea
+	 */
+	{ teamName: 'Fnatic', displayName: 'Fnatic', backgroundColor: '#202127' },
+	{ teamName: 'HaeJeokDan', displayName: 'HaeJeokDan', backgroundColor: '#202127' },
+];
+
+// Reuse S2 logos for teams that carry over from S1
+const owcsS1TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s1')?.data ?? []);
+const reusedFromS2ForS1 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS1TeamNames.has(t.teamName as string));
+
+export const TEAM_LOGOS_OWCS_S1: TeamLogoData<'owcs-s1'>[] = [
+	...(reusedFromS2ForS1.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
+	...(teamLogosOWCS_S1_New.map((t) => ({ ...t, imgUrl: `/teams/owcs-s1/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
+];
+
 type LogoData<T extends Dataset> = {
 	dataset: T;
 	data: TeamLogoData<T>[];
@@ -352,6 +402,7 @@ export type CombinedLogoData =
 	| LogoData<'season4'>
 	| LogoData<'season5'>
 	| LogoData<'season6'>
+	| LogoData<'owcs-s1'>
 	| LogoData<'owcs-s2'>
 	| LogoData<'owcs-s3'>;
 
@@ -402,6 +453,7 @@ export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season4', data: TEAM_LOGOS_S3 as unknown[] as TeamLogoData<'season4'>[] },
 	{ dataset: 'season5', data: TEAM_LOGOS_S5 as unknown[] as TeamLogoData<'season5'>[] },
 	{ dataset: 'season6', data: TEAM_LOGOS_S6 },
+	{ dataset: 'owcs-s1', data: TEAM_LOGOS_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: TEAM_LOGOS_OWCS_S2 },
 	{ dataset: 'owcs-s3', data: TEAM_LOGOS_OWCS_S3 },
 ] as const;

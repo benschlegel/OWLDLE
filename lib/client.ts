@@ -1,4 +1,5 @@
 import { type Dataset, datasetInfo } from '@/data/datasets';
+import { customCountryNames, type CountryCode } from '@/types/countries';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 
 export type FormatConfig = {
@@ -101,6 +102,19 @@ export function getSiteName() {
 }
 
 export const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+/**
+ * Safely resolves a country code to a display name.
+ * Falls back to `customCountryNames` for non-standard codes (e.g. subdivision codes like 'GB-WLS')
+ */
+export function getCountryDisplayName(code: string | undefined): string | undefined {
+	if (!code) return undefined;
+	try {
+		return regionNames.of(code);
+	} catch {
+		return customCountryNames[code as CountryCode];
+	}
+}
 
 /**
  * Splits a string by capitalization (e.g. LosAngelesGladiators => 'Los Angeles Gladiators')
