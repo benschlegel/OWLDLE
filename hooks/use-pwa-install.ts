@@ -12,6 +12,7 @@ const DISMISSED_KEY = 'pwa-install-dismissed';
 export function usePWAInstall() {
 	const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
 	const [canInstall, setCanInstall] = useState(false);
+	const [dismissed, setDismissed] = useState(() => isDismissed());
 
 	useEffect(() => {
 		function handleBeforeInstallPrompt(e: Event) {
@@ -37,12 +38,13 @@ export function usePWAInstall() {
 		}
 	}, []);
 
-	const showBanner = canInstall && !isDismissed();
+	const showBanner = canInstall && !dismissed;
 
 	const dismissBanner = useCallback(() => {
 		try {
 			localStorage.setItem(DISMISSED_KEY, '1');
 		} catch {}
+		setDismissed(true);
 	}, []);
 
 	return { canInstall, showBanner, install, dismissBanner };
