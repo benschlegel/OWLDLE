@@ -161,7 +161,7 @@ export default function RootLayout({
 													<Suspense>
 														<Navbar />
 													</Suspense>
-													<div className="px-2 pt-6 sm:px-4 lg:px-8 w-full flex justify-center items-center flex-1">
+													<div className="px-2 sm:mt-8 mt-6 sm:px-4 lg:px-8 w-full flex justify-center items-start flex-1">
 														<main className="w-[32rem]">{children}</main>
 													</div>
 													<Toaster />
