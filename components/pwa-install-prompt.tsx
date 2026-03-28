@@ -16,9 +16,9 @@ export function PWAInstallPrompt() {
 					<p className="text-sm text-muted-foreground leading-tight">Install as app for a better experience.</p>
 				</div>
 				<div className="flex gap-2">
-					<button type="button" onClick={dismissBanner} className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted">
+					<Button variant={'ghost'} onClick={dismissBanner} className="rounded-md px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted">
 						Later
-					</button>
+					</Button>
 					<Button onClick={install} className="rounded-md bg-primary-foreground px-3 text-sm text-white/90 hover:bg-primary-foreground/90 py-1 h-auto">
 						Install
 					</Button>
