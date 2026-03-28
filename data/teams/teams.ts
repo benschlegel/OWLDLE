@@ -145,7 +145,7 @@ const KR_OWCS_S3: readonly string[] = [
 	'Cheeseburger',
 	'PokerFace',
 ];
-const CN_OWCS_S3: readonly string[] = ['WeiboGaming', 'JDGaming', 'AllGamers', 'MilkTea', 'HomieE', 'DEG', 'SolusVictorem', 'Naive Piggy'];
+const CN_OWCS_S3: readonly string[] = ['WeiboGaming', 'JDGaming', 'AllGamers', 'MilkTea', 'HomieE', 'DEG', 'SolusVictorem', 'NaivePiggy'];
 
 const ALL_EMEA = [
 	{ dataset: 'owcs-s2', data: EMEA_OWCS_S2 },

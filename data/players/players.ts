@@ -1394,11 +1394,11 @@ export const owcsS3Players: Player<'owcs-s3'>[] = [
 	{ name: 'prot3ct', country: 'KR', role: 'Tank', team: 'SolusVictorem' },
 	{ name: 'A1WAYS', country: 'CN', role: 'Support', team: 'SolusVictorem' },
 	{ name: 'Noy', country: 'KR', role: 'Support', team: 'SolusVictorem' },
-	{ name: 'wh4le', country: 'CN', role: 'Damage', team: 'Naive Piggy' },
-	{ name: 'JAYA', country: 'CN', role: 'Damage', team: 'Naive Piggy' },
-	{ name: 'Lateyoung', country: 'CN', role: 'Tank', team: 'Naive Piggy' },
-	{ name: 'sara', country: 'CN', role: 'Support', team: 'Naive Piggy' },
-	{ name: 'Coldj', country: 'CN', role: 'Support', team: 'Naive Piggy' },
+	{ name: 'wh4le', country: 'CN', role: 'Damage', team: 'NaivePiggy' },
+	{ name: 'JAYA', country: 'CN', role: 'Damage', team: 'NaivePiggy' },
+	{ name: 'Lateyoung', country: 'CN', role: 'Tank', team: 'NaivePiggy' },
+	{ name: 'sara', country: 'CN', role: 'Support', team: 'NaivePiggy' },
+	{ name: 'Coldj', country: 'CN', role: 'Support', team: 'NaivePiggy' },
 ];
 
 export type CombinedPlayers =

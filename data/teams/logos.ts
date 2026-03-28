@@ -383,7 +383,7 @@ const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
 	{ teamName: 'HomieE', displayName: 'Homie E', backgroundColor: '#202127' },
 	{ teamName: 'DEG', displayName: 'DEG', backgroundColor: '#202127' },
 	{ teamName: 'SolusVictorem', displayName: 'Solus Victorem', backgroundColor: '#202127' },
-	{ teamName: 'Naive Piggy', displayName: 'Naive Piggy', backgroundColor: '#202127' },
+	{ teamName: 'NaivePiggy', displayName: 'Naive Piggy', backgroundColor: '#202127' },
 ];
 
 // Reuse S2 logos for teams that carry over to S3
