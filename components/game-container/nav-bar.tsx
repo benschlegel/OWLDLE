@@ -142,7 +142,9 @@ export function Navbar() {
 								</NavSelect>
 							</NavigationMenuList>
 						</NavigationMenu>
-						<NavButton className="hidden navbar-hidden:flex">Statistics</NavButton>
+						<NavButton className="hidden navbar-hidden:flex" href="/statistics" highlight={pathname === '/statistics'}>
+							Statistics
+						</NavButton>
 					</div>
 				</div>
 
