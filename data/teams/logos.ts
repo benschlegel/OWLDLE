@@ -183,13 +183,13 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'TheUltimates',
-		displayName: 'The Ultimates',
+		teamName: 'TeamVision',
+		displayName: 'Team Vision',
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'FrostTailsEsports',
-		displayName: 'Frost Tails Esport',
+		teamName: 'GoudGuysANM',
+		displayName: 'Goud Guys ANM',
 		backgroundColor: '#202127',
 	},
 	{
@@ -241,9 +241,10 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'Supernova',
-		displayName: 'Supernova',
+		teamName: 'TeamZ',
+		displayName: 'Team Z',
 		backgroundColor: '#202127',
+		imgUrl: `/teams/owcs-s1/TeamZ.${GAME_CONFIG.teamLogoImgExtension}`,
 	},
 	{
 		teamName: 'DhillDucks',
@@ -274,28 +275,13 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'PokerFace',
-		displayName: 'Poker Face',
+		teamName: 'WAE',
+		displayName: 'WAE',
 		backgroundColor: '#202127',
 	},
 	{
 		teamName: 'OnsideGaming',
 		displayName: 'ONSIDE Gaming',
-		backgroundColor: '#202127',
-	},
-	{
-		teamName: 'VEC',
-		displayName: 'VEC',
-		backgroundColor: '#202127',
-	},
-	{
-		teamName: 'AllGamersGlobal',
-		displayName: 'All Gamers Global',
-		backgroundColor: '#202127',
-	},
-	{
-		teamName: 'OldOcean',
-		displayName: 'Old Ocean',
 		backgroundColor: '#202127',
 	},
 ];
@@ -337,7 +323,7 @@ TEAM_LOGOS_S6.push(teamLogosS6[0]);
 TEAM_LOGOS_S6.push(teamLogosS6[1]);
 
 export const TEAM_LOGOS_OWCS_S2: TeamLogoData<'owcs-s2'>[] = teamLogosOWCS_S2.map(
-	(team) => ({ ...team, imgUrl: `/teams/owcs-s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData<'owcs-s2'>
+	(team) => ({ imgUrl: `/teams/owcs-s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}`, ...team }) as TeamLogoData<'owcs-s2'>
 );
 
 // New teams for OWCS S1 (not in S2)
@@ -370,7 +356,6 @@ const teamLogosOWCS_S1_New: Partial<TeamLogoData<'owcs-s1'>>[] = [
 	{ teamName: 'EXNZenith', displayName: 'EXN Zenith', backgroundColor: '#202127' },
 	{ teamName: 'Ramattrapunch', displayName: 'Ramattra punch', backgroundColor: '#202127' },
 	{ teamName: 'Absolution', displayName: 'Absolution', backgroundColor: '#202127' },
-	{ teamName: 'TeamZ', displayName: 'Team Z', backgroundColor: '#202127' },
 	{ teamName: 'RadxAvidity', displayName: 'Rad x Avidity', backgroundColor: '#202127' },
 	{ teamName: 'BlastOffBuds', displayName: 'Blast Off Buds', backgroundColor: '#202127' },
 	{ teamName: 'YFPGaming', displayName: 'YFP Gaming', backgroundColor: '#202127' },
@@ -381,12 +366,19 @@ const teamLogosOWCS_S1_New: Partial<TeamLogoData<'owcs-s1'>>[] = [
 	{ teamName: 'HaeJeokDan', displayName: 'HaeJeokDan', backgroundColor: '#202127' },
 ];
 
+const teamLogosOWCS_S1_FromS2: Partial<TeamLogoData<'owcs-s1'>>[] = [
+	{ teamName: 'PokerFace', displayName: 'Poker Face', backgroundColor: '#202127' },
+	{ teamName: 'VEC', displayName: 'VEC', backgroundColor: '#202127' },
+	{ teamName: 'OldOcean', displayName: 'Old Ocean', backgroundColor: '#202127' },
+];
+
 // Reuse S2 logos for teams that carry over from S1
 const owcsS1TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s1')?.data ?? []);
 const reusedFromS2ForS1 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS1TeamNames.has(t.teamName as string));
 
 export const TEAM_LOGOS_OWCS_S1: TeamLogoData<'owcs-s1'>[] = [
-	...(reusedFromS2ForS1.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
+	...(reusedFromS2ForS1 as unknown as TeamLogoData<'owcs-s1'>[]),
+	...(teamLogosOWCS_S1_FromS2.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
 	...(teamLogosOWCS_S1_New.map((t) => ({ ...t, imgUrl: `/teams/owcs-s1/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
 ];
 
@@ -424,6 +416,7 @@ const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
 	{ teamName: 'NewEra', displayName: 'New Era', backgroundColor: '#202127' },
 	{ teamName: 'ZANEsports', displayName: 'ZAN Esports', backgroundColor: '#202127' },
 	{ teamName: 'Cheeseburger', displayName: 'Cheeseburger', backgroundColor: '#202127' },
+	{ teamName: 'PokerFace', displayName: 'Poker Face', backgroundColor: '#202127' },
 	/**
 	 * China
 	 */
