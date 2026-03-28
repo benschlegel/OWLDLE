@@ -22,6 +22,7 @@ import { PWAProvider } from '@/components/pwa-provider';
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { OfflineToast } from '@/components/offline-toast';
 import { THEME_COLORS, ThemeColorSync } from '@/components/theme-color-sync';
+import { NuqsAdapter } from 'nuqs/adapters/next/app';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -128,6 +129,7 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
+		<NuqsAdapter>
 		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 			<head>
 				<meta name="twitter:card" content="summary_large_image" />
@@ -182,5 +184,6 @@ export default function RootLayout({
 				</SerwistProvider>
 			</body>
 		</html>
+		</NuqsAdapter>
 	);
 }
