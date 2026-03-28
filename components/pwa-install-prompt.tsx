@@ -9,7 +9,7 @@ export function PWAInstallPrompt() {
 	if (!showBanner) return null;
 
 	return (
-		<div className="sm:hidden fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-lg border border-border bg-card p-4 shadow-lg">
+		<div className="sm:hidden fixed animate-in fade-in duration-900 bottom-4 left-4 right-4 z-50 mx-auto max-w-md rounded-lg border border-border bg-card p-4 shadow-lg">
 			<div className="flex items-start gap-3">
 				<div className="flex-1 flex flex-col gap-2">
 					<p className="font-medium text-foreground">Install App</p>
