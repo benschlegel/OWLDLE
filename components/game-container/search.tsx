@@ -69,6 +69,45 @@ export default function PlayerSearch({ className }: Props) {
 		return () => document.removeEventListener('keydown', down);
 	}, []);
 
+	// On mobile, after the keyboard finishes opening (visualViewport resize settles),
+	// scroll the page so the input sits at the very bottom of the visible area.
+	// This ensures the popup (which opens above when keyboard is open) is fully visible.
+	useEffect(() => {
+		const input = inputRef.current;
+		if (!input) return;
+
+		let timer: ReturnType<typeof setTimeout>;
+
+		const scrollInputToBottom = () => {
+			if (window.innerWidth >= 640) return;
+			const vv = window.visualViewport;
+			const vvHeight = vv?.height ?? window.innerHeight;
+			const rect = input.getBoundingClientRect();
+			const scrollTarget = window.scrollY + rect.bottom - vvHeight + 8;
+			window.scrollTo({ top: Math.max(0, scrollTarget), behavior: 'smooth' });
+		};
+
+		const onViewportResize = () => {
+			clearTimeout(timer);
+			timer = setTimeout(scrollInputToBottom, 100);
+		};
+
+		const onFocus = () => window.visualViewport?.addEventListener('resize', onViewportResize);
+		const onBlur = () => {
+			clearTimeout(timer);
+			window.visualViewport?.removeEventListener('resize', onViewportResize);
+		};
+
+		input.addEventListener('focus', onFocus);
+		input.addEventListener('blur', onBlur);
+		return () => {
+			clearTimeout(timer);
+			input.removeEventListener('focus', onFocus);
+			input.removeEventListener('blur', onBlur);
+			window.visualViewport?.removeEventListener('resize', onViewportResize);
+		};
+	}, []);
+
 	return (
 		<Combobox.Root
 			key={dataset.dataset}
@@ -132,7 +171,7 @@ export default function PlayerSearch({ className }: Props) {
 
 			<Combobox.Portal>
 				<Combobox.Positioner className="z-50" style={{ width: 'var(--anchor-width)' }} sideOffset={4} side="bottom">
-					<Combobox.Popup className="sm:max-h-40 max-h-[80px] overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
+					<Combobox.Popup className="max-h-40 overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
 						<Combobox.Empty className="py-6 text-center text-sm empty:hidden">No results found.</Combobox.Empty>
 						<Combobox.List className="p-1">
 							{(player: Player) => (
