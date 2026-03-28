@@ -108,6 +108,44 @@ const WESTERN_S6 = [
 	'WashingtonJustice',
 ] as const;
 
+const EMEA_OWCS_S1: readonly string[] = [
+	'ENCE',
+	'VirtusPro',
+	'SpacestationGaming',
+	'TwistedMinds',
+	'PieceofCake',
+	'SrPeakCheck',
+	'TeamPeps',
+	'QuickEsports',
+	'WASPXOHHHHNO',
+	'AOneManArmy',
+	'ExOblivione',
+	'TeamG4mbit',
+	'NegMentalAttitude',
+	'Hypnos',
+	'Metaboiz',
+	'Vendetta',
+];
+const NA_OWCS_S1: readonly string[] = [
+	'TorontoDefiant',
+	'NRGShock',
+	'NTMR',
+	'CitrusNation',
+	'TSM',
+	'O3Splash',
+	'FluffyDreamland',
+	'Shikigami',
+	'TanukiTapire',
+	'EXNZenith',
+	'Ramattrapunch',
+	'Absolution',
+	'TeamZ',
+	'RadxAvidity',
+	'BlastOffBuds',
+	'YFPGaming',
+];
+const KR_OWCS_S1: readonly string[] = ['TeamFalcons', 'CrazyRaccoon', 'ZETADIVISION', 'Fnatic', 'HaeJeokDan', 'VEC', 'PokerFace', 'OldOcean'];
+
 const EMEA_OWCS_S2 = ['GenG', 'TwistedMinds', 'VirtusPro', 'TheUltimates', 'FrostTailsEsports', 'TeamPeps', 'AlQadsiah', 'QuickEsports'] as const;
 const NA_OWCS_S2 = ['SpacestationGaming', 'TeamLiquid', 'GeekayEsports', 'Extinction', 'SakuraEsports', 'NTMR', 'Supernova', 'DhillDucks'] as const;
 const KR_OWCS_S2 = ['CrazyRaccoon', 'T1', 'TeamFalcons', 'ZETADIVISION', 'PokerFace', 'AllGamersGlobal', 'VEC', 'OnsideGaming', 'OldOcean'] as const;
@@ -148,14 +186,17 @@ const KR_OWCS_S3: readonly string[] = [
 const CN_OWCS_S3: readonly string[] = ['WeiboGaming', 'JDGaming', 'AllGamers', 'MilkTea', 'HomieE', 'DEG', 'SolusVictorem', 'NaivePiggy'];
 
 const ALL_EMEA = [
+	{ dataset: 'owcs-s1', data: EMEA_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: EMEA_OWCS_S2 },
 	{ dataset: 'owcs-s3', data: EMEA_OWCS_S3 },
 ];
 const ALL_NA = [
+	{ dataset: 'owcs-s1', data: NA_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: NA_OWCS_S2 },
 	{ dataset: 'owcs-s3', data: NA_OWCS_S3 },
 ];
 const ALL_KR = [
+	{ dataset: 'owcs-s1', data: KR_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: KR_OWCS_S2 },
 	{ dataset: 'owcs-s3', data: KR_OWCS_S3 },
 ];
@@ -168,6 +209,7 @@ export const ALL_TEAMS = [
 	{ dataset: 'season4', data: [...EASTERN_S4, ...WESTERN_S4] },
 	{ dataset: 'season5', data: [...EASTERN_S5, ...WESTERN_S5] },
 	{ dataset: 'season6', data: [...EASTERN_S6, ...WESTERN_S6] },
+	{ dataset: 'owcs-s1', data: [...EMEA_OWCS_S1, ...NA_OWCS_S1, ...KR_OWCS_S1] },
 	{ dataset: 'owcs-s2', data: [...EMEA_OWCS_S2, ...NA_OWCS_S2, ...KR_OWCS_S2] },
 	{ dataset: 'owcs-s3', data: [...EMEA_OWCS_S3, ...NA_OWCS_S3, ...KR_OWCS_S3, ...CN_OWCS_S3] },
 ] as const;

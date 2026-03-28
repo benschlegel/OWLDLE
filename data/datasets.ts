@@ -36,6 +36,7 @@ export type CombinedDatasetMetadata =
 	| DatasetMetadata<'season4'>
 	| DatasetMetadata<'season5'>
 	| DatasetMetadata<'season6'>
+	| DatasetMetadata<'owcs-s1'>
 	| DatasetMetadata<'owcs-s2'>
 	| DatasetMetadata<'owcs-s3'>;
 
@@ -111,6 +112,16 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		league: 'owl',
 		href: 'owl?season=6',
 		prettyHref: '/owl/season6',
+	},
+	{
+		dataset: 'owcs-s1',
+		formattedName: 'OWCS S1 (2024)',
+		name: 'OWCS S1',
+		year: '2024',
+		shorthand: 'S1',
+		league: 'owcs',
+		href: 'owcs?season=s1',
+		prettyHref: '/owcs/season1',
 	},
 	{
 		dataset: 'owcs-s2',
