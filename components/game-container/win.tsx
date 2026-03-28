@@ -62,7 +62,7 @@ export default function WinScreen({ nextReset, formattedResult, dataset, isOldSt
 				)}
 			</div>
 			<SwitchableButton
-				className="max-w-[20rem] mt-3 box-border px-4"
+				className="max-w-[20rem] mt-3 box-border sm:px-4"
 				onClick={() => {
 					navigator.clipboard.writeText(formattedResult ?? '');
 					plausible('copyResult', { props: { state: 'won', dataset: dataset ?? 'season1' } });

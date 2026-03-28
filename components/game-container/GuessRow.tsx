@@ -96,6 +96,9 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		} else if (data.player.region === 'Korea') {
 			region = 'KR';
 			regionTooltip = 'Korea';
+		} else if (data.player.region === 'CN') {
+			region = 'CN';
+			regionTooltip = 'China';
 		}
 	}
 
