@@ -5,7 +5,7 @@ import { exit } from 'node:process';
 const blacklist: string[] = [];
 
 console.time('backlog');
-await generateBacklog(45, 'owcs-s2', undefined, blacklist);
+await generateBacklog(45, 'owcs-s3', undefined, blacklist);
 console.timeEnd('backlog');
 console.log('Finished.');
 exit(0);
