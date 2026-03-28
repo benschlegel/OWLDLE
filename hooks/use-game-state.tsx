@@ -11,6 +11,7 @@ import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { markGameCompleted } from '@/components/pwa-provider';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { useGameStats } from '@/hooks/use-game-stats';
 import { usePlayerStatsStore } from '@/store/player-stats-store';
@@ -142,6 +143,7 @@ export default function useGameState({ slug }: Props) {
 
 			// Save result and update game state
 			if (result !== 'in-progress') {
+				markGameCompleted();
 				setGameState(result);
 				const data: DbSaveData = { gameData: [...evaluatedGuesses, newRow], gameResult: result };
 				saveGame(data);
