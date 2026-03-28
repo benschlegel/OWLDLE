@@ -1,52 +1,40 @@
 'use client';
 
-import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList, CustomCommandInput } from '@/components/ui/command';
+import { Button } from '@/components/ui/button';
+import { ButtonGroup } from '@/components/ui/button-group';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
-import { type CombinedFormattedPlayer, type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
+import { Combobox } from '@base-ui/react/combobox';
 import type { Player } from '@/types/players';
-import { UserIcon } from 'lucide-react';
+import { Dices, Search, UserIcon } from 'lucide-react';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
-type SearchState = 'unfocused' | 'typing' | 'submitting';
-
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
 	const [dataset, setDataset] = useContext(DatasetContext);
-	const [selectedPlayer, setSelectedPlayer] = useState<Player | undefined>();
-	const [searchState, setSearchState] = useState<SearchState>('unfocused');
-	const [searchValue, setSearchValue] = useState('');
+	const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+	const [inputValue, setInputValue] = useState('');
+	const [open, setOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
 	const players = dataset.playerData;
 
-	const closeSearch = useCallback(() => {
-		// TODO: find better workaround
-		setTimeout(() => {
-			setSearchState('unfocused');
-		}, 150);
-	}, []);
-
-	// Called when player is selected
 	const handleSubmit = useCallback(() => {
-		if (selectedPlayer !== undefined) {
-			// Reset search state
-			setSearchState('unfocused');
-			setSearchValue('');
-			setSelectedPlayer(undefined);
+		if (selectedPlayer !== null) {
+			const player = selectedPlayer;
+			setInputValue('');
+			setSelectedPlayer(null);
 
-			// Submit guess (if guesses remain)
 			if (guesses.length < GAME_CONFIG.maxGuesses) {
-				if (!guesses.some((g) => g.name === selectedPlayer.name)) {
-					// Send guess (if player wasnt already guessed)
-					setGuesses([...guesses, selectedPlayer as FormattedPlayer]);
+				if (!guesses.some((g) => g.name === player.name)) {
+					setGuesses([...guesses, player as FormattedPlayer]);
 				} else {
-					// Show toast if player was already guessed
 					toast({
 						title: '❌ Duplicate guess',
 						description: 'You already guessed that player.',
@@ -56,39 +44,24 @@ export default function PlayerSearch({ className }: Props) {
 		}
 	}, [selectedPlayer, setGuesses, guesses, toast]);
 
-	// Called when item is selected from dropdown (through click or enter)
-	const handleItemSubmit = useCallback(
-		(e: string) => {
-			if (searchState !== 'unfocused') {
-				const player: Player = JSON.parse(e);
-				setSearchValue(player.name);
-				setSelectedPlayer(JSON.parse(e));
-				setSearchState('submitting');
-			}
-		},
-		[searchState]
-	);
-
-	const filterSearch = useCallback((value: string, search: string, keywords?: string[]) => {
-		// Manually add filter to fix weird bug where items are unsorted if using built-in filter fn
-		// TODO: find better solution than parsing json on every search
-		const parsed = JSON.parse(value) as CombinedFormattedPlayer;
-		if (parsed.name.toLowerCase().includes(search.toLowerCase())) return 1;
-		return 0;
+	const filterItems = useCallback((item: Player, query: string) => {
+		return item.name.toLowerCase().includes(query.toLowerCase());
 	}, []);
 
-	const handleTyping = (e: React.FormEvent<HTMLInputElement>) => {
-		setSearchValue(e.currentTarget.value);
-		setSearchState('typing');
-		setSelectedPlayer(undefined);
-	};
+	// Reset state when dataset changes
+	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional trigger on dataset change
+	useEffect(() => {
+		setInputValue('');
+		setSelectedPlayer(null);
+		setOpen(false);
+	}, [dataset.dataset]);
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
-			// Focus search on ctrl + y
 			if (e.key === 'y' && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
 				inputRef.current?.focus();
+				setOpen(true);
 			}
 		};
 
@@ -97,50 +70,84 @@ export default function PlayerSearch({ className }: Props) {
 	}, []);
 
 	return (
-		<Command
-			loop
-			className={cn('rounded-lg border border-secondary md:min-w-[450px] mb-4 transition-colors duration-300 ', className)}
-			onBlur={closeSearch}
-			filter={filterSearch}>
-			<CustomCommandInput
-				onButtonClick={handleSubmit}
-				placeholder="Search for player..."
-				className="sm:text-base text-sm"
-				value={searchValue}
-				onChangeCapture={handleTyping}
-				onFocus={() => setSearchState('typing')}
-				onClick={() => setSearchState('typing')}
-				ref={inputRef}
-				onKeyDownCapture={(event) => {
-					if (event.key === 'Enter') {
-						if (searchState === 'submitting') {
-							handleSubmit();
-						}
-					} else if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
-						setSearchState('typing');
-					}
-				}}
-				isButtonDisabled={selectedPlayer === undefined}
-			/>
-			<CommandList className={`${searchState === 'typing' ? '' : 'hidden'} max-h-[200px] h-[--cmdk-list-height] transition-[height] duration-200`}>
-				{/* <ScrollArea className="sm:h-[10rem] h-[15rem]"> */}
-				<CommandEmpty>No results found.</CommandEmpty>
-				<CommandGroup heading="">
-					{players.map((player) => {
-						return (
-							<CommandItem
-								value={JSON.stringify(player)}
-								key={`${player.name}-${player.team}`}
-								onSelect={handleItemSubmit}
-								className="text-[16px] sm:text-[16px] sm:py-[0.43rem] z-10">
-								<UserIcon className="mr-2 h-4 w-4" />
-								<span>{player.name}</span>
-							</CommandItem>
-						);
-					})}
-				</CommandGroup>
-				{/* </ScrollArea> */}
-			</CommandList>
-		</Command>
+		<Combobox.Root
+			key={dataset.dataset}
+			items={players as readonly Player[]}
+			value={selectedPlayer}
+			onValueChange={(player) => {
+				setSelectedPlayer(player as Player);
+			}}
+			inputValue={inputValue}
+			onInputValueChange={(value, eventDetails) => {
+				setInputValue(value as string);
+				// Only clear selection when user is actively typing
+				if (eventDetails.reason === 'input-change' || eventDetails.reason === 'input-clear') {
+					setSelectedPlayer(null);
+				}
+			}}
+			open={open}
+			onOpenChange={(isOpen) => setOpen(isOpen)}
+			filter={filterItems}
+			itemToStringLabel={(player) => player.name}
+			itemToStringValue={(player) => player.name}
+			openOnInputClick
+			autoHighlight
+			loopFocus>
+			<Combobox.InputGroup
+				className={cn('rounded-lg border border-secondary bg-popover text-popover-foreground md:min-w-[450px] mb-4 transition-colors duration-300', className)}>
+				<ButtonGroup className="w-full">
+					<div data-slot="input" className="flex items-center px-3 grow">
+						<Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
+						<Combobox.Input
+							ref={inputRef}
+							placeholder="Search for player..."
+							className="flex h-11 w-full bg-transparent py-3 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 text-[16px] sm:text-base"
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' && selectedPlayer !== null && !open) {
+									e.preventDefault();
+									handleSubmit();
+								}
+							}}
+						/>
+					</div>
+					<Button
+						data-slot="button"
+						type="button"
+						variant="default"
+						size="lg"
+						onClick={handleSubmit}
+						disabled={selectedPlayer === null}
+						aria-label="Guess"
+						className="px-4">
+						<div className="flex flex-row gap-2">
+							<p className="sm:text-lg text-base tracking-tight">Guess</p>
+							<div className="flex items-center justify-center">
+								<Dices className="h-4 w-4" />
+								<span className="sr-only">Guess</span>
+							</div>
+						</div>
+					</Button>
+				</ButtonGroup>
+			</Combobox.InputGroup>
+
+			<Combobox.Portal>
+				<Combobox.Positioner className="z-50" style={{ width: 'var(--anchor-width)' }} sideOffset={4}>
+					<Combobox.Popup className="max-h-[200px] overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
+						<Combobox.Empty className="py-6 text-center text-sm empty:hidden">No results found.</Combobox.Empty>
+						<Combobox.List className="p-1">
+							{(player: Player) => (
+								<Combobox.Item
+									key={`${player.name}-${player.team}`}
+									value={player}
+									className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-[16px] sm:text-[16px] sm:py-[0.43rem] outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground">
+									<UserIcon className="mr-2 h-4 w-4" />
+									<span>{player.name}</span>
+								</Combobox.Item>
+							)}
+						</Combobox.List>
+					</Combobox.Popup>
+				</Combobox.Positioner>
+			</Combobox.Portal>
+		</Combobox.Root>
 	);
 }
