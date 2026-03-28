@@ -1,10 +1,10 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { usePWAInstall } from '@/hooks/use-pwa-install';
+import { usePWA } from '@/components/pwa-provider';
 
 export function PWAInstallPrompt() {
-	const { showBanner, install, dismissBanner } = usePWAInstall();
+	const { showBanner, install, dismissBanner } = usePWA();
 
 	if (!showBanner) return null;
 

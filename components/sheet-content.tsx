@@ -12,7 +12,6 @@ import { useDialogState } from '@/hooks/use-dialog-param';
 import { DownloadIcon, SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { usePWAInstall } from '@/hooks/use-pwa-install';
 import { usePWA } from '@/components/pwa-provider';
 
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
@@ -69,7 +68,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 		[router, setSheetOpen]
 	);
 
-	const { canInstall, install } = usePWAInstall();
+	const { install } = usePWA();
 	const defaultAccordion = PATHNAME_TO_ACCORDION[pathname] ?? '';
 
 	return (

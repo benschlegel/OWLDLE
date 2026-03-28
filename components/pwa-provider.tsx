@@ -1,15 +1,38 @@
 'use client';
 
-import { createContext, useContext, useMemo, useSyncExternalStore } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+
+type BeforeInstallPromptEvent = Event & {
+	prompt(): Promise<void>;
+	userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+};
+
+const DISMISSED_KEY = 'pwa-install-dismissed';
+
+function isDismissed(): boolean {
+	try {
+		return localStorage.getItem(DISMISSED_KEY) === '1';
+	} catch {
+		return false;
+	}
+}
 
 type PWAContextValue = {
 	isOnline: boolean;
 	isInstalled: boolean;
+	canInstall: boolean;
+	showBanner: boolean;
+	install: () => Promise<void>;
+	dismissBanner: () => void;
 };
 
 const PWAContext = createContext<PWAContextValue>({
 	isOnline: true,
 	isInstalled: false,
+	canInstall: false,
+	showBanner: false,
+	install: async () => {},
+	dismissBanner: () => {},
 });
 
 function subscribeOnline(callback: () => void) {
@@ -47,7 +70,49 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 	const isOnline = useSyncExternalStore(subscribeOnline, getOnlineSnapshot, getServerSnapshot);
 	const isInstalled = useSyncExternalStore(subscribeDisplayMode, getDisplayModeSnapshot, getDisplayModeServerSnapshot);
 
-	const value = useMemo(() => ({ isOnline, isInstalled }), [isOnline, isInstalled]);
+	const deferredPromptRef = useRef<BeforeInstallPromptEvent | null>(null);
+	const [canInstall, setCanInstall] = useState(false);
+	const [dismissed, setDismissed] = useState(false);
+
+	useEffect(() => {
+		setDismissed(isDismissed());
+
+		function handleBeforeInstallPrompt(e: Event) {
+			e.preventDefault();
+			deferredPromptRef.current = e as BeforeInstallPromptEvent;
+			setCanInstall(true);
+		}
+
+		window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+		return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+	}, []);
+
+	const install = useCallback(async () => {
+		const prompt = deferredPromptRef.current;
+		if (!prompt) return;
+
+		await prompt.prompt();
+		const { outcome } = await prompt.userChoice;
+
+		if (outcome === 'accepted') {
+			deferredPromptRef.current = null;
+			setCanInstall(false);
+		}
+	}, []);
+
+	const dismissBanner = useCallback(() => {
+		try {
+			localStorage.setItem(DISMISSED_KEY, '1');
+		} catch {}
+		setDismissed(true);
+	}, []);
+
+	const showBanner = canInstall && !dismissed;
+
+	const value = useMemo(
+		() => ({ isOnline, isInstalled, canInstall, showBanner, install, dismissBanner }),
+		[isOnline, isInstalled, canInstall, showBanner, install, dismissBanner]
+	);
 
 	return <PWAContext value={value}>{children}</PWAContext>;
 }
