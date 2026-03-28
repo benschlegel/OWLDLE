@@ -131,8 +131,8 @@ export default function PlayerSearch({ className }: Props) {
 			</Combobox.InputGroup>
 
 			<Combobox.Portal>
-				<Combobox.Positioner className="z-50" style={{ width: 'var(--anchor-width)' }} sideOffset={4}>
-					<Combobox.Popup className="max-h-[200px] overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
+				<Combobox.Positioner className="z-50" style={{ width: 'var(--anchor-width)' }} sideOffset={4} side="bottom">
+					<Combobox.Popup className="sm:max-h-40 max-h-[80px] overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
 						<Combobox.Empty className="py-6 text-center text-sm empty:hidden">No results found.</Combobox.Empty>
 						<Combobox.List className="p-1">
 							{(player: Player) => (
