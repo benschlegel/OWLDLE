@@ -74,10 +74,27 @@ export function Navbar() {
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, []);
 
+	// const handleOwlSelect = useCallback(
+	// 	(value: string) => {
+	// 		const season = value.slice('season'.length);
+	// 		const target = `${OWL_PATHNAME}?season=${season}`;
+	// 		viewTransition(() => (pathname === OWL_PATHNAME ? router.replace(target) : router.push(target)));
+	// 	},
+	// 	[router, pathname]
+	// );
 	const handleOwlSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('season'.length);
 			const target = `${OWL_PATHNAME}?season=${season}`;
+			const isSamePath = pathname === OWL_PATHNAME;
+			viewTransition(() => {
+				if (isSamePath) {
+					window.history.pushState(null, '', target);
+					router.refresh();
+				} else {
+					router.push(target);
+				}
+			});
 			viewTransition(() => (pathname === OWL_PATHNAME ? router.replace(target) : router.push(target)));
 		},
 		[router, pathname]
@@ -87,7 +104,15 @@ export function Navbar() {
 		(value: string) => {
 			const season = value.slice('owcs-'.length);
 			const target = `${OWCS_PATHNAME}?season=${season}`;
-			viewTransition(() => (pathname === OWCS_PATHNAME ? router.replace(target) : router.push(target)));
+			const isSamePath = pathname === OWCS_PATHNAME;
+			viewTransition(() => {
+				if (isSamePath) {
+					window.history.pushState(null, '', target);
+					router.refresh();
+				} else {
+					router.push(target);
+				}
+			});
 		},
 		[router, pathname]
 	);
