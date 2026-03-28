@@ -85,6 +85,16 @@ export async function dropAll() {
 }
 
 /**
+ * Drop all data for a single dataset (players, backlog, answers, iterations)
+ */
+export async function dropDataset(dataset: Dataset) {
+	await playerCollection.deleteOne({ _id: dataset });
+	await backlogCollection.deleteOne({ _id: dataset });
+	await answerCollection.deleteMany({ _id: { $in: [`current_${dataset}`, `next_${dataset}`] as AnswerKey[] } });
+	await iterationCollection.deleteMany({ dataset });
+}
+
+/**
  * Insert all players from a dataset to the database backlog (if no object with the current dataset id exists, create it, otherwise, update)
  */
 export async function insertPlayers(dataset: Dataset) {
