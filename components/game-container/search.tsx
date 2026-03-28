@@ -6,6 +6,7 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useToast } from '@/hooks/use-toast';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { GAME_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import { Combobox } from '@base-ui/react/combobox';
@@ -23,6 +24,7 @@ export default function PlayerSearch({ className }: Props) {
 	const [open, setOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
+	const isMobile = useIsMobile();
 	const players = dataset.playerData;
 
 	const handleSubmit = useCallback(() => {
@@ -30,6 +32,7 @@ export default function PlayerSearch({ className }: Props) {
 			const player = selectedPlayer;
 			setInputValue('');
 			setSelectedPlayer(null);
+			if (isMobile) inputRef.current?.blur();
 
 			if (guesses.length < GAME_CONFIG.maxGuesses) {
 				if (!guesses.some((g) => g.name === player.name)) {
@@ -42,7 +45,7 @@ export default function PlayerSearch({ className }: Props) {
 				}
 			}
 		}
-	}, [selectedPlayer, setGuesses, guesses, toast]);
+	}, [selectedPlayer, setGuesses, guesses, toast, isMobile]);
 
 	const filterItems = useCallback((item: Player, query: string) => {
 		return item.name.toLowerCase().includes(query.toLowerCase());
@@ -67,45 +70,6 @@ export default function PlayerSearch({ className }: Props) {
 
 		document.addEventListener('keydown', down);
 		return () => document.removeEventListener('keydown', down);
-	}, []);
-
-	// On mobile, after the keyboard finishes opening (visualViewport resize settles),
-	// scroll the page so the input sits at the very bottom of the visible area.
-	// This ensures the popup (which opens above when keyboard is open) is fully visible.
-	useEffect(() => {
-		const input = inputRef.current;
-		if (!input) return;
-
-		let timer: ReturnType<typeof setTimeout>;
-
-		const scrollInputToBottom = () => {
-			if (window.innerWidth >= 640) return;
-			const vv = window.visualViewport;
-			const vvHeight = vv?.height ?? window.innerHeight;
-			const rect = input.getBoundingClientRect();
-			const scrollTarget = window.scrollY + rect.bottom - vvHeight + 8;
-			window.scrollTo({ top: Math.max(0, scrollTarget), behavior: 'smooth' });
-		};
-
-		const onViewportResize = () => {
-			clearTimeout(timer);
-			timer = setTimeout(scrollInputToBottom, 100);
-		};
-
-		const onFocus = () => window.visualViewport?.addEventListener('resize', onViewportResize);
-		const onBlur = () => {
-			clearTimeout(timer);
-			window.visualViewport?.removeEventListener('resize', onViewportResize);
-		};
-
-		input.addEventListener('focus', onFocus);
-		input.addEventListener('blur', onBlur);
-		return () => {
-			clearTimeout(timer);
-			input.removeEventListener('focus', onFocus);
-			input.removeEventListener('blur', onBlur);
-			window.visualViewport?.removeEventListener('resize', onViewportResize);
-		};
 	}, []);
 
 	return (
