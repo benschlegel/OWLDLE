@@ -147,7 +147,12 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 								</AccordionContent>
 							</AccordionItem>
 						</Accordion>
-						<SheetLinkButton text="Statistics" className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base" />
+						<SheetLinkButton
+							text="Statistics"
+							href="/statistics"
+							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
+							onClick={() => setSheetOpen(false)}
+						/>
 					</div>
 				</div>
 				<div className="flex flex-col">
