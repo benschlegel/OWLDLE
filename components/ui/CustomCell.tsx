@@ -1,8 +1,8 @@
 'use client';
 import type { DemoCell } from '@/components/game-container/dialogs/HelpContent';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { useLongPress } from '@uidotdev/usehooks';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useMobileTooltip } from '@/hooks/use-mobile-tooltip';
+import type React from 'react';
 
 type Props = {
 	cellData: Partial<DemoCell>;
@@ -13,39 +13,20 @@ type Props = {
 };
 
 export default function CustomCell({ cellData, id, ignoreTabIndex, isSmall, debounceTime = 100 }: Props) {
-	const [open, setOpen] = useState(false);
+	const { open, setOpen, triggerRef, touchHandlers } = useMobileTooltip();
 	const tooltip = cellData.description;
-
-	const attrs = useLongPress(
-		() => {
-			console.log('finished');
-			setOpen(true);
-		},
-		{
-			onCancel: (event) => setOpen(false),
-			threshold: 500,
-		}
-	);
-
-	const handleOpen = useCallback(() => {
-		setOpen(true);
-	}, []);
-
-	const handleToggle = useCallback(() => {
-		setOpen((open) => !open);
-	}, []);
 
 	const ButtonContent = <p className="text-opacity-100 leading-4 text-sm">{cellData.text}</p>;
 
 	const ButtonProps = {
-		...attrs,
 		type: 'button' as const,
 		id,
+		ref: triggerRef as React.RefObject<HTMLButtonElement>,
 		style: { backgroundColor: cellData.bgColor, color: cellData.color },
-		onClick: !ignoreTabIndex ? handleToggle : undefined,
-		onMouseEnter: !ignoreTabIndex ? handleOpen : undefined,
+		onClick: !ignoreTabIndex ? () => setOpen((prev) => !prev) : undefined,
+		onMouseEnter: !ignoreTabIndex ? () => setOpen(true) : undefined,
 		onMouseLeave: !ignoreTabIndex ? () => setOpen(false) : undefined,
-		onTouchStart: !ignoreTabIndex ? handleToggle : undefined,
+		...(!ignoreTabIndex ? touchHandlers : {}),
 		'aria-label': 'Open tooltip',
 		'aria-expanded': open,
 	};

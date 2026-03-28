@@ -1,4 +1,5 @@
-import type { Dataset } from '@/data/datasets';
+import { type Dataset, datasetInfo } from '@/data/datasets';
+import { customCountryNames, type CountryCode } from '@/types/countries';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 
 export type FormatConfig = {
@@ -34,18 +35,9 @@ export type FormatConfig = {
  * @returns a string formatted using emojis (🟥 🟩) + stats
  */
 export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl, dataset }: FormatConfig): string {
-	let datasetPostfix = '';
-	if (dataset !== undefined) {
-		datasetPostfix = dataset;
-	}
-	if (dataset === 'owcs-s2') {
-		datasetPostfix = 'owcs';
-	}
-	let seasonText = dataset !== undefined ? `${dataset.charAt(0).toUpperCase()}${dataset.slice(1, -1)} ${dataset.slice(-1)}` : '';
-
-	if (dataset === 'owcs-s2') {
-		seasonText = 'OWCS S2';
-	}
+	const meta = dataset ? datasetInfo.find((d) => d.dataset === dataset) : undefined;
+	const datasetPostfix = meta?.prettyHref ?? '';
+	const seasonText = meta?.name ?? '';
 
 	if (guesses.length === 0 || guesses === undefined) return '';
 	// Add header
@@ -64,7 +56,8 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (hasFailed === true) result += '❌';
 
 	// Add footer (with site url)
-	result += `\n<${siteUrl ? siteUrl + datasetPostfix : getSiteName()}>`;
+	const base = siteUrl?.replace(/\/$/, '') ?? getSiteName();
+	result += `\n<${base}${datasetPostfix}>`;
 	return result;
 }
 
@@ -109,6 +102,19 @@ export function getSiteName() {
 }
 
 export const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+
+/**
+ * Safely resolves a country code to a display name.
+ * Falls back to `customCountryNames` for non-standard codes (e.g. subdivision codes like 'GB-WLS')
+ */
+export function getCountryDisplayName(code: string | undefined): string | undefined {
+	if (!code) return undefined;
+	try {
+		return regionNames.of(code);
+	} catch {
+		return customCountryNames[code as CountryCode];
+	}
+}
 
 /**
  * Splits a string by capitalization (e.g. LosAngelesGladiators => 'Los Angeles Gladiators')

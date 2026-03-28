@@ -4,7 +4,6 @@ import { getRegion } from '@/data/teams/teams';
 import type { CountryCode } from '@/types/countries';
 import type { Player } from '@/types/players';
 
-type CustomFlag = { country: Player['country']; customImg: string };
 export type FormattedPlayer<T extends Dataset = 'season1'> = Player<T> & { countryImg: string; regionImg: string; id: number };
 export type CombinedFormattedPlayer =
 	| FormattedPlayer<'season1'>
@@ -13,7 +12,9 @@ export type CombinedFormattedPlayer =
 	| FormattedPlayer<'season4'>
 	| FormattedPlayer<'season5'>
 	| FormattedPlayer<'season6'>
-	| FormattedPlayer<'owcs-s2'>;
+	| FormattedPlayer<'owcs-s1'>
+	| FormattedPlayer<'owcs-s2'>
+	| FormattedPlayer<'owcs-s3'>;
 
 export type PlayerDataset = {
 	dataset: Dataset;
@@ -22,13 +23,23 @@ export type PlayerDataset = {
 
 export const FORMATTED_PLAYERS: PlayerDataset[] = [];
 
-// Countries that are not supported by vectorflags api
-// ! Add unsupported countries here
-const unsupportedCountryCodes: CountryCode[] = ['ET', 'RO', 'LV', 'PL', 'KH'];
-const unsupportedCountries: CustomFlag[] = unsupportedCountryCodes.map((c) => ({ country: c, customImg: `https://flagsapi.com/${c}/flat/64.png` }));
+/**
+ * Custom flag images for non-standard country codes
+ */
+const customCountryImages: Partial<Record<CountryCode, string>> = {
+	ET: 'https://flagsapi.com/ET/flat/64.png',
+	RO: 'https://flagsapi.com/RO/flat/64.png',
+	LV: 'https://flagsapi.com/LV/flat/64.png',
+	PL: 'https://flagsapi.com/PL/flat/64.png',
+	KH: 'https://flagsapi.com/KH/flat/64.png',
+	'GB-WLS': '/countries/wales.avif',
+	'GB-SCT': '/countries/scotland.avif',
+	AX: '/countries/aland.avif',
+	'GB-NI': '/countries/GB-NI.avif',
+};
 
 // TODO: find out why using DATASETS causes "cant use before initialization"
-const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s2'] as const;
+const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s1', 'owcs-s2', 'owcs-s3'] as const;
 for (let i = 0; i < ALL_PLAYERS.length; i++) {
 	const currentPlayers = ALL_PLAYERS[i];
 	const currDataset = datasets[i];
@@ -37,15 +48,10 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 		let countryImg = `https://vectorflags.s3.amazonaws.com/flags/${player.country.toLowerCase()}-square-01.png`;
 		let regionImg = '';
 
-		// Check if player is unsupported by vectorflags api and override with custom image
-		const unsupportedCountry = unsupportedCountries.find((unsupported) => unsupported.country === player.country);
-		if (unsupportedCountry) {
-			countryImg = unsupportedCountry.customImg;
-		}
-
-		// Special case for wales (was not in unsupported api either)
-		if (player.country === 'GB-WLS') {
-			countryImg = '/countries/wales.avif';
+		// Override with custom image if one is defined for this country code
+		const customImg = customCountryImages[player.country];
+		if (customImg) {
+			countryImg = customImg;
 		}
 
 		// Set player region

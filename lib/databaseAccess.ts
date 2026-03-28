@@ -13,8 +13,10 @@ import type {
 	DbFeedback,
 	DbIteration,
 	DbLoggedGame,
+	DbLoggedEndlessSession,
 	DbGuess,
 	DbGameResult,
+	DbGameStats,
 } from '@/types/database';
 import { type ClientSession, MongoClient } from 'mongodb';
 
@@ -56,6 +58,21 @@ const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
 const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
 
+const endlessLogCollection = database.collection<DbLoggedEndlessSession>('endless_game_logs');
+
+const gameStatsCollection = database.collection<DbGameStats>('game_stats');
+gameStatsCollection.createIndex({ dataset: 1, iteration: 1 }, { unique: true });
+
+/**
+ * Log an endless session to db (called when a streak ends via a loss)
+ * @param dataset what dataset this session is for
+ * @param streakLength number of wins before the streak ended
+ * @param games simplified summary of each game in streak (including last lost game)
+ */
+export async function logEndlessSession(dataset: Dataset, streakLength: number, games: DbLoggedEndlessSession['games']) {
+	return endlessLogCollection.insertOne({ dataset, streakLength, games, finishedAt: new Date() });
+}
+
 /**
  * CAREFUL: deletes the entire player backlog from database
  */
@@ -65,6 +82,16 @@ export async function deleteAllPlayers(dataset: Dataset) {
 
 export async function dropAll() {
 	await database.dropDatabase();
+}
+
+/**
+ * Drop all data for a single dataset (players, backlog, answers, iterations)
+ */
+export async function dropDataset(dataset: Dataset) {
+	await playerCollection.deleteOne({ _id: dataset });
+	await backlogCollection.deleteOne({ _id: dataset });
+	await answerCollection.deleteMany({ _id: { $in: [`current_${dataset}`, `next_${dataset}`] as AnswerKey[] } });
+	await iterationCollection.deleteMany({ dataset });
 }
 
 /**
@@ -540,4 +567,42 @@ export async function goNextIteration(
 	// step 5: pop backlog
 	// step 5.5: regenerate backlog, if necessary
 	// step 6: set new next answer
+}
+
+/**
+ * Atomically increment game stats for a given dataset + iteration.
+ * Creates the document on first call (upsert). Returns the updated document.
+ * @param dataset which dataset
+ * @param iteration which iteration
+ * @param gameResult 'won' or 'lost'
+ * @param guessCount number of guesses used (only meaningful for wins)
+ */
+export async function updateGameStats(dataset: Dataset, iteration: number, gameResult: DbGameResult, guessCount: number) {
+	const statsId = `stats_${dataset}_${iteration}`;
+	const distributionKey = gameResult === 'won' ? `guessDistribution.${guessCount}` : 'guessDistribution.failed';
+
+	return gameStatsCollection.findOneAndUpdate(
+		{ _id: statsId },
+		{
+			$inc: {
+				totalGames: 1,
+				wins: gameResult === 'won' ? 1 : 0,
+				losses: gameResult === 'lost' ? 1 : 0,
+				[distributionKey]: 1,
+			},
+			$setOnInsert: {
+				dataset,
+				iteration,
+			},
+		},
+		{ upsert: true, returnDocument: 'after' }
+	);
+}
+
+/**
+ * Get game stats for a given dataset + iteration
+ */
+export async function getGameStats(dataset: Dataset, iteration: number) {
+	const statsId = `stats_${dataset}_${iteration}`;
+	return gameStatsCollection.findOne({ _id: statsId });
 }

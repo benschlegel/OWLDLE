@@ -15,6 +15,7 @@ export const GuessSchema = z.object({
 export const feedbackSchema = z.object({
 	rating: z.number().min(0.5).max(5).step(0.5).optional(),
 	name: z.string().trim().max(128).optional(),
+	contactInfo: z.string().trim().max(128).optional(),
 	feedback: z.string().trim().max(4096),
 });
 

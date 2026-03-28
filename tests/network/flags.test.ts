@@ -1,5 +1,7 @@
 import { test, expect, describe } from 'vitest';
-import { PLAYERS_S1, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import type { CountryCode } from '@/types/countries';
 
 type MergedPlayer = { country: CountryCode; imgUrl: string };
@@ -13,15 +15,17 @@ const uniqueCountries = getUniqueCountries(mergedPlayers);
 
 // Test if all flags for countries that players are from are working
 describe('country flag logos loading', () => {
-	test.concurrent.each(uniqueCountries)('$country: flag url loading', async ({ country, imgUrl }) => {
-		// Fetch the image
-		if (imgUrl.startsWith('/countries')) {
-			return;
-		}
-		const response = await fetch(imgUrl);
+	test.concurrent.each(uniqueCountries)('$country: flag url loading', async ({ imgUrl }) => {
+		if (imgUrl.startsWith('/')) {
+			// Local file -> check in public folder
+			const filePath = path.join(process.cwd(), 'public', imgUrl);
 
-		// Ensure the request was successful
-		expect(response.ok).toBe(true);
+			expect(existsSync(filePath)).toBe(true);
+		} else {
+			// Remote URL -> fetch
+			const response = await fetch(imgUrl);
+			expect(response.ok).toBe(true);
+		}
 	});
 });
 

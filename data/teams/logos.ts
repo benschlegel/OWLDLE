@@ -1,5 +1,5 @@
 import type { Dataset } from '@/data/datasets';
-import type { TeamName } from '@/data/teams/teams';
+import { ALL_TEAMS, type TeamName } from '@/data/teams/teams';
 import { GAME_CONFIG } from '@/lib/config';
 export type TeamLogoData<T extends Dataset = 'season1'> = {
 	teamName: TeamName<T>;
@@ -183,13 +183,13 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'TheUltimates',
-		displayName: 'The Ultimates',
+		teamName: 'TeamVision',
+		displayName: 'Team Vision',
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'FrostTailsEsports',
-		displayName: 'Frost Tails Esport',
+		teamName: 'GoudGuysANM',
+		displayName: 'Goud Guys ANM',
 		backgroundColor: '#202127',
 	},
 	{
@@ -241,9 +241,10 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'Supernova',
-		displayName: 'Supernova',
+		teamName: 'TeamZ',
+		displayName: 'Team Z',
 		backgroundColor: '#202127',
+		imgUrl: `/teams/owcs-s1/TeamZ.${GAME_CONFIG.teamLogoImgExtension}`,
 	},
 	{
 		teamName: 'DhillDucks',
@@ -274,28 +275,13 @@ const teamLogosOWCS_S2: Partial<TeamLogoData<'owcs-s2'>>[] = [
 		backgroundColor: '#202127',
 	},
 	{
-		teamName: 'PokerFace',
-		displayName: 'Poker Face',
+		teamName: 'WAE',
+		displayName: 'WAE',
 		backgroundColor: '#202127',
 	},
 	{
 		teamName: 'OnsideGaming',
 		displayName: 'ONSIDE Gaming',
-		backgroundColor: '#202127',
-	},
-	{
-		teamName: 'VEC',
-		displayName: 'VEC',
-		backgroundColor: '#202127',
-	},
-	{
-		teamName: 'AllGamersGlobal',
-		displayName: 'All Gamers Global',
-		backgroundColor: '#202127',
-	},
-	{
-		teamName: 'OldOcean',
-		displayName: 'Old Ocean',
 		backgroundColor: '#202127',
 	},
 ];
@@ -337,8 +323,64 @@ TEAM_LOGOS_S6.push(teamLogosS6[0]);
 TEAM_LOGOS_S6.push(teamLogosS6[1]);
 
 export const TEAM_LOGOS_OWCS_S2: TeamLogoData<'owcs-s2'>[] = teamLogosOWCS_S2.map(
-	(team) => ({ ...team, imgUrl: `/teams/owcs-s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}` }) as TeamLogoData<'owcs-s2'>
+	(team) => ({ imgUrl: `/teams/owcs-s2/${team.teamName}.${GAME_CONFIG.teamLogoImgExtension}`, ...team }) as TeamLogoData<'owcs-s2'>
 );
+
+// New teams for OWCS S1 (not in S2)
+const teamLogosOWCS_S1_New: Partial<TeamLogoData<'owcs-s1'>>[] = [
+	/**
+	 * EMEA
+	 */
+	{ teamName: 'ENCE', displayName: 'ENCE', backgroundColor: '#202127' },
+	{ teamName: 'PieceofCake', displayName: 'Piece of Cake', backgroundColor: '#202127' },
+	{ teamName: 'SrPeakCheck', displayName: 'Sr Peak Check', backgroundColor: '#202127' },
+	{ teamName: 'WASPXOHHHHNO', displayName: 'WASP X OHHHH NO', backgroundColor: '#202127' },
+	{ teamName: 'AOneManArmy', displayName: 'A One Man Army', backgroundColor: '#202127' },
+	{ teamName: 'ExOblivione', displayName: 'Ex Oblivione', backgroundColor: '#202127' },
+	{ teamName: 'TeamG4mbit', displayName: 'Team G4mbit', backgroundColor: '#202127' },
+	{ teamName: 'NegMentalAttitude', displayName: 'Neg. Mental Attitude', backgroundColor: '#202127' },
+	{ teamName: 'Hypnos', displayName: 'Hypnos', backgroundColor: '#202127' },
+	{ teamName: 'Metaboiz', displayName: 'Metaboiz', backgroundColor: '#202127' },
+	{ teamName: 'Vendetta', displayName: 'Vendetta', backgroundColor: '#202127' },
+	/**
+	 * NA
+	 */
+	{ teamName: 'TorontoDefiant', displayName: 'Toronto Defiant', backgroundColor: '#202127' },
+	{ teamName: 'NRGShock', displayName: 'NRG Shock', backgroundColor: '#202127' },
+	{ teamName: 'CitrusNation', displayName: 'Citrus Nation', backgroundColor: '#202127' },
+	{ teamName: 'TSM', displayName: 'TSM', backgroundColor: '#202127' },
+	{ teamName: 'O3Splash', displayName: 'O3 Splash', backgroundColor: '#202127' },
+	{ teamName: 'FluffyDreamland', displayName: 'Fluffy Dreamland', backgroundColor: '#202127' },
+	{ teamName: 'Shikigami', displayName: 'Shikigami', backgroundColor: '#202127' },
+	{ teamName: 'TanukiTapire', displayName: 'Tanuki Tapire', backgroundColor: '#202127' },
+	{ teamName: 'EXNZenith', displayName: 'EXN Zenith', backgroundColor: '#202127' },
+	{ teamName: 'Ramattrapunch', displayName: 'Ramattra punch', backgroundColor: '#202127' },
+	{ teamName: 'Absolution', displayName: 'Absolution', backgroundColor: '#202127' },
+	{ teamName: 'RadxAvidity', displayName: 'Rad x Avidity', backgroundColor: '#202127' },
+	{ teamName: 'BlastOffBuds', displayName: 'Blast Off Buds', backgroundColor: '#202127' },
+	{ teamName: 'YFPGaming', displayName: 'YFP Gaming', backgroundColor: '#202127' },
+	/**
+	 * Korea
+	 */
+	{ teamName: 'Fnatic', displayName: 'Fnatic', backgroundColor: '#202127' },
+	{ teamName: 'HaeJeokDan', displayName: 'HaeJeokDan', backgroundColor: '#202127' },
+];
+
+const teamLogosOWCS_S1_FromS2: Partial<TeamLogoData<'owcs-s1'>>[] = [
+	{ teamName: 'PokerFace', displayName: 'Poker Face', backgroundColor: '#202127' },
+	{ teamName: 'VEC', displayName: 'VEC', backgroundColor: '#202127' },
+	{ teamName: 'OldOcean', displayName: 'Old Ocean', backgroundColor: '#202127' },
+];
+
+// Reuse S2 logos for teams that carry over from S1
+const owcsS1TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s1')?.data ?? []);
+const reusedFromS2ForS1 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS1TeamNames.has(t.teamName as string));
+
+export const TEAM_LOGOS_OWCS_S1: TeamLogoData<'owcs-s1'>[] = [
+	...(reusedFromS2ForS1 as unknown as TeamLogoData<'owcs-s1'>[]),
+	...(teamLogosOWCS_S1_FromS2.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
+	...(teamLogosOWCS_S1_New.map((t) => ({ ...t, imgUrl: `/teams/owcs-s1/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s1'>[]),
+];
 
 type LogoData<T extends Dataset> = {
 	dataset: T;
@@ -352,7 +394,50 @@ export type CombinedLogoData =
 	| LogoData<'season4'>
 	| LogoData<'season5'>
 	| LogoData<'season6'>
-	| LogoData<'owcs-s2'>;
+	| LogoData<'owcs-s1'>
+	| LogoData<'owcs-s2'>
+	| LogoData<'owcs-s3'>;
+
+// New teams for OWCS S3 (not in S2)
+const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
+	/**
+	 * EMEA
+	 */
+	{ teamName: 'AnyonesLegend', displayName: "Anyone's Legend", backgroundColor: '#202127' },
+	/**
+	 * NA
+	 */
+	{ teamName: 'DallasFuel', displayName: 'Dallas Fuel', backgroundColor: '#202127' },
+	{ teamName: 'Disguised', displayName: 'Disguised', backgroundColor: '#202127' },
+	{ teamName: 'LuneXGaming', displayName: 'LuneX Gaming', backgroundColor: '#202127' },
+	/**
+	 * Korea
+	 */
+	{ teamName: 'NewEra', displayName: 'New Era', backgroundColor: '#202127' },
+	{ teamName: 'ZANEsports', displayName: 'ZAN Esports', backgroundColor: '#202127' },
+	{ teamName: 'Cheeseburger', displayName: 'Cheeseburger', backgroundColor: '#202127' },
+	{ teamName: 'PokerFace', displayName: 'Poker Face', backgroundColor: '#202127' },
+	/**
+	 * China
+	 */
+	{ teamName: 'WeiboGaming', displayName: 'Weibo Gaming', backgroundColor: '#202127' },
+	{ teamName: 'JDGaming', displayName: 'JD Gaming', backgroundColor: '#202127' },
+	{ teamName: 'AllGamers', displayName: 'All Gamers', backgroundColor: '#202127' },
+	{ teamName: 'MilkTea', displayName: 'Milk Tea', backgroundColor: '#202127' },
+	{ teamName: 'HomieE', displayName: 'Homie E', backgroundColor: '#202127' },
+	{ teamName: 'DEG', displayName: 'DEG', backgroundColor: '#202127' },
+	{ teamName: 'SolusVictorem', displayName: 'Solus Victorem', backgroundColor: '#202127' },
+	{ teamName: 'NaivePiggy', displayName: 'Naive Piggy', backgroundColor: '#202127' },
+];
+
+// Reuse S2 logos for teams that carry over to S3
+const owcsS3TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s3')?.data ?? []);
+const reusedFromS2 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS3TeamNames.has(t.teamName as string));
+
+export const TEAM_LOGOS_OWCS_S3: TeamLogoData<'owcs-s3'>[] = [
+	...(reusedFromS2.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s3'>[]),
+	...(teamLogosOWCS_S3_New.map((t) => ({ ...t, imgUrl: `/teams/owcs-s3/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s3'>[]),
+];
 
 export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },
@@ -361,7 +446,9 @@ export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season4', data: TEAM_LOGOS_S3 as unknown[] as TeamLogoData<'season4'>[] },
 	{ dataset: 'season5', data: TEAM_LOGOS_S5 as unknown[] as TeamLogoData<'season5'>[] },
 	{ dataset: 'season6', data: TEAM_LOGOS_S6 },
+	{ dataset: 'owcs-s1', data: TEAM_LOGOS_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: TEAM_LOGOS_OWCS_S2 },
+	{ dataset: 'owcs-s3', data: TEAM_LOGOS_OWCS_S3 },
 ] as const;
 
 export function getTeamLogos(dataset: Dataset) {
