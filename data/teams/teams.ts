@@ -146,9 +146,9 @@ const NA_OWCS_S1: readonly string[] = [
 ];
 const KR_OWCS_S1: readonly string[] = ['TeamFalcons', 'CrazyRaccoon', 'ZETADIVISION', 'Fnatic', 'HaeJeokDan', 'VEC', 'PokerFace', 'OldOcean'];
 
-const EMEA_OWCS_S2 = ['GenG', 'TwistedMinds', 'VirtusPro', 'TheUltimates', 'FrostTailsEsports', 'TeamPeps', 'AlQadsiah', 'QuickEsports'] as const;
-const NA_OWCS_S2 = ['SpacestationGaming', 'TeamLiquid', 'GeekayEsports', 'Extinction', 'SakuraEsports', 'NTMR', 'Supernova', 'DhillDucks'] as const;
-const KR_OWCS_S2 = ['CrazyRaccoon', 'T1', 'TeamFalcons', 'ZETADIVISION', 'PokerFace', 'AllGamersGlobal', 'VEC', 'OnsideGaming', 'OldOcean'] as const;
+const EMEA_OWCS_S2 = ['AlQadsiah', 'TwistedMinds', 'VirtusPro', 'GenG', 'TeamPeps', 'TeamVision', 'GoudGuysANM', 'QuickEsports'] as const;
+const NA_OWCS_S2 = ['GeekayEsports', 'TeamLiquid', 'NTMR', 'SpacestationGaming', 'SakuraEsports', 'Extinction', 'TeamZ', 'DhillDucks'] as const;
+const KR_OWCS_S2 = ['CrazyRaccoon', 'T1', 'WAE', 'ZETADIVISION', 'TeamFalcons', 'OnsideGaming'] as const;
 
 // * Combine data
 
