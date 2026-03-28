@@ -6,7 +6,7 @@ import { createParser, useQueryState } from 'nuqs';
 const KEY_NAME = 'season';
 
 export function useOwcsParams() {
-	return useQueryState(KEY_NAME, parseOwcsSeasons.withDefault(DEFAULT_OWCS_DATASET_NAME).withOptions({ history: 'push' }));
+	return useQueryState(KEY_NAME, parseOwcsSeasons.withDefault(DEFAULT_OWCS_DATASET_NAME).withOptions({ history: 'push', clearOnDefault: true }));
 }
 
 const parseOwcsSeasons = createParser<Dataset>({

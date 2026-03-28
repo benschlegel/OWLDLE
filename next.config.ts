@@ -34,35 +34,64 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 	allowedDevOrigins: ['dev.bschlegel.com'],
 	async redirects() {
 		return [
+			// Legacy /play → /owl
+			{
+				source: '/play',
+				destination: '/owl',
+				permanent: true,
+			},
+			// Legacy /seasonN routes
 			{
 				source: '/season6',
-				destination: '/play',
+				destination: '/owl',
 				permanent: true,
 			},
 			{
 				source: '/season5',
-				destination: '/play?season=5',
+				destination: '/owl?season=5',
 				permanent: true,
 			},
 			{
 				source: '/season4',
-				destination: '/play?season=4',
+				destination: '/owl?season=4',
 				permanent: true,
 			},
 			{
 				source: '/season3',
-				destination: '/play?season=3',
+				destination: '/owl?season=3',
 				permanent: true,
 			},
 			{
 				source: '/season2',
-				destination: '/play?season=2',
+				destination: '/owl?season=2',
 				permanent: true,
 			},
 			{
 				source: '/season1',
-				destination: '/play?season=1',
+				destination: '/owl?season=1',
 				permanent: true,
+			},
+			// Pretty OWL URLs: /owl/season1 -> /owl?season=1
+			{
+				source: '/owl/season:num',
+				destination: '/owl?season=:num',
+				permanent: false,
+			},
+			// Pretty OWCS URLs: /owcs/seasonN → /owcs?season=sN
+			{
+				source: '/owcs/season1',
+				destination: '/owcs?season=s1',
+				permanent: false,
+			},
+			{
+				source: '/owcs/season2',
+				destination: '/owcs?season=s2',
+				permanent: false,
+			},
+			{
+				source: '/owcs/season3',
+				destination: '/owcs?season=s3',
+				permanent: false,
 			},
 		];
 	},

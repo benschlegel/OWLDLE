@@ -73,7 +73,7 @@ export const metadata: Metadata = {
 	},
 	metadataBase: new URL(GAME_CONFIG.siteUrl),
 	alternates: {
-		canonical: '/play',
+		canonical: '/owl',
 	},
 	openGraph: {
 		title: DEFAULT_TITLE,

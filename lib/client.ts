@@ -35,7 +35,7 @@ export type FormatConfig = {
  */
 export function formatResult({ guesses, gameIteration, maxGuesses, gameName, siteUrl, dataset }: FormatConfig): string {
 	const meta = dataset ? datasetInfo.find((d) => d.dataset === dataset) : undefined;
-	const datasetPostfix = meta?.href ?? '';
+	const datasetPostfix = meta?.prettyHref ?? '';
 	const seasonText = meta?.name ?? '';
 
 	if (guesses.length === 0 || guesses === undefined) return '';
@@ -55,7 +55,8 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 	if (hasFailed === true) result += '❌';
 
 	// Add footer (with site url)
-	result += `\n<${siteUrl ? siteUrl + datasetPostfix : getSiteName()}>`;
+	const base = siteUrl?.replace(/\/$/, '') ?? getSiteName();
+	result += `\n<${base}${datasetPostfix}>`;
 	return result;
 }
 

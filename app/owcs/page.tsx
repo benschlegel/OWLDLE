@@ -4,7 +4,7 @@ import { Suspense } from 'react';
 import SeasonPageWrapper from '@/app/owcs/PageWrapper';
 import { GAME_CONFIG } from '@/lib/config';
 
-const formattedTitle = `${DEFAULT_TITLE} - OWCS Edition`;
+const formattedTitle = `${DEFAULT_TITLE} - OWCS`;
 const formattedDescription = 'Guess the correct Overwatch Champion Series player within 8 tries to win.';
 const ogImagePath = `/open-graph/owcs-s2.png?new=true`;
 

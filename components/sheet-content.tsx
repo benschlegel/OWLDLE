@@ -7,7 +7,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { SheetClose, SheetContent, SheetFooter } from '@/components/ui/sheet';
 import { SheetLinkButton } from '@/components/ui/sheet-link-button';
-import { OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
+import { DEFAULT_OWCS_DATASET_NAME, ENDLESS_PATHNAME, OWCS_PATHNAME, OWL_PATHNAME, OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { DownloadIcon, SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
@@ -16,9 +16,9 @@ import { usePWAInstall } from '@/hooks/use-pwa-install';
 import { usePWA } from '@/components/pwa-provider';
 
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
-	'/play': 'owl',
-	'/owcs': 'owcs',
-	'/endless': 'endless',
+	[OWL_PATHNAME]: 'owl',
+	[OWCS_PATHNAME]: 'owcs',
+	[ENDLESS_PATHNAME]: 'endless',
 };
 
 const triggerClass =
@@ -32,13 +32,15 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
-	const activeOwlDataset = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
-	const activeOwcsDataset = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? 's2'}` : '';
+	const activeOwlDataset = pathname === OWL_PATHNAME ? `season${searchParams.get('season') ?? '6'}` : '';
+	const owcsSeason = searchParams.get('season');
+	const activeOwcsDataset = pathname === OWCS_PATHNAME ? (owcsSeason ? `owcs-${owcsSeason}` : DEFAULT_OWCS_DATASET_NAME) : '';
+	const endlessSeason = searchParams.get('season');
 	const activeEndlessDataset =
-		pathname === '/endless'
+		pathname === ENDLESS_PATHNAME
 			? (searchParams.get('mode') ?? 'owcs') === 'owcs'
-				? `owcs-${searchParams.get('season') ?? 's2'}`
-				: `season${searchParams.get('season') ?? '6'}`
+				? endlessSeason ? `owcs-${endlessSeason}` : DEFAULT_OWCS_DATASET_NAME
+				: `season${endlessSeason ?? '6'}`
 			: '';
 	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
 	const { setOpen: setHelpOpen } = useDialogState('help');
@@ -93,7 +95,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											<SheetLinkButton
 												key={dataset.dataset}
 												text={dataset.formattedName}
-												onClick={() => navigateTo(`/play?season=${dataset.dataset.slice('season'.length)}`)}
+												onClick={() => navigateTo(`${OWL_PATHNAME}?season=${dataset.dataset.slice('season'.length)}`)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
 												active={dataset.dataset === activeOwlDataset}
 											/>
@@ -109,7 +111,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											<SheetLinkButton
 												key={dataset.dataset}
 												text={dataset.formattedName}
-												onClick={() => navigateTo(`/owcs?season=${dataset.dataset.slice('owcs-'.length)}`)}
+												onClick={() => navigateTo(`${OWCS_PATHNAME}?season=${dataset.dataset.slice('owcs-'.length)}`)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
 												active={dataset.dataset === activeOwcsDataset}
 											/>
@@ -127,7 +129,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											<SheetLinkButton
 												key={`endless-${dataset.dataset}`}
 												text={dataset.formattedName}
-												onClick={() => navigateTo(`/endless?mode=owl&season=${dataset.dataset.slice('season'.length)}`)}
+												onClick={() => navigateTo(`${ENDLESS_PATHNAME}?mode=owl&season=${dataset.dataset.slice('season'.length)}`)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
 												active={dataset.dataset === activeEndlessDataset}
 											/>
@@ -138,7 +140,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											<SheetLinkButton
 												key={`endless-${dataset.dataset}`}
 												text={dataset.formattedName}
-												onClick={() => navigateTo(`/endless?mode=owcs&season=${dataset.dataset.slice('owcs-'.length)}`)}
+												onClick={() => navigateTo(`${ENDLESS_PATHNAME}?mode=owcs&season=${dataset.dataset.slice('owcs-'.length)}`)}
 												className="font-mono font-semibold text-foreground sm:py-2.5"
 												active={dataset.dataset === activeEndlessDataset}
 											/>

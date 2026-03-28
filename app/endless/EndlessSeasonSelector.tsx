@@ -1,7 +1,7 @@
 'use client';
 
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { datasetInfo, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
+import { ENDLESS_PATHNAME, datasetInfo, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { useEndlessParams } from '@/hooks/use-endless-params';
 import { useRouter } from 'next/navigation';
@@ -18,7 +18,7 @@ export default function EndlessSeasonSelector() {
 			if (!info) return;
 			const mode = info.league;
 			const season = mode === 'owcs' ? value.slice('owcs-'.length) : value.slice('season'.length);
-			viewTransition(() => router.push(`/endless?mode=${mode}&season=${season}`));
+			viewTransition(() => router.push(`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`));
 		},
 		[router]
 	);

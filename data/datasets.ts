@@ -4,6 +4,11 @@ import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import { z } from 'zod';
 
+export const OWL_PATHNAME = '/owl' as const;
+export const OWCS_PATHNAME = '/owcs' as const;
+export const ENDLESS_PATHNAME = '/endless' as const;
+export const STATISTICS_PATHNAME = '/statistics' as const;
+
 export const DEFAULT_DATASET_NAME: Dataset = 'season6';
 export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s1', 'owcs-s2', 'owcs-s3'] as const;
 export type Dataset = (typeof DATASETS)[number];
@@ -21,6 +26,7 @@ export type DatasetMetadata<T extends Dataset> = {
 	shorthand: string;
 	league: DatasetMode;
 	href: string;
+	prettyHref: string;
 };
 
 export type CombinedDatasetMetadata =
@@ -41,6 +47,8 @@ type BaseDatasetMetadata = {
 	shorthand: string;
 	league: DatasetMode;
 	href: string;
+	/** Clean URL path used for share links (e.g. "/owl/season6" -> "owl?season=6", "/owcs/season2" -> "/owcs?season=s2"), resolves via redirect */
+	prettyHref: string;
 };
 
 export const datasetInfo: BaseDatasetMetadata[] = [
@@ -51,7 +59,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2018',
 		shorthand: 'S1',
 		league: 'owl',
-		href: 'owl?season=s1',
+		href: 'owl?season=1',
+		prettyHref: '/owl/season1',
 	},
 	{
 		dataset: 'season2',
@@ -60,7 +69,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2019',
 		shorthand: 'S2',
 		league: 'owl',
-		href: 'owl?season=s2',
+		href: 'owl?season=2',
+		prettyHref: '/owl/season2',
 	},
 	{
 		dataset: 'season3',
@@ -69,7 +79,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2020',
 		shorthand: 'S3',
 		league: 'owl',
-		href: 'owl?season=s3',
+		href: 'owl?season=3',
+		prettyHref: '/owl/season3',
 	},
 	{
 		dataset: 'season4',
@@ -78,7 +89,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2021',
 		shorthand: 'S4',
 		league: 'owl',
-		href: 'owl?season=s4',
+		href: 'owl?season=4',
+		prettyHref: '/owl/season4',
 	},
 	{
 		dataset: 'season5',
@@ -87,7 +99,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2022',
 		shorthand: 'S5',
 		league: 'owl',
-		href: 'owl?season=s5',
+		href: 'owl?season=5',
+		prettyHref: '/owl/season5',
 	},
 	{
 		dataset: 'season6',
@@ -96,7 +109,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2023',
 		shorthand: 'S6',
 		league: 'owl',
-		href: 'owl?season=s6',
+		href: 'owl?season=6',
+		prettyHref: '/owl/season6',
 	},
 	{
 		dataset: 'owcs-s2',
@@ -106,6 +120,7 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		shorthand: 'S2',
 		league: 'owcs',
 		href: 'owcs?season=s2',
+		prettyHref: '/owcs/season2',
 	},
 	{
 		dataset: 'owcs-s3',
@@ -114,7 +129,8 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 		year: '2025',
 		shorthand: 'S3',
 		league: 'owcs',
-		href: 'owcs',
+		href: 'owcs?season=s3',
+		prettyHref: '/owcs/season3',
 	},
 ] as const;
 
@@ -122,7 +138,7 @@ export const OWL_DATASETS = datasetInfo.filter((d) => d.league === 'owl');
 export const OWCS_DATASETS = datasetInfo.filter((d) => d.league === 'owcs');
 export const OWL_DATASETS_REVERSED = OWL_DATASETS.toReversed();
 export const OWCS_DATASETS_REVERSED = OWCS_DATASETS.toReversed();
-export const DEFAULT_OWCS_DATASET_NAME: Dataset = OWCS_DATASETS[OWCS_DATASETS.length - 1].dataset;
+export const DEFAULT_OWCS_DATASET_NAME: Dataset = 'owcs-s3';
 
 export function isOwcsDataset(dataset: Dataset): boolean {
 	return datasetInfo.find((d) => d.dataset === dataset)?.league === 'owcs';
