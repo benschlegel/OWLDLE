@@ -1,6 +1,6 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { type Dataset, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
+import { type Dataset, OWL_PATHNAME, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { useOwcsParams } from '@/hooks/use-owcs-params';
 import { useRouter } from 'next/navigation';
@@ -20,7 +20,7 @@ export default function SeasonSelector() {
 			} else {
 				// Navigate to OWL page
 				const owlSeason = value.substring(value.length - 1);
-				viewTransition(() => router.push(`/play?season=${owlSeason}`));
+				viewTransition(() => router.push(`${OWL_PATHNAME}?season=${owlSeason}`));
 			}
 		},
 		[setSeason, router]

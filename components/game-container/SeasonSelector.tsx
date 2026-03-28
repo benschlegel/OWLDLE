@@ -1,6 +1,6 @@
 'use client';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { DEFAULT_DATASET_NAME, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED, datasetInfo } from '@/data/datasets';
+import { DEFAULT_DATASET_NAME, OWCS_PATHNAME, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED, datasetInfo } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { useSeasonParams } from '@/hooks/use-season-params';
 import { useRouter } from 'next/navigation';
@@ -16,7 +16,7 @@ export default function SeasonSelector() {
 		(value: string) => {
 			if (value.startsWith('owcs')) {
 				const owcsSeason = value.slice('owcs-'.length);
-				viewTransition(() => router.push(`/owcs?season=${owcsSeason}`));
+				viewTransition(() => router.push(`${OWCS_PATHNAME}?season=${owcsSeason}`));
 				return;
 			}
 			if (value !== formattedSlug) {

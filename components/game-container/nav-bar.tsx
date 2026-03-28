@@ -9,7 +9,7 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { DEFAULT_OWCS_DATASET_NAME, OWCS_DATASETS_REVERSED, OWL_DATASETS_REVERSED } from '@/data/datasets';
+import { DEFAULT_OWCS_DATASET_NAME, ENDLESS_PATHNAME, OWCS_DATASETS_REVERSED, OWCS_PATHNAME, OWL_DATASETS_REVERSED, OWL_PATHNAME, STATISTICS_PATHNAME } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
@@ -40,10 +40,11 @@ export function Navbar() {
 	const { setOpen: setSettingsOpen } = useDialogState('settings');
 	const [sheetOpen, setSheetOpen] = useState(false);
 
-	const owlValue = pathname === '/play' ? `season${searchParams.get('season') ?? '6'}` : '';
-	const owcsValue = pathname === '/owcs' ? `owcs-${searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME}` : '';
-	const endlessMode = pathname === '/endless' ? searchParams.get('mode') ?? 'owcs' : '';
-	const endlessSeason = pathname === '/endless' ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME : '';
+	const owlValue = pathname === OWL_PATHNAME ? `season${searchParams.get('season') ?? '6'}` : '';
+	const owcsSeason = searchParams.get('season');
+	const owcsValue = pathname === OWCS_PATHNAME ? (owcsSeason ? `owcs-${owcsSeason}` : DEFAULT_OWCS_DATASET_NAME) : '';
+	const endlessMode = pathname === ENDLESS_PATHNAME ? searchParams.get('mode') ?? 'owcs' : '';
+	const endlessSeason = pathname === ENDLESS_PATHNAME ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME : '';
 
 	useEffect(() => {
 		if (ALLOWED_PATHS.includes(pathname)) {
@@ -67,7 +68,7 @@ export function Navbar() {
 	const handleOwlSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('season'.length);
-			viewTransition(() => router.push(`/play?season=${season}`));
+			viewTransition(() => router.push(`${OWL_PATHNAME}?season=${season}`));
 		},
 		[router]
 	);
@@ -75,7 +76,7 @@ export function Navbar() {
 	const handleOwcsSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('owcs-'.length);
-			viewTransition(() => router.push(`/owcs?season=${season}`));
+			viewTransition(() => router.push(`${OWCS_PATHNAME}?season=${season}`));
 		},
 		[router]
 	);
@@ -84,7 +85,7 @@ export function Navbar() {
 		(value: string) => {
 			// value format: "owl:6" or "owcs:s2"
 			const [mode, season] = value.split(':');
-			viewTransition(() => router.push(`/endless?mode=${mode}&season=${season}`));
+			viewTransition(() => router.push(`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`));
 		},
 		[router]
 	);
@@ -112,9 +113,9 @@ export function Navbar() {
 									items={OWL_DATASETS_REVERSED}
 									onValueChange={handleOwlSelect}
 									value={owlValue}
-									highlight={pathname === '/play'}
+									highlight={pathname === OWL_PATHNAME}
 									label="Overwatch League"
-									prefetchRoute="/play"
+									prefetchRoute={OWL_PATHNAME}
 									className={'2xl:ml-0 2xl:pl-5 -ml-1.5 pl-6'}>
 									<span className="2xl:block hidden">Overwatch League</span>
 									<span className="2xl:hidden block">OWL</span>
@@ -124,17 +125,17 @@ export function Navbar() {
 									items={OWCS_DATASETS_REVERSED}
 									onValueChange={handleOwcsSelect}
 									value={owcsValue}
-									highlight={pathname === '/owcs'}
-									prefetchRoute="/owcs">
+									highlight={pathname === OWCS_PATHNAME}
+									prefetchRoute={OWCS_PATHNAME}>
 									OWCS
 								</NavSelect>
 								<NavSelect
 									onValueChange={handleEndlessSelect}
-									value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''}
-									highlight={pathname === '/endless'}
-									prefetchRoute="/endless"
+									value={pathname === ENDLESS_PATHNAME ? `${endlessMode}:${endlessSeason}` : ''}
+									highlight={pathname === ENDLESS_PATHNAME}
+									prefetchRoute={ENDLESS_PATHNAME}
 									menuContent={
-										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === '/endless' ? `${endlessMode}:${endlessSeason}` : ''} />
+										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === ENDLESS_PATHNAME ? `${endlessMode}:${endlessSeason}` : ''} />
 									}>
 									{/* <span className="2xl:block hidden">Endless Mode</span> */}
 									{/* <span className="2xl:hidden block">Endless</span> */}
@@ -142,7 +143,7 @@ export function Navbar() {
 								</NavSelect>
 							</NavigationMenuList>
 						</NavigationMenu>
-						<NavButton className="hidden navbar-hidden:flex" href="/statistics" highlight={pathname === '/statistics'}>
+						<NavButton className="hidden navbar-hidden:flex" href={STATISTICS_PATHNAME} highlight={pathname === STATISTICS_PATHNAME}>
 							Statistics
 						</NavButton>
 					</div>

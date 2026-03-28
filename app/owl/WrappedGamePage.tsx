@@ -1,5 +1,5 @@
 'use client';
-import UpdateMetadata from '@/app/play/UpdateMetadata';
+import UpdateMetadata from '@/app/owl/UpdateMetadata';
 import GamePage from '@/components/landing-page/game-page';
 import GlobalStats from '@/components/game-container/global-stats';
 import Header from '@/components/landing-page/header';
