@@ -14,7 +14,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
     "plugins": [
       {
@@ -35,10 +35,14 @@
     ".next/types/**/*.ts",
     "**/*.test.ts",
     "tests/**/*",
-    "vitest.config.mts"
-, "next.config.mjs", "postcss.config.mjs"  ],
+    "vitest.config.mts",
+    "next.config.mjs",
+    "postcss.config.mjs",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
-    "cron"
+    "cron",
+    "app/sw.ts"
   ]
 }

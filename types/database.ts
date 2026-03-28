@@ -95,6 +95,48 @@ export const gameSaveValidator = z.object({
 	gameResult: z.enum(['won', 'lost']),
 });
 
+export type DbGameStats = {
+	_id: string;
+	dataset: Dataset;
+	iteration: number;
+	totalGames: number;
+	wins: number;
+	losses: number;
+	/** Keys are stringified guess counts ("1", "2", ...) or "failed" */
+	guessDistribution: Record<string, number>;
+};
+
+export type DbEndlessGameEntry = {
+	/** How many guesses were submitted in this game */
+	guessCount: number;
+	/** Whether this game was won or lost */
+	result: DbGameResult;
+};
+
+export type DbLoggedEndlessSession = {
+	/** What dataset this session is for */
+	dataset: Dataset;
+	/** Number of wins before the streak ended */
+	streakLength: number;
+	/** Simplified per-game summary for entire streak*/
+	games: DbEndlessGameEntry[];
+	/** Timestamp of when the streak ended (game was lost) */
+	finishedAt: Date;
+};
+
+export const endlessSaveValidator = z.object({
+	streakLength: z.number().min(1),
+	games: z
+		.array(
+			z.object({
+				guessCount: z.number().min(1),
+				result: z.enum(['won', 'lost']),
+			})
+		)
+		.min(1),
+});
+export type DbEndlessSaveData = z.infer<typeof endlessSaveValidator>;
+
 /**
  * Feedback schema + timestamp
  */

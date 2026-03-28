@@ -1,6 +1,6 @@
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import type { NextRequest } from 'next/server';
-import { logGame } from '@/lib/databaseAccess';
+import { logGame, updateGameStats, getCurrentIteration } from '@/lib/databaseAccess';
 import { gameSaveValidator } from '@/types/database';
 import { datasetSchema } from '@/data/datasets';
 export const dynamic = 'force-dynamic';
@@ -46,6 +46,17 @@ export async function POST(request: NextRequest) {
 		const timestamp = new Date();
 		const res = await logGame(playerGuesses, gameSaveRes.data.gameResult, timestamp, datasetParsed.data);
 		if (res?.acknowledged) {
+			// Update game stats atomically
+			const iteration = await getCurrentIteration(datasetParsed.data);
+			if (iteration) {
+				const guessCount = gameSaveRes.data.gameData.length;
+				const updatedStats = await updateGameStats(datasetParsed.data, iteration, gameSaveRes.data.gameResult, guessCount);
+				if (updatedStats) {
+					const { _id, ...stats } = updatedStats;
+					return Response.json({ stats, isFirstWin: gameSaveRes.data.gameResult === 'won' && stats.wins === 1 });
+				}
+			}
+			// Stats update failed but game was saved, still return 200
 			return new Response(undefined, { status: 200 });
 		}
 	} catch (e) {

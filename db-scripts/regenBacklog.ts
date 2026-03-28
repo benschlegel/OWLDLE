@@ -1,3 +1,4 @@
+import { GAME_CONFIG } from '@/lib/config';
 import { generateBacklog } from '@/lib/databaseAccess';
 import { exit } from 'node:process';
 
@@ -5,7 +6,7 @@ import { exit } from 'node:process';
 const blacklist: string[] = [];
 
 console.time('backlog');
-await generateBacklog(45, 'owcs-s2', undefined, blacklist);
+await generateBacklog(GAME_CONFIG.backlogMaxSize, 'owcs-s2', undefined, blacklist);
 console.timeEnd('backlog');
 console.log('Finished.');
 exit(0);

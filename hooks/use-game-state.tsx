@@ -11,7 +11,10 @@ import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse } from '@/types/server';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { markGameCompleted } from '@/components/pwa-provider';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
+import { useGameStats } from '@/hooks/use-game-stats';
+import { usePlayerStatsStore } from '@/store/player-stats-store';
 import type { GameState } from '@/types/client';
 import { useEvaluatedGuesses } from '@/context/GlobalGuessContext';
 
@@ -32,11 +35,18 @@ export default function useGameState({ slug }: Props) {
 	const { data: validatedData, isStale } = useAnswerQuery(dataset.dataset);
 	const { data } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
 	const { evaluatedGuesses, setEvaluatedGuesses } = data;
+	const { refetch: refetchStats, setStats } = useGameStats(dataset.dataset);
+	const recordWin = usePlayerStatsStore((s) => s.recordWin);
+	const recordLoss = usePlayerStatsStore((s) => s.recordLoss);
 
-	// Update dataset and reset guesses when slug cahnges (slug change updates dataset)
+	// tracks last dataset that resetGuesses ran for. Used to prevent confetti from firing when navigating after winning a game
+	const syncedDatasetRef = useRef<string | null>(null);
+
+	// update dataset and reset guesses when dataset changes
 	useEffect(() => {
 		setDataset(dataset);
 		resetGuesses();
+		syncedDatasetRef.current = dataset.dataset;
 	}, [dataset, setDataset]);
 
 	const resetGuesses = useCallback(() => {
@@ -50,6 +60,8 @@ export default function useGameState({ slug }: Props) {
 					if (oldStateRaw === 'won' || oldStateRaw === 'lost') {
 						// Set game state to "won-old"/"lost-old" to avoid playing particle effects if read from storage
 						setGameState(`${oldStateRaw}-old`);
+						// Fetch stats for completed games loaded from localStorage
+						refetchStats();
 					} else {
 						setGameState(oldStateRaw);
 					}
@@ -67,7 +79,7 @@ export default function useGameState({ slug }: Props) {
 			setPlayerGuesses([]);
 			setEvaluatedGuesses([]);
 		}
-	}, [setPlayerGuesses, setGameState, setEvaluatedGuesses, evaluatedGuesses, dataset.dataset]);
+	}, [setPlayerGuesses, setGameState, setEvaluatedGuesses, evaluatedGuesses, dataset.dataset, refetchStats]);
 
 	// Evaluate guess every time new guess comes in from GuessContext, merge and set new evaluated guesses
 	useEffect(() => {
@@ -81,15 +93,24 @@ export default function useGameState({ slug }: Props) {
 	const saveGame = useCallback(
 		(data: DbSaveData) => {
 			fetch(`/api/save?dataset=${dataset.dataset}`, { method: 'POST', body: JSON.stringify(data) })
-				.then((r) => {
+				.then(async (r) => {
 					if (r.status === 200) {
 						plausible('finishGame', { props: { didSucceed: true, state: data.gameResult, dataset: dataset.dataset } });
 						console.log('saved successfully!');
+						// Inject stats from response into query cache
+						try {
+							const json = await r.json();
+							if (json?.stats) {
+								setStats(json.stats);
+							}
+						} catch {
+							// Response may not have JSON body — stats update failed silently
+						}
 					}
 				})
 				.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: data.gameResult, dataset: dataset.dataset } }));
 		},
-		[plausible, dataset.dataset]
+		[plausible, dataset.dataset, setStats]
 	);
 
 	const handleGuess = useCallback(async () => {
@@ -122,18 +143,26 @@ export default function useGameState({ slug }: Props) {
 
 			// Save result and update game state
 			if (result !== 'in-progress') {
+				markGameCompleted();
 				setGameState(result);
 				const data: DbSaveData = { gameData: [...evaluatedGuesses, newRow], gameResult: result };
 				saveGame(data);
+				// Update local player stats
+				if (result === 'won') {
+					recordWin(dataset.dataset, newData.length);
+				} else {
+					recordLoss(dataset.dataset);
+				}
 			}
 		} else {
 			// Guess could not be processed, remove last guess
 			isRollbackRef.current = true;
 			setPlayerGuesses((old) => old.slice(0, -1));
 		}
-	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses, dataset.dataset]);
+	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses, dataset.dataset, recordWin, recordLoss]);
 
-	return [evaluatedGuesses, gameState, validatedData] as const;
+	const isDatasetSynced = syncedDatasetRef.current === dataset.dataset;
+	return [evaluatedGuesses, isDatasetSynced ? gameState : 'in-progress', validatedData] as const;
 }
 
 type SavedState = { [key: string]: GameState };

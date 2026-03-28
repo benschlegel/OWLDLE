@@ -9,24 +9,26 @@ import { BotMessageSquareIcon, CoffeeIcon, Github, TwitterIcon } from 'lucide-re
 import { usePlausible } from 'next-plausible';
 import Link from 'next/link';
 
+export const DONATION_LINK = 'https://ko-fi.com/scorer5';
+
 const socials: SocialProps[] = [
 	{
 		socialName: 'Twitter',
-		socialLink: 'https://x.com/scorer5_',
-		socialValue: '@scorer5_',
+		socialLink: 'https://x.com/thalindore',
+		socialValue: '@thalindore',
 		children: <TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
 	},
 	{
 		socialName: 'Discord',
 		socialLink: '',
-		socialValue: 'scorer5',
+		socialValue: 'thalindore',
 		isCopyable: true,
 		children: <BotMessageSquareIcon className="w-[1.1rem] h-[1.1rem] mb-1" />,
 	},
 	// { socialName: 'Battle.net', socialLink: '', socialValue: 'scorer5#21277', isCopyable: true, children: <Swords className="w-[1.1rem] h-[1.1rem] mb-1" /> },
 	{
 		socialName: 'Ko-fi',
-		socialLink: 'https://ko-fi.com/scorer5',
+		socialLink: DONATION_LINK,
 		socialValue: 'scorer5',
 		children: <CoffeeIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
 	},
@@ -38,12 +40,12 @@ const socials: SocialProps[] = [
 	},
 ];
 
-const projectGithubLink = 'https://github.com/benschlegel/OWLDLE';
+export const GITHUB_LINK = 'https://github.com/benschlegel/OWLDLE';
 
 export default function Socials() {
 	const plausible = usePlausible<PlausibleEvents>();
 	return (
-		<div className="flex justify-center items-center opacity-60 sm:ml-[0.75rem]">
+		<div className="pointer-events-auto flex relative justify-center items-center opacity-60 sm:text-xs">
 			<div className="text-sm font-medium leading-none">
 				Made with ❤️ by{' '}
 				<Popover>
@@ -55,46 +57,50 @@ export default function Socials() {
 						</Button>
 					</PopoverTrigger>
 					<PopoverContent className="w-80 mr-4 sm:mr-0">
-						<div className="grid gap-4">
-							<div className="space-y-2">
-								<h4 className="font-medium leading-none">My Socials</h4>
-								<p className="text-sm text-muted-foreground">Check me out here</p>
-							</div>
-							<div className="grid gap-2">
-								{socials.map((socialEntry) =>
-									socialEntry.isCopyable ? (
-										<SocialsRowCopy key={socialEntry.socialName} socialValue={socialEntry.socialValue} socialName={socialEntry.socialName}>
-											{socialEntry.children}
-										</SocialsRowCopy>
-									) : (
-										<SocialsRow
-											key={socialEntry.socialName}
-											socialLink={socialEntry.socialLink}
-											socialName={socialEntry.socialName}
-											socialValue={socialEntry.socialValue}
-											isCopyable={socialEntry.isCopyable}>
-											{socialEntry.children}
-										</SocialsRow>
-									)
-								)}
-							</div>
-							<Separator />
-							<div className="text-sm text-muted-foreground">
-								You can also find this project on{' '}
-								<Link target="_blank" href={projectGithubLink} rel="noopener noreferrer" className="border-md">
-									<Button variant="link" className="p-0 h-auto" tabIndex={-1} aria-label="View on Github">
-										<code
-											className="relative rounded bg-background px-[0.3rem] py-[0.2rem] text-sm font-semibold"
-											style={{ fontFamily: 'var(--font-geist-mono)' }}>
-											Github
-										</code>
-									</Button>
-								</Link>
-								!
-							</div>
-						</div>
+						<SocialPopoverContent />
 					</PopoverContent>
 				</Popover>
+			</div>
+		</div>
+	);
+}
+
+export function SocialPopoverContent() {
+	return (
+		<div className="grid gap-4">
+			<div className="space-y-2">
+				<h4 className="font-medium leading-none">My Socials</h4>
+				<p className="text-sm text-muted-foreground">Check me out here</p>
+			</div>
+			<div className="grid gap-2">
+				{socials.map((socialEntry) =>
+					socialEntry.isCopyable ? (
+						<SocialsRowCopy key={socialEntry.socialName} socialValue={socialEntry.socialValue} socialName={socialEntry.socialName}>
+							{socialEntry.children}
+						</SocialsRowCopy>
+					) : (
+						<SocialsRow
+							key={socialEntry.socialName}
+							socialLink={socialEntry.socialLink}
+							socialName={socialEntry.socialName}
+							socialValue={socialEntry.socialValue}
+							isCopyable={socialEntry.isCopyable}>
+							{socialEntry.children}
+						</SocialsRow>
+					)
+				)}
+			</div>
+			<Separator />
+			<div className="text-sm text-muted-foreground">
+				You can also find this project on{' '}
+				<Link target="_blank" href={GITHUB_LINK} rel="noopener noreferrer" className="border-md">
+					<Button variant="link" className="p-0 h-auto" tabIndex={-1} aria-label="View on Github">
+						<code className="relative rounded bg-background px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
+							Github
+						</code>
+					</Button>
+				</Link>
+				!
 			</div>
 		</div>
 	);

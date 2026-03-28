@@ -1,8 +1,8 @@
-import { DATASETS, type Dataset } from '@/data/datasets';
-import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { DATASETS } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 import {
 	addIteration,
+	dbName,
 	dropAll,
 	generateBacklog,
 	getAnswer,
@@ -12,20 +12,27 @@ import {
 	setCurrentAnswer,
 	setNextAnswer,
 } from '@/lib/databaseAccess';
-import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
+
+// ! SAFETY: Set to true to allow this script to run. Reset to false after use.
+const I_KNOW_WHAT_I_AM_DOING = false;
+if (!I_KNOW_WHAT_I_AM_DOING) {
+	console.error('Safety guard is enabled. Set I_KNOW_WHAT_I_AM_DOING to true to run this script.');
+	exit(1);
+}
+if (dbName !== 'OWLEL-dev') {
+	console.error(`Refusing to run against production database (${dbName}). Use .env.local for dev.`);
+	exit(1);
+}
 
 // ! Configure your first reset date here (in UTC)
 // ! Keep in mind that javascript months start at 0
 // ! By default, sets to midnight UTC (when timezone is Europe/Vienna)
 const now = new Date();
-const nextReset = trimDate(new Date(Date.UTC(2025, now.getMonth(), now.getDate(), 22, 0, 0)));
-// const nextReset = new Date(Date.UTC(2024, now.getMonth(), now.getDate(), 12, 3, 0));
+const nextReset = trimDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 22, 0, 0)));
 const nextNextReset = new Date(nextReset);
 nextNextReset.setDate(nextNextReset.getDate() + 1);
-// const nextReset = getFormattedMidnightTmrw();
-// const nextNextReset = getFormattedMidnightDayAfter();
 
 console.time('regen');
 // * Delete old data
@@ -33,8 +40,6 @@ await dropAll();
 
 // * Insert all players
 await insertAllPlayers();
-
-// const newDatasets = DATASETS.slice(1);
 
 for (const dataset of DATASETS) {
 	// * Regen backlog
@@ -56,8 +61,6 @@ for (const dataset of DATASETS) {
 	await rerollAnswer('next', dataset);
 
 	// * Set first iteration (get curr_answer data from db)
-	const dayBefore = new Date(nextReset);
-	dayBefore.setDate(dayBefore.getDate() - 1);
 	const currAnswer = await getAnswer('current', dataset);
 	if (!currAnswer) throw new Error('Could not get current answer');
 	await addIteration({ iteration: currAnswer.iteration, dataset: dataset, player: currAnswer.player, resetAt: nextReset });
@@ -67,33 +70,3 @@ for (const dataset of DATASETS) {
 console.timeEnd('regen');
 console.log('Finished.');
 exit(0);
-
-// Date helpers if inserting automatically
-function getFormattedMidnight(): Date {
-	const midnight = new Date();
-	midnight.setHours(26);
-	midnight.setDate(midnight.getDate() - 1);
-	midnight.setMinutes(0);
-	midnight.setSeconds(0);
-	midnight.setMilliseconds(0);
-	return midnight;
-}
-
-function getFormattedMidnightTmrw(): Date {
-	const midnight = new Date();
-	midnight.setHours(26);
-	midnight.setMinutes(0);
-	midnight.setSeconds(0);
-	midnight.setMilliseconds(0);
-	return midnight;
-}
-
-function getFormattedMidnightDayAfter(): Date {
-	const midnight = new Date();
-	midnight.setHours(26);
-	midnight.setDate(midnight.getDate() + 1);
-	midnight.setMinutes(0);
-	midnight.setSeconds(0);
-	midnight.setMilliseconds(0);
-	return midnight;
-}
