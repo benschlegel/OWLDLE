@@ -9,7 +9,15 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { DEFAULT_OWCS_DATASET_NAME, ENDLESS_PATHNAME, OWCS_DATASETS_REVERSED, OWCS_PATHNAME, OWL_DATASETS_REVERSED, OWL_PATHNAME, STATISTICS_PATHNAME } from '@/data/datasets';
+import {
+	DEFAULT_OWCS_DATASET_NAME,
+	ENDLESS_PATHNAME,
+	OWCS_DATASETS_REVERSED,
+	OWCS_PATHNAME,
+	OWL_DATASETS_REVERSED,
+	OWL_PATHNAME,
+	STATISTICS_PATHNAME,
+} from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
@@ -46,13 +54,13 @@ export function Navbar() {
 	const endlessMode = pathname === ENDLESS_PATHNAME ? searchParams.get('mode') ?? 'owcs' : '';
 	const endlessSeason = pathname === ENDLESS_PATHNAME ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME : '';
 
-	useEffect(() => {
-		if (ALLOWED_PATHS.includes(pathname)) {
-			const qs = searchParams.toString();
-			const url = qs ? `${pathname}?${qs}` : pathname;
-			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
-		}
-	}, [pathname, searchParams]);
+	// useEffect(() => {
+	// 	if (ALLOWED_PATHS.includes(pathname)) {
+	// 		const qs = searchParams.toString();
+	// 		const url = qs ? `${pathname}?${qs}` : pathname;
+	// 		document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
+	// 	}
+	// }, [pathname, searchParams]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -68,7 +76,9 @@ export function Navbar() {
 	const handleOwlSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('season'.length);
-			viewTransition(() => router.push(`${OWL_PATHNAME}?season=${season}`));
+			const url = `${OWCS_PATHNAME}?season=${season}`;
+			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
+			viewTransition(() => router.push(url));
 		},
 		[router]
 	);
@@ -76,7 +86,9 @@ export function Navbar() {
 	const handleOwcsSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('owcs-'.length);
-			viewTransition(() => router.push(`${OWCS_PATHNAME}?season=${season}`));
+			const url = `${OWCS_PATHNAME}?season=${season}`;
+			document.cookie = `${LAST_GAME_COOKIE}=${encodeURIComponent(url)}; path=/; max-age=${ONE_YEAR_SECONDS}; SameSite=Lax`;
+			viewTransition(() => router.push(url));
 		},
 		[router]
 	);
