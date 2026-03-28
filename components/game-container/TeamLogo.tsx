@@ -2,11 +2,11 @@
 import { getTeamLogo } from '@/data/teams/logos';
 import Image from 'next/image';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { splitCapitalization } from '@/lib/client';
 import { cn } from '@/lib/utils';
-import { useContext, useState } from 'react';
+import type React from 'react';
+import { useContext } from 'react';
 import { DatasetContext } from '@/context/DatasetContext';
-import { useLongPress } from '@uidotdev/usehooks';
+import { useMobileTooltip } from '@/hooks/use-mobile-tooltip';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	teamName?: string;
@@ -16,20 +16,9 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false, debounceTime = 100 }: Props) {
-	const [open, setOpen] = useState(false);
+	const { open, setOpen, triggerRef, touchHandlers } = useMobileTooltip();
 	const [dataset, _] = useContext(DatasetContext);
 	const team = getTeamLogo(dataset.dataset, teamName ?? '');
-
-	const attrs = useLongPress(
-		() => {
-			console.log('finished');
-			setOpen(true);
-		},
-		{
-			onCancel: (event) => setOpen(false),
-			threshold: 500,
-		}
-	);
 
 	if (!teamName || !team) return <></>;
 
@@ -39,7 +28,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 				<TooltipTrigger asChild>
 					<div className="p-1">
 						<div
-							{...attrs}
+							ref={triggerRef as React.RefObject<HTMLDivElement>}
 							className={cn(
 								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
 								className
@@ -54,6 +43,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 							onClick={() => setOpen(!open)}
 							onMouseEnter={() => setOpen(true)}
 							onMouseLeave={() => setOpen(false)}
+							{...touchHandlers}
 							role="button"
 							aria-label="Open tooltip">
 							<div className="absolute inset-0 flex justify-center items-center p-[0.35rem] cursor-default">

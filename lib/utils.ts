@@ -29,3 +29,7 @@ export function trimAndAddHours(date: Date, hours: number) {
 	date.setHours(date.getHours() + hours);
 	return new Date(date);
 }
+
+export function isMacDevice() {
+	return typeof window !== 'undefined' ? navigator.platform.toUpperCase().indexOf('MAC') >= 0 : false;
+}
