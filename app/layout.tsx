@@ -47,9 +47,9 @@ const owlHeader = localFont({
 });
 
 export const DEFAULT_TITLE = 'OWLDLE';
-export const DEFAULT_DESCRIPTION = 'Guess the Overwatch League player';
+export const DEFAULT_DESCRIPTION = 'Guess the pro overwatch player';
 export const OgConfig = {
-	ogImagePath: '/opengraph-image.png?new=true',
+	ogImagePath: '/open-graph/og-image.png?new=true',
 	ogImageWidth: 1200,
 	ogImageHeight: 630,
 };
@@ -121,7 +121,7 @@ export const metadata: Metadata = {
 			'max-snippet': -1,
 		},
 	},
-	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame'],
+	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame', 'owcs', 'Champion Series'],
 };
 
 export default function RootLayout({
