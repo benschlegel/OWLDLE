@@ -15,7 +15,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 			...prevMetadata,
 			title: `${DEFAULT_TITLE} - Season 6`,
 			alternates: {
-				canonical: '/play?season=6',
+				canonical: '/owl?season=6',
 			},
 		};
 	}
@@ -29,14 +29,14 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 	const formattedDescritpion = DEFAULT_DESCRIPTION;
 	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
 
-	const ogImagePath = `/open-graph/${formattedSeason}.png?new=true`;
+	const ogImagePath = `/opengraph-image.png?img=new`;
 
 	return {
 		...prevMetadata,
 		title: formattedTitle,
 		description: formattedDescritpion,
 		alternates: {
-			canonical: `/play?season=${season}`,
+			canonical: `/owl?season=${season}`,
 		},
 		openGraph: {
 			title: openGraphTitle,
