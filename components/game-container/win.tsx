@@ -12,6 +12,7 @@ import FooterText from '@/components/footer-text';
 import GameConfetti from '@/components/game-container/game-confetti';
 import { Button } from '@/components/ui/button';
 import { useSettings } from '@/store/settings-store';
+import StatsButton from '@/components/game-container/stats-button';
 
 type Props = {
 	nextReset: Date;
@@ -28,12 +29,6 @@ export default function WinScreen({ nextReset, formattedResult, dataset, isOldSt
 	const [_guesses, setGuesses] = useContext(GuessContext);
 	const [showTimer, setShowTimer] = useState(true);
 	const plausible = usePlausible<PlausibleEvents>();
-	const areStatsVisible = useSettings((s) => s.areStatsVisible);
-	const setAreStatsVisible = useSettings((s) => s.setAreStatsVisible);
-
-	const toggleStatsVisible = useCallback(() => {
-		setAreStatsVisible(!areStatsVisible);
-	}, [setAreStatsVisible, areStatsVisible]);
 
 	// Fix hydration warning for mismatching countdown time
 	useLayoutEffect(() => {
@@ -70,17 +65,7 @@ export default function WinScreen({ nextReset, formattedResult, dataset, isOldSt
 				switchedContent={<SwitchedButtonContent />}>
 				<DefaultButtonContent />
 			</SwitchableButton>
-			{areStatsVisible ? (
-				<Button variant={'outline'} className="mt-2 gap-2" onClick={toggleStatsVisible}>
-					Hide Stats
-					<EyeOffIcon className="size-4" />
-				</Button>
-			) : (
-				<Button variant={'outline'} className="mt-2 gap-2" onClick={toggleStatsVisible}>
-					Show Stats
-					<EyeIcon className="size-4" />
-				</Button>
-			)}
+			<StatsButton />
 
 			<GameConfetti isOldState={isOldState ?? false} />
 			<FooterText />
