@@ -23,6 +23,7 @@ import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { OfflineToast } from '@/components/offline-toast';
 import { THEME_COLORS, ThemeColorSync } from '@/components/theme-color-sync';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
+import { StatsDialog } from '@/components/game-container/dialogs/stats-dialog';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -130,60 +131,63 @@ export default function RootLayout({
 }>) {
 	return (
 		<NuqsAdapter>
-		<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
-			<head>
-				<meta name="twitter:card" content="summary_large_image" />
-				{/* Blocking script: sets theme class before first paint to prevent flash */}
-				<script
-					// biome-ignore lint/security/noDangerouslySetInnerHtml: needed to prevent theme flash
-					dangerouslySetInnerHTML={{
-						__html: `(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');}catch(e){}})()`,
-					}}
-				/>
-				{/* Add your own plausible config (if you want to set up analytics) */}
-				<Suspense>
-					<PlausibleWrapper />
-				</Suspense>
-			</head>
-			<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
-				<SerwistProvider swUrl="/serwist/sw.js">
-					<PWAProvider>
-						<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-							<ThemeColorSync />
-							<ReactQueryProvider>
-								<EvaluatedGuessProvider>
-									<GuessContextProvider>
-										<GameStateContextProvider>
-											<DatasetContexttProvider>
-												<Background />
-												<>
-													<Suspense>
-														<SettingsDialog />
-													</Suspense>
-													<Suspense>
-														<Navbar />
-													</Suspense>
-													<div className="px-2 sm:mt-8 mt-6 sm:px-4 lg:px-8 w-full flex justify-center items-start flex-1">
-														<main className="w-[32rem]">{children}</main>
-													</div>
-													<Toaster />
-													<div className="pointer-events-none flex justify-center pb-8 pt-4">
-														<Socials />
-													</div>
-												</>
-											</DatasetContexttProvider>
-											<SpeedInsights />
-										</GameStateContextProvider>
-									</GuessContextProvider>
-								</EvaluatedGuessProvider>
-							</ReactQueryProvider>
-						</ThemeProvider>
-						<PWAInstallPrompt />
-						<OfflineToast />
-					</PWAProvider>
-				</SerwistProvider>
-			</body>
-		</html>
+			<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
+				<head>
+					<meta name="twitter:card" content="summary_large_image" />
+					{/* Blocking script: sets theme class before first paint to prevent flash */}
+					<script
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: needed to prevent theme flash
+						dangerouslySetInnerHTML={{
+							__html: `(function(){try{var t=localStorage.getItem('theme');if(!t)t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';if(t==='dark')document.documentElement.classList.add('dark');else document.documentElement.classList.remove('dark');}catch(e){}})()`,
+						}}
+					/>
+					{/* Add your own plausible config (if you want to set up analytics) */}
+					<Suspense>
+						<PlausibleWrapper />
+					</Suspense>
+				</head>
+				<body className={`${geistSans.className} ${owlHeader.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}>
+					<SerwistProvider swUrl="/serwist/sw.js">
+						<PWAProvider>
+							<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+								<ThemeColorSync />
+								<ReactQueryProvider>
+									<EvaluatedGuessProvider>
+										<GuessContextProvider>
+											<GameStateContextProvider>
+												<DatasetContexttProvider>
+													<Background />
+													<>
+														<Suspense>
+															<SettingsDialog />
+														</Suspense>
+														<Suspense>
+															<StatsDialog />
+														</Suspense>
+														<Suspense>
+															<Navbar />
+														</Suspense>
+														<div className="px-2 sm:mt-8 mt-6 sm:px-4 lg:px-8 w-full flex justify-center items-start flex-1">
+															<main className="w-[32rem]">{children}</main>
+														</div>
+														<Toaster />
+														<div className="pointer-events-none flex justify-center pb-8 pt-4">
+															<Socials />
+														</div>
+													</>
+												</DatasetContexttProvider>
+												<SpeedInsights />
+											</GameStateContextProvider>
+										</GuessContextProvider>
+									</EvaluatedGuessProvider>
+								</ReactQueryProvider>
+							</ThemeProvider>
+							<PWAInstallPrompt />
+							<OfflineToast />
+						</PWAProvider>
+					</SerwistProvider>
+				</body>
+			</html>
 		</NuqsAdapter>
 	);
 }
