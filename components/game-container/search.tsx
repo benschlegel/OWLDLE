@@ -135,14 +135,14 @@ export default function PlayerSearch({ className }: Props) {
 
 			<Combobox.Portal>
 				<Combobox.Positioner className="z-50" style={{ width: 'var(--anchor-width)' }} sideOffset={4} side="bottom">
-					<Combobox.Popup className="max-h-40 overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
+					<Combobox.Popup className="max-h-46 overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
 						<Combobox.Empty className="py-6 text-center text-sm empty:hidden">No results found.</Combobox.Empty>
-						<Combobox.List className="p-1">
+						<Combobox.List className="p-1 data-empty:hidden">
 							{(player: Player) => (
 								<Combobox.Item
 									key={`${player.name}-${player.team}`}
 									value={player}
-									className="relative flex cursor-default select-none items-center rounded-sm px-2 py-2 text-[16px] sm:text-[16px] sm:py-[0.43rem] outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground">
+									className="relative flex cursor-default select-none items-center rounded-sm px-2 h-11 text-[16px] outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground">
 									<UserIcon className="mr-2 h-4 w-4" />
 									<span>{player.name}</span>
 								</Combobox.Item>
