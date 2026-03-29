@@ -32,18 +32,16 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 		viewTransition: true,
 	},
 	allowedDevOrigins: ['dev.bschlegel.com'],
-	async rewrites() {
+	async redirects() {
 		return [
-			// Legacy /play → /owl
 			{
 				source: '/play',
 				destination: '/owl',
 				permanent: true,
 			},
-			// Legacy /seasonN routes
 			{
 				source: '/season6',
-				destination: '/owl',
+				destination: '/owl?season=6',
 				permanent: true,
 			},
 			{
@@ -71,27 +69,27 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 				destination: '/owl?season=1',
 				permanent: true,
 			},
+		];
+	},
+	async rewrites() {
+		return [
 			// Pretty OWL URLs: /owl/season1 -> /owl?season=1
 			{
 				source: '/owl/season:num',
 				destination: '/owl?season=:num',
-				permanent: false,
 			},
 			// Pretty OWCS URLs: /owcs/seasonN → /owcs?season=sN
 			{
 				source: '/owcs/season1',
 				destination: '/owcs?season=s1',
-				permanent: false,
 			},
 			{
 				source: '/owcs/season2',
 				destination: '/owcs?season=s2',
-				permanent: false,
 			},
 			{
 				source: '/owcs/season3',
 				destination: '/owcs?season=s3',
-				permanent: false,
 			},
 		];
 	},
