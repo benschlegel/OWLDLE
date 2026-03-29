@@ -163,9 +163,9 @@
       @apply bg-primary text-foreground;
     }
   }
-  html {
+  /* html {
     overflow-y: overlay;
-  }
+  } */
   body {
     @apply bg-background text-foreground transition-colors duration-300;
     min-height: 100dvh;
