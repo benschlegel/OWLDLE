@@ -1,5 +1,5 @@
 'use client';
-import { TWITTER_LINK } from '@/components/game-container/nav-bar';
+import { DISCORD_LINK, TWITTER_LINK } from '@/components/game-container/nav-bar';
 import { DONATION_LINK, GITHUB_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
@@ -38,7 +38,9 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 	const activeEndlessDataset =
 		pathname === ENDLESS_PATHNAME
 			? (searchParams.get('mode') ?? 'owcs') === 'owcs'
-				? endlessSeason ? `owcs-${endlessSeason}` : DEFAULT_OWCS_DATASET_NAME
+				? endlessSeason
+					? `owcs-${endlessSeason}`
+					: DEFAULT_OWCS_DATASET_NAME
 				: `season${endlessSeason ?? '6'}`
 			: '';
 	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
@@ -163,6 +165,11 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 						<Separator />
 						<SheetLinkButton text="Feedback" onClick={onFeedbackClick} />
 						<Separator />
+						<SheetLinkButton text="Discord" href={DISCORD_LINK} isExternal />
+						<Separator />
+
+						<SheetLinkButton text="Donate" href={DONATION_LINK} isExternal />
+						<Separator />
 						<Popover>
 							<PopoverTrigger asChild>
 								<SheetLinkButton text="Contact" />
@@ -171,10 +178,6 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 								<SocialPopoverContent />
 							</PopoverContent>
 						</Popover>
-						<Separator />
-						<SheetLinkButton text="Donate" href={DONATION_LINK} isExternal />
-						<Separator />
-						<SheetLinkButton text="Twitter" href={TWITTER_LINK} isExternal />
 						<Separator />
 						<SheetLinkButton text="Github" href={GITHUB_LINK} isExternal />
 					</div>
