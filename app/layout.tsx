@@ -21,7 +21,7 @@ import { SerwistProvider } from './serwist-provider';
 import { PWAProvider } from '@/components/pwa-provider';
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { OfflineToast } from '@/components/offline-toast';
-import { THEME_COLORS, ThemeColorSync } from '@/components/theme-color-sync';
+import { ThemeColorSync } from '@/components/theme-color-sync';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { StatsDialog } from '@/components/game-container/dialogs/stats-dialog';
 
@@ -52,13 +52,6 @@ export const OgConfig = {
 	ogImagePath: `/open-graph/opengraph-image.png?type=newImg`,
 	ogImageWidth: 1200,
 	ogImageHeight: 630,
-};
-
-export const viewport: Viewport = {
-	themeColor: [
-		{ media: '(prefers-color-scheme: dark)', color: THEME_COLORS.dark },
-		{ media: '(prefers-color-scheme: light)', color: THEME_COLORS.dark },
-	],
 };
 
 export const metadata: Metadata = {
