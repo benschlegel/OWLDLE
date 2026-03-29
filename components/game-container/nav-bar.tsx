@@ -9,12 +9,20 @@ import {
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
-import { DEFAULT_OWCS_DATASET_NAME, ENDLESS_PATHNAME, OWCS_DATASETS_REVERSED, OWCS_PATHNAME, OWL_DATASETS_REVERSED, OWL_PATHNAME, STATISTICS_PATHNAME } from '@/data/datasets';
+import {
+	DEFAULT_OWCS_DATASET_NAME,
+	ENDLESS_PATHNAME,
+	OWCS_DATASETS_REVERSED,
+	OWCS_PATHNAME,
+	OWL_DATASETS_REVERSED,
+	OWL_PATHNAME,
+	STATISTICS_PATHNAME,
+} from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
-import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
+// import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -22,8 +30,10 @@ import { Sheet } from '@/components/ui/sheet';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
+import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/app/page';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
+export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 const skewStyle = (skewRight: boolean) => ({ transform: `skewX(${skewRight ? '' : '-'}12deg)` });
@@ -65,20 +75,47 @@ export function Navbar() {
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, []);
 
+	// const handleOwlSelect = useCallback(
+	// 	(value: string) => {
+	// 		const season = value.slice('season'.length);
+	// 		const target = `${OWL_PATHNAME}?season=${season}`;
+	// 		viewTransition(() => (pathname === OWL_PATHNAME ? router.replace(target) : router.push(target)));
+	// 	},
+	// 	[router, pathname]
+	// );
 	const handleOwlSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('season'.length);
-			viewTransition(() => router.push(`${OWL_PATHNAME}?season=${season}`));
+			const target = `${OWL_PATHNAME}?season=${season}`;
+			const isSamePath = pathname === OWL_PATHNAME;
+			viewTransition(() => {
+				if (isSamePath) {
+					window.history.pushState(null, '', target);
+					router.refresh();
+				} else {
+					router.push(target);
+				}
+			});
+			viewTransition(() => (pathname === OWL_PATHNAME ? router.replace(target) : router.push(target)));
 		},
-		[router]
+		[router, pathname]
 	);
 
 	const handleOwcsSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('owcs-'.length);
-			viewTransition(() => router.push(`${OWCS_PATHNAME}?season=${season}`));
+			const target = `${OWCS_PATHNAME}?season=${season}`;
+			const isSamePath = pathname === OWCS_PATHNAME;
+			viewTransition(() => {
+				if (isSamePath) {
+					window.history.pushState(null, '', target);
+					router.refresh();
+				} else {
+					router.push(target);
+				}
+			});
 		},
-		[router]
+		[router, pathname]
 	);
 
 	const handleEndlessSelect = useCallback(
@@ -182,8 +219,15 @@ export function Navbar() {
 
 				{/* Right section */}
 				<div className="items-center lg:flex hidden">
+					<NavButton isRightSkewed href={DISCORD_LINK} isExternal className="hidden navbar-hidden:flex">
+						Discord
+					</NavButton>
 					<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
 						Feedback
+					</NavButton>
+
+					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
+						Donate
 					</NavButton>
 					{/* Contact button popover */}
 					<Popover>
@@ -196,13 +240,6 @@ export function Navbar() {
 							<SocialPopoverContent />
 						</PopoverContent>
 					</Popover>
-					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
-						Donate
-					</NavButton>
-
-					<NavButton isRightSkewed href={TWITTER_LINK} isExternal className="hidden navbar-hidden:flex">
-						Twitter
-					</NavButton>
 					<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
 						<SettingsIcon className="size-5" />
 					</NavButton>

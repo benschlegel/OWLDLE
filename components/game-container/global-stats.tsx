@@ -10,6 +10,8 @@ import { useEvaluatedGuesses } from '@/context/GlobalGuessContext';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { Separator } from '@/components/ui/separator';
 import { useSettings } from '@/store/settings-store';
+import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from 'recharts';
 
 export default function GlobalStats() {
 	const [gameState] = useContext(GameStateContext);
@@ -37,7 +39,7 @@ export default function GlobalStats() {
 					<CardContent className="p-4 pt-0">
 						<GlobalSummary stats={globalStats} />
 						<div className="mt-3">
-							<p className="text-xs text-muted-foreground mb-1.5">Guess Distribution</p>
+							<p className="text-lg text-foreground/90 mb-1.5 font-owl text-center">Guess Distribution</p>
 							<GuessDistribution stats={globalStats} playerGuessCount={playerGuessCount} didWin={didWin} />
 						</div>
 					</CardContent>
@@ -67,39 +69,96 @@ function GlobalSummary({ stats }: { stats: GameStatsData }) {
 	);
 }
 
-function GuessDistribution({ stats, playerGuessCount, didWin }: { stats: GameStatsData; playerGuessCount: number; didWin: boolean }) {
+function GuessDistribution({
+	stats,
+	playerGuessCount,
+	didWin,
+}: {
+	stats: GameStatsData;
+	playerGuessCount: number;
+	didWin: boolean;
+}) {
 	const distribution = stats.guessDistribution;
 
-	// Build rows: 1 through maxGuesses + "failed"
+	// Build keys
 	const keys: string[] = [];
 	for (let i = 1; i <= GAME_CONFIG.maxGuesses; i++) {
 		keys.push(String(i));
 	}
 	keys.push('failed');
 
-	const maxCount = Math.max(1, ...keys.map((k) => distribution[k] ?? 0));
+	const chartData = keys.map((key) => {
+		const count = distribution[key] ?? 0;
+		const percentage = stats.totalGames > 0 ? (count / stats.totalGames) * 100 : 0;
+
+		const isPlayerRow = didWin ? key === String(playerGuessCount) : key === 'failed';
+		const label = key === 'failed' ? 'failed' : key;
+
+		return {
+			key,
+			label,
+			value: count, // absolute count (used in tooltip)
+			percentage, // percentage (used in right label)
+			isPlayerRow,
+		};
+	});
+
+	const chartConfig = {
+		value: {
+			label: 'Guesses',
+			color: 'var(--secondary)',
+		},
+		label: {
+			color: 'var(--background)',
+		},
+	} satisfies ChartConfig;
 
 	return (
-		<div className="flex flex-col gap-1">
-			{keys.map((key) => {
-				const count = distribution[key] ?? 0;
-				const widthPercent = Math.max(8, (count / maxCount) * 100);
-				const isPlayerRow = didWin ? key === String(playerGuessCount) : key === 'failed';
-				const label = key === 'failed' ? 'X' : key;
+		<ChartContainer config={chartConfig} className="h-54 w-full ">
+			<BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ right: 24 }}>
+				<CartesianGrid horizontal={false} />
 
-				return (
-					<div key={key} className="flex items-center gap-1.5 text-xs">
-						<span className="w-3 text-right font-mono text-muted-foreground shrink-0">{label}</span>
-						<div
-							className={`rounded-sm px-1.5 py-0.5 text-right font-mono text-[11px] leading-tight transition-colors ${
-								isPlayerRow ? 'bg-correct text-white font-bold' : 'bg-muted text-muted-foreground'
-							}`}
-							style={{ width: `${widthPercent}%`, minWidth: 'fit-content' }}>
-							{count}
-						</div>
-					</div>
-				);
-			})}
-		</div>
+				<YAxis dataKey="label" type="category" tickLine={false} axisLine={false} tickMargin={10} width={50} />
+
+				<XAxis type="number" hide />
+
+				<ChartTooltip
+					cursor={false}
+					content={
+						<ChartTooltipContent
+							indicator="line"
+							formatter={(_, __, item) => {
+								const raw = item?.payload?.value ?? 0;
+								if (raw === 1) return '1 Player';
+								return `${raw} Players`;
+							}}
+						/>
+					}
+				/>
+
+				<Bar dataKey="percentage" radius={4} minPointSize={8}>
+					{/* Custom coloring per row */}
+					{chartData.map((entry, index) => (
+						<Cell
+							// biome-ignore lint/suspicious/noArrayIndexKey: only thing available
+							key={index}
+							className={entry.isPlayerRow ? 'fill-primary-foreground' : 'fill-secondary'}
+						/>
+					))}
+
+					{/* Left label (inside bar) */}
+					{/* <LabelList dataKey="label" position="insideLeft" offset={8} className="fill-foreground text-xs" /> */}
+
+					{/* Value on the right */}
+					<LabelList
+						dataKey="percentage"
+						position="right"
+						offset={8}
+						className="fill-foreground text-xs"
+						formatter={(value: unknown) => `${Math.round(Number(value ?? 0))}%`}
+					/>
+				</Bar>
+			</BarChart>
+		</ChartContainer>
 	);
 }
