@@ -3,6 +3,9 @@ import { withSerwist } from '@serwist/turbopack';
 import type { NextConfig } from 'next';
 import { withPlausibleProxy } from 'next-plausible';
 
+export const TWITTER_LINK = 'https://x.com/owldle';
+export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
+
 const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
 	images: {
 		// TODO: remove to disable nextjs image optimizations/caching
@@ -67,6 +70,18 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 			{
 				source: '/season1',
 				destination: '/owl?season=1',
+				permanent: true,
+			},
+
+			// Socials links
+			{
+				source: '/discord',
+				destination: DISCORD_LINK,
+				permanent: true,
+			},
+			{
+				source: '/twitter',
+				destination: TWITTER_LINK,
 				permanent: true,
 			},
 		];
