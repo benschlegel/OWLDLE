@@ -142,7 +142,7 @@ export default function PlayerSearch({ className }: Props) {
 								<Combobox.Item
 									key={`${player.name}-${player.team}`}
 									value={player}
-									className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-[16px] sm:text-[16px] sm:py-[0.43rem] outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground">
+									className="relative flex cursor-default select-none items-center rounded-sm px-2 py-2 text-[16px] sm:text-[16px] sm:py-[0.43rem] outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground">
 									<UserIcon className="mr-2 h-4 w-4" />
 									<span>{player.name}</span>
 								</Combobox.Item>
