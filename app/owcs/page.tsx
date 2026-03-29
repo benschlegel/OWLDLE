@@ -6,7 +6,7 @@ import { GAME_CONFIG } from '@/lib/config';
 
 const formattedTitle = `${DEFAULT_TITLE} - OWCS`;
 const formattedDescription = 'Guess the correct Overwatch Champion Series player within 8 tries to win.';
-const ogImagePath = `/opengraph-image.png?img=new`;
+const ogImagePath = `/open-graph/og-image?img=new`;
 
 export const metadata: Metadata = {
 	...prevMetadata,
