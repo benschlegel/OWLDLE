@@ -97,6 +97,7 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 		setHasCompletedGame(hasCompletedGameInStorage());
 
 		function handleBeforeInstallPrompt(e: Event) {
+			console.log('beforeinstallprompt fired');
 			e.preventDefault();
 			deferredPromptRef.current = e as BeforeInstallPromptEvent;
 			setCanInstall(true);
@@ -116,14 +117,15 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 
 	const install = useCallback(async () => {
 		const prompt = deferredPromptRef.current;
-		if (!prompt) return;
 
-		await prompt.prompt();
-		const { outcome } = await prompt.userChoice;
+		if (prompt) {
+			await prompt.prompt();
+			const { outcome } = await prompt.userChoice;
 
-		if (outcome === 'accepted') {
-			deferredPromptRef.current = null;
-			setCanInstall(false);
+			if (outcome === 'accepted') {
+				deferredPromptRef.current = null;
+				setCanInstall(false);
+			}
 		}
 	}, []);
 
