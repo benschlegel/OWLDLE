@@ -27,7 +27,7 @@ type Props = {
 	setSheetOpen: (value: React.SetStateAction<boolean>) => void;
 };
 export default function HamburgerSheetContent({ setSheetOpen }: Props) {
-	const { isInstalled } = usePWA();
+	const { canInstall, isInstalled } = usePWA();
 	const router = useRouter();
 	const pathname = usePathname();
 	const searchParams = useSearchParams();
@@ -185,7 +185,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 			</div>
 			<DrawerFooter className="py-3.5">
 				{!isInstalled && (
-					<Button variant={'default'} className="h-auto py-1.5 gap-1 sm:hidden flex" onClick={install}>
+					<Button variant={'default'} className="h-auto py-1.5 gap-1 sm:hidden flex" onClick={install} disabled={!canInstall}>
 						<DownloadIcon className="size-4" />
 						Install App
 					</Button>

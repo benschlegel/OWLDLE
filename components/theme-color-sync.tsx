@@ -1,32 +1,39 @@
 'use client';
 
 import { useTheme } from 'next-themes';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const THEME_COLORS = {
 	dark: '#1a1a1e',
 	light: '#ffffff',
 } as const;
 
-function applyThemeColor(theme: string | undefined) {
-	const color = THEME_COLORS[theme as keyof typeof THEME_COLORS] ?? THEME_COLORS.light;
-	const existing = document.querySelectorAll('meta[name="theme-color"]');
-	for (const el of existing) {
-		el.setAttribute('content', color);
-	}
-}
-
 export function ThemeColorSync() {
 	const { resolvedTheme } = useTheme();
+	const metaRef = useRef<HTMLMetaElement | null>(null);
 
 	useEffect(() => {
-		applyThemeColor(resolvedTheme);
+		let meta = metaRef.current;
+		if (!meta) {
+			// Remove server-rendered theme-color meta tags to prevent flashing, then manually add tags again-
+			for (const el of document.querySelectorAll('meta[name="theme-color"]')) {
+				el.remove();
+			}
 
-		// Re-apply after Next.js re-renders <head> during navigation
-		const observer = new MutationObserver(() => applyThemeColor(resolvedTheme));
-		observer.observe(document.head, { childList: true });
-		return () => observer.disconnect();
+			meta = document.createElement('meta');
+			meta.setAttribute('name', 'theme-color');
+			document.head.appendChild(meta);
+			metaRef.current = meta;
+		}
+		const color = THEME_COLORS[resolvedTheme as keyof typeof THEME_COLORS] ?? THEME_COLORS.light;
+		meta.setAttribute('content', color);
 	}, [resolvedTheme]);
+
+	useEffect(() => {
+		return () => {
+			metaRef.current?.remove();
+		};
+	}, []);
 
 	return null;
 }
