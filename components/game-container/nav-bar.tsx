@@ -26,7 +26,7 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Sheet } from '@/components/ui/sheet';
+import { Drawer } from '@/components/ui/drawer';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
@@ -128,7 +128,7 @@ export function Navbar() {
 	);
 
 	return (
-		<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+		<Drawer direction="right" open={sheetOpen} onOpenChange={setSheetOpen}>
 			<nav className="sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 				{/* Left section*/}
 				<div className="flex items-center sm:flex-none flex-1 self-stretch">
@@ -252,7 +252,7 @@ export function Navbar() {
 			<Suspense>
 				<LazySheetContent setSheetOpen={setSheetOpen} />
 			</Suspense>
-		</Sheet>
+		</Drawer>
 	);
 }
 
