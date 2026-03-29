@@ -1,83 +1,52 @@
+import { datasetInfo } from '@/data/datasets';
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-	const yesterday = new Date();
-	yesterday.setDate(yesterday.getDate() - 1);
-	yesterday.setHours(2);
-	yesterday.setMinutes(0);
-	yesterday.setSeconds(0);
-	return [
+	const lastModified = new Date();
+	lastModified.setDate(lastModified.getDate() - 1);
+	lastModified.setHours(2, 0, 0, 0);
+
+	const baseUrl = 'https://www.owldle.com';
+
+	const staticRoutes: MetadataRoute.Sitemap = [
 		{
-			url: 'https://www.owldle.com/',
-			lastModified: yesterday,
+			url: `${baseUrl}/`,
+			lastModified,
 			changeFrequency: 'daily',
 			priority: 1,
 		},
 		{
-			url: 'https://www.owldle.com/owcs',
-			lastModified: yesterday,
+			url: `${baseUrl}/owcs?season=s3`,
+			lastModified,
 			changeFrequency: 'daily',
-			priority: 1,
+			priority: 0.98,
 		},
 		{
-			url: 'https://www.owldle.com/play',
-			lastModified: yesterday,
+			url: `${baseUrl}/owl?season=6`,
+			lastModified,
 			changeFrequency: 'daily',
+			priority: 0.95,
+		},
+		{
+			url: `${baseUrl}/endless`,
+			lastModified,
+			changeFrequency: 'weekly',
 			priority: 0.9,
 		},
 		{
-			url: 'https://www.owldle.com/play?season=6',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.95,
-		},
-		{
-			url: 'https://www.owldle.com/play?season=5',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.95,
-		},
-		{
-			url: 'https://www.owldle.com/play?season=4',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.95,
-		},
-		{
-			url: 'https://www.owldle.com/play?season=3',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.95,
-		},
-		{
-			url: 'https://www.owldle.com/play?season=2',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.95,
-		},
-		{
-			url: 'https://www.owldle.com/play?season=1',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.95,
-		},
-		{
-			url: 'https://www.owldle.com/play?dialog=help',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
+			url: `${baseUrl}/statistics`,
+			lastModified,
+			changeFrequency: 'weekly',
 			priority: 0.8,
 		},
-		{
-			url: 'https://www.owldle.com/owcs?dialog=help',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.85,
-		},
-		{
-			url: 'https://www.owldle.com/play?dialog=feedback',
-			lastModified: yesterday,
-			changeFrequency: 'daily',
-			priority: 0.5,
-		},
 	];
+
+	const datasetRoutes: MetadataRoute.Sitemap = datasetInfo.map((d) => ({
+		url: `${baseUrl}/${d.href}`,
+		lastModified,
+		changeFrequency: 'daily',
+		priority: d.league === 'owcs' ? 0.9 : 0.85,
+	}));
+
+	return [...staticRoutes, ...datasetRoutes];
 }
