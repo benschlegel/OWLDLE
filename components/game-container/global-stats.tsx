@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { useSettings } from '@/store/settings-store';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, XAxis, YAxis } from 'recharts';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 export default function GlobalStats() {
 	const [gameState] = useContext(GameStateContext);
@@ -78,6 +79,7 @@ function GuessDistribution({
 	playerGuessCount: number;
 	didWin: boolean;
 }) {
+	const isMobile = useIsMobile();
 	const distribution = stats.guessDistribution;
 
 	// Build keys
@@ -114,8 +116,8 @@ function GuessDistribution({
 	} satisfies ChartConfig;
 
 	return (
-		<ChartContainer config={chartConfig} className="h-54 w-full ">
-			<BarChart accessibilityLayer data={chartData} layout="vertical" margin={{ right: 24 }}>
+		<ChartContainer config={chartConfig} className={`h-54 w-full ${isMobile ? '**:outline-none!' : ''}`}>
+			<BarChart accessibilityLayer={!isMobile} data={chartData} layout="vertical" margin={{ right: 24 }}>
 				<CartesianGrid horizontal={false} />
 
 				<YAxis dataKey="label" type="category" tickLine={false} axisLine={false} tickMargin={10} width={50} />
