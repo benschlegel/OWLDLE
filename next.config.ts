@@ -32,7 +32,7 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 		viewTransition: true,
 	},
 	allowedDevOrigins: ['dev.bschlegel.com'],
-	async redirects() {
+	async rewrites() {
 		return [
 			// Legacy /play → /owl
 			{
