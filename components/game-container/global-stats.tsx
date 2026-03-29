@@ -136,7 +136,7 @@ function GuessDistribution({
 					}
 				/>
 
-				<Bar dataKey="percentage" radius={4}>
+				<Bar dataKey="percentage" radius={4} minPointSize={8}>
 					{/* Custom coloring per row */}
 					{chartData.map((entry, index) => (
 						<Cell
