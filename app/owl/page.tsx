@@ -29,7 +29,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 	const formattedDescritpion = DEFAULT_DESCRIPTION;
 	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
 
-	const ogImagePath = `/open-graph/og-image?img=new`;
+	const ogImagePath = `/open-graph/og-image.png?img=new`;
 
 	return {
 		...prevMetadata,
