@@ -1,4 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+};
 import localFont from 'next/font/local';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -47,7 +52,7 @@ const owlHeader = localFont({
 });
 
 export const DEFAULT_TITLE = 'OWLDLE';
-export const DEFAULT_DESCRIPTION = 'Guess the pro overwatch player';
+export const DEFAULT_DESCRIPTION = 'Guess the Overwatch esports pro player through clues about their team, role and nationality. New puzzles every day';
 export const OgConfig = {
 	ogImagePath: `/open-graph/opengraph-image.png?type=newImg`,
 	ogImageWidth: 1200,
@@ -103,18 +108,32 @@ export const metadata: Metadata = {
 		card: 'summary_large_image',
 	},
 	robots: {
-		index: false,
+		index: true,
 		follow: true,
-		nocache: true,
 		googleBot: {
 			index: true,
-			follow: false,
-			noimageindex: true,
+			follow: true,
 			'max-video-preview': -1,
 			'max-snippet': -1,
 		},
 	},
-	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame', 'owcs', 'Champion Series'],
+	keywords: [
+		'overwatch wordle',
+		'overwatch guessing game',
+		'overwatch player quiz',
+		'overwatch esports quiz',
+		'ow2 wordle',
+		'overwatch 2 wordle',
+		'daily overwatch game',
+		'owldle',
+		'Overwatch League',
+		'OWCS',
+		'Overwatch Champions Series',
+		'esports wordle',
+		'OWL trivia',
+		'OWCS trivia',
+		'ow wordle',
+	],
 };
 
 export default function RootLayout({
@@ -127,6 +146,26 @@ export default function RootLayout({
 			<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 				<head>
 					<meta name="twitter:card" content="summary_large_image" />
+					<script
+						type="application/ld+json"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data for SEO
+						dangerouslySetInnerHTML={{
+							__html: JSON.stringify({
+								'@context': 'https://schema.org',
+								'@type': 'WebApplication',
+								name: 'OWLDLE',
+								url: 'https://www.owldle.com',
+								description: DEFAULT_DESCRIPTION,
+								applicationCategory: 'GameApplication',
+								operatingSystem: 'Web',
+								offers: {
+									'@type': 'Offer',
+									price: '0',
+									priceCurrency: 'USD',
+								},
+							}),
+						}}
+					/>
 					{/* Blocking script: sets theme class before first paint to prevent flash */}
 					<script
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: needed to prevent theme flash

@@ -26,7 +26,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = formatDataset(formattedSeason);
 	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
-	const formattedDescritpion = DEFAULT_DESCRIPTION;
+	const formattedDescription = `Guess the Overwatch League ${formattedDataset} player from clues about their team, role and nationality. New puzzle every day.`;
 	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
 
 	const ogImagePath = `/open-graph/opengraph-image.png?type=newImg`;
@@ -34,13 +34,13 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 	return {
 		...prevMetadata,
 		title: formattedTitle,
-		description: formattedDescritpion,
+		description: formattedDescription,
 		alternates: {
 			canonical: `/owl?season=${season}`,
 		},
 		openGraph: {
 			title: openGraphTitle,
-			description: formattedDescritpion,
+			description: formattedDescription,
 			url: GAME_CONFIG.siteUrl,
 			images: [
 				{
@@ -71,13 +71,11 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 			card: 'summary_large_image',
 		},
 		robots: {
-			index: false,
+			index: true,
 			follow: true,
-			nocache: true,
 			googleBot: {
 				index: true,
-				follow: false,
-				noimageindex: true,
+				follow: true,
 				'max-video-preview': -1,
 				'max-snippet': -1,
 			},
