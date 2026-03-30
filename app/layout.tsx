@@ -55,6 +55,7 @@ export const DEFAULT_TITLE = 'OWLDLE';
 export const DEFAULT_DESCRIPTION = 'Guess the Overwatch esports pro player through clues about their team, role and nationality. New puzzles every day';
 export const OgConfig = {
 	ogImagePath: `/open-graph/opengraph-image.png?type=newImg`,
+	ogSquarePath: '/open-graph/opengraph-square.png',
 	ogImageWidth: 1200,
 	ogImageHeight: 630,
 };
@@ -146,6 +147,7 @@ export default function RootLayout({
 			<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 				<head>
 					<meta name="twitter:card" content="summary_large_image" />
+					<meta name="robots" content="max-image-preview: large" />
 					<script
 						type="application/ld+json"
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data for SEO
@@ -158,6 +160,7 @@ export default function RootLayout({
 								description: DEFAULT_DESCRIPTION,
 								applicationCategory: 'GameApplication',
 								operatingSystem: 'Web',
+								image: [`https://www.owldle.com${OgConfig.ogImagePath}`, `https://www.owldle.com${OgConfig.ogSquarePath}`],
 								offers: {
 									'@type': 'Offer',
 									price: '0',
@@ -203,9 +206,7 @@ export default function RootLayout({
 															<main className="w-[32rem]">{children}</main>
 														</div>
 														<Toaster />
-														<div className="pointer-events-none flex justify-center pb-8 pt-4">
-															<Socials />
-														</div>
+														<div className="pointer-events-none flex justify-center pb-8 pt-4">{/* <Socials /> */}</div>
 													</>
 												</DatasetContexttProvider>
 												<SpeedInsights />
