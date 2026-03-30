@@ -1,3 +1,25 @@
+import { DEFAULT_TITLE, OgConfig, metadata as prevMetadata } from '@/app/layout';
+import { GAME_CONFIG } from '@/lib/config';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+	...prevMetadata,
+	openGraph: {
+		...prevMetadata.openGraph,
+		title: `${DEFAULT_TITLE} - Statistics`,
+		url: `${GAME_CONFIG.siteUrl}/statistics`,
+		images: [
+			{
+				alt: `${DEFAULT_TITLE} - Statistics`,
+				url: '/open-graph/statistics.png',
+				width: OgConfig.ogImageWidth,
+				height: OgConfig.ogImageHeight,
+				type: 'image/png',
+			},
+		],
+	},
+};
+
 export default function StatisticsPage() {
 	return (
 		<div className="w-full sm:mt-80 mt-65 flex items-center justify-center">
