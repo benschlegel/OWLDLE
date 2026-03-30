@@ -1,4 +1,4 @@
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, metadata as prevMetadata } from '@/app/layout';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, OgConfig, metadata as prevMetadata } from '@/app/layout';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
@@ -16,6 +16,15 @@ export const metadata: Metadata = {
 		title: `${DEFAULT_TITLE} - Endless Mode`,
 		description: description,
 		url: `${GAME_CONFIG.siteUrl}/endless`,
+		images: [
+			{
+				alt: `${DEFAULT_TITLE} - Endless Mode`,
+				url: '/open-graph/endless.png',
+				width: OgConfig.ogImageWidth,
+				height: OgConfig.ogImageHeight,
+				type: 'image/png',
+			},
+		],
 		type: 'website',
 		siteName: 'owldle',
 	},
