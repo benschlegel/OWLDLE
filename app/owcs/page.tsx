@@ -5,7 +5,7 @@ import SeasonPageWrapper from '@/app/owcs/PageWrapper';
 import { GAME_CONFIG } from '@/lib/config';
 
 const formattedTitle = `${DEFAULT_TITLE} - OWCS`;
-const formattedDescription = 'Guess the Overwatch Champions Series pro player from clues about their team, role and region. A new OWCS puzzle every day.';
+const formattedDescription = 'Guess the Overwatch Champions Series pro player from clues about their team, role and region. New puzzle every day.';
 const ogImagePath = `/open-graph/opengraph-image.png?type=newImg`;
 
 export const metadata: Metadata = {
