@@ -18,7 +18,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = formatDataset(formattedSeason);
 	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
-	const formattedDescription = `Guess the Overwatch League ${formattedDataset} player from clues about their team, role and nationality. New puzzle every day.`;
+	const formattedDescription = `Guess the Overwatch League (${formattedDataset}) player from clues about their team, role and nationality. New puzzle every day.`;
 	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
 
 	const ogImagePath = `/open-graph/season${seasonNum}.png`;
