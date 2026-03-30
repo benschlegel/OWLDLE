@@ -18,6 +18,18 @@ export const metadata: Metadata = {
 			},
 		],
 	},
+	twitter: {
+		...prevMetadata.twitter,
+		images: [
+			{
+				url: `https://www.owldle.com/open-graph/statistics.png`,
+				alt: `${DEFAULT_TITLE} - Statistics`,
+				width: OgConfig.ogImageWidth,
+				height: OgConfig.ogImageHeight,
+				type: 'image/png',
+			},
+		],
+	},
 };
 
 export default function StatisticsPage() {
