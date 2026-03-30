@@ -10,6 +10,12 @@ const DEFAULT_OWCS_SEASON = DEFAULT_OWCS_DATASET_NAME.slice(5);
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ season?: string }> }): Promise<Metadata> {
 	const { season } = await searchParams;
+
+	// No season param => arrived via redirect from "/". Return the layout default metadata so OG image is preserved for social crawlers.
+	if (!season) {
+		return prevMetadata;
+	}
+
 	const seasonParam = season ?? DEFAULT_OWCS_SEASON;
 	const datasetName = `owcs-${seasonParam}`;
 	const info =
@@ -18,7 +24,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 		datasetInfo[datasetInfo.length - 1];
 
 	const formattedTitle = `${DEFAULT_TITLE} - ${info.name}`;
-	const formattedDescription = `Guess the Overwatch Champions Series ${info.name} pro player from clues about their team, role and region. New puzzle every day.`;
+	const formattedDescription = `Guess the Overwatch Champions Series (${info.shorthand}) pro player from clues about their team, role and region. New puzzle every day.`;
 	const ogImagePath = `/open-graph/${info.dataset}.png`;
 
 	return {
