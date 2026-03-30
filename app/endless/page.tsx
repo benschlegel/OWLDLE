@@ -28,6 +28,18 @@ export const metadata: Metadata = {
 		type: 'website',
 		siteName: 'owldle',
 	},
+	twitter: {
+		...prevMetadata.twitter,
+		images: [
+			{
+				url: `https://www.owldle.com/open-graph/endless.png`,
+				alt: `${DEFAULT_TITLE} - Endless Mode`,
+				width: OgConfig.ogImageWidth,
+				height: OgConfig.ogImageHeight,
+				type: 'image/png',
+			},
+		],
+	},
 	icons: {
 		icon: [
 			{
