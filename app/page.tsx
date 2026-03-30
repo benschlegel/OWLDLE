@@ -1,24 +1,27 @@
-'use client';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import { OWCS_PATHNAME } from '@/data/datasets';
+import type { Metadata } from 'next';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, metadata as prevMetadata } from '@/app/layout';
+import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/lib/navigation';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { OWCS_PATHNAME, OWL_PATHNAME } from '@/data/datasets';
+export const metadata: Metadata = {
+	...prevMetadata,
+	title: DEFAULT_TITLE,
+	description: DEFAULT_DESCRIPTION,
+};
 
-export const LAST_GAME_COOKIE = 'last-game';
-export const ALLOWED_PATHS: readonly string[] = [OWL_PATHNAME, OWCS_PATHNAME];
-export default function Home() {
-	const router = useRouter();
+export default async function Home() {
+	const cookieStore = await cookies();
+	const raw = cookieStore.get(LAST_GAME_COOKIE)?.value;
 
-	useEffect(() => {
-		const cookie = document.cookie.split('; ').find((row) => row.startsWith(`${LAST_GAME_COOKIE}=`));
-
-		if (cookie) {
-			const value = decodeURIComponent(cookie.split('=')[1]);
-			router.replace(value);
-		} else {
-			router.replace(OWCS_PATHNAME);
+	if (raw) {
+		const decoded = decodeURIComponent(raw);
+		const pathname = decoded.split('?')[0];
+		if (ALLOWED_PATHS.includes(pathname)) {
+			redirect(decoded);
 		}
-	}, [router]);
+	}
 
-	return null;
+	redirect(OWCS_PATHNAME);
 }

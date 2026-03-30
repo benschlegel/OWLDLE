@@ -5,7 +5,7 @@ import SeasonPageWrapper from '@/app/owcs/PageWrapper';
 import { GAME_CONFIG } from '@/lib/config';
 
 const formattedTitle = `${DEFAULT_TITLE} - OWCS`;
-const formattedDescription = 'Guess the correct Overwatch Champion Series player within 8 tries to win.';
+const formattedDescription = 'Guess the Overwatch Champions Series pro player from clues about their team, role and region. A new OWCS puzzle every day.';
 const ogImagePath = `/open-graph/opengraph-image.png?type=newImg`;
 
 export const metadata: Metadata = {
@@ -61,13 +61,11 @@ export const metadata: Metadata = {
 		card: 'summary_large_image',
 	},
 	robots: {
-		index: false,
+		index: true,
 		follow: true,
-		nocache: true,
 		googleBot: {
 			index: true,
-			follow: false,
-			noimageindex: true,
+			follow: true,
 			'max-video-preview': -1,
 			'max-snippet': -1,
 		},

@@ -30,7 +30,7 @@ import { Drawer } from '@/components/ui/drawer';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/app/page';
+import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/lib/navigation';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
 export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';

@@ -4,16 +4,17 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import EndlessPageWrapper from '@/app/endless/EndlessPageWrapper';
 
+const description = 'Unlimited Overwatch esports pro player guessing with no daily limit. See how many you can get right in a row!';
 export const metadata: Metadata = {
 	...prevMetadata,
 	title: `${DEFAULT_TITLE} - Endless Mode`,
-	description: `${DEFAULT_DESCRIPTION} - Endless Mode`,
+	description: description,
 	alternates: {
 		canonical: '/endless',
 	},
 	openGraph: {
 		title: `${DEFAULT_TITLE} - Endless Mode`,
-		description: `${DEFAULT_DESCRIPTION} - Endless Mode`,
+		description: description,
 		url: `${GAME_CONFIG.siteUrl}/endless`,
 		type: 'website',
 		siteName: 'owldle',
