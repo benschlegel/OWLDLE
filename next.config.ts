@@ -37,6 +37,28 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 	allowedDevOrigins: ['dev.bschlegel.com'],
 	async redirects() {
 		return [
+			// Pretty OWL URLs: /owl/season1 -> /owl?season=1
+			{
+				source: '/owl/season:num',
+				destination: '/owl?season=:num',
+				permanent: true,
+			},
+			// Pretty OWCS URLs: /owcs/seasonN -> /owcs?season=sN
+			{
+				source: '/owcs/season1',
+				destination: '/owcs?season=s1',
+				permanent: true,
+			},
+			{
+				source: '/owcs/season2',
+				destination: '/owcs?season=s2',
+				permanent: true,
+			},
+			{
+				source: '/owcs/season3',
+				destination: '/owcs?season=s3',
+				permanent: true,
+			},
 			{
 				source: '/play',
 				destination: '/owl',
@@ -83,28 +105,6 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 				source: '/twitter',
 				destination: TWITTER_LINK,
 				permanent: true,
-			},
-		];
-	},
-	async rewrites() {
-		return [
-			// Pretty OWL URLs: /owl/season1 -> /owl?season=1
-			{
-				source: '/owl/season:num',
-				destination: '/owl?season=:num',
-			},
-			// Pretty OWCS URLs: /owcs/seasonN → /owcs?season=sN
-			{
-				source: '/owcs/season1',
-				destination: '/owcs?season=s1',
-			},
-			{
-				source: '/owcs/season2',
-				destination: '/owcs?season=s2',
-			},
-			{
-				source: '/owcs/season3',
-				destination: '/owcs?season=s3',
 			},
 		];
 	},
