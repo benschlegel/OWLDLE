@@ -43,7 +43,7 @@
 }
 
 @theme {
-  --breakpoint-navbar-hidden: 70rem;
+  --breakpoint-navbar-hidden: 84rem;
   --spacing-layout-spacing: 2rem;
   --spacing-layout-top: 7rem;
   --spacing-layout-width: 18rem;

@@ -167,6 +167,8 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 						<Separator />
 						<SheetLinkButton text="Discord" href={DISCORD_LINK} isExternal />
 						<Separator />
+						<SheetLinkButton text="Twitter" href={TWITTER_LINK} isExternal />
+						<Separator />
 
 						<SheetLinkButton text="Donate" href={DONATION_LINK} isExternal />
 						<Separator />

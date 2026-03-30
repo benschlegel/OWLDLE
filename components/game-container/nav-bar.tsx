@@ -222,12 +222,11 @@ export function Navbar() {
 					<NavButton isRightSkewed href={DISCORD_LINK} isExternal className="hidden navbar-hidden:flex">
 						Discord
 					</NavButton>
+					<NavButton isRightSkewed href={TWITTER_LINK} isExternal className="hidden navbar-hidden:flex">
+						Twitter
+					</NavButton>
 					<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
 						Feedback
-					</NavButton>
-
-					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
-						Donate
 					</NavButton>
 					{/* Contact button popover */}
 					<Popover>
@@ -240,9 +239,15 @@ export function Navbar() {
 							<SocialPopoverContent />
 						</PopoverContent>
 					</Popover>
+					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
+						Donate
+					</NavButton>
+
+					{/* Settings button */}
 					<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
 						<SettingsIcon className="size-5" />
 					</NavButton>
+
 					{/* desktop overflow hamburger menu */}
 					<NavButton isRightSkewed className="-mr-2 pr-6 flex navbar-hidden:hidden" onClick={() => setSheetOpen(true)}>
 						<MenuIcon className="size-5" />
