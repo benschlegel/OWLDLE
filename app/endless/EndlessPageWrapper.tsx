@@ -5,18 +5,27 @@ import EndlessSeasonSelector from '@/app/endless/EndlessSeasonSelector';
 import EndlessSeasonTitle from '@/app/endless/EndlessSeasonTitle';
 import GameHeader from '@/components/game-container/GameHeader';
 import { useEndlessParams } from '@/hooks/use-endless-params';
-import { isOwcsDataset } from '@/data/datasets';
+import { DEFAULT_DATASET, getDataset, isOwcsDataset, type CombinedDatasetMetadata } from '@/data/datasets';
+import { DatasetContext } from '@/context/DatasetContext';
+import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { GamepadIcon } from 'lucide-react';
 
 export default function EndlessPageWrapper() {
 	const { dataset } = useEndlessParams();
 	const modeLabel = isOwcsDataset(dataset) ? 'OWCS' : 'Overwatch League';
+	const datasetMetadata = useMemo(() => getDataset(dataset) ?? DEFAULT_DATASET, [dataset]);
+	const datasetContextValue = useMemo(
+		(): [CombinedDatasetMetadata, Dispatch<SetStateAction<CombinedDatasetMetadata>>] => [datasetMetadata, () => {}],
+		[datasetMetadata]
+	);
 
 	return (
-		<div className="animate-in fade-in duration-300">
-			<GameHeader topLabel={<EndlessHeaderBadge />} modeLabel={modeLabel} seasonSelector={<EndlessSeasonSelector />} seasonTitle={<EndlessSeasonTitle />} />
-			<EndlessGame dataset={dataset} />
-		</div>
+		<DatasetContext.Provider value={datasetContextValue}>
+			<div className="animate-in fade-in duration-300">
+				<GameHeader topLabel={<EndlessHeaderBadge />} modeLabel={modeLabel} seasonSelector={<EndlessSeasonSelector />} seasonTitle={<EndlessSeasonTitle />} />
+				<EndlessGame dataset={dataset} />
+			</div>
+		</DatasetContext.Provider>
 	);
 }
 
