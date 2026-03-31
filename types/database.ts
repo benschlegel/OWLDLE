@@ -122,6 +122,11 @@ export type DbLoggedEndlessSession = {
 	games: DbEndlessGameEntry[];
 	/** Timestamp of when the streak ended (game was lost) */
 	finishedAt: Date;
+	/**
+	 * Compact encoding of active filters at time of session (omitted when all defaults).
+	 * region: bitmask for owcs-s3 (EMEA=1, NA=2, Korea=4, CN=8; 15=all active)
+	 */
+	filters?: { region: number; isPartnerOnly: boolean };
 };
 
 export const endlessSaveValidator = z.object({
@@ -134,6 +139,12 @@ export const endlessSaveValidator = z.object({
 			})
 		)
 		.min(1),
+	filters: z
+		.object({
+			region: z.number().int().min(0),
+			isPartnerOnly: z.boolean(),
+		})
+		.optional(),
 });
 export type DbEndlessSaveData = z.infer<typeof endlessSaveValidator>;
 

@@ -24,6 +24,14 @@ export type SessionGameEntry = {
 	result: 'won' | 'lost';
 };
 
+export type EndlessFilters = {
+	/** Active regions. Empty array means all regions are included. */
+	regions: string[];
+	partnerOnly: boolean;
+};
+
+const defaultFilters: EndlessFilters = { regions: [], partnerOnly: false };
+
 export type DatasetStats = {
 	currentStreak: number;
 	highestStreak: number;
@@ -32,6 +40,7 @@ export type DatasetStats = {
 	current: EndlessGame | null;
 	/** per-game summary for the current streak, persisted so partial streaks survive page reloads */
 	sessionHistory: SessionGameEntry[];
+	filters: EndlessFilters;
 };
 
 const defaultStats: DatasetStats = {
@@ -41,16 +50,18 @@ const defaultStats: DatasetStats = {
 	games: 0,
 	current: null,
 	sessionHistory: [],
+	filters: defaultFilters,
 };
 
 type EndlessStore = {
 	datasets: Partial<Record<Dataset, DatasetStats>>;
 	getStats: (dataset: Dataset) => DatasetStats;
-	startGame: (dataset: Dataset, playerCount: number) => void;
+	startGame: (dataset: Dataset, validIndices: number[]) => void;
 	addGuess: (dataset: Dataset, guess: CompactGuess) => void;
 	winGame: (dataset: Dataset) => void;
 	loseGame: (dataset: Dataset) => void;
-	playAgain: (dataset: Dataset, playerCount: number) => void;
+	updateFilters: (dataset: Dataset, filters: EndlessFilters) => void;
+	playAgain: (dataset: Dataset, validIndices: number[]) => void;
 };
 
 function randomIndex(max: number): number {
@@ -64,7 +75,7 @@ export const useEndlessStore = create<EndlessStore>()(
 		(set, get) => ({
 			datasets: {},
 			getStats: (dataset) => get().datasets[dataset] ?? defaultStats,
-			startGame: (dataset, playerCount) =>
+			startGame: (dataset, validIndices) =>
 				set((state) => {
 					const prev = state.datasets[dataset] ?? defaultStats;
 					if (prev.current?.state === 'in-progress') return state;
@@ -73,7 +84,7 @@ export const useEndlessStore = create<EndlessStore>()(
 							...state.datasets,
 							[dataset]: {
 								...prev,
-								current: { playerIndex: randomIndex(playerCount), guesses: [], state: 'in-progress' },
+								current: { playerIndex: validIndices[randomIndex(validIndices.length)], guesses: [], state: 'in-progress' },
 							},
 						},
 					};
@@ -136,7 +147,23 @@ export const useEndlessStore = create<EndlessStore>()(
 				});
 				markGameCompleted();
 			},
-			playAgain: (dataset, playerCount) =>
+			updateFilters: (dataset, filters) =>
+				set((state) => {
+					const prev = state.datasets[dataset] ?? defaultStats;
+					return {
+						datasets: {
+							...state.datasets,
+							[dataset]: {
+								...prev,
+								filters,
+								currentStreak: 0,
+								sessionHistory: [],
+								current: null,
+							},
+						},
+					};
+				}),
+			playAgain: (dataset, validIndices) =>
 				set((state) => {
 					const prev = state.datasets[dataset] ?? defaultStats;
 					// clear sessionHistory only after a loss (streak ended), preserve it midstreak after a win
@@ -147,7 +174,7 @@ export const useEndlessStore = create<EndlessStore>()(
 							[dataset]: {
 								...prev,
 								sessionHistory: wasLost ? [] : prev.sessionHistory ?? [],
-								current: { playerIndex: randomIndex(playerCount), guesses: [], state: 'in-progress' },
+								current: { playerIndex: validIndices[randomIndex(validIndices.length)], guesses: [], state: 'in-progress' },
 							},
 						},
 					};
