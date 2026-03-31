@@ -192,7 +192,17 @@ export async function setPartialAnswer(answerPrefix: DbAnswerPrefix, player: DbP
  */
 export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: Dataset) {
 	const answerKey: AnswerKey = `${answerPrefix}_${dataset}`;
-	const randomPlayer = await getUniqueRandomPlayer(dataset);
+
+	// Build exclusion list: last 20 iterations + current answer (if rolling next)
+	const recentIterations = await getLastNIterations(dataset, GAME_CONFIG.backlogMaxSize);
+	const exclusions: DbPlayer[] = recentIterations.map((it) => it.player);
+
+	if (answerPrefix === 'next') {
+		const current = await getAnswer('current', dataset);
+		if (current) exclusions.push(current.player);
+	}
+
+	const randomPlayer = await getUniqueRandomPlayer(dataset, exclusions);
 	if (!randomPlayer) {
 		return false;
 	}
@@ -216,23 +226,30 @@ export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: Datase
 }
 
 /**
- * Pick random unqiue player that isn't in any backlog (answers or main backlog)
- * @param dataset what dataset to get unqiue player for
+ * Get the last N iterations for a dataset, sorted by iteration descending
+ * @param dataset what dataset to get iterations for
+ * @param n how many iterations to return
  */
-export async function getUniqueRandomPlayer(dataset: Dataset) {
+export async function getLastNIterations(dataset: Dataset, n: number) {
+	return iterationCollection.find({ dataset }, { sort: { iteration: -1 }, limit: n }).toArray();
+}
+
+/**
+ * Pick random unique player that isn't in the exclusion list or the main backlog
+ * @param dataset what dataset to get unique player for
+ * @param exclusions list of players to exclude (e.g. recent iterations, current answer)
+ */
+export async function getUniqueRandomPlayer(dataset: Dataset, exclusions: DbPlayer[] = []) {
 	let randomPlayer = getRandomPlayer(dataset);
 	let isIncluded = true;
-
-	// Get other answer + backlog to compare against
-	const answers = await getAllAnswers(dataset);
 
 	const backlog = (await getBacklog(dataset))?.players;
 	if (!backlog) return;
 
 	while (isIncluded) {
 		const isIncludedBacklog = backlog.some((player) => player.name === randomPlayer.name);
-		const isAnswersIncluded = answers.some((player) => player.player.name === randomPlayer.name);
-		if (isIncludedBacklog === false && isAnswersIncluded === false) {
+		const isExcluded = exclusions.some((player) => player.name === randomPlayer.name);
+		if (!isIncludedBacklog && !isExcluded) {
 			isIncluded = false;
 		} else {
 			randomPlayer = getRandomPlayer(dataset);
