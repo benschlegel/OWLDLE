@@ -135,9 +135,9 @@ export const datasetInfo: BaseDatasetMetadata[] = [
 	},
 	{
 		dataset: 'owcs-s3',
-		formattedName: 'OWCS S3 (2025)',
+		formattedName: 'OWCS S3 (2026)',
 		name: 'OWCS S3',
-		year: '2025',
+		year: '2026',
 		shorthand: 'S3',
 		league: 'owcs',
 		href: 'owcs?season=s3',
