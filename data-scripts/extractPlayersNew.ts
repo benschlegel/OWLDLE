@@ -1,7 +1,7 @@
 import type { Dataset } from '@/data/datasets';
 import { getCountryAbbreviation } from '@/types/countries';
 import { playerSchema } from '@/types/players';
-import axios from 'axios';
+// import axios from 'axios';
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
 import fs from 'node:fs';
