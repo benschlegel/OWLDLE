@@ -4,6 +4,8 @@ import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useStat
 import GameContainer, { FLIP_OUT_DURATION, ROW_DISMISS_STAGGER } from '@/components/game-container/GameContainer';
 import PlayerSearch from '@/components/game-container/search';
 import EndlessResult from '@/components/endless/endless-result';
+import EndlessLeftColumn from '@/components/endless/endless-left-column';
+import EndlessRightColumn from '@/components/endless/endless-right-column';
 import { StreakDisplay } from '@/components/endless/streak-display';
 import { useEndlessGame } from '@/hooks/use-endless-game';
 import type { Dataset } from '@/data/datasets';
@@ -98,7 +100,11 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 	if (!mounted) {
 		return (
 			<div className="pb-2">
-				<StreakDisplay stats={defaultStats} />
+				<EndlessLeftColumn stats={defaultStats} />
+				<EndlessRightColumn stats={defaultStats} />
+				<div className="xl:hidden">
+					<StreakDisplay stats={defaultStats} />
+				</div>
 				<GameContainer guesses={[]} />
 			</div>
 		);
@@ -108,7 +114,11 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 		<DatasetContext.Provider value={datasetContextValue}>
 			<GuessContext.Provider value={guessContextValue}>
 				<div className="pb-2">
-					<StreakDisplay stats={stats} />
+					<EndlessLeftColumn stats={stats} />
+					<EndlessRightColumn stats={stats} />
+					<div className="xl:hidden">
+						<StreakDisplay stats={stats} />
+					</div>
 					{process.env.NODE_ENV === 'development' && <DevAnswer correctPlayer={correctPlayer} />}
 					<GameContainer guesses={evaluatedGuesses} isDismissing={isDismissing} />
 					{gameState === 'in-progress' || isDismissing ? (

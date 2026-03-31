@@ -13,7 +13,7 @@ export default function EndlessPageWrapper() {
 	const modeLabel = isOwcsDataset(dataset) ? 'OWCS' : 'Overwatch League';
 
 	return (
-		<div className="animate-in fade-in duration-300">
+		<div className="relative animate-in fade-in duration-300">
 			<GameHeader topLabel={<EndlessHeaderBadge />} modeLabel={modeLabel} seasonSelector={<EndlessSeasonSelector />} seasonTitle={<EndlessSeasonTitle />} />
 			<EndlessGame dataset={dataset} />
 		</div>
