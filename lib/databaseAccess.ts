@@ -69,8 +69,13 @@ gameStatsCollection.createIndex({ dataset: 1, iteration: 1 }, { unique: true });
  * @param streakLength number of wins before the streak ended
  * @param games simplified summary of each game in streak (including last lost game)
  */
-export async function logEndlessSession(dataset: Dataset, streakLength: number, games: DbLoggedEndlessSession['games']) {
-	return endlessLogCollection.insertOne({ dataset, streakLength, games, finishedAt: new Date() });
+export async function logEndlessSession(
+	dataset: Dataset,
+	streakLength: number,
+	games: DbLoggedEndlessSession['games'],
+	filters?: DbLoggedEndlessSession['filters']
+) {
+	return endlessLogCollection.insertOne({ dataset, streakLength, games, finishedAt: new Date(), ...(filters !== undefined && { filters }) });
 }
 
 /**

@@ -25,7 +25,7 @@ type Props = {
 };
 
 export default function EndlessGame({ dataset: datasetName }: Props) {
-	const { evaluatedGuesses, guessedPlayers, gameState, correctPlayer, stats, dataset, submitGuess, handlePlayAgain, handleNextGame } =
+	const { evaluatedGuesses, guessedPlayers, gameState, correctPlayer, stats, dataset, filteredPlayers, submitGuess, handlePlayAgain, handleNextGame } =
 		useEndlessGame(datasetName);
 
 	const prefersReducedMotion = useReducedMotion();
@@ -95,12 +95,13 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 		[guessedPlayers, setGuessesInterceptor]
 	);
 
-	const datasetContextValue = useMemo((): [typeof dataset, React.Dispatch<React.SetStateAction<typeof dataset>>] => [dataset, () => {}], [dataset]);
+	const filteredDataset = useMemo(() => ({ ...dataset, playerData: filteredPlayers }), [dataset, filteredPlayers]);
+	const datasetContextValue = useMemo((): [typeof dataset, React.Dispatch<React.SetStateAction<typeof dataset>>] => [filteredDataset, () => {}], [filteredDataset]);
 
 	if (!mounted) {
 		return (
 			<div className="pb-2">
-				<EndlessLeftColumn stats={defaultStats} />
+				<EndlessLeftColumn stats={defaultStats} dataset={datasetName} />
 				<EndlessRightColumn stats={defaultStats} />
 				<div className="xl:hidden">
 					<StreakDisplay stats={defaultStats} />
@@ -114,7 +115,7 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 		<DatasetContext.Provider value={datasetContextValue}>
 			<GuessContext.Provider value={guessContextValue}>
 				<div className="pb-2">
-					<EndlessLeftColumn stats={stats} />
+					<EndlessLeftColumn stats={stats} dataset={datasetName} />
 					<EndlessRightColumn stats={stats} />
 					<div className="xl:hidden">
 						<StreakDisplay stats={stats} />

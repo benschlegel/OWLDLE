@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
 	}
 
 	try {
-		const res = await logEndlessSession(datasetParsed.data, saveRes.data.streakLength, saveRes.data.games);
+		const res = await logEndlessSession(datasetParsed.data, saveRes.data.streakLength, saveRes.data.games, saveRes.data.filters);
 		if (res.acknowledged) {
 			return new Response(undefined, { status: 200 });
 		}
