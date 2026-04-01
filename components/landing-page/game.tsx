@@ -16,16 +16,16 @@ type Props = {
 const MemoizedPlayerSearch = React.memo(PlayerSearch);
 
 export default function Game({ slug }: Props) {
-	const [evaluatedGuesses, gameState, validatedData] = useGameState({ slug });
+	const [evaluatedGuesses, gameState, validatedData, isDismissing] = useGameState({ slug });
 
 	// Memoize the className to avoid triggering re-renders
 	const playerSearchClassName = useMemo(() => 'mt-6', []);
 
 	return (
 		<div className="pb-2">
-			<GameContainer guesses={evaluatedGuesses} />
-			{/* Render search bar while in progress, render result when done */}
-			{gameState === 'in-progress' ? (
+			<GameContainer guesses={evaluatedGuesses} isDismissing={isDismissing} />
+			{/* Render search bar while in progress, result when done, nothing while auto-resetting */}
+			{!isDismissing && (gameState === 'in-progress' ? (
 				<>
 					<MemoizedPlayerSearch className={playerSearchClassName} />
 					<Suspense fallback={<div className="aria-hidden hidden" />}>
@@ -34,7 +34,7 @@ export default function Game({ slug }: Props) {
 				</>
 			) : (
 				<GameResult results={evaluatedGuesses} validatedResponse={validatedData} iteration={validatedData?.iteration} />
-			)}
+			))}
 		</div>
 	);
 }
