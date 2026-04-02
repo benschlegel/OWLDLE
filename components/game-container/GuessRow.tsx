@@ -8,6 +8,7 @@ import TeamLogo from '@/components/game-container/TeamLogo';
 import { DatasetContext } from '@/context/DatasetContext';
 import { isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams } from '@/data/teams/teams';
+import { getTeamLogo } from '@/data/teams/logos';
 import { getCountryDisplayName } from '@/lib/client';
 import { cn } from '@/lib/utils';
 import { motion, useReducedMotion } from 'motion/react';
@@ -102,6 +103,8 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		}
 	}
 
+	const teamDisplayName = data ? getTeamLogo(dataset.dataset, data.player.team)?.displayName : undefined;
+
 	// track if this row was empty at mount (for detecting fresh guesses vs reloads)
 	const mountedWithoutData = useRef(data === undefined);
 	const [flippedIn, setFlippedIn] = useState(false);
@@ -191,7 +194,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 			)}
 			{/* Team */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-				<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={data?.player.team}>
+				<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={teamDisplayName}>
 					<TeamLogo teamName={data?.player.team} />
 				</GameCell>
 			</FlipCard>

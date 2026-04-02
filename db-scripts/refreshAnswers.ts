@@ -4,7 +4,7 @@ import { trimDate } from '@/lib/utils';
 import { exit } from 'node:process';
 
 // ! Configure the dataset to refresh answers for
-const DATASET: Dataset = 'owcs-s2';
+const DATASET: Dataset = 'owcs-s3';
 
 const now = new Date();
 const nextReset = trimDate(new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 22, 0, 0)));

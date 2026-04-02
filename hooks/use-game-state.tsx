@@ -17,6 +17,7 @@ import { useGameStats } from '@/hooks/use-game-stats';
 import { usePlayerStatsStore } from '@/store/player-stats-store';
 import type { GameState } from '@/types/client';
 import { useEvaluatedGuesses } from '@/context/GlobalGuessContext';
+import { useAutoReset } from '@/hooks/use-auto-reset';
 
 type Props = {
 	slug: string;
@@ -32,9 +33,22 @@ export default function useGameState({ slug }: Props) {
 	const plausible = usePlausible<PlausibleEvents>();
 
 	const dataset = useMemo(() => getDataset(slug as Dataset) ?? DEFAULT_DATASET, [slug]);
-	const { data: validatedData, isStale } = useAnswerQuery(dataset.dataset);
-	const { data } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
+	const { data: validatedData, isStale, refetch } = useAnswerQuery(dataset.dataset);
+	const { data, resetAllDatasets } = useEvaluatedGuesses(dataset.dataset, validatedData?.nextReset);
 	const { evaluatedGuesses, setEvaluatedGuesses } = data;
+
+	const performReset = useCallback(() => {
+		resetAllDatasets();
+		setGameState('in-progress');
+		setPlayerGuesses([]);
+		refetch();
+	}, [resetAllDatasets, setGameState, setPlayerGuesses, refetch]);
+
+	const isDismissing = useAutoReset({
+		nextReset: validatedData?.nextReset,
+		evaluatedGuesses,
+		performReset,
+	});
 	const { refetch: refetchStats, setStats } = useGameStats(dataset.dataset);
 	const recordWin = usePlayerStatsStore((s) => s.recordWin);
 	const recordLoss = usePlayerStatsStore((s) => s.recordLoss);
@@ -162,7 +176,7 @@ export default function useGameState({ slug }: Props) {
 	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses, dataset.dataset, recordWin, recordLoss]);
 
 	const isDatasetSynced = syncedDatasetRef.current === dataset.dataset;
-	return [evaluatedGuesses, isDatasetSynced ? gameState : 'in-progress', validatedData] as const;
+	return [evaluatedGuesses, isDatasetSynced ? gameState : 'in-progress', validatedData, isDismissing] as const;
 }
 
 type SavedState = { [key: string]: GameState };

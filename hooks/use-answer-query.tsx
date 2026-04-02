@@ -52,8 +52,15 @@ async function fetchValidateDataset(): Promise<FetchResult> {
 	return { data: formatted, isStale };
 }
 
+// How many times to automatically retry fetching after a reset before giving up
+const MAX_RETRIES = 3;
+// Interval to send retries
+const RETRY_INTERVAL = 5_000;
+
 export function useAnswerQuery(dataset: Dataset) {
 	const isStaleRef = useRef(false);
+	// tracks retries after reset (to ensure MAX_RETRIES works. resets to 0 with fresh data.)
+	const postResetRetryCountRef = useRef(0);
 	const query = useQuery({
 		queryKey: [QUERY_KEY],
 		queryFn: async () => {
@@ -67,6 +74,21 @@ export function useAnswerQuery(dataset: Dataset) {
 		},
 		staleTime: 60 * 60 * 1000, // 6 hours, gets reset at reload
 		refetchOnWindowFocus: false,
+		// Poll every 5s when nextReset is already in the past (server hasn't updated yet).
+		// Stops after MAX_RETRIES attempts. Counter resets when fresh data arrives.
+		refetchInterval: (query) => {
+			const raw = query.state.data as FetchResult | undefined;
+			const nextReset = raw?.data?.[0]?.answer?.nextReset;
+			if (!nextReset) return false;
+			// data is fresh, reset for next daily cycle
+			if (new Date(nextReset).getTime() > Date.now()) {
+				postResetRetryCountRef.current = 0;
+				return false;
+			}
+			if (postResetRetryCountRef.current >= MAX_RETRIES) return false;
+			postResetRetryCountRef.current++;
+			return RETRY_INTERVAL;
+		},
 	});
 
 	return { ...query, isStale: isStaleRef };

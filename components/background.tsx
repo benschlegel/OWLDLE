@@ -11,6 +11,7 @@ export default function Background() {
 			<div className="h-[200vh] w-[150vw] origin-left relative rotate-[-27.4deg] sm:block opacity-20 dark:opacity-15 *:absolute *:skew-x-[-28deg]">
 				<div className="top-[25%] left-[5%] w-75 h-[15px] bg-primary-foreground opacity-90" />
 				<div className="top-[25%] left-[5%] w-75 h-[15px] bg-primary-foreground opacity-90" />
+				{/* <div className="top-[39%] left-[51%] w-95 h-[15px] bg-primary-foreground opacity-90" /> */}
 				<div className="top-[57%] left-[10%] w-120 h-5 bg-foreground opacity-60" />
 				<div className="top-[40%] left-[15%] w-75 h-10 dark:bg-slate-200 bg-slate-300 dark:opacity-60 opacity-100" />
 				<div className="top-[50%] left-[42%] w-120 h-[15px] bg-slate-200 opacity-50" />
@@ -19,6 +20,7 @@ export default function Background() {
 				<div className="top-[20%] left-[15%] w-120 h-[15px] sm:dark:bg-slate-200 dark:bg-slate-300 sm:bg-slate-400 bg-slate-300 opacity-60" />
 				<div className="top-[70%] left-[60%] w-75 h-[15px] bg-slate-200 opacity-60" />
 				<div className="top-[55%] left-[55%] w-95 h-[15px] bg-foreground opacity-60" />
+				{/* <div className="top-[44%] left-[0%] w-[200vh] h-[20px] bg-foreground opacity-20" /> */}
 				<div className="top-[45%] left-[0%] w-[200vh] h-[35px] bg-foreground opacity-10" />
 				<div className="top-[15%] left-[0%] w-[200vh] h-[20px] bg-foreground opacity-20" />
 				<div className="top-[30%] left-[0%] w-[200vh] h-[25px] bg-foreground opacity-15" />

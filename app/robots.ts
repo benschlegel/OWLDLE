@@ -4,8 +4,8 @@ export default function robots(): MetadataRoute.Robots {
 	return {
 		rules: {
 			userAgent: '*',
-			allow: ['/', '/open-graph', '/opengraph-image.png'],
-			disallow: ['/teams/', '/regions/'],
+			allow: ['/', '/owl', '/owcs', '/endless', '/statistics', '/open-graph'],
+			disallow: ['/teams/', '/regions/', '/api/'],
 		},
 		sitemap: 'https://www.owldle.com/sitemap.xml',
 	};

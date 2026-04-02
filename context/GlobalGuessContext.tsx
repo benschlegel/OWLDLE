@@ -29,6 +29,7 @@ interface DatasetState {
 // Modify the context value structure to include datasets and isOldRef
 interface EvaluatedGuessContextType {
 	datasets: Record<Dataset, DatasetState>;
+	resetAllDatasets: () => void;
 }
 
 // Create a context with an empty initial value
@@ -106,7 +107,25 @@ export function EvaluatedGuessProvider({ children }: PropsWithChildren) {
 		return initialState;
 	});
 
-	return <EvaluatedGuessContext.Provider value={{ datasets }}>{children}</EvaluatedGuessContext.Provider>;
+	const resetAllDatasets = useCallback(() => {
+		localStorage.removeItem(LOCAL_STORAGE_STATE_KEY);
+		localStorage.removeItem(GUESS_LOCAL_STORAGE_KEY);
+		const initialState = {} as Record<Dataset, { evaluatedGuesses: never[] }>;
+		for (const d of DATASETS) {
+			initialState[d] = { evaluatedGuesses: [] };
+		}
+		localStorage.setItem(GUESS_LOCAL_STORAGE_KEY, JSON.stringify(initialState));
+
+		setDatasets((prev) => {
+			const updated = { ...prev };
+			for (const d of DATASETS) {
+				updated[d] = { ...prev[d], evaluatedGuesses: [] };
+			}
+			return updated;
+		});
+	}, []);
+
+	return <EvaluatedGuessContext.Provider value={{ datasets, resetAllDatasets }}>{children}</EvaluatedGuessContext.Provider>;
 }
 
 // Create a custom hook to use items based on the dataset key
@@ -119,6 +138,7 @@ export const useEvaluatedGuesses = (dataset: Dataset, nextReset?: Date) => {
 	}
 
 	const { evaluatedGuesses, setEvaluatedGuesses } = context.datasets[dataset];
+	const { resetAllDatasets } = context;
 
 	// TODO: convert isStale to state or do in answer-query
 	const handleStale = useCallback(
@@ -152,5 +172,6 @@ export const useEvaluatedGuesses = (dataset: Dataset, nextReset?: Date) => {
 	}, [handleStale, nextReset]);
 	return {
 		data: { evaluatedGuesses, setEvaluatedGuesses },
+		resetAllDatasets,
 	};
 };
