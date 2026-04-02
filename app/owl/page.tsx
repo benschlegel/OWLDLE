@@ -10,37 +10,29 @@ const DEFAULT_SEASON_NUMBER = DEFAULT_DATASET_NAME.slice(-1);
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ season?: string }> }): Promise<Metadata> {
 	const { season } = await searchParams;
-	if (!season || season === DEFAULT_SEASON_NUMBER) {
-		return {
-			...prevMetadata,
-			title: `${DEFAULT_TITLE} - Season 6`,
-			alternates: {
-				canonical: '/owl?season=6',
-			},
-		};
-	}
+	const seasonNum = season ?? DEFAULT_SEASON_NUMBER;
 
 	// Query param only contains number, e.g. "6" -> season6
-	const formattedSeason = `season${season ?? DEFAULT_SEASON_NUMBER}`;
+	const formattedSeason = `season${seasonNum}`;
 
 	// Format dataset (e.g. "season1" to "Season 1")
 	const formattedDataset = formatDataset(formattedSeason);
 	const formattedTitle = `${DEFAULT_TITLE} - ${formattedDataset}`;
-	const formattedDescritpion = DEFAULT_DESCRIPTION;
+	const formattedDescription = `Guess the Overwatch League (${formattedDataset}) player from clues about their team, role and nationality. New puzzle every day.`;
 	const openGraphTitle = formattedSeason === DEFAULT_DATASET_NAME ? DEFAULT_TITLE : formattedTitle;
 
-	const ogImagePath = `/open-graph/opengraph-image.png?type=newImg`;
+	const ogImagePath = `/open-graph/season${seasonNum}.png`;
 
 	return {
 		...prevMetadata,
 		title: formattedTitle,
-		description: formattedDescritpion,
+		description: formattedDescription,
 		alternates: {
-			canonical: `/owl?season=${season}`,
+			canonical: `/owl?season=${seasonNum}`,
 		},
 		openGraph: {
 			title: openGraphTitle,
-			description: formattedDescritpion,
+			description: formattedDescription,
 			url: GAME_CONFIG.siteUrl,
 			images: [
 				{
@@ -71,13 +63,11 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
 			card: 'summary_large_image',
 		},
 		robots: {
-			index: false,
+			index: true,
 			follow: true,
-			nocache: true,
 			googleBot: {
 				index: true,
-				follow: false,
-				noimageindex: true,
+				follow: true,
 				'max-video-preview': -1,
 				'max-snippet': -1,
 			},

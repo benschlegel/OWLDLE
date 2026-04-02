@@ -1,4 +1,9 @@
 import type { Metadata, Viewport } from 'next';
+
+export const viewport: Viewport = {
+	width: 'device-width',
+	initialScale: 1,
+};
 import localFont from 'next/font/local';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -21,7 +26,7 @@ import { SerwistProvider } from './serwist-provider';
 import { PWAProvider } from '@/components/pwa-provider';
 import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import { OfflineToast } from '@/components/offline-toast';
-import { THEME_COLORS, ThemeColorSync } from '@/components/theme-color-sync';
+import { ThemeColorSync } from '@/components/theme-color-sync';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { StatsDialog } from '@/components/game-container/dialogs/stats-dialog';
 import { TeamsDialog } from '@/components/game-container/dialogs/teams-dialog';
@@ -48,18 +53,12 @@ const owlHeader = localFont({
 });
 
 export const DEFAULT_TITLE = 'OWLDLE';
-export const DEFAULT_DESCRIPTION = 'Guess the pro overwatch player';
+export const DEFAULT_DESCRIPTION = 'Guess the Overwatch esports pro player through clues about their team, role and nationality. New puzzles every day';
 export const OgConfig = {
 	ogImagePath: `/open-graph/opengraph-image.png?type=newImg`,
+	ogSquarePath: '/open-graph/opengraph-square.png',
 	ogImageWidth: 1200,
 	ogImageHeight: 630,
-};
-
-export const viewport: Viewport = {
-	themeColor: [
-		{ media: '(prefers-color-scheme: dark)', color: THEME_COLORS.dark },
-		{ media: '(prefers-color-scheme: light)', color: THEME_COLORS.dark },
-	],
 };
 
 export const metadata: Metadata = {
@@ -76,7 +75,7 @@ export const metadata: Metadata = {
 	},
 	metadataBase: new URL(GAME_CONFIG.siteUrl),
 	alternates: {
-		canonical: '/owl?season=6',
+		canonical: '/owcs?season=s3',
 	},
 	openGraph: {
 		title: DEFAULT_TITLE,
@@ -111,18 +110,32 @@ export const metadata: Metadata = {
 		card: 'summary_large_image',
 	},
 	robots: {
-		index: false,
+		index: true,
 		follow: true,
-		nocache: true,
 		googleBot: {
 			index: true,
-			follow: false,
-			noimageindex: true,
+			follow: true,
 			'max-video-preview': -1,
 			'max-snippet': -1,
 		},
 	},
-	keywords: ['Overwatch League', 'wordle', 'overwatch', 'guess the player', 'queue game', 'minigame', 'owcs', 'Champion Series'],
+	keywords: [
+		'overwatch wordle',
+		'overwatch guessing game',
+		'overwatch player quiz',
+		'overwatch esports quiz',
+		'ow2 wordle',
+		'overwatch 2 wordle',
+		'daily overwatch game',
+		'owldle',
+		'Overwatch League',
+		'OWCS',
+		'Overwatch Champions Series',
+		'esports wordle',
+		'OWL trivia',
+		'OWCS trivia',
+		'ow wordle',
+	],
 };
 
 export default function RootLayout({
@@ -135,6 +148,28 @@ export default function RootLayout({
 			<html lang="en" suppressHydrationWarning className="will-change-[clip-path]">
 				<head>
 					<meta name="twitter:card" content="summary_large_image" />
+					<meta name="robots" content="max-image-preview: large" />
+					<script
+						type="application/ld+json"
+						// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data for SEO
+						dangerouslySetInnerHTML={{
+							__html: JSON.stringify({
+								'@context': 'https://schema.org',
+								'@type': 'WebApplication',
+								name: 'OWLDLE',
+								url: 'https://www.owldle.com',
+								description: DEFAULT_DESCRIPTION,
+								applicationCategory: 'GameApplication',
+								operatingSystem: 'Web',
+								image: [`https://www.owldle.com${OgConfig.ogImagePath}`, `https://www.owldle.com${OgConfig.ogSquarePath}`],
+								offers: {
+									'@type': 'Offer',
+									price: '0',
+									priceCurrency: 'USD',
+								},
+							}),
+						}}
+					/>
 					{/* Blocking script: sets theme class before first paint to prevent flash */}
 					<script
 						// biome-ignore lint/security/noDangerouslySetInnerHtml: needed to prevent theme flash
@@ -175,9 +210,7 @@ export default function RootLayout({
 															<main className="w-[32rem]">{children}</main>
 														</div>
 														<Toaster />
-														<div className="pointer-events-none flex justify-center pb-8 pt-4">
-															<Socials />
-														</div>
+														<div className="pointer-events-none flex justify-center pb-8 pt-4">{/* <Socials /> */}</div>
 													</>
 												</DatasetContexttProvider>
 												<SpeedInsights />

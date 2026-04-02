@@ -3,6 +3,9 @@ import { withSerwist } from '@serwist/turbopack';
 import type { NextConfig } from 'next';
 import { withPlausibleProxy } from 'next-plausible';
 
+export const TWITTER_LINK = 'https://x.com/owldle';
+export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
+
 const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
 	images: {
 		// TODO: remove to disable nextjs image optimizations/caching
@@ -34,6 +37,28 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 	allowedDevOrigins: ['dev.bschlegel.com'],
 	async redirects() {
 		return [
+			// Pretty OWL URLs: /owl/season1 -> /owl?season=1
+			{
+				source: '/owl/season:num',
+				destination: '/owl?season=:num',
+				permanent: true,
+			},
+			// Pretty OWCS URLs: /owcs/seasonN -> /owcs?season=sN
+			{
+				source: '/owcs/season1',
+				destination: '/owcs?season=s1',
+				permanent: true,
+			},
+			{
+				source: '/owcs/season2',
+				destination: '/owcs?season=s2',
+				permanent: true,
+			},
+			{
+				source: '/owcs/season3',
+				destination: '/owcs?season=s3',
+				permanent: true,
+			},
 			{
 				source: '/play',
 				destination: '/owl',
@@ -69,27 +94,17 @@ const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plaus
 				destination: '/owl?season=1',
 				permanent: true,
 			},
-		];
-	},
-	async rewrites() {
-		return [
-			// Pretty OWL URLs: /owl/season1 -> /owl?season=1
+
+			// Socials links
 			{
-				source: '/owl/season:num',
-				destination: '/owl?season=:num',
-			},
-			// Pretty OWCS URLs: /owcs/seasonN → /owcs?season=sN
-			{
-				source: '/owcs/season1',
-				destination: '/owcs?season=s1',
+				source: '/discord',
+				destination: DISCORD_LINK,
+				permanent: true,
 			},
 			{
-				source: '/owcs/season2',
-				destination: '/owcs?season=s2',
-			},
-			{
-				source: '/owcs/season3',
-				destination: '/owcs?season=s3',
+				source: '/twitter',
+				destination: TWITTER_LINK,
+				permanent: true,
 			},
 		];
 	},

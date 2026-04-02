@@ -2,23 +2,38 @@
 
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
+import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxList } from '@/components/ui/combobox';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
-import { useToast } from '@/hooks/use-toast';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
-import { Combobox } from '@base-ui/react/combobox';
 import type { Player } from '@/types/players';
+import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import Fuse, { type IFuseOptions } from 'fuse.js';
 import { Dices, Search, UserIcon } from 'lucide-react';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+
+const ITEM_HEIGHT = 44;
+
+const FUSE_OPTIONS: IFuseOptions<Player> = {
+	keys: [
+		{ name: 'name', weight: 0.7 },
+		// { name: 'team', weight: 0.3 },
+	],
+	threshold: 0.4,
+	ignoreLocation: true,
+	minMatchCharLength: 1,
+};
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {}
 
 export default function PlayerSearch({ className }: Props) {
 	const [guesses, setGuesses] = useContext(GuessContext);
-	const [dataset, setDataset] = useContext(DatasetContext);
+	const [dataset] = useContext(DatasetContext);
 	const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 	const [inputValue, setInputValue] = useState('');
 	const [open, setOpen] = useState(false);
@@ -26,6 +41,33 @@ export default function PlayerSearch({ className }: Props) {
 	const { toast } = useToast();
 	const isMobile = useIsMobile();
 	const players = dataset.playerData;
+
+	// Fuse.js lazy initialization, index is only built on first non-empty query (perf optimization)
+	const fuseRef = useRef<Fuse<Player> | null>(null);
+	const fusePlayersRef = useRef<unknown>(null);
+
+	const filteredPlayers = useMemo(() => {
+		const q = inputValue.trim();
+		if (!q) return players as Player[];
+
+		// Recreate fuse index when player data changes
+		if (!fuseRef.current || fusePlayersRef.current !== players) {
+			fuseRef.current = new Fuse(players as Player[], FUSE_OPTIONS);
+			fusePlayersRef.current = players;
+		}
+
+		return fuseRef.current.search(q).map((r) => r.item);
+	}, [inputValue, players]);
+
+	// TanStack Virtual
+	const [scrollElement, setScrollElement] = useState<HTMLDivElement | null>(null);
+
+	const virtualizer = useVirtualizer({
+		count: filteredPlayers.length,
+		getScrollElement: () => scrollElement,
+		estimateSize: () => ITEM_HEIGHT,
+		overscan: 8,
+	});
 
 	const handleSubmit = useCallback(() => {
 		if (selectedPlayer !== null) {
@@ -46,10 +88,6 @@ export default function PlayerSearch({ className }: Props) {
 			}
 		}
 	}, [selectedPlayer, setGuesses, guesses, toast, isMobile]);
-
-	const filterItems = useCallback((item: Player, query: string) => {
-		return item.name.toLowerCase().includes(query.toLowerCase());
-	}, []);
 
 	// Reset state when dataset changes
 	// biome-ignore lint/correctness/useExhaustiveDependencies: intentional trigger on dataset change
@@ -73,9 +111,10 @@ export default function PlayerSearch({ className }: Props) {
 	}, []);
 
 	return (
-		<Combobox.Root
+		<Combobox
 			key={dataset.dataset}
 			items={players as readonly Player[]}
+			filteredItems={filteredPlayers}
 			value={selectedPlayer}
 			onValueChange={(player) => {
 				setSelectedPlayer(player as Player);
@@ -83,25 +122,34 @@ export default function PlayerSearch({ className }: Props) {
 			inputValue={inputValue}
 			onInputValueChange={(value, eventDetails) => {
 				setInputValue(value as string);
-				// Only clear selection when user is actively typing
 				if (eventDetails.reason === 'input-change' || eventDetails.reason === 'input-clear') {
 					setSelectedPlayer(null);
 				}
+				// Reset virtual scroll on input change
+				if (scrollElement) scrollElement.scrollTop = 0;
 			}}
 			open={open}
 			onOpenChange={(isOpen) => setOpen(isOpen)}
-			filter={filterItems}
+			filter={null}
 			itemToStringLabel={(player) => player.name}
 			itemToStringValue={(player) => player.name}
 			openOnInputClick
 			autoHighlight
-			loopFocus>
-			<Combobox.InputGroup
+			loopFocus
+			virtualized
+			onItemHighlighted={(itemValue) => {
+				if (!itemValue) return;
+				const index = filteredPlayers.findIndex((p) => p.name === (itemValue as Player).name);
+				if (index !== -1) {
+					virtualizer.scrollToIndex(index, { align: 'auto' });
+				}
+			}}>
+			<ComboboxPrimitive.InputGroup
 				className={cn('rounded-lg border border-secondary bg-popover text-popover-foreground md:min-w-[450px] mb-4 transition-colors duration-300', className)}>
 				<ButtonGroup className="w-full">
 					<div data-slot="input" className="flex items-center px-3 grow">
 						<Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
-						<Combobox.Input
+						<ComboboxPrimitive.Input
 							ref={inputRef}
 							placeholder="Search for player..."
 							className="flex h-11 w-full bg-transparent py-3 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 text-[16px] sm:text-base"
@@ -131,26 +179,41 @@ export default function PlayerSearch({ className }: Props) {
 						</div>
 					</Button>
 				</ButtonGroup>
-			</Combobox.InputGroup>
+			</ComboboxPrimitive.InputGroup>
 
-			<Combobox.Portal>
-				<Combobox.Positioner className="z-50" style={{ width: 'var(--anchor-width)' }} sideOffset={4} side="bottom">
-					<Combobox.Popup className="max-h-40 overflow-y-auto rounded-lg border border-secondary bg-popover text-popover-foreground shadow-md">
-						<Combobox.Empty className="py-6 text-center text-sm empty:hidden">No results found.</Combobox.Empty>
-						<Combobox.List className="p-1">
-							{(player: Player) => (
-								<Combobox.Item
+			<ComboboxContent sideOffset={4} className="border border-secondary ring-0 min-w-(--anchor-width)">
+				<ComboboxEmpty className="py-6 text-center text-sm">No results found.</ComboboxEmpty>
+				<ComboboxList ref={setScrollElement} className="max-h-46 p-1">
+					<div
+						style={{
+							height: `${virtualizer.getTotalSize()}px`,
+							width: '100%',
+							position: 'relative',
+						}}>
+						{virtualizer.getVirtualItems().map((virtualRow) => {
+							const player = filteredPlayers[virtualRow.index];
+							if (!player) return null;
+							return (
+								<ComboboxPrimitive.Item
 									key={`${player.name}-${player.team}`}
 									value={player}
-									className="relative flex cursor-default select-none items-center rounded-sm px-2 py-2 text-[16px] sm:text-[16px] sm:py-[0.43rem] outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground">
+									className="relative flex cursor-default select-none items-center rounded-sm px-2 h-11 text-[16px] outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground"
+									style={{
+										position: 'absolute',
+										top: 0,
+										left: 0,
+										width: '100%',
+										height: `${virtualRow.size}px`,
+										transform: `translateY(${virtualRow.start}px)`,
+									}}>
 									<UserIcon className="mr-2 h-4 w-4" />
 									<span>{player.name}</span>
-								</Combobox.Item>
-							)}
-						</Combobox.List>
-					</Combobox.Popup>
-				</Combobox.Positioner>
-			</Combobox.Portal>
-		</Combobox.Root>
+								</ComboboxPrimitive.Item>
+							);
+						})}
+					</div>
+				</ComboboxList>
+			</ComboboxContent>
+		</Combobox>
 	);
 }

@@ -26,11 +26,11 @@ import Link from 'next/link';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Sheet } from '@/components/ui/sheet';
+import { Drawer } from '@/components/ui/drawer';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/app/page';
+import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/lib/navigation';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
 export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
@@ -128,7 +128,7 @@ export function Navbar() {
 	);
 
 	return (
-		<Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
+		<Drawer direction="right" open={sheetOpen} onOpenChange={setSheetOpen}>
 			<nav className="sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 				{/* Left section*/}
 				<div className="flex items-center sm:flex-none flex-1 self-stretch">
@@ -222,12 +222,11 @@ export function Navbar() {
 					<NavButton isRightSkewed href={DISCORD_LINK} isExternal className="hidden navbar-hidden:flex">
 						Discord
 					</NavButton>
+					<NavButton isRightSkewed href={TWITTER_LINK} isExternal className="hidden navbar-hidden:flex">
+						Twitter
+					</NavButton>
 					<NavButton isRightSkewed onClick={() => setFeedbackOpen(true)}>
 						Feedback
-					</NavButton>
-
-					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
-						Donate
 					</NavButton>
 					{/* Contact button popover */}
 					<Popover>
@@ -240,9 +239,15 @@ export function Navbar() {
 							<SocialPopoverContent />
 						</PopoverContent>
 					</Popover>
+					<NavButton isRightSkewed href={DONATION_LINK} isExternal>
+						Donate
+					</NavButton>
+
+					{/* Settings button */}
 					<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
 						<SettingsIcon className="size-5" />
 					</NavButton>
+
 					{/* desktop overflow hamburger menu */}
 					<NavButton isRightSkewed className="-mr-2 pr-6 flex navbar-hidden:hidden" onClick={() => setSheetOpen(true)}>
 						<MenuIcon className="size-5" />
@@ -252,7 +257,7 @@ export function Navbar() {
 			<Suspense>
 				<LazySheetContent setSheetOpen={setSheetOpen} />
 			</Suspense>
-		</Sheet>
+		</Drawer>
 	);
 }
 
