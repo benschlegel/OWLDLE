@@ -214,10 +214,11 @@ export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: Datase
 		if (iteration === undefined) return false;
 
 		// Do partial update on backlog iteration
-		return updateIterationPlayer(iteration, randomPlayer);
+		const updated = await updateIterationPlayer(iteration, randomPlayer);
+		if (!updated) return false;
 	}
 
-	return true;
+	return randomPlayer;
 }
 
 /**
