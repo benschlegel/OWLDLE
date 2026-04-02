@@ -20,7 +20,7 @@ const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
 
 export default function EndlessLeftColumn({ stats, dataset }: { stats: EndlessStats; dataset: Dataset }) {
 	return (
-		<div className="hidden xl:block absolute right-full top-layout-top mr-layout-spacing w-layout-width">
+		<div className="hidden xl:block absolute right-full top-endless-top mr-layout-spacing w-layout-width">
 			<Card className="transition-colors">
 				<CardHeader className="p-4 pb-2">
 					<CardTitle className="text-lg font-owl">Streak</CardTitle>
