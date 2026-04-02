@@ -24,6 +24,7 @@ import { OfflineToast } from '@/components/offline-toast';
 import { THEME_COLORS, ThemeColorSync } from '@/components/theme-color-sync';
 import { NuqsAdapter } from 'nuqs/adapters/next/app';
 import { StatsDialog } from '@/components/game-container/dialogs/stats-dialog';
+import { TeamsDialog } from '@/components/game-container/dialogs/teams-dialog';
 
 // Bold font https://fonts.adobe.com/fonts/atf-poster-gothic-round#fonts-section
 
@@ -160,6 +161,9 @@ export default function RootLayout({
 													<>
 														<Suspense>
 															<SettingsDialog />
+														</Suspense>
+														<Suspense>
+															<TeamsDialog />
 														</Suspense>
 														<Suspense>
 															<StatsDialog />
