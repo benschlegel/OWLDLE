@@ -1,6 +1,9 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { Kbd } from '@/components/ui/kbd';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
@@ -22,16 +25,24 @@ export default function EndlessLeftColumn({ stats, dataset }: { stats: EndlessSt
 	return (
 		<div className="hidden xl:block absolute right-full top-endless-top mr-layout-spacing w-layout-width">
 			<Card className="transition-colors">
-				<CardHeader className="p-4 pb-2">
-					<CardTitle className="text-lg font-owl">Streak</CardTitle>
-					<Separator />
-				</CardHeader>
-				<CardContent className="p-4 pt-0">
-					<div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
-						<StatCell label="Current" value={stats.currentStreak} icon={<Flame className="size-4 text-primary-foreground" />} />
-						<StatCell label="Best" value={stats.highestStreak} icon={<Trophy className="size-4 text-yellow-500" />} />
-					</div>
-				</CardContent>
+				<Accordion type="single" collapsible defaultValue="streak">
+					<AccordionItem value="streak" className="border-b-0">
+						<CardHeader className="p-4">
+							<AccordionTrigger className="py-0 pb-0 cursor-pointer hover:no-underline">
+								<span className="text-lg font-owl font-semibold leading-none tracking-tight">Streak</span>
+							</AccordionTrigger>
+						</CardHeader>
+						<AccordionContent className="p-0">
+							<CardContent className="p-4 pt-0">
+								{/* <Separator className="-mt-2" /> */}
+								<div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
+									<StatCell label="Current" value={stats.currentStreak} icon={<Flame className="size-4 text-primary-foreground" />} />
+									<StatCell label="Best" value={stats.highestStreak} icon={<Trophy className="size-4 text-yellow-500" />} />
+								</div>
+							</CardContent>
+						</AccordionContent>
+					</AccordionItem>
+				</Accordion>
 			</Card>
 			{dataset === 'owcs-s3' && <FilterCard dataset={dataset} />}
 		</div>
@@ -79,28 +90,40 @@ function FilterCard({ dataset }: { dataset: Dataset }) {
 
 	return (
 		<Card className="transition-colors mt-2">
-			<CardHeader className="p-4 pb-2">
-				<CardTitle className="text-lg font-owl">Filters</CardTitle>
-				<Separator />
-			</CardHeader>
-			<CardContent className="p-4 pt-0 space-y-2.5">
-				{OWCS_S3_REGIONS.map((region) => (
-					<div key={region} className="flex items-center justify-between">
-						<Label htmlFor={`filter-region-${region}`} className="text-sm cursor-pointer">
-							{region}
-						</Label>
-						<Switch id={`filter-region-${region}`} checked={isRegionActive(region)} onCheckedChange={() => toggleRegion(region)} />
-					</div>
-				))}
-				<Separator />
-				<div className="flex items-center justify-between">
-					<Label htmlFor="filter-partner" className="text-sm cursor-pointer">
-						Partner teams only
-					</Label>
-					<Switch id="filter-partner" checked={filters.partnerOnly} onCheckedChange={togglePartner} />
-				</div>
-				<p className="text-xs text-muted-foreground pt-0.5">Changing filters resets your streak.</p>
-			</CardContent>
+			<Accordion type="single" collapsible defaultValue="filters">
+				<AccordionItem value="filters" className="border-b-0">
+					<CardHeader className="p-4">
+						<AccordionTrigger className="py-0 hover:no-underline cursor-pointer">
+							<span className="text-lg font-owl font-semibold leading-none tracking-tight">Filters</span>
+						</AccordionTrigger>
+					</CardHeader>
+					<AccordionContent className="p-0">
+						<CardContent className="p-4 pt-0 space-y-2.5">
+							{/* <Separator /> */}
+							{OWCS_S3_REGIONS.map((region) => (
+								<div key={region} className="flex items-center justify-between">
+									<Label htmlFor={`filter-region-${region}`} className="text-sm cursor-pointer w-full">
+										{region}
+									</Label>
+									<Switch id={`filter-region-${region}`} checked={isRegionActive(region)} onCheckedChange={() => toggleRegion(region)} />
+								</div>
+							))}
+							<Separator />
+							<div className="flex items-center justify-between">
+								<Label htmlFor="filter-partner" className="text-sm cursor-pointer w-full">
+									Partner teams only
+								</Label>
+								<Switch id="filter-partner" checked={filters.partnerOnly} onCheckedChange={togglePartner} />
+							</div>
+							<p className="text-xs text-muted-foreground pt-0.5">Changing filters resets your streak.</p>
+							<Button variant={'outline'} className="w-full py-1.5 h-auto justify-between">
+								Show selected teams
+								<Kbd className="font-mono sm:flex hidden opacity-95">alt+s</Kbd>
+							</Button>
+						</CardContent>
+					</AccordionContent>
+				</AccordionItem>
+			</Accordion>
 		</Card>
 	);
 }
