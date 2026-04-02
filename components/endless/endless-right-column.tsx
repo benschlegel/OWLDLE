@@ -18,7 +18,7 @@ export default function EndlessRightColumn({ stats }: { stats: EndlessStats }) {
 					<AccordionItem value="games" className="border-b-0">
 						<CardHeader className="p-4">
 							<AccordionTrigger className="py-0 hover:no-underline">
-								<span className="text-lg font-owl font-semibold leading-none tracking-tight">Games</span>
+								<span className="text-lg font-owl font-semibold leading-none  cursor-pointer tracking-tight">Games</span>
 							</AccordionTrigger>
 							{/* <Separator /> */}
 						</CardHeader>

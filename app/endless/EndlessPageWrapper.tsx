@@ -7,7 +7,7 @@ import GameHeader from '@/components/game-container/GameHeader';
 import { useEndlessParams } from '@/hooks/use-endless-params';
 import { DEFAULT_DATASET, getDataset, isOwcsDataset, type CombinedDatasetMetadata } from '@/data/datasets';
 import { DatasetContext } from '@/context/DatasetContext';
-import { useMemo, type Dispatch, type SetStateAction } from 'react';
+import { useMemo, useContext, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { GamepadIcon } from 'lucide-react';
 
 export default function EndlessPageWrapper() {
@@ -18,6 +18,12 @@ export default function EndlessPageWrapper() {
 		(): [CombinedDatasetMetadata, Dispatch<SetStateAction<CombinedDatasetMetadata>>] => [datasetMetadata, () => {}],
 		[datasetMetadata]
 	);
+
+	// Sync to root DatasetContext so dialogs rendered outside this tree (e.g. TeamsDialog, HelpContent) see the correct dataset
+	const [, setRootDataset] = useContext(DatasetContext);
+	useEffect(() => {
+		setRootDataset(datasetMetadata);
+	}, [datasetMetadata, setRootDataset]);
 
 	return (
 		<DatasetContext.Provider value={datasetContextValue}>

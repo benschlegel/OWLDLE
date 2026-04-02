@@ -89,7 +89,7 @@ export default function TeamsContent({ setOpen }: Props) {
 					Teams
 				</DialogTitle>
 			</DialogHeader>
-			<ScrollArea type="scroll" className="h-128">
+			<ScrollArea type="scroll" className="max-h-128">
 				<main className="h-full w-full flex flex-col gap-6 px-2 pb-2 text-wrap wrap-break-word ">
 					<p className="scroll-m-20 text-base tracking-normal">
 						<span className="text-primary-foreground">{dataset.name}</span> has the following teams:
