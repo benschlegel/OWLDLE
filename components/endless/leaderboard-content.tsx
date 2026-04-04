@@ -7,7 +7,7 @@ import type { Dataset } from '@/data/datasets';
 import type { EndlessFilters } from '@/store/endless-store';
 import { useEndlessStore } from '@/store/endless-store';
 import { GAME_CONFIG } from '@/lib/config';
-import { ChevronLeft, ChevronRight, Pencil, Trophy, Check, X, Crosshair } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsRight, Pencil, Trophy, Check, X, Crosshair } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -31,7 +31,8 @@ const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, 
 const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
 const PAGE_SIZE = GAME_CONFIG.leaderboardPageSize;
 // Fixed row height so the table doesn't shift between pages
-const ROW_HEIGHT_CLASS = 'h-8';
+const ROW_HEIGHT_CLASS = 'h-10';
+const ROW_HEIGHT_PX = 40;
 
 function encodeFiltersForQuery(filters: EndlessFilters): string {
 	if (filters.regions.length === 0 && !filters.partnerOnly) return '';
@@ -193,11 +194,11 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 
 			<div className="flex flex-col">
 				{showLoading ? (
-					<div className="flex items-center justify-center text-muted-foreground text-sm" style={{ height: `${(PAGE_SIZE + 1) * 32}px` }}>
+					<div className="flex items-center justify-center text-muted-foreground text-sm" style={{ height: `${(PAGE_SIZE + 1) * ROW_HEIGHT_PX}px` }}>
 						Loading...
 					</div>
 				) : entries.length === 0 ? (
-					<div className="flex items-center justify-center text-muted-foreground text-sm" style={{ height: `${(PAGE_SIZE + 1) * 32}px` }}>
+					<div className="flex items-center justify-center text-muted-foreground text-sm" style={{ height: `${(PAGE_SIZE + 1) * ROW_HEIGHT_PX}px` }}>
 						No leaderboard entries yet. Be the first!
 					</div>
 				) : (
@@ -211,36 +212,46 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 							<span className="text-right">Date</span>
 						</div>
 						{/* Rows, always render PAGE_SIZE slots for stable height */}
-						{Array.from({ length: PAGE_SIZE }, (_, i) => {
-							const entry = entries[i];
-							const rank = (page - 1) * PAGE_SIZE + i + 1;
-							if (!entry) {
-								return <div key={rank} className={ROW_HEIGHT_CLASS} />;
-							}
-							const isOwn = entry.clientId === clientId;
-							return (
-								<div
-									key={rank}
-									className={`grid grid-cols-[2.5rem_1fr_3.5rem_5.5rem] gap-2 px-2 items-center text-sm border-b last:border-b-0 ${ROW_HEIGHT_CLASS} ${isOwn ? 'bg-primary/10 font-semibold' : ''}`}>
-									<span className="text-muted-foreground tabular-nums">{rank <= 3 ? ['\ud83e\udd47', '\ud83e\udd48', '\ud83e\udd49'][rank - 1] : rank}</span>
-									<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? 'Anonymous'}</span>
-									<span className="text-right tabular-nums font-mono">{entry.streakLength}</span>
-									<span className="text-right text-xs text-muted-foreground tabular-nums">{formatDate(entry.finishedAt)}</span>
-								</div>
-							);
-						})}
+						<div className="divide-y">
+							{Array.from({ length: PAGE_SIZE }, (_, i) => {
+								const entry = entries[i];
+								const rank = (page - 1) * PAGE_SIZE + i + 1;
+								if (!entry) {
+									return <div key={rank} className={ROW_HEIGHT_CLASS} />;
+								}
+								const isOwn = entry.clientId === clientId;
+								return (
+									<div
+										key={rank}
+										className={`grid grid-cols-[2.5rem_1fr_3.5rem_5.5rem] gap-2 px-2 items-center text-sm ${ROW_HEIGHT_CLASS} ${isOwn ? 'bg-primary/10 font-semibold' : ''}`}>
+										<span className="text-muted-foreground tabular-nums">{rank <= 3 ? ['\ud83e\udd47', '\ud83e\udd48', '\ud83e\udd49'][rank - 1] : rank}</span>
+										<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? 'Anonymous'}</span>
+										<span className="text-right tabular-nums font-mono">{entry.streakLength}</span>
+										<span className="text-right text-xs text-muted-foreground tabular-nums">{formatDate(entry.finishedAt)}</span>
+									</div>
+								);
+							})}
+						</div>
 					</div>
 				)}
 
 				{/* Pagination + go to me */}
-				<div className="flex items-center justify-between pt-3 border-t mt-2 gap-1">
-					{myRankCache !== null ? (
-						<Button variant="outline" size="sm" className="gap-1 text-xs shrink-0" onClick={jumpToMyEntry}>
-							Go to me
+				<div className="flex items-center justify-between pt-3 mt-2 gap-1">
+					<div className="flex items-center gap-1">
+						{myRankCache !== null && (
+							<Button variant="outline" size="sm" className="gap-1 text-xs shrink-0 select-none" onClick={jumpToMyEntry}>
+								Go to me
+							</Button>
+						)}
+						<Button
+							variant="outline"
+							size="sm"
+							className="gap-1 text-xs shrink-0 select-none"
+							onClick={() => setPage(totalPages)}
+							disabled={page >= totalPages}>
+							Go to last
 						</Button>
-					) : (
-						<div />
-					)}
+					</div>
 					<div className="flex items-center gap-1 ml-auto">
 						<Button variant="outline" size="icon" className="size-7" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>
 							<ChevronLeft className="size-4" />
