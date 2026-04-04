@@ -1,10 +1,10 @@
 'use client';
 
-import { type Dataset, DATASETS, DEFAULT_DATASET_NAME, type DatasetMode } from '@/data/datasets';
+import { type Dataset, DATASETS, DEFAULT_DATASET_NAME, DEFAULT_OWCS_DATASET_NAME, type DatasetMode } from '@/data/datasets';
 import { createParser, useQueryState } from 'nuqs';
 
 const DEFAULT_LEAGUE: DatasetMode = 'owcs';
-const DEFAULT_SEASON = 's2';
+const DEFAULT_SEASON = DEFAULT_OWCS_DATASET_NAME.slice('owcs-'.length);
 
 /**
  * maps mode + season query params to a Dataset name.
