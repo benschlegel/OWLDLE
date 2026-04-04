@@ -4,6 +4,8 @@ import React, { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useStat
 import GameContainer, { FLIP_OUT_DURATION, ROW_DISMISS_STAGGER } from '@/components/game-container/GameContainer';
 import PlayerSearch from '@/components/game-container/search';
 import EndlessResult from '@/components/endless/endless-result';
+import EndlessLeftColumn from '@/components/endless/endless-left-column';
+import EndlessRightColumn from '@/components/endless/endless-right-column';
 import { StreakDisplay } from '@/components/endless/streak-display';
 import { useEndlessGame } from '@/hooks/use-endless-game';
 import type { Dataset } from '@/data/datasets';
@@ -12,6 +14,10 @@ import { DatasetContext } from '@/context/DatasetContext';
 import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
 import { useSettings } from '@/store/settings-store';
 import { useReducedMotion } from 'motion/react';
+import { useDialogState } from '@/hooks/use-dialog-param';
+import LeaderboardNameDialog from '@/components/endless/leaderboard-name-dialog';
+import LeaderboardDialog from '@/components/endless/leaderboard-dialog';
+import FiltersDialog from '@/components/endless/filters-dialog';
 
 const SearchDialog = lazy(() => import('@/components/game-container/search-dialog'));
 const MemoizedPlayerSearch = React.memo(PlayerSearch);
@@ -23,11 +29,15 @@ type Props = {
 };
 
 export default function EndlessGame({ dataset: datasetName }: Props) {
-	const { evaluatedGuesses, guessedPlayers, gameState, correctPlayer, stats, dataset, submitGuess, handlePlayAgain, handleNextGame } =
-		useEndlessGame(datasetName);
+	const {
+		evaluatedGuesses, guessedPlayers, gameState, correctPlayer, stats, dataset, filteredPlayers, filters,
+		submitGuess, handlePlayAgain, handleNextGame, pendingSave, submitWithName, submitAnonymous,
+	} = useEndlessGame(datasetName);
 
 	const prefersReducedMotion = useReducedMotion();
 	const [isDismissing, setIsDismissing] = useState(false);
+	const { open: leaderboardOpen, setOpen: setLeaderboardOpen } = useDialogState('leaderboard');
+	const { open: filtersOpen, setOpen: setFiltersOpen } = useDialogState('filters');
 
 	const handleDismissAndReset = useCallback(
 		(resetFn: () => void) => {
@@ -93,12 +103,17 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 		[guessedPlayers, setGuessesInterceptor]
 	);
 
-	const datasetContextValue = useMemo((): [typeof dataset, React.Dispatch<React.SetStateAction<typeof dataset>>] => [dataset, () => {}], [dataset]);
+	const filteredDataset = useMemo(() => ({ ...dataset, playerData: filteredPlayers }), [dataset, filteredPlayers]);
+	const datasetContextValue = useMemo((): [typeof dataset, React.Dispatch<React.SetStateAction<typeof dataset>>] => [filteredDataset, () => {}], [filteredDataset]);
 
 	if (!mounted) {
 		return (
 			<div className="pb-2">
-				<StreakDisplay stats={defaultStats} />
+				<EndlessLeftColumn stats={defaultStats} dataset={datasetName} />
+				<EndlessRightColumn stats={defaultStats} dataset={datasetName} filters={filters} onOpenLeaderboard={() => {}} />
+				<div className="xl:hidden">
+					<StreakDisplay stats={defaultStats} />
+				</div>
 				<GameContainer guesses={[]} />
 			</div>
 		);
@@ -108,7 +123,11 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 		<DatasetContext.Provider value={datasetContextValue}>
 			<GuessContext.Provider value={guessContextValue}>
 				<div className="pb-2">
-					<StreakDisplay stats={stats} />
+					<EndlessLeftColumn stats={stats} dataset={datasetName} />
+					<EndlessRightColumn stats={stats} dataset={datasetName} filters={filters} onOpenLeaderboard={() => setLeaderboardOpen(true)} />
+					<div className="xl:hidden">
+						<StreakDisplay stats={stats} />
+					</div>
 					{process.env.NODE_ENV === 'development' && <DevAnswer correctPlayer={correctPlayer} />}
 					<GameContainer guesses={evaluatedGuesses} isDismissing={isDismissing} />
 					{gameState === 'in-progress' || isDismissing ? (
@@ -128,6 +147,23 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 							isNewResult={isNewResult}
 						/>
 					)}
+					<LeaderboardNameDialog
+						open={pendingSave !== null}
+						streakLength={pendingSave?.streakLength ?? 0}
+						onSubmitWithName={submitWithName}
+						onSubmitAnonymous={submitAnonymous}
+					/>
+					<LeaderboardDialog
+						open={leaderboardOpen}
+						onOpenChange={setLeaderboardOpen}
+						dataset={datasetName}
+						filters={filters}
+					/>
+					<FiltersDialog
+						open={filtersOpen}
+						onOpenChange={setFiltersOpen}
+						dataset={datasetName}
+					/>
 				</div>
 			</GuessContext.Provider>
 		</DatasetContext.Provider>

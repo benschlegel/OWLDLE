@@ -3,26 +3,63 @@
 import type { RowData } from '@/components/game-container/GameContainer';
 import { type Dataset, DEFAULT_DATASET, getDataset } from '@/data/datasets';
 import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
+import { PARTNERED_TEAMS_OWCS_S3 } from '@/data/teams/teams';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
-import { type CompactGuess, useEndlessStore } from '@/store/endless-store';
-import { useCallback, useEffect, useMemo } from 'react';
+import { type CompactGuess, type EndlessFilters, useEndlessStore } from '@/store/endless-store';
+import { useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
+const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, CN: 8 };
+const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
+
+function encodeFiltersForDb(filters: EndlessFilters): { region: number; isPartnerOnly: boolean } | undefined {
+	if (filters.regions.length === 0 && !filters.partnerOnly) return undefined;
+	const activeRegions = filters.regions.length === 0 ? ALL_OWCS_S3_REGIONS : filters.regions;
+	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
+	return { region, isPartnerOnly: filters.partnerOnly };
+}
+
+export type PendingSave = {
+	dataset: Dataset;
+	streakLength: number;
+	games: { guessCount: number; result: 'won' | 'lost'; completedAt: number }[];
+	filters?: { region: number; isPartnerOnly: boolean };
+};
 
 export function useEndlessGame(datasetName: Dataset) {
 	const dataset = useMemo(() => getDataset(datasetName) ?? DEFAULT_DATASET, [datasetName]);
 	const players = dataset.playerData;
 
-	const { startGame, addGuess, winGame, loseGame, playAgain } = useEndlessStore();
+	const queryClient = useQueryClient();
+	const { startGame, addGuess, winGame, loseGame, playAgain, updateFilters } = useEndlessStore();
 	const stats = useEndlessStore((s) => s.getStats(datasetName));
+	const leaderboard = useEndlessStore((s) => s.leaderboard);
 	const currentGame = stats.current;
+
+	const filters = stats.filters ?? DEFAULT_FILTERS;
+
+	const filteredPlayers = useMemo(() => {
+		let result = players;
+		if (filters.regions.length > 0) {
+			result = result.filter((p) => filters.regions.includes(p.region ?? ''));
+		}
+		if (filters.partnerOnly) {
+			result = result.filter((p) => (PARTNERED_TEAMS_OWCS_S3 as readonly string[]).includes(p.team as string));
+		}
+		return result.length > 0 ? result : players;
+	}, [players, filters.regions, filters.partnerOnly]);
+
+	const validIndices = useMemo(() => filteredPlayers.map((fp) => players.findIndex((p) => p.id === fp.id)), [filteredPlayers, players]);
 
 	// initialize game if none exists (in useEffect to avoid rendering errors)
 	const hasGame = currentGame != null;
 	useEffect(() => {
 		if (!hasGame) {
-			startGame(datasetName, players.length);
+			startGame(datasetName, validIndices);
 		}
-	}, [hasGame, datasetName, players.length, startGame]);
+	}, [hasGame, datasetName, validIndices, startGame]);
 
 	// find correct player from playerIndex
 	const correctPlayer = useMemo(() => {
@@ -39,6 +76,43 @@ export function useEndlessGame(datasetName: Dataset) {
 			return acc;
 		}, []);
 	}, [currentGame, players]);
+
+	// When a qualifying streak ends, defer the save so the name dialog can attach a name.
+	const [pendingSave, setPendingSave] = useState<PendingSave | null>(null);
+	const pendingSaveRef = useRef<PendingSave | null>(null);
+
+	// Actually send the save request (called after name dialog resolves or immediately for non qualifying runs)
+	const executeSave = useCallback(
+		(save: PendingSave, name?: string) => {
+			const { clientId } = leaderboard;
+			fetch(`/api/save-endless?dataset=${save.dataset}`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					streakLength: save.streakLength,
+					games: save.games,
+					...(save.filters !== undefined && { filters: save.filters }),
+					...(name !== undefined ? { name, clientId } : { anonymous: true, clientId }),
+				}),
+			}).then((res) => {
+				if (res.ok) queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
+			});
+			setPendingSave(null);
+			pendingSaveRef.current = null;
+		},
+		[leaderboard, queryClient]
+	);
+
+	const submitWithName = useCallback(
+		(name: string) => {
+			if (pendingSaveRef.current) executeSave(pendingSaveRef.current, name);
+		},
+		[executeSave]
+	);
+
+	const submitAnonymous = useCallback(() => {
+		if (pendingSaveRef.current) executeSave(pendingSaveRef.current);
+	}, [executeSave]);
 
 	// called by local GuessContext when new guess is submitted
 	const submitGuess = useCallback(
@@ -57,25 +131,53 @@ export function useEndlessGame(datasetName: Dataset) {
 				const prevStreak = useEndlessStore.getState().getStats(datasetName).currentStreak;
 				loseGame(datasetName);
 				if (prevStreak > 0) {
-					const { sessionHistory } = useEndlessStore.getState().getStats(datasetName);
-					fetch(`/api/save-endless?dataset=${datasetName}`, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ streakLength: prevStreak, games: sessionHistory }),
-					});
+					const { sessionHistory, filters: sessionFilters } = useEndlessStore.getState().getStats(datasetName);
+					const filterPayload = encodeFiltersForDb(sessionFilters ?? DEFAULT_FILTERS);
+
+					// Add completedAt to final (loss) game, wins already have it from winGame flow
+					const gamesWithTimestamps = sessionHistory.map((g) => ({
+						...g,
+						completedAt: g.completedAt ?? Date.now(),
+					}));
+
+					const save: PendingSave = {
+						dataset: datasetName,
+						streakLength: prevStreak,
+						games: gamesWithTimestamps,
+						filters: filterPayload,
+					};
+
+					const { name } = useEndlessStore.getState().leaderboard;
+					const qualifies = prevStreak >= GAME_CONFIG.minLeaderboardStreak;
+
+					if (qualifies && name) {
+						// Has name set already: auto-submit with name
+						executeSave(save, name);
+					} else if (qualifies) {
+						// Qualifying run, no name yet: show dialog
+						setPendingSave(save);
+						pendingSaveRef.current = save;
+					} else {
+						// Non-qualifying: save anonymously
+						executeSave(save);
+					}
 				}
 			}
 		},
-		[currentGame, correctPlayer, datasetName, addGuess, winGame, loseGame]
+		[currentGame, correctPlayer, datasetName, addGuess, winGame, loseGame, executeSave]
 	);
 
 	const handlePlayAgain = useCallback(() => {
-		playAgain(datasetName, players.length);
-	}, [datasetName, players.length, playAgain]);
+		// If there's a pending save that wasn't resolved, send it anonymously
+		if (pendingSaveRef.current) {
+			executeSave(pendingSaveRef.current);
+		}
+		playAgain(datasetName, validIndices);
+	}, [datasetName, validIndices, playAgain, executeSave]);
 
 	const handleNextGame = useCallback(() => {
-		playAgain(datasetName, players.length);
-	}, [datasetName, players.length, playAgain]);
+		playAgain(datasetName, validIndices);
+	}, [datasetName, validIndices, playAgain]);
 
 	const gameState = currentGame?.state ?? 'in-progress';
 
@@ -91,8 +193,14 @@ export function useEndlessGame(datasetName: Dataset) {
 		correctPlayer,
 		stats,
 		dataset,
+		filteredPlayers,
+		filters,
+		updateFilters,
 		submitGuess,
 		handlePlayAgain,
 		handleNextGame,
+		pendingSave,
+		submitWithName,
+		submitAnonymous,
 	};
 }
