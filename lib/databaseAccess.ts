@@ -1,4 +1,5 @@
 import type { Dataset } from '@/data/datasets';
+import { pickStreamerName } from '@/lib/streamer-names';
 import { type CombinedFormattedPlayer, getRandomPlayer, PLAYERS_S1, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
@@ -14,6 +15,7 @@ import type {
 	DbIteration,
 	DbLoggedGame,
 	DbLoggedEndlessSession,
+	DbLeaderboardEntry,
 	DbGuess,
 	DbGameResult,
 	DbGameStats,
@@ -59,27 +61,205 @@ const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
 
 const endlessLogCollection = database.collection<DbLoggedEndlessSession>('endless_game_logs');
+endlessLogCollection.createIndex({ dataset: 1, name: 1, streakLength: -1 });
 
 const gameStatsCollection = database.collection<DbGameStats>('game_stats');
 gameStatsCollection.createIndex({ dataset: 1, iteration: 1 }, { unique: true });
 
 /**
- * Log an endless session to db (called when a streak ends via a loss)
- * @param dataset what dataset this session is for
- * @param streakLength number of wins before the streak ended
- * @param games simplified summary of each game in streak (including last lost game)
+ * Log an endless session to db (called when a streak ends via a loss).
+ * When a clientId + name is provided and meets the leaderboard threshold,
+ * this upserts (keeps only the best streak per clientId per dataset+filters).
  */
 export async function logEndlessSession(
 	dataset: Dataset,
 	streakLength: number,
 	games: DbLoggedEndlessSession['games'],
-	filters?: DbLoggedEndlessSession['filters']
+	filters?: DbLoggedEndlessSession['filters'],
+	name?: string,
+	clientId?: string,
+	anonymous?: boolean
 ) {
-	return endlessLogCollection.insertOne({ dataset, streakLength, games, finishedAt: new Date(), ...(filters !== undefined && { filters }) });
+	const resolvedName = name ?? (anonymous && clientId ? pickStreamerName(clientId) : undefined);
+	const doc: Omit<DbLoggedEndlessSession, '_id'> = {
+		dataset,
+		streakLength,
+		games,
+		finishedAt: new Date(),
+		...(filters !== undefined && { filters }),
+		...(resolvedName !== undefined && { name: resolvedName }),
+		...(clientId !== undefined && { clientId }),
+		...(anonymous && { anonymous: true }),
+	};
+
+	// If clientId is provided, upsert: only replace if new streak is better
+	if (clientId) {
+		const filter: Record<string, unknown> = { dataset, clientId };
+		if (filters !== undefined) {
+			filter['filters.region'] = filters.region;
+			filter['filters.isPartnerOnly'] = filters.isPartnerOnly;
+		} else {
+			filter.filters = { $exists: false };
+		}
+
+		return endlessLogCollection.updateOne({ ...filter, streakLength: { $lt: streakLength } } as any, { $set: doc as any }, { upsert: true }).catch((err) => {
+			// E11000 duplicate key = existing entry has equal or higher streak, just insert a plain log
+			if (err?.code === 11000) {
+				return endlessLogCollection.insertOne({ ...doc, clientId: undefined, name: undefined } as any);
+			}
+			throw err;
+		});
+	}
+
+	return endlessLogCollection.insertOne(doc as any);
 }
 
 /**
- * CAREFUL: deletes the entire player backlog from database
+ * Get paginated leaderboard for a dataset (best streak per clientId, named entries only).
+ * For owcs-s3, optionally filter by region bitmask and partnerOnly.
+ */
+export async function getLeaderboard(
+	dataset: Dataset,
+	page: number,
+	limit: number,
+	maxEntries: number,
+	filters?: { region: number; isPartnerOnly: boolean }
+): Promise<{ entries: DbLeaderboardEntry[]; total: number }> {
+	const match: Record<string, any> = {
+		dataset,
+		// Include named, anonymous (skip), and legacy entries
+		$or: [{ name: { $exists: true }, clientId: { $exists: true } }, { anonymous: true, clientId: { $exists: true } }, { legacy: true }],
+	};
+
+	if (filters !== undefined) {
+		match['filters.region'] = filters.region;
+		match['filters.isPartnerOnly'] = filters.isPartnerOnly;
+	}
+
+	const pipeline = [
+		{ $match: match },
+		// Use clientId for dedup when available, otherwise fall back to _id (legacy entries)
+		{ $addFields: { _groupKey: { $ifNull: ['$clientId', '$_id'] } } },
+		// Best streak per identity
+		{ $sort: { streakLength: -1 as const, finishedAt: 1 as const } },
+		{
+			$group: {
+				_id: '$_groupKey',
+				name: { $first: '$name' },
+				streakLength: { $first: '$streakLength' },
+				finishedAt: { $first: '$finishedAt' },
+				clientId: { $first: '$clientId' },
+				anonymous: { $first: '$anonymous' },
+			},
+		},
+		{ $sort: { streakLength: -1 as const, finishedAt: 1 as const } },
+		{ $limit: maxEntries },
+	];
+
+	// Run count + page in parallel
+	const countPipeline = [...pipeline, { $count: 'total' }];
+	const dataPipeline = [...pipeline, { $skip: (page - 1) * limit }, { $limit: limit }];
+
+	const projection = { $project: { _id: 0, name: 1, streakLength: 1, finishedAt: 1, clientId: 1, anonymous: 1 } };
+	const [countResult, entries] = await Promise.all([
+		endlessLogCollection.aggregate(countPipeline).toArray(),
+		endlessLogCollection.aggregate<DbLeaderboardEntry>([...dataPipeline, projection]).toArray(),
+	]);
+
+	const total = countResult[0]?.total ?? 0;
+	return { entries, total };
+}
+
+/**
+ * Find the rank (1-indexed) of a specific clientId on the leaderboard.
+ * Returns null if the client has no leaderboard entry.
+ */
+export async function getLeaderboardRank(
+	dataset: Dataset,
+	clientId: string,
+	maxEntries: number,
+	filters?: { region: number; isPartnerOnly: boolean }
+): Promise<number | null> {
+	const match: Record<string, any> = {
+		dataset,
+		$or: [{ name: { $exists: true }, clientId: { $exists: true } }, { legacy: true }],
+	};
+
+	if (filters !== undefined) {
+		match['filters.region'] = filters.region;
+		match['filters.isPartnerOnly'] = filters.isPartnerOnly;
+	}
+
+	const pipeline = [
+		{ $match: match },
+		{ $addFields: { _groupKey: { $ifNull: ['$clientId', '$_id'] } } },
+		{ $sort: { streakLength: -1 as const, finishedAt: 1 as const } },
+		{
+			$group: {
+				_id: '$_groupKey',
+				name: { $first: '$name' },
+				streakLength: { $first: '$streakLength' },
+				finishedAt: { $first: '$finishedAt' },
+				clientId: { $first: '$clientId' },
+			},
+		},
+		{ $sort: { streakLength: -1 as const, finishedAt: 1 as const } },
+		{ $limit: maxEntries },
+		{ $group: { _id: null, entries: { $push: '$clientId' } } },
+		{ $project: { _id: 0, rank: { $add: [{ $indexOfArray: ['$entries', clientId] }, 1] } } },
+	];
+
+	const result = await endlessLogCollection.aggregate<{ rank: number }>(pipeline).toArray();
+	const rank = result[0]?.rank;
+	return rank && rank > 0 ? rank : null;
+}
+
+/**
+ * Update the display name on all leaderboard entries for a given clientId.
+ */
+export async function updateLeaderboardName(clientId: string, newName: string) {
+	return endlessLogCollection.updateMany({ clientId } as any, { $set: { name: newName } });
+}
+
+/**
+ * Backfill streamer-mode names onto anonymous entries that were saved before
+ * name assignment was added to logEndlessSession. Processes in batches.
+ */
+export async function backfillAnonymousStreamerNames(dataset?: Dataset) {
+	const match: Record<string, unknown> = { anonymous: true, clientId: { $exists: true }, name: { $exists: false } };
+	if (dataset) match.dataset = dataset;
+
+	const cursor = endlessLogCollection.find(match as Partial<DbLoggedEndlessSession>);
+	let updated = 0;
+	for await (const doc of cursor) {
+		const streamerName = pickStreamerName(doc.clientId as string);
+		await endlessLogCollection.updateOne({ _id: doc._id }, { $set: { name: streamerName } });
+		updated++;
+	}
+	return updated;
+}
+
+/**
+ * Mark existing anonymous endless logs as legacy leaderboard entries.
+ * Assigns a name and marks them with legacy: true so they appear on the leaderboard
+ * without a clientId-based dedup (one entry per document).
+ */
+export async function markLegacyLeaderboardEntries(dataset: Dataset, minStreak: number, legacyName: string) {
+	return endlessLogCollection.updateMany(
+		{
+			dataset,
+			streakLength: { $gte: minStreak },
+			clientId: { $exists: false },
+			legacy: { $ne: true },
+		} as any,
+		{
+			$set: { name: legacyName, legacy: true },
+		} as any
+	);
+}
+
+/**
+ * WARNING: deletes the entire player backlog from database
  */
 export async function deleteAllPlayers(dataset: Dataset) {
 	return playerCollection.deleteMany({ _id: dataset });

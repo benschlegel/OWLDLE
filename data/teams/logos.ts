@@ -432,7 +432,7 @@ const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
 
 // Reuse S2 logos for teams that carry over to S3
 const owcsS3TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s3')?.data ?? []);
-const reusedFromS2 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS3TeamNames.has(t.teamName as string));
+const reusedFromS2 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS3TeamNames.has(t.teamName as any));
 
 export const TEAM_LOGOS_OWCS_S3: TeamLogoData<'owcs-s3'>[] = [
 	...(reusedFromS2.map((t) => ({ ...t, imgUrl: `/teams/owcs-s2/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s3'>[]),

@@ -1,16 +1,24 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { MedalIcon } from 'lucide-react';
+import type { Dataset } from '@/data/datasets';
+import type { EndlessFilters } from '@/store/endless-store';
+import { MedalIcon, Trophy } from 'lucide-react';
 
 type EndlessStats = {
 	wins: number;
 	games: number;
 };
 
-export default function EndlessRightColumn({ stats }: { stats: EndlessStats }) {
-	const winRate = stats.games > 0 ? Math.round((stats.wins / stats.games) * 100) : 0;
+type Props = {
+	stats: EndlessStats;
+	dataset: Dataset;
+	filters: EndlessFilters;
+	onOpenLeaderboard: () => void;
+};
 
+export default function EndlessRightColumn({ stats, onOpenLeaderboard }: Props) {
 	return (
 		<div className="hidden xl:block absolute left-full ml-layout-spacing top-endless-top w-layout-width">
 			<Card className="transition-colors">
@@ -20,15 +28,19 @@ export default function EndlessRightColumn({ stats }: { stats: EndlessStats }) {
 							<AccordionTrigger className="py-0 hover:no-underline">
 								<span className="text-lg font-owl font-semibold leading-none  cursor-pointer tracking-tight">Games</span>
 							</AccordionTrigger>
-							{/* <Separator /> */}
 						</CardHeader>
 						<AccordionContent className="p-0">
-							<CardContent className="p-4 pt-0">
+							<CardContent className="p-4 pt-0 space-y-3">
 								<div className="flex flex-row justify-around text-sm">
-									<StatCell label="Played" value={stats.games} icon={<MedalIcon className="size-4 text-yellow-400" />} />
-									{/* <StatCell label="Win Rate" value={`${winRate}%`} icon={<MedalIcon className="size-4 text-green-700" />} /> */}
-									<StatCell label="Wins" value={stats.wins} icon={<MedalIcon className="size-4 text-yellow-400" />} />
+									<StatCell label="Played" value={stats.games} />
+									<StatCell label="Wins" value={stats.wins} />
 								</div>
+								<Separator />
+								<Button variant="outline" className="w-full gap-2" onClick={onOpenLeaderboard}>
+									<Trophy className="size-4 text-yellow-500" />
+									Leaderboard
+								</Button>
+								<p className="text-xs text-muted-foreground pt-0.5 text-center">Leaderboard shows data for your currently selected filters.</p>
 							</CardContent>
 						</AccordionContent>
 					</AccordionItem>
@@ -38,11 +50,10 @@ export default function EndlessRightColumn({ stats }: { stats: EndlessStats }) {
 	);
 }
 
-function StatCell({ label, value, icon }: { label: string; value: number | string; icon?: React.ReactNode }) {
+function StatCell({ label, value }: { label: string; value: number | string }) {
 	return (
 		<div className="flex justify-between items-center flex-col">
 			<div className="flex items-center gap-1.5 mb-0.5">
-				{/* {icon} */}
 				<span className="font-bold text-xl font-owl opacity-90">{value}</span>
 			</div>
 			<span className="text-muted-foreground tracking-wide">{label}</span>

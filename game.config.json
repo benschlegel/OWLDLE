@@ -4,5 +4,8 @@
   "gameName": "OWLDLE",
   "teamLogoImgExtension": "avif",
   "backlogMaxSize": 20,
-  "nextResetHours": 24
+  "nextResetHours": 24,
+  "minLeaderboardStreak": 4,
+  "leaderboardPageSize": 10,
+  "leaderboardMaxEntries": 500
 }
