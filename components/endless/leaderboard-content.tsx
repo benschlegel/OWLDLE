@@ -192,6 +192,9 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 				)}
 			</div>
 
+			{/* Info */}
+			<p className="text-xs text-muted-foreground opacity-60 text-center -my-2 pt-2">Top 500 players · minimum streak of 4 required to qualify</p>
+
 			<div className="flex flex-col">
 				{showLoading ? (
 					<div className="flex items-center justify-center text-muted-foreground text-sm" style={{ height: `${(PAGE_SIZE + 1) * ROW_HEIGHT_PX}px` }}>
