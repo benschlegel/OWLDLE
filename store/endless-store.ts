@@ -22,7 +22,17 @@ export type EndlessGame = {
 export type SessionGameEntry = {
 	guessCount: number;
 	result: 'won' | 'lost';
+	/** Client-side timestamp for anti-abuse validation */
+	completedAt: number;
 };
+
+export type EndlessFilters = {
+	/** Active regions. Empty array means all regions are included. */
+	regions: string[];
+	partnerOnly: boolean;
+};
+
+const defaultFilters: EndlessFilters = { regions: [], partnerOnly: false };
 
 export type DatasetStats = {
 	currentStreak: number;
@@ -32,6 +42,7 @@ export type DatasetStats = {
 	current: EndlessGame | null;
 	/** per-game summary for the current streak, persisted so partial streaks survive page reloads */
 	sessionHistory: SessionGameEntry[];
+	filters: EndlessFilters;
 };
 
 const defaultStats: DatasetStats = {
@@ -41,16 +52,31 @@ const defaultStats: DatasetStats = {
 	games: 0,
 	current: null,
 	sessionHistory: [],
+	filters: defaultFilters,
+};
+
+/** Leaderboard preferences, persisted alongside game state */
+export type LeaderboardPrefs = {
+	/** Display name for leaderboard submissions */
+	name: string | null;
+	/** Persistent browser UUID for dedup */
+	clientId: string;
+	/** If true, user chose to always submit anonymously (skip prompt) */
+	alwaysAnonymous: boolean;
 };
 
 type EndlessStore = {
 	datasets: Partial<Record<Dataset, DatasetStats>>;
+	leaderboard: LeaderboardPrefs;
 	getStats: (dataset: Dataset) => DatasetStats;
-	startGame: (dataset: Dataset, playerCount: number) => void;
+	startGame: (dataset: Dataset, validIndices: number[]) => void;
 	addGuess: (dataset: Dataset, guess: CompactGuess) => void;
 	winGame: (dataset: Dataset) => void;
 	loseGame: (dataset: Dataset) => void;
-	playAgain: (dataset: Dataset, playerCount: number) => void;
+	updateFilters: (dataset: Dataset, filters: EndlessFilters) => void;
+	playAgain: (dataset: Dataset, validIndices: number[]) => void;
+	setLeaderboardName: (name: string) => void;
+	setAlwaysAnonymous: (value: boolean) => void;
 };
 
 function randomIndex(max: number): number {
@@ -59,12 +85,22 @@ function randomIndex(max: number): number {
 
 export const ENDLESS_STORE_KEY = 'endless';
 
+function generateClientId(): string {
+	if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+	// Fallback for older environments
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+		const r = (Math.random() * 16) | 0;
+		return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+	});
+}
+
 export const useEndlessStore = create<EndlessStore>()(
 	persist(
 		(set, get) => ({
 			datasets: {},
+			leaderboard: { name: null, clientId: generateClientId(), alwaysAnonymous: false },
 			getStats: (dataset) => get().datasets[dataset] ?? defaultStats,
-			startGame: (dataset, playerCount) =>
+			startGame: (dataset, validIndices) =>
 				set((state) => {
 					const prev = state.datasets[dataset] ?? defaultStats;
 					if (prev.current?.state === 'in-progress') return state;
@@ -73,7 +109,7 @@ export const useEndlessStore = create<EndlessStore>()(
 							...state.datasets,
 							[dataset]: {
 								...prev,
-								current: { playerIndex: randomIndex(playerCount), guesses: [], state: 'in-progress' },
+								current: { playerIndex: validIndices[randomIndex(validIndices.length)], guesses: [], state: 'in-progress' },
 							},
 						},
 					};
@@ -109,7 +145,7 @@ export const useEndlessStore = create<EndlessStore>()(
 								highestStreak: Math.max(prev.highestStreak, newStreak),
 								wins: prev.wins + 1,
 								games: prev.games + 1,
-								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'won' }],
+								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'won', completedAt: Date.now() }],
 								current: { ...prev.current, state: 'won' },
 							},
 						},
@@ -128,7 +164,7 @@ export const useEndlessStore = create<EndlessStore>()(
 								...prev,
 								currentStreak: 0,
 								games: prev.games + 1,
-								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'lost' }],
+								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'lost', completedAt: Date.now() }],
 								current: { ...prev.current, state: 'lost' },
 							},
 						},
@@ -136,7 +172,23 @@ export const useEndlessStore = create<EndlessStore>()(
 				});
 				markGameCompleted();
 			},
-			playAgain: (dataset, playerCount) =>
+			updateFilters: (dataset, filters) =>
+				set((state) => {
+					const prev = state.datasets[dataset] ?? defaultStats;
+					return {
+						datasets: {
+							...state.datasets,
+							[dataset]: {
+								...prev,
+								filters,
+								currentStreak: 0,
+								sessionHistory: [],
+								current: null,
+							},
+						},
+					};
+				}),
+			playAgain: (dataset, validIndices) =>
 				set((state) => {
 					const prev = state.datasets[dataset] ?? defaultStats;
 					// clear sessionHistory only after a loss (streak ended), preserve it midstreak after a win
@@ -147,12 +199,30 @@ export const useEndlessStore = create<EndlessStore>()(
 							[dataset]: {
 								...prev,
 								sessionHistory: wasLost ? [] : prev.sessionHistory ?? [],
-								current: { playerIndex: randomIndex(playerCount), guesses: [], state: 'in-progress' },
+								current: { playerIndex: validIndices[randomIndex(validIndices.length)], guesses: [], state: 'in-progress' },
 							},
 						},
 					};
 				}),
+			setLeaderboardName: (name) =>
+				set((state) => ({
+					leaderboard: { ...state.leaderboard, name, alwaysAnonymous: false },
+				})),
+			setAlwaysAnonymous: (value) =>
+				set((state) => ({
+					leaderboard: { ...state.leaderboard, alwaysAnonymous: value },
+				})),
 		}),
-		{ name: ENDLESS_STORE_KEY }
+		{
+			name: ENDLESS_STORE_KEY,
+			// Ensure clientId is never lost on rehydration (generate if missing from old storage)
+			merge: (persisted, current) => {
+				const merged = { ...current, ...(persisted as Partial<EndlessStore>) };
+				if (!merged.leaderboard?.clientId) {
+					merged.leaderboard = { ...merged.leaderboard, clientId: generateClientId() };
+				}
+				return merged;
+			},
+		}
 	)
 );

@@ -8,10 +8,13 @@ type SettingsStore = {
 	setIsDevAnswerVisible: (newState: boolean) => void;
 	areStatsVisible: boolean;
 	setAreStatsVisible: (newState: boolean) => void;
+	showConfetti: boolean;
+	setShowConfetti: (newState: boolean) => void;
 };
 
 export const DEFAULT_IS_BACKGROUND_ENABLED = true;
 export const DEFAULT_ARE_STATS_VISIBLE = true;
+export const DEFAULT_SHOW_CONFETTI = true;
 
 export const SETTINGS_STORE_KEY = 'settings';
 
@@ -24,6 +27,8 @@ export const useSettings = create<SettingsStore>()(
 			setIsDevAnswerVisible: (newState) => set({ isDevAnswerVisible: newState }),
 			areStatsVisible: DEFAULT_ARE_STATS_VISIBLE,
 			setAreStatsVisible: (newState) => set({ areStatsVisible: newState }),
+			showConfetti: DEFAULT_SHOW_CONFETTI,
+			setShowConfetti: (newState) => set({ showConfetti: newState }),
 		})),
 		{
 			name: SETTINGS_STORE_KEY,

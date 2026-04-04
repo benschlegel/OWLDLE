@@ -1,4 +1,5 @@
 import type { Dataset } from '@/data/datasets';
+import { pickStreamerName } from '@/lib/streamer-names';
 import { type CombinedFormattedPlayer, getRandomPlayer, PLAYERS_S1, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
@@ -14,6 +15,7 @@ import type {
 	DbIteration,
 	DbLoggedGame,
 	DbLoggedEndlessSession,
+	DbLeaderboardEntry,
 	DbGuess,
 	DbGameResult,
 	DbGameStats,
@@ -59,18 +61,57 @@ const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
 
 const endlessLogCollection = database.collection<DbLoggedEndlessSession>('endless_game_logs');
+endlessLogCollection.createIndex({ dataset: 1, name: 1, streakLength: -1 });
 
 const gameStatsCollection = database.collection<DbGameStats>('game_stats');
 gameStatsCollection.createIndex({ dataset: 1, iteration: 1 }, { unique: true });
 
 /**
- * Log an endless session to db (called when a streak ends via a loss)
- * @param dataset what dataset this session is for
- * @param streakLength number of wins before the streak ended
- * @param games simplified summary of each game in streak (including last lost game)
+ * Log an endless session to db (called when a streak ends via a loss).
+ * When a clientId + name is provided and meets the leaderboard threshold,
+ * this upserts (keeps only the best streak per clientId per dataset+filters).
  */
-export async function logEndlessSession(dataset: Dataset, streakLength: number, games: DbLoggedEndlessSession['games']) {
-	return endlessLogCollection.insertOne({ dataset, streakLength, games, finishedAt: new Date() });
+export async function logEndlessSession(
+	dataset: Dataset,
+	streakLength: number,
+	games: DbLoggedEndlessSession['games'],
+	filters?: DbLoggedEndlessSession['filters'],
+	name?: string,
+	clientId?: string,
+	anonymous?: boolean
+) {
+	const resolvedName = name ?? (anonymous && clientId ? pickStreamerName(clientId) : undefined);
+	const doc: Omit<DbLoggedEndlessSession, '_id'> = {
+		dataset,
+		streakLength,
+		games,
+		finishedAt: new Date(),
+		...(filters !== undefined && { filters }),
+		...(resolvedName !== undefined && { name: resolvedName }),
+		...(clientId !== undefined && { clientId }),
+		...(anonymous && { anonymous: true }),
+	};
+
+	// If clientId is provided, upsert: only replace if new streak is better
+	if (clientId) {
+		const filter: Record<string, unknown> = { dataset, clientId };
+		if (filters !== undefined) {
+			filter['filters.region'] = filters.region;
+			filter['filters.isPartnerOnly'] = filters.isPartnerOnly;
+		} else {
+			filter.filters = { $exists: false };
+		}
+
+		return endlessLogCollection.updateOne({ ...filter, streakLength: { $lt: streakLength } } as any, { $set: doc as any }, { upsert: true }).catch((err) => {
+			// E11000 duplicate key = existing entry has equal or higher streak, just insert a plain log
+			if (err?.code === 11000) {
+				return endlessLogCollection.insertOne({ ...doc, clientId: undefined, name: undefined } as any);
+			}
+			throw err;
+		});
+	}
+
+	return endlessLogCollection.insertOne(doc as any);
 }
 
 /**
@@ -236,7 +277,7 @@ export async function markLegacyLeaderboardEntries(dataset: Dataset, minStreak: 
 }
 
 /**
- * WARNING: deletes the entire player backlog from database
+ * CAREFUL: deletes the entire player backlog from database
  */
 export async function deleteAllPlayers(dataset: Dataset) {
 	return playerCollection.deleteMany({ _id: dataset });
@@ -381,10 +422,11 @@ export async function rerollAnswer(answerPrefix: DbAnswerPrefix, dataset: Datase
 		if (iteration === undefined) return false;
 
 		// Do partial update on backlog iteration
-		return updateIterationPlayer(iteration, randomPlayer);
+		const updated = await updateIterationPlayer(iteration, randomPlayer);
+		if (!updated) return false;
 	}
 
-	return true;
+	return randomPlayer;
 }
 
 /**
