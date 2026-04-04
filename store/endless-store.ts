@@ -22,6 +22,8 @@ export type EndlessGame = {
 export type SessionGameEntry = {
 	guessCount: number;
 	result: 'won' | 'lost';
+	/** Client-side timestamp for anti-abuse validation */
+	completedAt: number;
 };
 
 export type EndlessFilters = {
@@ -53,8 +55,19 @@ const defaultStats: DatasetStats = {
 	filters: defaultFilters,
 };
 
+/** Leaderboard preferences, persisted alongside game state */
+export type LeaderboardPrefs = {
+	/** Display name for leaderboard submissions */
+	name: string | null;
+	/** Persistent browser UUID for dedup */
+	clientId: string;
+	/** If true, user chose to always submit anonymously (skip prompt) */
+	alwaysAnonymous: boolean;
+};
+
 type EndlessStore = {
 	datasets: Partial<Record<Dataset, DatasetStats>>;
+	leaderboard: LeaderboardPrefs;
 	getStats: (dataset: Dataset) => DatasetStats;
 	startGame: (dataset: Dataset, validIndices: number[]) => void;
 	addGuess: (dataset: Dataset, guess: CompactGuess) => void;
@@ -62,6 +75,8 @@ type EndlessStore = {
 	loseGame: (dataset: Dataset) => void;
 	updateFilters: (dataset: Dataset, filters: EndlessFilters) => void;
 	playAgain: (dataset: Dataset, validIndices: number[]) => void;
+	setLeaderboardName: (name: string) => void;
+	setAlwaysAnonymous: (value: boolean) => void;
 };
 
 function randomIndex(max: number): number {
@@ -70,10 +85,20 @@ function randomIndex(max: number): number {
 
 export const ENDLESS_STORE_KEY = 'endless';
 
+function generateClientId(): string {
+	if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+	// Fallback for older environments
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+		const r = (Math.random() * 16) | 0;
+		return (c === 'x' ? r : (r & 0x3) | 0x8).toString(16);
+	});
+}
+
 export const useEndlessStore = create<EndlessStore>()(
 	persist(
 		(set, get) => ({
 			datasets: {},
+			leaderboard: { name: null, clientId: generateClientId(), alwaysAnonymous: false },
 			getStats: (dataset) => get().datasets[dataset] ?? defaultStats,
 			startGame: (dataset, validIndices) =>
 				set((state) => {
@@ -120,7 +145,7 @@ export const useEndlessStore = create<EndlessStore>()(
 								highestStreak: Math.max(prev.highestStreak, newStreak),
 								wins: prev.wins + 1,
 								games: prev.games + 1,
-								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'won' }],
+								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'won', completedAt: Date.now() }],
 								current: { ...prev.current, state: 'won' },
 							},
 						},
@@ -139,7 +164,7 @@ export const useEndlessStore = create<EndlessStore>()(
 								...prev,
 								currentStreak: 0,
 								games: prev.games + 1,
-								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'lost' }],
+								sessionHistory: [...(prev.sessionHistory ?? []), { guessCount: prev.current.guesses.length, result: 'lost', completedAt: Date.now() }],
 								current: { ...prev.current, state: 'lost' },
 							},
 						},
@@ -179,7 +204,25 @@ export const useEndlessStore = create<EndlessStore>()(
 						},
 					};
 				}),
+			setLeaderboardName: (name) =>
+				set((state) => ({
+					leaderboard: { ...state.leaderboard, name, alwaysAnonymous: false },
+				})),
+			setAlwaysAnonymous: (value) =>
+				set((state) => ({
+					leaderboard: { ...state.leaderboard, alwaysAnonymous: value },
+				})),
 		}),
-		{ name: ENDLESS_STORE_KEY }
+		{
+			name: ENDLESS_STORE_KEY,
+			// Ensure clientId is never lost on rehydration (generate if missing from old storage)
+			merge: (persisted, current) => {
+				const merged = { ...current, ...(persisted as Partial<EndlessStore>) };
+				if (!merged.leaderboard?.clientId) {
+					merged.leaderboard = { ...merged.leaderboard, clientId: generateClientId() };
+				}
+				return merged;
+			},
+		}
 	)
 );

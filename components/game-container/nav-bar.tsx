@@ -54,7 +54,7 @@ export function Navbar() {
 	const owcsSeason = searchParams.get('season');
 	const owcsValue = pathname === OWCS_PATHNAME ? (owcsSeason ? `owcs-${owcsSeason}` : DEFAULT_OWCS_DATASET_NAME) : '';
 	const endlessMode = pathname === ENDLESS_PATHNAME ? searchParams.get('mode') ?? 'owcs' : '';
-	const endlessSeason = pathname === ENDLESS_PATHNAME ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME : '';
+	const endlessSeason = pathname === ENDLESS_PATHNAME ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME.slice('owcs-'.length) : '';
 
 	useEffect(() => {
 		if (ALLOWED_PATHS.includes(pathname)) {

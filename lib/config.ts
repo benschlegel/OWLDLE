@@ -27,6 +27,18 @@ const configSchema = z.object({
 	 * !Important: make sure you match your vercel cron job
 	 */
 	nextResetHours: z.number().min(1),
+	/**
+	 * Minimum streak length required to appear on the leaderboard
+	 */
+	minLeaderboardStreak: z.number().min(1),
+	/**
+	 * Number of entries per page in the leaderboard UI
+	 */
+	leaderboardPageSize: z.number().min(1),
+	/**
+	 * Maximum number of entries shown on the leaderboard (top N)
+	 */
+	leaderboardMaxEntries: z.number().min(1),
 });
 
 export const GAME_CONFIG = configSchema.parse(config);
