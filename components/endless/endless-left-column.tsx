@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import type { Dataset } from '@/data/datasets';
+import { useDialogState } from '@/hooks/use-dialog-param';
 import { useEndlessStore, type EndlessFilters } from '@/store/endless-store';
 import { Flame, Trophy } from 'lucide-react';
 
@@ -65,6 +66,7 @@ function FilterCard({ dataset }: { dataset: Dataset }) {
 	const filtersFromStore = useEndlessStore((s) => s.datasets[dataset]?.filters);
 	const filters: EndlessFilters = filtersFromStore ?? DEFAULT_FILTERS;
 	const updateFilters = useEndlessStore((s) => s.updateFilters);
+	const { setOpen: setTeamsOpen } = useDialogState('teams');
 
 	const isRegionActive = (region: OwcsS3Region) => filters.regions.length === 0 || filters.regions.includes(region);
 
@@ -116,7 +118,7 @@ function FilterCard({ dataset }: { dataset: Dataset }) {
 								<Switch id="filter-partner" checked={filters.partnerOnly} onCheckedChange={togglePartner} />
 							</div>
 							<p className="text-xs text-muted-foreground pt-0.5">Changing filters resets your streak.</p>
-							<Button variant={'outline'} className="w-full py-1.5 h-auto justify-between">
+							<Button variant={'outline'} className="w-full py-1.5 h-auto justify-between" onClick={() => setTeamsOpen(true)}>
 								Show selected teams
 								<Kbd className="font-mono sm:flex hidden opacity-95">alt+s</Kbd>
 							</Button>
