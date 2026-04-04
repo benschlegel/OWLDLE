@@ -25,8 +25,8 @@ export default function EndlessRightColumn({ stats, onOpenLeaderboard }: Props) 
 				<Accordion type="single" collapsible defaultValue="games">
 					<AccordionItem value="games" className="border-b-0">
 						<CardHeader className="p-4">
-							<AccordionTrigger className="py-0 hover:no-underline">
-								<span className="text-lg font-owl font-semibold leading-none  cursor-pointer tracking-tight">Games</span>
+							<AccordionTrigger className="py-0 cursor-pointer hover:no-underline">
+								<span className="text-lg font-owl font-semibold leading-none tracking-tight">Games</span>
 							</AccordionTrigger>
 						</CardHeader>
 						<AccordionContent className="p-0">

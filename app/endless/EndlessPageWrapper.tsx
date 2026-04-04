@@ -3,7 +3,7 @@
 import EndlessGame from '@/components/endless/endless-game';
 import EndlessSeasonSelector from '@/app/endless/EndlessSeasonSelector';
 import EndlessSeasonTitle from '@/app/endless/EndlessSeasonTitle';
-import GameHeader from '@/components/game-container/GameHeader';
+import EndlessGameHeader from '@/components/endless/EndlessGameHeader';
 import { useEndlessParams } from '@/hooks/use-endless-params';
 import { DEFAULT_DATASET, getDataset, isOwcsDataset, type CombinedDatasetMetadata } from '@/data/datasets';
 import { DatasetContext } from '@/context/DatasetContext';
@@ -28,7 +28,7 @@ export default function EndlessPageWrapper() {
 	return (
 		<DatasetContext.Provider value={datasetContextValue}>
 			<div className="relative animate-in fade-in duration-300">
-				<GameHeader topLabel={<EndlessHeaderBadge />} modeLabel={modeLabel} seasonSelector={<EndlessSeasonSelector />} seasonTitle={<EndlessSeasonTitle />} />
+				<EndlessGameHeader topLabel={<EndlessHeaderBadge />} modeLabel={modeLabel} dataset={dataset} seasonSelector={<EndlessSeasonSelector />} seasonTitle={<EndlessSeasonTitle />} />
 				<EndlessGame dataset={dataset} />
 			</div>
 		</DatasetContext.Provider>

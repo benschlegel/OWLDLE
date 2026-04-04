@@ -17,6 +17,7 @@ import { useReducedMotion } from 'motion/react';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import LeaderboardNameDialog from '@/components/endless/leaderboard-name-dialog';
 import LeaderboardDialog from '@/components/endless/leaderboard-dialog';
+import FiltersDialog from '@/components/endless/filters-dialog';
 
 const SearchDialog = lazy(() => import('@/components/game-container/search-dialog'));
 const MemoizedPlayerSearch = React.memo(PlayerSearch);
@@ -36,6 +37,7 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 	const prefersReducedMotion = useReducedMotion();
 	const [isDismissing, setIsDismissing] = useState(false);
 	const { open: leaderboardOpen, setOpen: setLeaderboardOpen } = useDialogState('leaderboard');
+	const { open: filtersOpen, setOpen: setFiltersOpen } = useDialogState('filters');
 
 	const handleDismissAndReset = useCallback(
 		(resetFn: () => void) => {
@@ -124,7 +126,7 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 					<EndlessLeftColumn stats={stats} dataset={datasetName} />
 					<EndlessRightColumn stats={stats} dataset={datasetName} filters={filters} onOpenLeaderboard={() => setLeaderboardOpen(true)} />
 					<div className="xl:hidden">
-						<StreakDisplay stats={stats} onOpenLeaderboard={() => setLeaderboardOpen(true)} />
+						<StreakDisplay stats={stats} />
 					</div>
 					{process.env.NODE_ENV === 'development' && <DevAnswer correctPlayer={correctPlayer} />}
 					<GameContainer guesses={evaluatedGuesses} isDismissing={isDismissing} />
@@ -156,6 +158,11 @@ export default function EndlessGame({ dataset: datasetName }: Props) {
 						onOpenChange={setLeaderboardOpen}
 						dataset={datasetName}
 						filters={filters}
+					/>
+					<FiltersDialog
+						open={filtersOpen}
+						onOpenChange={setFiltersOpen}
+						dataset={datasetName}
 					/>
 				</div>
 			</GuessContext.Provider>
