@@ -132,15 +132,9 @@ export function Navbar() {
 			<nav className="sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 				{/* Left section*/}
 				<div className="flex items-center sm:flex-none flex-1 self-stretch">
-					<Button
-						asChild
-						variant={'ghost'}
-						className="w-full sm:flex hidden py-6 bg-secondary/50 text-foreground transition-colors rounded-none dark:hover:text-cyan-400 hover:text-cyan-500"
-						style={{ clipPath: 'polygon(0% 0%, 100% 0%, calc(100% - 12px) 100%, 0% 100%)', marginRight: '-7px', paddingRight: '24px' }}>
-						<Link href={'/'}>
-							<Home className="h-5 w-5" />
-						</Link>
-					</Button>
+					<NavButton href="/" className="sm:flex hidden -ml-1 px-5 bg-secondary">
+						<Home className="h-5 w-5" />
+					</NavButton>
 
 					{/* Slanted nav buttons */}
 					<div className="flex items-center self-stretch">
@@ -170,6 +164,7 @@ export function Navbar() {
 									onValueChange={handleEndlessSelect}
 									value={pathname === ENDLESS_PATHNAME ? `${endlessMode}:${endlessSeason}` : ''}
 									highlight={pathname === ENDLESS_PATHNAME}
+									showNew
 									prefetchRoute={ENDLESS_PATHNAME}
 									menuContent={
 										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === ENDLESS_PATHNAME ? `${endlessMode}:${endlessSeason}` : ''} />
@@ -272,6 +267,7 @@ function NavSelect({
 	menuContent,
 	label,
 	prefetchRoute,
+	showNew = false,
 }: {
 	children: React.ReactNode;
 	label?: string;
@@ -283,6 +279,7 @@ function NavSelect({
 	className?: string;
 	menuContent?: ReactNode;
 	prefetchRoute?: string;
+	showNew?: boolean;
 }) {
 	const router = useRouter();
 	return (
@@ -302,7 +299,10 @@ function NavSelect({
 					if (prefetchRoute) router.prefetch(prefetchRoute);
 				}}
 				style={{ transform: `skewX(${!isRightSkewed ? '-' : ''}12deg)` }}>
-				<span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>
+				<span className="relative" style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>
+					{children}
+					{showNew && <span className="absolute -top-2.5 -right-3 text-[9px] font-bold text-primary-foreground leading-none tracking-normal">New</span>}
+				</span>
 			</NavigationMenuTrigger>
 			{menuContent ? (
 				<NavigationMenuContent>{menuContent}</NavigationMenuContent>
@@ -343,15 +343,21 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	isRightSkewed?: boolean;
 	href?: string;
 	isExternal?: boolean;
+	showNew?: boolean;
 }
 
-function NavButton({ children, highlight = false, isRightSkewed = false, className, href, isExternal: external, ...props }: ButtonProps) {
+function NavButton({ children, highlight = false, isRightSkewed = false, className, href, isExternal: external, showNew = false, ...props }: ButtonProps) {
 	const buttonClass = cn(
 		`relative focus-visible:ring-offset-0 uppercase rounded-none px-4 py-6 text-sm font-semibold tracking-wide transition-colors font-owl
         ${highlight ? 'bg-primary-foreground hover:bg-primary-foreground hover:text-white text-white' : 'text-foreground dark:hover:text-cyan-400 hover:text-cyan-500'}`,
 		className
 	);
-	const inner = <span style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>{children}</span>;
+	const inner = (
+		<span className="relative" style={{ display: 'inline-block', transform: `skewX(${isRightSkewed ? '-' : ''}12deg)` }}>
+			{children}
+			{showNew && <span className="absolute -top-2.5 -right-3 text-[9px] font-bold text-primary-foreground leading-none tracking-normal">New</span>}
+		</span>
+	);
 
 	if (href) {
 		return (
