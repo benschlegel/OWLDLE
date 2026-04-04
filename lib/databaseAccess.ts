@@ -92,7 +92,8 @@ export async function logEndlessSession(
 		...(anonymous && { anonymous: true }),
 	};
 
-	// If clientId is provided, upsert: only replace if new streak is better
+	// If clientId is provided, keep only the best streak per clientId.
+	// If a name is provided for a lower/equal streak, update the name on the existing entry.
 	if (clientId) {
 		const filter: Record<string, unknown> = { dataset, clientId };
 		if (filters !== undefined) {
@@ -102,13 +103,26 @@ export async function logEndlessSession(
 			filter.filters = { $exists: false };
 		}
 
-		return endlessLogCollection.updateOne({ ...filter, streakLength: { $lt: streakLength } } as any, { $set: doc as any }, { upsert: true }).catch((err) => {
-			// E11000 duplicate key = existing entry has equal or higher streak, just insert a plain log
-			if (err?.code === 11000) {
-				return endlessLogCollection.insertOne({ ...doc, clientId: undefined, name: undefined } as any);
-			}
-			throw err;
-		});
+		const existing = await endlessLogCollection.findOne(filter as any, { projection: { streakLength: 1 } });
+
+		if (!existing) {
+			// First submission for this clientId: insert new doc
+			return endlessLogCollection.insertOne(doc as any);
+		}
+
+		if (streakLength > existing.streakLength) {
+			// New streak is better: replace entire entry
+			return endlessLogCollection.updateOne(filter as any, { $set: doc as any });
+		}
+
+		// Existing entry has equal or higher streak
+		if (name) {
+			// User is providing a name: apply it to their existing entry so it shows on the leaderboard
+			return endlessLogCollection.updateOne(filter as any, { $set: { name } });
+		}
+
+		// No name: insert a plain log entry without clientId (for record-keeping only)
+		return endlessLogCollection.insertOne({ ...doc, clientId: undefined, name: undefined } as any);
 	}
 
 	return endlessLogCollection.insertOne(doc as any);
@@ -127,6 +141,7 @@ export async function getLeaderboard(
 ): Promise<{ entries: DbLeaderboardEntry[]; total: number }> {
 	const match: Record<string, any> = {
 		dataset,
+		streakLength: { $gte: GAME_CONFIG.minLeaderboardStreak },
 		// Include named, anonymous (skip), and legacy entries
 		$or: [{ name: { $exists: true }, clientId: { $exists: true } }, { anonymous: true, clientId: { $exists: true } }, { legacy: true }],
 	};
@@ -182,6 +197,7 @@ export async function getLeaderboardRank(
 ): Promise<number | null> {
 	const match: Record<string, any> = {
 		dataset,
+		streakLength: { $gte: GAME_CONFIG.minLeaderboardStreak },
 		$or: [{ name: { $exists: true }, clientId: { $exists: true } }, { legacy: true }],
 	};
 
