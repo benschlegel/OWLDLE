@@ -7,7 +7,7 @@ import type { Dataset } from '@/data/datasets';
 import type { EndlessFilters } from '@/store/endless-store';
 import { useEndlessStore } from '@/store/endless-store';
 import { GAME_CONFIG } from '@/lib/config';
-import { ChevronLeft, ChevronRight, ChevronsRight, Pencil, Trophy, Check, X, Crosshair } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pencil, Trophy, Check, X, Crosshair } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -243,16 +243,11 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 								Go to me
 							</Button>
 						)}
-						<Button
-							variant="outline"
-							size="sm"
-							className="gap-1 text-xs shrink-0 select-none"
-							onClick={() => setPage(totalPages)}
-							disabled={page >= totalPages}>
-							Go to last
-						</Button>
 					</div>
 					<div className="flex items-center gap-1 ml-auto">
+						<Button variant="outline" size="icon" className="size-7" onClick={() => setPage(1)} disabled={page <= 1}>
+							<ChevronsLeft className="size-4" />
+						</Button>
 						<Button variant="outline" size="icon" className="size-7" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page <= 1}>
 							<ChevronLeft className="size-4" />
 						</Button>
@@ -261,6 +256,9 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 						</span>
 						<Button variant="outline" size="icon" className="size-7" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page >= totalPages}>
 							<ChevronRight className="size-4" />
+						</Button>
+						<Button variant="outline" size="icon" className="size-7" onClick={() => setPage(totalPages)} disabled={page >= totalPages}>
+							<ChevronsRight className="size-4" />
 						</Button>
 					</div>
 				</div>

@@ -132,7 +132,7 @@ export function Navbar() {
 			<nav className="sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
 				{/* Left section*/}
 				<div className="flex items-center sm:flex-none flex-1 self-stretch">
-					<NavButton href="/" className="sm:flex hidden -ml-1 px-5 bg-secondary">
+					<NavButton href="/" className="sm:flex hidden -ml-1 px-5 bg-secondary/50">
 						<Home className="h-5 w-5" />
 					</NavButton>
 
