@@ -36,6 +36,8 @@ function SettingsEntries() {
 	const setIsDevAnswerVisible = useSettings((s) => s.setIsDevAnswerVisible);
 	const areStatsVisible = useSettings((s) => s.areStatsVisible);
 	const setAreStatsVisible = useSettings((s) => s.setAreStatsVisible);
+	const setShowConfetti = useSettings((s) => s.setShowConfetti);
+	const showConfetti = useSettings((s) => s.showConfetti);
 	const { setTheme, theme } = useTheme();
 
 	const onBackgroundSwitch = useCallback(
@@ -57,6 +59,12 @@ function SettingsEntries() {
 			setIsDevAnswerVisible(newState);
 		},
 		[setIsDevAnswerVisible]
+	);
+	const onConfettiSwitch = useCallback(
+		(newState: boolean) => {
+			setShowConfetti(newState);
+		},
+		[setShowConfetti]
 	);
 
 	const handleThemeSwitch = useCallback(
@@ -102,6 +110,13 @@ function SettingsEntries() {
 					description="Show the correct answer in endless mode."
 				/>
 			)}
+			<SettingsSwitchEntry
+				label="Show confetti"
+				id="stats-setting"
+				onSwitch={onConfettiSwitch}
+				initialChecked={showConfetti}
+				description="Show confetti after winning a game."
+			/>
 			<SettingsSwitchEntry
 				label="Show stats"
 				id="stats-setting"

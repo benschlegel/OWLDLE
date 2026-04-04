@@ -111,6 +111,8 @@ export type DbEndlessGameEntry = {
 	guessCount: number;
 	/** Whether this game was won or lost */
 	result: DbGameResult;
+	/** Client-side timestamp of when this game was completed (for anti-abuse timing validation) */
+	completedAt: number;
 };
 
 export type DbLoggedEndlessSession = {
@@ -122,6 +124,19 @@ export type DbLoggedEndlessSession = {
 	games: DbEndlessGameEntry[];
 	/** Timestamp of when the streak ended (game was lost) */
 	finishedAt: Date;
+	/**
+	 * Compact encoding of active filters at time of session (omitted when all defaults).
+	 * region: bitmask for owcs-s3 (EMEA=1, NA=2, Korea=4, CN=8; 15=all active)
+	 */
+	filters?: { region: number; isPartnerOnly: boolean };
+	/** Display name for leaderboard (omitted for anonymous entries) */
+	name?: string;
+	/** Persistent browser identifier for leaderboard dedup (one best entry per clientId per dataset) */
+	clientId?: string;
+	/** If true, submitted anonymously via Skip (shows on leaderboard without a name) */
+	anonymous?: boolean;
+	/** If true, this is a legacy entry promoted to the leaderboard (no clientId dedup) */
+	legacy?: boolean;
 };
 
 export const endlessSaveValidator = z.object({
@@ -131,11 +146,34 @@ export const endlessSaveValidator = z.object({
 			z.object({
 				guessCount: z.number().min(1),
 				result: z.enum(['won', 'lost']),
+				completedAt: z.number(),
 			})
 		)
 		.min(1),
+	filters: z
+		.object({
+			region: z.number().int().min(0),
+			isPartnerOnly: z.boolean(),
+		})
+		.optional(),
+	name: z.string().min(2).max(20).optional(),
+	clientId: z.string().uuid().optional(),
+	anonymous: z.boolean().optional(),
 });
 export type DbEndlessSaveData = z.infer<typeof endlessSaveValidator>;
+
+export type DbLeaderboardEntry = {
+	/** Display name (absent for anonymous entries) */
+	name?: string;
+	/** Best streak length */
+	streakLength: number;
+	/** When this best streak was achieved */
+	finishedAt: Date;
+	/** Client identifier (for highlighting own entry) */
+	clientId: string;
+	/** True for entries submitted via Skip */
+	anonymous?: boolean;
+};
 
 /**
  * Feedback schema + timestamp
