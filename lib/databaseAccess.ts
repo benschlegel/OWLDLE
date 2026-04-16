@@ -239,7 +239,7 @@ export async function getLeaderboardRank(
  * Update the display name on all leaderboard entries for a given clientId.
  */
 export async function updateLeaderboardName(clientId: string, newName: string) {
-	return endlessLogCollection.updateMany({ clientId } as any, { $set: { name: newName } });
+	return endlessLogCollection.updateMany({ clientId } as any, { $set: { name: newName }, $unset: { anonymous: '' } });
 }
 
 /**
@@ -274,6 +274,26 @@ export async function convertLegacyToAnonymousFormat(dataset?: Dataset) {
 		const streamerName = pickStreamerName(doc._id.toString());
 		await endlessLogCollection.updateOne({ _id: doc._id }, { $set: { name: streamerName, anonymous: true } });
 		updated++;
+	}
+	return updated;
+}
+
+/**
+ * Clear the `anonymous` flag from entries that have a user-provided name
+ * (i.e. name exists and does NOT match the deterministic streamer name for that clientId).
+ */
+export async function clearStaleAnonymousFlags(dataset?: Dataset) {
+	const match: Record<string, unknown> = { anonymous: true, clientId: { $exists: true }, name: { $exists: true } };
+	if (dataset) match.dataset = dataset;
+
+	const cursor = endlessLogCollection.find(match as Partial<DbLoggedEndlessSession>);
+	let updated = 0;
+	for await (const doc of cursor) {
+		const streamerName = pickStreamerName(doc.clientId as string);
+		if (doc.name !== streamerName) {
+			await endlessLogCollection.updateOne({ _id: doc._id }, { $unset: { anonymous: '' } });
+			updated++;
+		}
 	}
 	return updated;
 }
