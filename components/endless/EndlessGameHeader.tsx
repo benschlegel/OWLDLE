@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import type { Dataset } from '@/data/datasets';
+import { DEFAULT_OWCS_DATASET_NAME, type Dataset } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { ENDLESS_BACKEND_DISABLED } from '@/hooks/use-endless-game';
 import { SlidersHorizontal, Trophy, UsersIcon } from 'lucide-react';
@@ -20,6 +20,7 @@ export default function EndlessGameHeader({ modeLabel, dataset, seasonSelector, 
 	const { setOpen: setTeamsOpen } = useDialogState('teams');
 	const { setOpen: setLeaderboardOpen } = useDialogState('leaderboard');
 	const { setOpen: setFiltersOpen } = useDialogState('filters');
+	const isLatestDataset = dataset === DEFAULT_OWCS_DATASET_NAME;
 
 	return (
 		<div className="top-0 bg-transparent sm:bg-inherit z-10 pt-4 w-full">
@@ -40,12 +41,13 @@ export default function EndlessGameHeader({ modeLabel, dataset, seasonSelector, 
 					</h1>
 				</div>
 				<div className="flex gap-1">
+					{!isLatestDataset && <div className="size-10" />}
 					{!ENDLESS_BACKEND_DISABLED && (
 						<Button variant="ghost" size="icon" className="p-0" aria-label="Leaderboard" onClick={() => setLeaderboardOpen(true)}>
 							<Trophy className="h-[1.2rem] w-[1.2rem] text-yellow-500" />
 						</Button>
 					)}
-					{dataset === 'owcs-s3' && (
+					{isLatestDataset && (
 						<Button variant="ghost" size="icon" className="p-0" aria-label="Filters" onClick={() => setFiltersOpen(true)}>
 							<SlidersHorizontal className="h-[1.2rem] w-[1.2rem]" />
 						</Button>
