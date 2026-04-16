@@ -283,7 +283,7 @@ export async function convertLegacyToAnonymousFormat(dataset?: Dataset) {
  * (i.e. name exists and does NOT match the deterministic streamer name for that clientId).
  */
 export async function clearStaleAnonymousFlags(dataset?: Dataset) {
-	const match: Record<string, unknown> = { anonymous: true, clientId: { $exists: true }, name: { $exists: true } };
+	const match: Record<string, unknown> = { anonymous: true, clientId: { $exists: true, $ne: null }, name: { $exists: true } };
 	if (dataset) match.dataset = dataset;
 
 	const cursor = endlessLogCollection.find(match as Partial<DbLoggedEndlessSession>);
