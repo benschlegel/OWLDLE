@@ -95,7 +95,10 @@ export function useEndlessGame(datasetName: Dataset) {
 					...(name !== undefined ? { name, clientId } : { anonymous: true, clientId }),
 				}),
 			}).then((res) => {
-				if (res.ok) queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
+				if (res.ok) {
+						queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
+						queryClient.invalidateQueries({ queryKey: ['leaderboard-top5', save.dataset] });
+					}
 			});
 			setPendingSave(null);
 			pendingSaveRef.current = null;

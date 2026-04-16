@@ -136,6 +136,7 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 		});
 
 		queryClient.invalidateQueries({ queryKey: ['leaderboard', dataset, filterKey, page] });
+		queryClient.invalidateQueries({ queryKey: ['leaderboard-top5', dataset, filterKey] });
 	};
 
 	const cancelEditName = () => setEditingName(false);
