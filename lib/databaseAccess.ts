@@ -117,11 +117,16 @@ export async function logEndlessSession(
 
 		// Existing entry has equal or higher streak
 		if (name) {
-			// User is providing a name: apply it to their existing entry so it shows on the leaderboard
-			return endlessLogCollection.updateOne(filter as any, { $set: { name } });
+			// User is providing a name: apply it to their existing entry and clear anonymous flag
+			return endlessLogCollection.updateOne(filter as any, { $set: { name }, $unset: { anonymous: '' } });
 		}
 
-		// No name: insert a plain log entry without clientId (for record-keeping only)
+		if (resolvedName) {
+			// Anonymous submission: ensure the existing entry has the generated streamer name
+			return endlessLogCollection.updateOne(filter as any, { $set: { name: resolvedName, anonymous: true } });
+		}
+
+		// No name and no clientId-based name: insert a plain log entry without clientId (for record-keeping only)
 		return endlessLogCollection.insertOne({ ...doc, clientId: undefined, name: undefined } as any);
 	}
 
