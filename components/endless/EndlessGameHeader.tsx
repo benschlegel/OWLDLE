@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import type { Dataset } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
+import { ENDLESS_BACKEND_DISABLED } from '@/hooks/use-endless-game';
 import { SlidersHorizontal, Trophy, UsersIcon } from 'lucide-react';
 import { Suspense, type ReactNode } from 'react';
 
@@ -39,9 +40,11 @@ export default function EndlessGameHeader({ modeLabel, dataset, seasonSelector, 
 					</h1>
 				</div>
 				<div className="flex gap-1">
-					<Button variant="ghost" size="icon" className="p-0" aria-label="Leaderboard" onClick={() => setLeaderboardOpen(true)}>
-						<Trophy className="h-[1.2rem] w-[1.2rem] text-yellow-500" />
-					</Button>
+					{!ENDLESS_BACKEND_DISABLED && (
+						<Button variant="ghost" size="icon" className="p-0" aria-label="Leaderboard" onClick={() => setLeaderboardOpen(true)}>
+							<Trophy className="h-[1.2rem] w-[1.2rem] text-yellow-500" />
+						</Button>
+					)}
 					{dataset === 'owcs-s3' && (
 						<Button variant="ghost" size="icon" className="p-0" aria-label="Filters" onClick={() => setFiltersOpen(true)}>
 							<SlidersHorizontal className="h-[1.2rem] w-[1.2rem]" />

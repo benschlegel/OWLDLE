@@ -10,6 +10,9 @@ import { type CompactGuess, type EndlessFilters, useEndlessStore } from '@/store
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
+// TODO: revert, temporary flag to disable all endless backend requests (leaderboard + saves)
+export const ENDLESS_BACKEND_DISABLED = true;
+
 const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
 const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, CN: 8 };
 const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
@@ -84,6 +87,11 @@ export function useEndlessGame(datasetName: Dataset) {
 	// Actually send the save request (called after name dialog resolves or immediately for non qualifying runs)
 	const executeSave = useCallback(
 		(save: PendingSave, name?: string) => {
+			if (ENDLESS_BACKEND_DISABLED) {
+				setPendingSave(null);
+				pendingSaveRef.current = null;
+				return;
+			}
 			const { clientId } = leaderboard;
 			fetch(`/api/save-endless?dataset=${save.dataset}`, {
 				method: 'POST',
@@ -96,9 +104,9 @@ export function useEndlessGame(datasetName: Dataset) {
 				}),
 			}).then((res) => {
 				if (res.ok) {
-						queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
-						queryClient.invalidateQueries({ queryKey: ['leaderboard-top5', save.dataset] });
-					}
+					queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
+					queryClient.invalidateQueries({ queryKey: ['leaderboard-top5', save.dataset] });
+				}
 			});
 			setPendingSave(null);
 			pendingSaveRef.current = null;

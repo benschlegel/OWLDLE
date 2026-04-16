@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Dataset } from '@/data/datasets';
 import type { EndlessFilters } from '@/store/endless-store';
 import { useEndlessStore } from '@/store/endless-store';
+import { ENDLESS_BACKEND_DISABLED } from '@/hooks/use-endless-game';
 import { Trophy } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -54,6 +55,7 @@ export default function EndlessRightColumn({ stats, dataset, filters, onOpenLead
 			return res.json();
 		},
 		staleTime: 30_000,
+		enabled: !ENDLESS_BACKEND_DISABLED,
 	});
 
 	const top5 = data?.entries?.slice(0, 5) ?? [];
@@ -90,7 +92,9 @@ export default function EndlessRightColumn({ stats, dataset, filters, onOpenLead
 						</CardHeader>
 						<AccordionContent className="p-0">
 							<CardContent className="p-4 pt-0 space-y-1">
-								{isLoading ? (
+								{ENDLESS_BACKEND_DISABLED ? (
+									<p className="text-xs text-muted-foreground text-center">Leaderboard temporarily unavailable</p>
+								) : isLoading ? (
 									SKELETON_KEYS.map((key) => (
 										<div key={key} className="grid grid-cols-[1.25rem_1fr_2.5rem] gap-2 items-center h-5">
 											<Skeleton className="h-4 w-4 rounded" />
@@ -114,11 +118,15 @@ export default function EndlessRightColumn({ stats, dataset, filters, onOpenLead
 										);
 									})
 								)}
-								<Separator className="mt-2!" />
-								<Button variant="outline" className="w-full gap-2 mt-2!" onClick={onOpenLeaderboard}>
-									<Trophy className="size-4 text-yellow-500" />
-									Leaderboard
-								</Button>
+								{!ENDLESS_BACKEND_DISABLED && (
+									<>
+										<Separator className="mt-2!" />
+										<Button variant="outline" className="w-full gap-2 mt-2!" onClick={onOpenLeaderboard}>
+											<Trophy className="size-4 text-yellow-500" />
+											Leaderboard
+										</Button>
+									</>
+								)}
 							</CardContent>
 						</AccordionContent>
 					</AccordionItem>
