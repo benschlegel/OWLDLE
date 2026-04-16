@@ -1,15 +1,36 @@
+'use client';
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import type { Dataset } from '@/data/datasets';
 import type { EndlessFilters } from '@/store/endless-store';
-import { MedalIcon, Trophy } from 'lucide-react';
+import { useEndlessStore } from '@/store/endless-store';
+import { Trophy } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 
 type EndlessStats = {
 	wins: number;
 	games: number;
 };
+
+type LeaderboardEntry = {
+	name?: string;
+	streakLength: number;
+	clientId: string;
+	anonymous?: boolean;
+};
+
+const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, CN: 8 };
+const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
+
+function encodeFiltersForQuery(filters: EndlessFilters): string {
+	if (filters.regions.length === 0 && !filters.partnerOnly) return '';
+	const activeRegions = filters.regions.length === 0 ? ALL_OWCS_S3_REGIONS : filters.regions;
+	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
+	return `&region=${region}&partnerOnly=${filters.partnerOnly}`;
+}
 
 type Props = {
 	stats: EndlessStats;
@@ -18,9 +39,25 @@ type Props = {
 	onOpenLeaderboard: () => void;
 };
 
-export default function EndlessRightColumn({ stats, onOpenLeaderboard }: Props) {
+export default function EndlessRightColumn({ stats, dataset, filters, onOpenLeaderboard }: Props) {
+	const clientId = useEndlessStore((s) => s.leaderboard.clientId);
+	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${filters.regions.join(',')}-${filters.partnerOnly}`;
+
+	const { data } = useQuery<{ entries: LeaderboardEntry[] }>({
+		queryKey: ['leaderboard', dataset, filterKey, 1],
+		queryFn: async () => {
+			const filterQuery = dataset === 'owcs-s3' ? encodeFiltersForQuery(filters) : '';
+			const res = await fetch(`/api/endless/leaderboard?dataset=${dataset}&page=1&limit=5${filterQuery}`);
+			if (!res.ok) throw new Error('Failed to fetch leaderboard');
+			return res.json();
+		},
+		staleTime: 30_000,
+	});
+
+	const top5 = data?.entries?.slice(0, 5) ?? [];
+
 	return (
-		<div className="hidden xl:block absolute left-full ml-layout-spacing top-endless-top w-layout-width">
+		<div className="hidden xl:block absolute left-full ml-layout-spacing top-endless-top w-layout-width space-y-3">
 			<Card className="transition-colors">
 				<Accordion type="single" collapsible defaultValue="games">
 					<AccordionItem value="games" className="border-b-0">
@@ -35,12 +72,42 @@ export default function EndlessRightColumn({ stats, onOpenLeaderboard }: Props) 
 									<StatCell label="Played" value={stats.games} />
 									<StatCell label="Wins" value={stats.wins} />
 								</div>
-								<Separator />
-								<Button variant="outline" className="w-full gap-2" onClick={onOpenLeaderboard}>
+							</CardContent>
+						</AccordionContent>
+					</AccordionItem>
+				</Accordion>
+			</Card>
+			<Card className="transition-colors">
+				<Accordion type="single" collapsible defaultValue="top5">
+					<AccordionItem value="top5" className="border-b-0">
+						<CardHeader className="p-4">
+							<AccordionTrigger className="py-0 cursor-pointer hover:no-underline">
+								<span className="text-lg font-owl font-semibold leading-none tracking-tight">Top 5</span>
+							</AccordionTrigger>
+						</CardHeader>
+						<AccordionContent className="p-0">
+							<CardContent className="p-4 pt-0 space-y-1">
+								{top5.length === 0 ? (
+									<p className="text-xs text-muted-foreground text-center mb-4">No entries yet</p>
+								) : (
+									top5.map((entry, i) => {
+										const isOwn = entry.clientId === clientId;
+										return (
+											<div key={entry.clientId} className={`grid grid-cols-[1.25rem_1fr_2.5rem] gap-2 items-center text-sm ${isOwn ? 'font-semibold' : ''}`}>
+												<span className="text-muted-foreground tabular-nums text-xs">
+													{i <= 2 ? ['\ud83e\udd47', '\ud83e\udd48', '\ud83e\udd49'][i] : i + 1}
+												</span>
+												<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? 'Anonymous'}</span>
+												<span className="text-right tabular-nums font-mono text-xs">{entry.streakLength}</span>
+											</div>
+										);
+									})
+								)}
+								<Separator className="mt-2!" />
+								<Button variant="outline" className="w-full gap-2 mt-2!" onClick={onOpenLeaderboard}>
 									<Trophy className="size-4 text-yellow-500" />
 									Leaderboard
 								</Button>
-								<p className="text-xs text-muted-foreground pt-0.5 text-center">Leaderboard shows data for your currently selected filters.</p>
 							</CardContent>
 						</AccordionContent>
 					</AccordionItem>
