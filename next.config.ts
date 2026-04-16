@@ -7,6 +7,7 @@ export const TWITTER_LINK = 'https://x.com/owldle';
 export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
 
 const nextConfig: NextConfig = withPlausibleProxy({ customDomain: 'https://plausible.global.bschlegel.com' })({
+	output: 'standalone',
 	images: {
 		// TODO: remove to disable nextjs image optimizations/caching
 		remotePatterns: [

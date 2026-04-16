@@ -1,0 +1,10 @@
+node_modules
+.next
+.env*
+.vercel
+.git
+.million
+coverage
+data-scripts/team-images
+*.tsbuildinfo
+next-env.d.ts

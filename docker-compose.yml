@@ -1,0 +1,12 @@
+services:
+  owldle:
+    build: .
+    restart: unless-stopped
+    container_name: owldle
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=${MONGO_URI}
+      - CRON_SECRET=${CRON_SECRET}
+      - ADMIN_API_TOKEN=${ADMIN_API_TOKEN}
+      - NODE_ENV=production
