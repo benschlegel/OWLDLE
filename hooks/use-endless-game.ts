@@ -10,8 +10,7 @@ import { type CompactGuess, type EndlessFilters, useEndlessStore } from '@/store
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-// TODO: revert, temporary flag to disable all endless backend requests (leaderboard + saves)
-export const ENDLESS_BACKEND_DISABLED = true;
+export const ENDLESS_BACKEND_DISABLED = false;
 
 const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
 const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, CN: 8 };
