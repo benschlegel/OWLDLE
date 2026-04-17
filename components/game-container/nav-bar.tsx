@@ -110,11 +110,15 @@ export function Navbar() {
 	);
 
 	const handleEndlessSelect = useCallback(
-		(value: string) => {
-			// value format: "owl:6" or "owcs:s2"
+		(value: string | null) => {
+			if (!value) return;
+
 			const [mode, season] = value.split(':');
+			if (!mode || !season) return;
+
 			const target = `${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`;
 			const isSamePath = pathname === ENDLESS_PATHNAME;
+
 			viewTransition(() => {
 				if (isSamePath) {
 					window.history.pushState(null, '', target);
