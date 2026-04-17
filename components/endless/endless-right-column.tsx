@@ -9,6 +9,7 @@ import type { Dataset } from '@/data/datasets';
 import type { EndlessFilters } from '@/store/endless-store';
 import { useEndlessStore } from '@/store/endless-store';
 import { ENDLESS_BACKEND_DISABLED } from '@/hooks/use-endless-game';
+import { pickStreamerName } from '@/lib/streamer-names';
 import { Trophy } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 
@@ -113,7 +114,7 @@ export default function EndlessRightColumn({ stats, dataset, filters, onOpenLead
 												<span className="text-muted-foreground tabular-nums text-xs text-center">
 													{i <= 2 ? ['\ud83e\udd47', '\ud83e\udd48', '\ud83e\udd49'][i] : i + 1}
 												</span>
-												<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? 'Anonymous'}</span>
+												<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? pickStreamerName(entry.clientId)}</span>
 												<span className="text-right tabular-nums font-mono text-xs">{entry.streakLength}</span>
 											</div>
 										);
