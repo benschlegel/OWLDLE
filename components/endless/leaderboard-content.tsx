@@ -7,6 +7,7 @@ import type { Dataset } from '@/data/datasets';
 import type { EndlessFilters } from '@/store/endless-store';
 import { useEndlessStore } from '@/store/endless-store';
 import { GAME_CONFIG } from '@/lib/config';
+import { pickStreamerName } from '@/lib/streamer-names';
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, Pencil, Trophy, Check, X, Crosshair } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -229,7 +230,7 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 										key={rank}
 										className={`grid grid-cols-[2.5rem_1fr_3.5rem_5.5rem] gap-2 px-2 items-center text-sm ${ROW_HEIGHT_CLASS} ${isOwn ? 'bg-primary/10 font-semibold' : ''}`}>
 										<span className="text-muted-foreground tabular-nums">{rank <= 3 ? ['\ud83e\udd47', '\ud83e\udd48', '\ud83e\udd49'][rank - 1] : rank}</span>
-										<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? 'Anonymous'}</span>
+										<span className={`truncate ${entry.anonymous ? 'text-muted-foreground italic' : ''}`}>{entry.name ?? pickStreamerName(entry.clientId)}</span>
 										<span className="text-right tabular-nums font-mono">{entry.streakLength}</span>
 										<span className="text-right text-xs text-muted-foreground tabular-nums">{formatDate(entry.finishedAt)}</span>
 									</div>
