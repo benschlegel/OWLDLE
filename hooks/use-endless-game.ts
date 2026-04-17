@@ -17,8 +17,9 @@ const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, 
 const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
 
 function encodeFiltersForDb(filters: EndlessFilters): { region: number; isPartnerOnly: boolean } | undefined {
-	if (filters.regions.length === 0 && !filters.partnerOnly) return undefined;
-	const activeRegions = filters.regions.length === 0 ? ALL_OWCS_S3_REGIONS : filters.regions;
+	const regions = filters.regions ?? [];
+	if (regions.length === 0 && !filters.partnerOnly) return undefined;
+	const activeRegions = regions.length === 0 ? ALL_OWCS_S3_REGIONS : regions;
 	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
 	return { region, isPartnerOnly: filters.partnerOnly };
 }
@@ -44,8 +45,9 @@ export function useEndlessGame(datasetName: Dataset) {
 
 	const filteredPlayers = useMemo(() => {
 		let result = players;
-		if (filters.regions.length > 0) {
-			result = result.filter((p) => filters.regions.includes(p.region ?? ''));
+		const regions = filters.regions ?? [];
+		if (regions.length > 0) {
+			result = result.filter((p) => regions.includes(p.region ?? ''));
 		}
 		if (filters.partnerOnly) {
 			result = result.filter((p) => (PARTNERED_TEAMS_OWCS_S3 as readonly string[]).includes(p.team as string));

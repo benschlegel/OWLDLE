@@ -18,11 +18,7 @@ export default function EndlessSeasonSelector() {
 			if (!info) return;
 			const mode = info.league;
 			const season = mode === 'owcs' ? value.slice('owcs-'.length) : value.slice('season'.length);
-			const target = `${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`;
-			viewTransition(() => {
-				window.history.pushState(null, '', target);
-				router.refresh();
-			});
+			viewTransition(() => router.push(`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`));
 		},
 		[router]
 	);
