@@ -75,14 +75,6 @@ export function Navbar() {
 		return () => window.removeEventListener('keydown', handleKeyDown);
 	}, []);
 
-	// const handleOwlSelect = useCallback(
-	// 	(value: string) => {
-	// 		const season = value.slice('season'.length);
-	// 		const target = `${OWL_PATHNAME}?season=${season}`;
-	// 		viewTransition(() => (pathname === OWL_PATHNAME ? router.replace(target) : router.push(target)));
-	// 	},
-	// 	[router, pathname]
-	// );
 	const handleOwlSelect = useCallback(
 		(value: string) => {
 			const season = value.slice('season'.length);
@@ -96,7 +88,6 @@ export function Navbar() {
 					router.push(target);
 				}
 			});
-			viewTransition(() => (pathname === OWL_PATHNAME ? router.replace(target) : router.push(target)));
 		},
 		[router, pathname]
 	);
@@ -122,9 +113,18 @@ export function Navbar() {
 		(value: string) => {
 			// value format: "owl:6" or "owcs:s2"
 			const [mode, season] = value.split(':');
-			viewTransition(() => router.push(`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`));
+			const target = `${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`;
+			const isSamePath = pathname === ENDLESS_PATHNAME;
+			viewTransition(() => {
+				if (isSamePath) {
+					window.history.pushState(null, '', target);
+					router.refresh();
+				} else {
+					router.push(target);
+				}
+			});
 		},
-		[router]
+		[router, pathname]
 	);
 
 	return (
