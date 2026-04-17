@@ -55,6 +55,7 @@ export default function EndlessRightColumn({ stats, dataset, filters, onOpenLead
 			return res.json();
 		},
 		staleTime: 30_000,
+		gcTime: 0,
 		enabled: !ENDLESS_BACKEND_DISABLED,
 	});
 
