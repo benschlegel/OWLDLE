@@ -54,7 +54,7 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 	const isLatestSeason = pathname === ENDLESS_PATHNAME && dataset.dataset === 'owcs-s3';
 	const filters: EndlessFilters = isLatestSeason && filtersFromStore ? filtersFromStore : DEFAULT_FILTERS;
 
-	const isRegionActive = (region: string) => !isLatestSeason || filters.regions.length === 0 || filters.regions.includes(region);
+	const isRegionActive = (region: string) => !isLatestSeason || (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
 
 	const partnerSet = new Set<string>(isLatestSeason && filters.partnerOnly ? (PARTNERED_TEAMS_OWCS_S3 as ReadonlyArray<string>) : []);
 	const filterTeams = (teams: readonly string[]) => (partnerSet.size > 0 ? teams.filter((t) => partnerSet.has(t)) : [...teams]);

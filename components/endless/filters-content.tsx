@@ -26,11 +26,11 @@ export default function FiltersContent({ dataset, setOpen }: Props) {
 	const updateFilters = useEndlessStore((s) => s.updateFilters);
 	const { setOpen: setTeamsOpen } = useDialogState('teams');
 
-	const isRegionActive = (region: OwcsS3Region) => filters.regions.length === 0 || filters.regions.includes(region);
+	const isRegionActive = (region: OwcsS3Region) => (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
 
 	const toggleRegion = (region: OwcsS3Region) => {
 		const allRegions = [...OWCS_S3_REGIONS];
-		const current = filters.regions;
+		const current = filters.regions ?? [];
 		let newRegions: string[];
 		if (current.length === 0) {
 			newRegions = allRegions.filter((r) => r !== region);

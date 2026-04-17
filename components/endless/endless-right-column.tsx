@@ -30,8 +30,9 @@ const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, 
 const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
 
 function encodeFiltersForQuery(filters: EndlessFilters): string {
-	if (filters.regions.length === 0 && !filters.partnerOnly) return '';
-	const activeRegions = filters.regions.length === 0 ? ALL_OWCS_S3_REGIONS : filters.regions;
+	const regions = filters.regions ?? [];
+	if (regions.length === 0 && !filters.partnerOnly) return '';
+	const activeRegions = regions.length === 0 ? ALL_OWCS_S3_REGIONS : regions;
 	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
 	return `&region=${region}&partnerOnly=${filters.partnerOnly}`;
 }
@@ -45,7 +46,7 @@ type Props = {
 
 export default function EndlessRightColumn({ stats, dataset, filters, onOpenLeaderboard }: Props) {
 	const clientId = useEndlessStore((s) => s.leaderboard.clientId);
-	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${filters.regions.join(',')}-${filters.partnerOnly}`;
+	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${(filters.regions ?? []).join(',')}-${filters.partnerOnly}`;
 
 	const { data } = useQuery<{ entries: LeaderboardEntry[] }>({
 		queryKey: ['leaderboard-top5', dataset, filterKey],

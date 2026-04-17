@@ -215,11 +215,20 @@ export const useEndlessStore = create<EndlessStore>()(
 		}),
 		{
 			name: ENDLESS_STORE_KEY,
-			// Ensure clientId is never lost on rehydration (generate if missing from old storage)
+			// Ensure clientId is never lost and filters are always complete on rehydration
 			merge: (persisted, current) => {
 				const merged = { ...current, ...(persisted as Partial<EndlessStore>) };
 				if (!merged.leaderboard?.clientId) {
 					merged.leaderboard = { ...merged.leaderboard, clientId: generateClientId() };
+				}
+				// Sanitize persisted dataset entries: ensure filters always have required fields
+				if (merged.datasets) {
+					for (const key of Object.keys(merged.datasets) as Array<keyof typeof merged.datasets>) {
+						const entry = merged.datasets[key];
+						if (entry && (!entry.filters || !Array.isArray(entry.filters.regions))) {
+							merged.datasets[key] = { ...entry, filters: { ...defaultFilters, ...entry.filters } };
+						}
+					}
 				}
 				return merged;
 			},
