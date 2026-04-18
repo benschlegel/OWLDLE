@@ -226,7 +226,14 @@ export const useEndlessStore = create<EndlessStore>()(
 					for (const key of Object.keys(merged.datasets) as Array<keyof typeof merged.datasets>) {
 						const entry = merged.datasets[key];
 						if (entry && (!entry.filters || !Array.isArray(entry.filters.regions))) {
-							merged.datasets[key] = { ...entry, filters: { ...defaultFilters, ...entry.filters } };
+							merged.datasets[key] = {
+								...entry,
+								filters: {
+									...defaultFilters,
+									...entry.filters,
+									regions: Array.isArray(entry.filters?.regions) ? entry.filters.regions : defaultFilters.regions,
+								},
+							};
 						}
 					}
 				}

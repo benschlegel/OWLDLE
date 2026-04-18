@@ -23,7 +23,8 @@ export const STREAMER_MODE_NAMES = [
 ] as const;
 
 // Deterministically pick a streamer mode name from a clientId.
-export function pickStreamerName(clientId: string): string {
+export function pickStreamerName(clientId: string | null | undefined): string {
+	if (!clientId) return STREAMER_MODE_NAMES[0];
 	let hash = 0;
 	for (let i = 0; i < clientId.length; i++) {
 		hash = Math.imul(31, hash) + clientId.charCodeAt(i);

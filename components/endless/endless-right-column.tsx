@@ -111,7 +111,7 @@ export default function EndlessRightColumn({ stats, dataset, filters, onOpenLead
 									top5.map((entry, i) => {
 										const isOwn = entry.clientId === clientId;
 										return (
-											<div key={entry.clientId} className={`grid grid-cols-[1.25rem_1fr_2.5rem] gap-2 items-center text-sm ${isOwn ? 'font-semibold' : ''}`}>
+											<div key={entry.clientId ?? `pos-${i}`} className={`grid grid-cols-[1.25rem_1fr_2.5rem] gap-2 items-center text-sm ${isOwn ? 'font-semibold' : ''}`}>
 												<span className="text-muted-foreground tabular-nums text-xs text-center">
 													{i <= 2 ? ['\ud83e\udd47', '\ud83e\udd48', '\ud83e\udd49'][i] : i + 1}
 												</span>
