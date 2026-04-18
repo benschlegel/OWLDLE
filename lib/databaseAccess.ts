@@ -20,7 +20,7 @@ import type {
 	DbGameResult,
 	DbGameStats,
 } from '@/types/database';
-import { type ClientSession, MongoClient } from 'mongodb';
+import { type ClientSession, type Filter, type FilterOperators, MongoClient } from 'mongodb';
 
 let useDevDatabase = false;
 if (process.env.NODE_ENV !== 'production') {
@@ -88,7 +88,7 @@ export async function logEndlessSession(
 		finishedAt: new Date(),
 		...(filters !== undefined && { filters }),
 		...(resolvedName !== undefined && { name: resolvedName }),
-		...(clientId !== undefined && { clientId }),
+		...(clientId != null && { clientId }),
 		...(anonymous && { anonymous: true }),
 	};
 
@@ -148,7 +148,7 @@ export async function getLeaderboard(
 		dataset,
 		streakLength: { $gte: GAME_CONFIG.minLeaderboardStreak },
 		// Include named, anonymous (skip), and legacy entries
-		$or: [{ name: { $exists: true }, clientId: { $exists: true } }, { anonymous: true, clientId: { $exists: true } }, { legacy: true }],
+		$or: [{ name: { $exists: true }, clientId: { $exists: true, $ne: null } }, { anonymous: true, clientId: { $exists: true, $ne: null } }, { legacy: true }],
 	};
 
 	if (filters !== undefined) {
@@ -203,7 +203,7 @@ export async function getLeaderboardRank(
 	const match: Record<string, any> = {
 		dataset,
 		streakLength: { $gte: GAME_CONFIG.minLeaderboardStreak },
-		$or: [{ name: { $exists: true }, clientId: { $exists: true } }, { legacy: true }],
+		$or: [{ name: { $exists: true }, clientId: { $exists: true, $ne: null } }, { legacy: true }],
 	};
 
 	if (filters !== undefined) {
@@ -315,6 +315,17 @@ export async function markLegacyLeaderboardEntries(dataset: Dataset, minStreak: 
 			$set: { name: legacyName, legacy: true },
 		} as any
 	);
+}
+
+/**
+ * Delete all endless_game_logs entries where clientId is explicitly null (polluting leaderboard)
+ */
+export async function deleteNullClientIdEntries(dataset?: Dataset): Promise<number> {
+	// $type: 'null' matches only BSON null, not missing fields (avoids deleting legacy entries)
+	const clientIdFilter: FilterOperators<string> = { $type: 'null' };
+	const filter: Filter<DbLoggedEndlessSession> = { clientId: clientIdFilter, ...(dataset !== undefined && { dataset }) };
+	const result = await endlessLogCollection.deleteMany(filter);
+	return result.deletedCount;
 }
 
 /**
