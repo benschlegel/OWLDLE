@@ -108,7 +108,7 @@ const WESTERN_S6 = [
 	'WashingtonJustice',
 ] as const;
 
-const EMEA_OWCS_S1: readonly string[] = [
+const EMEA_OWCS_S1 = [
 	'ENCE',
 	'VirtusPro',
 	'SpacestationGaming',
@@ -125,8 +125,8 @@ const EMEA_OWCS_S1: readonly string[] = [
 	'Hypnos',
 	'Metaboiz',
 	'Vendetta',
-];
-const NA_OWCS_S1: readonly string[] = [
+] as const;
+const NA_OWCS_S1 = [
 	'TorontoDefiant',
 	'NRGShock',
 	'NTMR',
@@ -143,8 +143,8 @@ const NA_OWCS_S1: readonly string[] = [
 	'RadxAvidity',
 	'BlastOffBuds',
 	'YFPGaming',
-];
-const KR_OWCS_S1: readonly string[] = ['TeamFalcons', 'CrazyRaccoon', 'ZETADIVISION', 'Fnatic', 'HaeJeokDan', 'VEC', 'PokerFace', 'OldOcean'];
+] as const;
+const KR_OWCS_S1 = ['TeamFalcons', 'CrazyRaccoon', 'ZETADIVISION', 'Fnatic', 'HaeJeokDan', 'VEC', 'PokerFace', 'OldOcean'] as const;
 
 const EMEA_OWCS_S2 = ['AlQadsiah', 'TwistedMinds', 'VirtusPro', 'GenG', 'TeamPeps', 'TeamVision', 'GoudGuysANM', 'QuickEsports'] as const;
 const NA_OWCS_S2 = ['GeekayEsports', 'TeamLiquid', 'NTMR', 'SpacestationGaming', 'SakuraEsports', 'Extinction', 'TeamZ', 'DhillDucks'] as const;

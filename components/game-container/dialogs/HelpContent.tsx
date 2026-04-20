@@ -11,6 +11,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
+import { getDisabledTeams } from '@/data/disabledTeams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { useDialogParams } from '@/hooks/use-dialog-param';
 import { useHelpDialogStore } from '@/store/help-dialog-store';
@@ -61,14 +62,14 @@ function InlineCode({ children }: { children: React.ReactNode }) {
 	return <code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm font-semibold">{children}</code>;
 }
 
-function TeamGroup({ title, teams }: { title: string; teams: string[] }) {
+function TeamGroup({ title, teams, disabledTeams = [] }: { title: string; teams: string[]; disabledTeams?: readonly string[] }) {
 	return (
 		<div className="flex flex-col">
 			<h3 className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight font-owl opacity-90">{title}</h3>
 			<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 				{teams?.map((team) => (
-					<div className="w-14 sm:w-[4.5rem] h-14 sm:h-[4.5rem]" key={team}>
-						<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+					<div className="w-14 sm:w-18 h-14 sm:h-18" key={team}>
+						<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" dailyDisabled={disabledTeams.includes(team)} />
 					</div>
 				))}
 			</div>
@@ -87,7 +88,7 @@ export default function HelpContent({ setOpen }: Props) {
 	}, [setOpen]);
 
 	return (
-		<DialogContent className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7" aria-describedby="Tutorial on how to play the game">
+		<DialogContent className="sm:max-w-3xl max-h-full py-6 px-3 md:px-7" aria-describedby="Tutorial on how to play the game">
 			<DialogHeader>
 				<DialogTitle className="flex flex-row gap-2 items-center text-left font-owl">
 					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
@@ -222,6 +223,7 @@ export default function HelpContent({ setOpen }: Props) {
 function OWLTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
+	const disabledTeams = getDisabledTeams(dataset.dataset);
 
 	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
 	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
@@ -235,8 +237,8 @@ function OWLTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 				<span className="text-primary-foreground">{dataset.name}</span> had the following teams:
 			</p>
 			<div className="flex flex-col gap-3">
-				<TeamGroup title={atlanticText} teams={atlanticTeams ?? []} />
-				<TeamGroup title={pacificText} teams={pacificTeams ?? []} />
+				<TeamGroup title={atlanticText} teams={atlanticTeams ?? []} disabledTeams={disabledTeams} />
+				<TeamGroup title={pacificText} teams={pacificTeams ?? []} disabledTeams={disabledTeams} />
 			</div>
 		</>
 	);
@@ -248,6 +250,7 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 	const koreaTeams = getKr(dataset.dataset);
 	const cnTeams = getCn(dataset.dataset);
 	const hasCn = cnTeams && cnTeams.length > 0;
+	const disabledTeams = getDisabledTeams(dataset.dataset);
 
 	return (
 		<>
@@ -262,10 +265,10 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 				. <span className="text-primary-foreground">{dataset.name}</span> has the following teams:
 			</p>
 			<div className="flex flex-col gap-3">
-				<TeamGroup title="EMEA" teams={emeaTeams ?? []} />
-				<TeamGroup title="North America" teams={naTeams ?? []} />
-				<TeamGroup title="Korea" teams={koreaTeams ?? []} />
-				{hasCn && <TeamGroup title="China" teams={cnTeams} />}
+				<TeamGroup title="EMEA" teams={emeaTeams ?? []} disabledTeams={disabledTeams} />
+				<TeamGroup title="North America" teams={naTeams ?? []} disabledTeams={disabledTeams} />
+				<TeamGroup title="Korea" teams={koreaTeams ?? []} disabledTeams={disabledTeams} />
+				{hasCn && <TeamGroup title="China" teams={cnTeams} disabledTeams={disabledTeams} />}
 			</div>
 		</>
 	);

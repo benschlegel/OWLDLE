@@ -5,11 +5,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
 import { type FormattedPlayer, PLAYERS_S1 } from '@/data/players/formattedPlayers';
+import { ENDLESS_PATHNAME } from '@/data/datasets';
+import { getDisabledTeams } from '@/data/disabledTeams';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import type { Player } from '@/types/players';
 import { UserIcon } from 'lucide-react';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	placeholder?: string;
@@ -21,7 +24,13 @@ export default function SearchDialog({ className }: Props) {
 	const [searchValue, setSearchValue] = useState('');
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
-	const players = dataset.playerData;
+	const pathname = usePathname();
+	const players = useMemo(() => {
+		if (pathname === ENDLESS_PATHNAME) return dataset.playerData;
+		const disabled = getDisabledTeams(dataset.dataset);
+		if (disabled.length === 0) return dataset.playerData;
+		return dataset.playerData.filter((p) => !disabled.includes(p.team as string));
+	}, [dataset, pathname]);
 
 	const [open, setOpen] = useState(false);
 

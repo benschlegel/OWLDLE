@@ -13,9 +13,11 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	disableBorder?: boolean;
 	useTabIndex?: boolean;
 	debounceTime?: number;
+	/** Whether this team is disabled (can't be a valid guess, only available in endless) */
+	dailyDisabled?: boolean;
 }
 
-export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false, debounceTime = 100 }: Props) {
+export default function TeamLogo({ teamName, className, useTabIndex, disableBorder = false, debounceTime = 100, dailyDisabled = false }: Props) {
 	const { open, setOpen, triggerRef, touchHandlers } = useMobileTooltip();
 	const [dataset, _] = useContext(DatasetContext);
 	const team = getTeamLogo(dataset.dataset, teamName ?? '');
@@ -30,7 +32,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 						<div
 							ref={triggerRef as React.RefObject<HTMLDivElement>}
 							className={cn(
-								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''}`,
+								`rounded-md relative w-full ${useTabIndex ? 'focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1' : ''} ${dailyDisabled ? 'dark:opacity-20 opacity-50' : ''}`,
 								className
 							)}
 							style={{
@@ -57,12 +59,17 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 									className="h-auto w-auto max-h-full max-w-full object-contain"
 								/>
 							</div>
+							{dailyDisabled && (
+								<div className="absolute inset-0 overflow-hidden rounded-md pointer-events-none">
+									<div className="absolute top-1/2 left-[-10%] right-[-10%] h-0.5 bg-destructive -rotate-38 origin-center" />
+								</div>
+							)}
 						</div>
 					</div>
 				</TooltipTrigger>
 				{useTabIndex && (
 					<TooltipContent style={{ backgroundColor: team.backgroundColor, color: team.useDarkForeground ? '#1a1a1e' : '#dfdfd7' }}>
-						<p>{team.displayName}</p>
+						<p>{dailyDisabled ? 'Only available in endless mode' : team.displayName}</p>
 					</TooltipContent>
 				)}
 			</Tooltip>
