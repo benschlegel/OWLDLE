@@ -83,7 +83,7 @@ export default function FeedbackContent({ setOpen }: Props) {
 				</div>
 				<div className="grid grid-cols-4 items-center gap-3">
 					<Label htmlFor="contactInfo" className="text-left w-full col-span-4">
-						Contact info <span className="opacity-60">(optional)</span>
+						Contact Info <span className="opacity-60">(optional)</span>
 					</Label>
 					<Input
 						id="contactInfo"
