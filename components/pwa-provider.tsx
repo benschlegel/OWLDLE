@@ -10,6 +10,15 @@ type BeforeInstallPromptEvent = Event & {
 const DISMISSED_KEY = 'pwa-install-dismissed';
 const GAME_COMPLETED_KEY = 'pwa-game-completed';
 const GAME_COMPLETED_EVENT = 'pwa-game-completed';
+const AUTO_PROMPTED_KEY = 'pwa-auto-prompted';
+
+function hasAutoPrompted(): boolean {
+	try {
+		return localStorage.getItem(AUTO_PROMPTED_KEY) === '1';
+	} catch {
+		return false;
+	}
+}
 
 function isDismissed(): boolean {
 	try {
@@ -96,19 +105,30 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 		setDismissed(isDismissed());
 		setHasCompletedGame(hasCompletedGameInStorage());
 
-		function handleBeforeInstallPrompt(e: Event) {
-			console.log('beforeinstallprompt fired');
-			e.preventDefault();
-			deferredPromptRef.current = e as BeforeInstallPromptEvent;
-			setCanInstall(true);
-		}
-
 		function handleGameCompleted() {
 			setHasCompletedGame(true);
 		}
+		window.addEventListener(GAME_COMPLETED_EVENT, handleGameCompleted);
+
+		function handleBeforeInstallPrompt(e: Event) {
+			e.preventDefault();
+			const promptEvent = e as BeforeInstallPromptEvent;
+			deferredPromptRef.current = promptEvent;
+			setCanInstall(true);
+
+			// Auto-show native prompt on first visit instead of waiting for user interaction.
+			if (!hasAutoPrompted()) {
+				try {
+					localStorage.setItem(AUTO_PROMPTED_KEY, '1');
+				} catch {}
+				promptEvent.prompt().then(() => {
+					deferredPromptRef.current = null;
+					setCanInstall(false);
+				});
+			}
+		}
 
 		window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-		window.addEventListener(GAME_COMPLETED_EVENT, handleGameCompleted);
 		return () => {
 			window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
 			window.removeEventListener(GAME_COMPLETED_EVENT, handleGameCompleted);
@@ -117,11 +137,9 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 
 	const install = useCallback(async () => {
 		const prompt = deferredPromptRef.current;
-
 		if (prompt) {
 			await prompt.prompt();
 			const { outcome } = await prompt.userChoice;
-
 			if (outcome === 'accepted') {
 				deferredPromptRef.current = null;
 				setCanInstall(false);
