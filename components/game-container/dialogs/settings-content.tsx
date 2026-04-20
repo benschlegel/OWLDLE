@@ -38,6 +38,8 @@ function SettingsEntries() {
 	const setAreStatsVisible = useSettings((s) => s.setAreStatsVisible);
 	const setShowConfetti = useSettings((s) => s.setShowConfetti);
 	const showConfetti = useSettings((s) => s.showConfetti);
+	const areCreditsVisible = useSettings((s) => s.areCreditsVisible);
+	const setAreCreditsVisible = useSettings((s) => s.setAreCreditsVisible);
 	const { setTheme, theme } = useTheme();
 
 	const onBackgroundSwitch = useCallback(
@@ -65,6 +67,13 @@ function SettingsEntries() {
 			setShowConfetti(newState);
 		},
 		[setShowConfetti]
+	);
+
+	const onCreditsSwitch = useCallback(
+		(newState: boolean) => {
+			setAreCreditsVisible(newState);
+		},
+		[setAreCreditsVisible]
 	);
 
 	const handleThemeSwitch = useCallback(
@@ -130,6 +139,13 @@ function SettingsEntries() {
 				onSwitch={onBackgroundSwitch}
 				initialChecked={isBackgroundEnabled}
 				description="Whether to show background or not."
+			/>
+			<SettingsSwitchEntry
+				label="Show credits"
+				id="credits-setting"
+				onSwitch={onCreditsSwitch}
+				initialChecked={areCreditsVisible}
+				description="Show the 'Made by' footer."
 			/>
 			<SettingsSelectEntry entries={themes} initialValue={theme} id="theme-setting" onSelect={onThemeSelect} label="Theme" description="Set page theme." />
 		</>

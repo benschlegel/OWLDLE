@@ -9,6 +9,8 @@ import { DEFAULT_DATASET, getDataset, isOwcsDataset, type CombinedDatasetMetadat
 import { DatasetContext } from '@/context/DatasetContext';
 import { useMemo, useContext, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { GamepadIcon } from 'lucide-react';
+import Socials from '@/components/landing-page/socials';
+import { useSettings } from '@/store/settings-store';
 
 export default function EndlessPageWrapper() {
 	const { dataset } = useEndlessParams();
@@ -18,6 +20,7 @@ export default function EndlessPageWrapper() {
 		(): [CombinedDatasetMetadata, Dispatch<SetStateAction<CombinedDatasetMetadata>>] => [datasetMetadata, () => {}],
 		[datasetMetadata]
 	);
+	const areCreditsVisible = useSettings((s) => s.areCreditsVisible);
 
 	// Sync to root DatasetContext so dialogs rendered outside this tree (e.g. TeamsDialog, HelpContent) see the correct dataset
 	const [, setRootDataset] = useContext(DatasetContext);
@@ -28,8 +31,19 @@ export default function EndlessPageWrapper() {
 	return (
 		<DatasetContext.Provider value={datasetContextValue}>
 			<div className="relative animate-in fade-in duration-300">
-				<EndlessGameHeader topLabel={<EndlessHeaderBadge />} modeLabel={modeLabel} dataset={dataset} seasonSelector={<EndlessSeasonSelector />} seasonTitle={<EndlessSeasonTitle />} />
+				<EndlessGameHeader
+					topLabel={<EndlessHeaderBadge />}
+					modeLabel={modeLabel}
+					dataset={dataset}
+					seasonSelector={<EndlessSeasonSelector />}
+					seasonTitle={<EndlessSeasonTitle />}
+				/>
 				<EndlessGame dataset={dataset} />
+				{areCreditsVisible && (
+					<div className="-mt-1 mb-2">
+						<Socials />
+					</div>
+				)}
 			</div>
 		</DatasetContext.Provider>
 	);

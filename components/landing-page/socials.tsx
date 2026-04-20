@@ -14,8 +14,8 @@ export const DONATION_LINK = 'https://ko-fi.com/scorer5';
 const socials: SocialProps[] = [
 	{
 		socialName: 'Twitter',
-		socialLink: 'https://x.com/thalindore',
-		socialValue: '@thalindore',
+		socialLink: 'https://x.com/owldle',
+		socialValue: '@owldle',
 		children: <TwitterIcon className="w-[1.1rem] h-[1.1rem] mb-[0.1rem]" />,
 	},
 	{
@@ -45,14 +45,16 @@ export const GITHUB_LINK = 'https://github.com/benschlegel/OWLDLE';
 export default function Socials() {
 	const plausible = usePlausible<PlausibleEvents>();
 	return (
-		<div className="pointer-events-auto flex relative justify-center items-center opacity-60 sm:text-xs">
+		<div className="pointer-events-auto flex relative justify-center items-center opacity-70 sm:text-xs">
 			<div className="text-sm font-medium leading-none">
 				Made with ❤️ by{' '}
 				<Popover>
 					<PopoverTrigger asChild>
 						<Button variant="link" className="p-0 h-auto transition-colors duration-200" name="Show socials" onClick={() => plausible('openSocials')}>
-							<code className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold" style={{ fontFamily: 'var(--font-geist-mono)' }}>
-								@scorer5
+							<code
+								className="relative rounded bg-muted px-[0.3rem] py-[0.2rem] text-sm font-semibold text-primary-foreground"
+								style={{ fontFamily: 'var(--font-geist-mono)' }}>
+								scorer5
 							</code>
 						</Button>
 					</PopoverTrigger>

@@ -10,11 +10,14 @@ type SettingsStore = {
 	setAreStatsVisible: (newState: boolean) => void;
 	showConfetti: boolean;
 	setShowConfetti: (newState: boolean) => void;
+	areCreditsVisible: boolean;
+	setAreCreditsVisible: (newState: boolean) => void;
 };
 
 export const DEFAULT_IS_BACKGROUND_ENABLED = true;
 export const DEFAULT_ARE_STATS_VISIBLE = true;
 export const DEFAULT_SHOW_CONFETTI = true;
+export const DEFAULT_ARE_CREDITS_VISIBLE = true;
 
 export const SETTINGS_STORE_KEY = 'settings';
 
@@ -29,6 +32,8 @@ export const useSettings = create<SettingsStore>()(
 			setAreStatsVisible: (newState) => set({ areStatsVisible: newState }),
 			showConfetti: DEFAULT_SHOW_CONFETTI,
 			setShowConfetti: (newState) => set({ showConfetti: newState }),
+			areCreditsVisible: DEFAULT_ARE_CREDITS_VISIBLE,
+			setAreCreditsVisible: (newState) => set({ areCreditsVisible: newState }),
 		})),
 		{
 			name: SETTINGS_STORE_KEY,
