@@ -9,6 +9,8 @@ import { notFound } from 'next/navigation';
 import React from 'react';
 import RightColumn from '@/components/game-container/right-column';
 import LeftColumn from '@/components/game-container/left-column';
+import Socials from '@/components/landing-page/socials';
+import { useSettings } from '@/store/settings-store';
 
 // Predefined valid seasons
 const validSeasons = DATASETS;
@@ -17,6 +19,7 @@ const MemoizedHeader = React.memo(Header);
 
 export default function SeasonPageWrapper() {
 	const [season, _setSeason] = useSeasonParams();
+	const areCreditsVisible = useSettings((s) => s.areCreditsVisible);
 
 	// Check if valid season was provided
 	if (validSeasons.includes(season as unknown as Dataset)) {
@@ -27,6 +30,11 @@ export default function SeasonPageWrapper() {
 				<UpdateMetadata />
 				<MemoizedHeader />
 				<GamePage slug={season} />
+				{areCreditsVisible && (
+					<div className="-mt-1 mb-2">
+						<Socials />
+					</div>
+				)}
 			</div>
 		);
 	}
