@@ -6,6 +6,8 @@ import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxList } from '@/compon
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
 import type { FormattedPlayer } from '@/data/players/formattedPlayers';
+import { ENDLESS_PATHNAME } from '@/data/datasets';
+import { getDisabledTeams } from '@/data/disabledTeams';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
@@ -16,6 +18,7 @@ import { useVirtualizer } from '@tanstack/react-virtual';
 import Fuse, { type IFuseOptions } from 'fuse.js';
 import { Dices, Search, UserIcon } from 'lucide-react';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 const ITEM_HEIGHT = 44;
 
@@ -40,7 +43,13 @@ export default function PlayerSearch({ className }: Props) {
 	const inputRef = useRef<HTMLInputElement>(null);
 	const { toast } = useToast();
 	const isMobile = useIsMobile();
-	const players = dataset.playerData;
+	const pathname = usePathname();
+	const players = useMemo(() => {
+		if (pathname === ENDLESS_PATHNAME) return dataset.playerData;
+		const disabled = getDisabledTeams(dataset.dataset);
+		if (disabled.length === 0) return dataset.playerData;
+		return dataset.playerData.filter((p) => !disabled.includes(p.team as string));
+	}, [dataset, pathname]);
 
 	// Fuse.js lazy initialization, index is only built on first non-empty query (perf optimization)
 	const fuseRef = useRef<Fuse<Player> | null>(null);

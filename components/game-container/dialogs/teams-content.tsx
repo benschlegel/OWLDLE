@@ -6,6 +6,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { ENDLESS_PATHNAME, type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific, PARTNERED_TEAMS_OWCS_S3 } from '@/data/teams/teams';
+import { getDisabledTeams } from '@/data/disabledTeams';
 import { useEndlessStore, type EndlessFilters } from '@/store/endless-store';
 import { CircleHelpIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
@@ -17,14 +18,14 @@ type Props = {
 
 const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
 
-function TeamGroup({ title, teams }: { title: string; teams: string[] }) {
+function TeamGroup({ title, teams, disabledTeams = [] }: { title: string; teams: string[]; disabledTeams?: readonly string[] }) {
 	return (
 		<div className="flex flex-col">
 			<h3 className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight font-owl opacity-90">{title}</h3>
 			<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
 				{teams.map((team) => (
 					<div className="w-14 sm:w-18 h-14 sm:h-18" key={team}>
-						<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" />
+						<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" dailyDisabled={disabledTeams.includes(team)} />
 					</div>
 				))}
 			</div>
@@ -32,26 +33,27 @@ function TeamGroup({ title, teams }: { title: string; teams: string[] }) {
 	);
 }
 
-function OWLTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
+function OWLTeams({ dataset, isEndless }: { dataset: CombinedDatasetMetadata; isEndless: boolean }) {
 	const atlanticTeams = getAtlantic(dataset.dataset);
 	const pacificTeams = getPacific(dataset.dataset);
+	const disabledTeams = isEndless ? [] : getDisabledTeams(dataset.dataset);
 
 	const atlanticText = atlanticPacificTeams.includes(dataset.dataset) ? 'Atlantic Division (Eastern)' : 'Eastern';
 	const pacificText = atlanticPacificTeams.includes(dataset.dataset) ? 'Pacific Division (Western)' : 'Western';
 
 	return (
 		<div className="flex flex-col gap-3">
-			<TeamGroup title={atlanticText} teams={atlanticTeams ?? []} />
-			<TeamGroup title={pacificText} teams={pacificTeams ?? []} />
+			<TeamGroup title={atlanticText} teams={atlanticTeams ?? []} disabledTeams={disabledTeams} />
+			<TeamGroup title={pacificText} teams={pacificTeams ?? []} disabledTeams={disabledTeams} />
 		</div>
 	);
 }
 
-function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
-	const pathname = usePathname();
+function OWCSTeams({ dataset, isEndless }: { dataset: CombinedDatasetMetadata; isEndless: boolean }) {
 	const filtersFromStore = useEndlessStore((s) => s.datasets[dataset.dataset]?.filters);
+	const disabledTeams = isEndless ? [] : getDisabledTeams(dataset.dataset);
 
-	const isLatestSeason = pathname === ENDLESS_PATHNAME && dataset.dataset === 'owcs-s3';
+	const isLatestSeason = isEndless && dataset.dataset === 'owcs-s3';
 	const filters: EndlessFilters = isLatestSeason && filtersFromStore ? filtersFromStore : DEFAULT_FILTERS;
 
 	const isRegionActive = (region: string) => !isLatestSeason || (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
@@ -66,23 +68,25 @@ function OWCSTeams({ dataset }: { dataset: CombinedDatasetMetadata }) {
 
 	return (
 		<div className="flex flex-col gap-3">
-			{isRegionActive('EMEA') && <TeamGroup title="EMEA" teams={emeaTeams} />}
-			{isRegionActive('NA') && <TeamGroup title="North America" teams={naTeams} />}
-			{isRegionActive('Korea') && <TeamGroup title="Korea" teams={koreaTeams} />}
-			{cnTeams.length > 0 && isRegionActive('CN') && <TeamGroup title="China" teams={cnTeams} />}
+			{isRegionActive('EMEA') && <TeamGroup title="EMEA" teams={emeaTeams} disabledTeams={disabledTeams} />}
+			{isRegionActive('NA') && <TeamGroup title="North America" teams={naTeams} disabledTeams={disabledTeams} />}
+			{isRegionActive('Korea') && <TeamGroup title="Korea" teams={koreaTeams} disabledTeams={disabledTeams} />}
+			{cnTeams.length > 0 && isRegionActive('CN') && <TeamGroup title="China" teams={cnTeams} disabledTeams={disabledTeams} />}
 		</div>
 	);
 }
 
 export default function TeamsContent({ setOpen }: Props) {
 	const [dataset] = useContext(DatasetContext);
+	const pathname = usePathname();
+	const isEndless = pathname === ENDLESS_PATHNAME;
 
 	const handleClose = useCallback(() => {
 		setOpen(false);
 	}, [setOpen]);
 
 	return (
-		<DialogContent className="sm:max-w-[48rem] max-h-full py-6 px-3 md:px-7" aria-describedby="Participating teams.">
+		<DialogContent className="sm:max-w-3xl max-h-full py-6 px-3 md:px-7" aria-describedby="Participating teams.">
 			<DialogHeader>
 				<DialogTitle className="flex flex-row gap-2 items-center text-left font-owl">
 					<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
@@ -94,7 +98,7 @@ export default function TeamsContent({ setOpen }: Props) {
 					<p className="scroll-m-20 text-base tracking-normal">
 						<span className="text-primary-foreground">{dataset.name}</span> has the following teams:
 					</p>
-					{!isOwcsDataset(dataset.dataset) ? <OWLTeams dataset={dataset} /> : <OWCSTeams dataset={dataset} />}
+					{!isOwcsDataset(dataset.dataset) ? <OWLTeams dataset={dataset} isEndless={isEndless} /> : <OWCSTeams dataset={dataset} isEndless={isEndless} />}
 				</main>
 			</ScrollArea>
 			<DialogFooter>

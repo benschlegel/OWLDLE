@@ -1,4 +1,5 @@
 import type { Dataset } from '@/data/datasets';
+import { getDisabledTeams } from '@/data/disabledTeams';
 import { pickStreamerName } from '@/lib/streamer-names';
 import { type CombinedFormattedPlayer, getRandomPlayer, PLAYERS_S1, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
@@ -590,7 +591,12 @@ export async function generateBacklog(size: number, dataset: Dataset, session?: 
 
 	// * Remove manually invalidated players (to avoid duplicates from old backlog)
 	invalidPlayerNames.push(...invalidPlayers);
-	const dedupedPlayers = seasonPlayers.players.filter((player) => !invalidPlayerNames.includes(player.name));
+
+	// * Remove players from teams disabled in daily mode
+	const disabledTeams = getDisabledTeams(dataset);
+	const dedupedPlayers = seasonPlayers.players.filter(
+		(player) => !invalidPlayerNames.includes(player.name) && !disabledTeams.includes(player.team as string)
+	);
 
 	// Apply Fisher-Yates shuffle
 	for (let i = dedupedPlayers.length - 1; i > 0; i--) {
