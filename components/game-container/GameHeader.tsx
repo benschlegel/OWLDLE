@@ -1,4 +1,4 @@
-import { FeedbackTriggerButton, FeedbackDialog } from '@/components/game-container/dialogs/feedback-dialog';
+import { FeedbackTriggerButton, FeedbackTriggerButtonFallback } from '@/components/game-container/dialogs/feedback-dialog';
 import { HelpDialog, HelpTriggerButton } from '@/components/game-container/dialogs/HelpDialog';
 import { ModeToggle } from '@/components/theme-switcher';
 import { Separator } from '@/components/ui/separator';
@@ -31,8 +31,8 @@ export default function GameHeader({ modeLabel, seasonSelector, seasonTitle, top
 					</h1>
 				</div>
 				<div className="flex gap-1">
-					<Suspense fallback={FeedbackTriggerButton}>
-						<FeedbackDialog />
+					<Suspense fallback={FeedbackTriggerButtonFallback}>
+						<FeedbackTriggerButton />
 					</Suspense>
 					<ModeToggle />
 				</div>
