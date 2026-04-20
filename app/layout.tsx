@@ -135,6 +135,12 @@ export const metadata: Metadata = {
 		'OWL trivia',
 		'OWCS trivia',
 		'ow wordle',
+		'wordle overwatch',
+		'overwatch esports wordle',
+		'overwatch esports dle',
+		'owcs dle',
+		'owcsdle',
+		'overwatch queue game',
 	],
 };
 
