@@ -373,8 +373,8 @@ const teamLogosOWCS_S1_FromS2: Partial<TeamLogoData<'owcs-s1'>>[] = [
 ];
 
 // Reuse S2 logos for teams that carry over from S1
-const owcsS1TeamNames = new Set(ALL_TEAMS.find((t) => t.dataset === 'owcs-s1')?.data ?? []);
-const reusedFromS2ForS1 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS1TeamNames.has(t.teamName as string));
+const owcsS1TeamNames = new Set<string>(ALL_TEAMS.find((t) => t.dataset === 'owcs-s1')?.data ?? []);
+const reusedFromS2ForS1 = TEAM_LOGOS_OWCS_S2.filter((t) => owcsS1TeamNames.has(t.teamName));
 
 export const TEAM_LOGOS_OWCS_S1: TeamLogoData<'owcs-s1'>[] = [
 	...(reusedFromS2ForS1 as unknown as TeamLogoData<'owcs-s1'>[]),
