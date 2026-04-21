@@ -7,7 +7,9 @@ import { DatasetContext } from '@/context/DatasetContext';
 import { ENDLESS_PATHNAME, type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
 import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific, PARTNERED_TEAMS_OWCS_S3 } from '@/data/teams/teams';
 import { getDisabledTeams } from '@/data/disabledTeams';
+import { useDialogParams } from '@/hooks/use-dialog-param';
 import { useEndlessStore, type EndlessFilters } from '@/store/endless-store';
+import { useSettings } from '@/store/settings-store';
 import { CircleHelpIcon } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 import { useCallback, useContext } from 'react';
@@ -80,10 +82,18 @@ export default function TeamsContent({ setOpen }: Props) {
 	const [dataset] = useContext(DatasetContext);
 	const pathname = usePathname();
 	const isEndless = pathname === ENDLESS_PATHNAME;
+	const preferTeams = useSettings((s) => s.preferTeamsDialog);
+	const setPreferTeams = useSettings((s) => s.setPreferTeamsDialog);
+	const [, setDialog] = useDialogParams();
 
 	const handleClose = useCallback(() => {
 		setOpen(false);
 	}, [setOpen]);
+
+	const handleShowHelp = useCallback(() => {
+		setPreferTeams(false);
+		setDialog('help');
+	}, [setPreferTeams, setDialog]);
 
 	return (
 		<DialogContent className="sm:max-w-3xl max-h-full py-6 px-3 md:px-7" aria-describedby="Participating teams.">
@@ -101,7 +111,12 @@ export default function TeamsContent({ setOpen }: Props) {
 					{!isOwcsDataset(dataset.dataset) ? <OWLTeams dataset={dataset} isEndless={isEndless} /> : <OWCSTeams dataset={dataset} isEndless={isEndless} />}
 				</main>
 			</ScrollArea>
-			<DialogFooter>
+			<DialogFooter className="gap-2 flex-row justify-end">
+				{preferTeams && (
+					<Button variant="outline" onClick={handleShowHelp}>
+						Show help
+					</Button>
+				)}
 				<Button type="submit" variant="outline" autoFocus onClick={handleClose}>
 					Close
 				</Button>
