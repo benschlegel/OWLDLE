@@ -21,11 +21,12 @@ type Props = {
 const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
 
 function TeamGroup({ title, teams, disabledTeams = [] }: { title: string; teams: string[]; disabledTeams?: readonly string[] }) {
+	const sortedTeams = disabledTeams.length > 0 ? [...teams].sort((a, b) => Number(disabledTeams.includes(a)) - Number(disabledTeams.includes(b))) : teams;
 	return (
 		<div className="flex flex-col">
 			<h3 className="flex gap-2 items-center scroll-m-20 pb-2 text-xl font-semibold tracking-tight font-owl opacity-90">{title}</h3>
 			<div className="flex w-full gap-0 sm:gap-1 flex-wrap">
-				{teams.map((team) => (
+				{sortedTeams.map((team) => (
 					<div className="w-14 sm:w-18 h-14 sm:h-18" key={team}>
 						<TeamLogo teamName={team} useTabIndex className="shadow-[0_8px_30px_rgb(0,0,0,0.12)]" dailyDisabled={disabledTeams.includes(team)} />
 					</div>
