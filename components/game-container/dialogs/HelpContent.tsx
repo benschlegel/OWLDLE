@@ -15,6 +15,7 @@ import { getDisabledTeams } from '@/data/disabledTeams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { useDialogParams } from '@/hooks/use-dialog-param';
 import { useHelpDialogStore } from '@/store/help-dialog-store';
+import { useSettings } from '@/store/settings-store';
 import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
 import type React from 'react';
 import { useContext, useCallback } from 'react';
@@ -82,10 +83,16 @@ export default function HelpContent({ setOpen }: Props) {
 	const { data: validatedData, isSuccess } = useAnswerQuery(dataset.dataset);
 	const [_dialog, setDialog] = useDialogParams();
 	const { tutorialOpen, setTutorialOpen } = useHelpDialogStore();
+	const setPreferTeams = useSettings((s) => s.setPreferTeamsDialog);
 
 	const handleClose = useCallback(() => {
 		setOpen(false);
 	}, [setOpen]);
+
+	const handleOnlyShowTeams = useCallback(() => {
+		setPreferTeams(true);
+		setDialog('teams');
+	}, [setPreferTeams, setDialog]);
 
 	return (
 		<DialogContent className="sm:max-w-3xl max-h-full py-6 px-3 md:px-7" aria-describedby="Tutorial on how to play the game">
@@ -211,7 +218,10 @@ export default function HelpContent({ setOpen }: Props) {
 					</div>
 				</main>
 			</ScrollArea>
-			<DialogFooter>
+			<DialogFooter className="gap-2 flex-row justify-end">
+				<Button variant="outline" onClick={handleOnlyShowTeams}>
+					Only show teams
+				</Button>
 				<Button type="submit" variant="outline" autoFocus onClick={handleClose}>
 					Close
 				</Button>

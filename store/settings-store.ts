@@ -12,6 +12,8 @@ type SettingsStore = {
 	setShowConfetti: (newState: boolean) => void;
 	areCreditsVisible: boolean;
 	setAreCreditsVisible: (newState: boolean) => void;
+	preferTeamsDialog: boolean;
+	setPreferTeamsDialog: (newState: boolean) => void;
 };
 
 export const DEFAULT_IS_BACKGROUND_ENABLED = true;
@@ -34,6 +36,8 @@ export const useSettings = create<SettingsStore>()(
 			setShowConfetti: (newState) => set({ showConfetti: newState }),
 			areCreditsVisible: DEFAULT_ARE_CREDITS_VISIBLE,
 			setAreCreditsVisible: (newState) => set({ areCreditsVisible: newState }),
+			preferTeamsDialog: false,
+			setPreferTeamsDialog: (newState) => set({ preferTeamsDialog: newState }),
 		})),
 		{
 			name: SETTINGS_STORE_KEY,

@@ -4,6 +4,7 @@ import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { CircleHelpIcon } from 'lucide-react';
 import { type DialogKey, useDialogState } from '@/hooks/use-dialog-param';
+import { useSettings } from '@/store/settings-store';
 const LazyHelpContent = lazy(() => import('@/components/game-container/dialogs/HelpContent'));
 
 const LOCAL_STORAGE_KEY = 'sawHelp';
@@ -11,6 +12,8 @@ const DIALOG_KEY = 'help' satisfies DialogKey;
 
 export function HelpDialog() {
 	const { open, setOpen } = useDialogState(DIALOG_KEY);
+	const { open: teamsOpen, setOpen: setTeamsOpen } = useDialogState('teams');
+	const preferTeams = useSettings((s) => s.preferTeamsDialog);
 	const [shouldOpenOnMount, setShouldOpenOnMount] = useState(false);
 
 	useEffect(() => {
@@ -24,35 +27,45 @@ export function HelpDialog() {
 	useEffect(() => {
 		// Open dialog after initial render if needed
 		if (shouldOpenOnMount) {
-			setOpen(true);
+			preferTeams ? setTeamsOpen(true) : setOpen(true);
 			setShouldOpenOnMount(false);
 			localStorage.setItem(LOCAL_STORAGE_KEY, String(true));
 		}
-	}, [shouldOpenOnMount, setOpen]);
+	}, [shouldOpenOnMount, preferTeams, setTeamsOpen, setOpen]);
 
-	const toggleDialogOpen = useCallback(() => {
-		setOpen(open !== true);
-	}, [open, setOpen]);
+	const handleToggle = useCallback(() => {
+		if (preferTeams) {
+			setTeamsOpen(!teamsOpen);
+		} else {
+			setOpen(!open);
+		}
+	}, [open, setOpen, preferTeams, teamsOpen, setTeamsOpen]);
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.key === 'e' && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
-				toggleDialogOpen();
+				handleToggle();
 			}
 		};
 
 		document.addEventListener('keydown', handleKeyDown);
 		return () => document.removeEventListener('keydown', handleKeyDown);
-	}, [toggleDialogOpen]);
+	}, [handleToggle]);
 
 	return (
-		<Dialog open={open} onOpenChange={toggleDialogOpen} aria-describedby="Tutorial on how to play the game">
-			<DialogTrigger asChild>{HelpTriggerButton}</DialogTrigger>
-			<Suspense>
-				<LazyHelpContent setOpen={setOpen} />
-			</Suspense>
-		</Dialog>
+		<>
+			<Button variant="ghost" size="icon" className="p-0" aria-label="Help" onClick={handleToggle}>
+				<CircleHelpIcon className="h-[1.3rem] w-[1.3rem] transition-all" />
+			</Button>
+			{!preferTeams && (
+				<Dialog open={open} onOpenChange={setOpen} aria-describedby="Tutorial on how to play the game">
+					<Suspense>
+						<LazyHelpContent setOpen={setOpen} />
+					</Suspense>
+				</Dialog>
+			)}
+		</>
 	);
 }
 

@@ -30,6 +30,7 @@ import { Drawer } from '@/components/ui/drawer';
 import { usePlausible } from 'next-plausible';
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
+import { useSettings } from '@/store/settings-store';
 import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/lib/navigation';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
@@ -45,7 +46,9 @@ export function Navbar() {
 	const pathname = usePathname();
 	const plausible = usePlausible();
 	const { setOpen: setFeedbackOpen } = useDialogState('feedback');
-	const { setOpen: setHelpOpen } = useDialogState('help');
+	const { open: helpOpen, setOpen: setHelpOpen } = useDialogState('help');
+	const { open: teamsOpen, setOpen: setTeamsOpen } = useDialogState('teams');
+	const preferTeams = useSettings((s) => s.preferTeamsDialog);
 	const searchParams = useSearchParams();
 	const { setOpen: setSettingsOpen } = useDialogState('settings');
 	const [sheetOpen, setSheetOpen] = useState(false);
@@ -203,7 +206,7 @@ export function Navbar() {
 						}}>
 						<Button
 							variant={'ghost'}
-							onClick={() => setHelpOpen(true)}
+							onClick={() => preferTeams ? setTeamsOpen(!teamsOpen) : setHelpOpen(!helpOpen)}
 							className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-secondary/60 transition-colors px-11 "
 							style={{
 								clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
