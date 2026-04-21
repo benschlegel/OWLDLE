@@ -14,7 +14,7 @@ export const DISABLED_TEAMS_CONFIG: DisabledTeamsConfig = {
 	season6: [],
 	'owcs-s1': [],
 	'owcs-s2': [],
-	'owcs-s3': [],
+	'owcs-s3': ['Cheeseburger', 'PokerFace', 'NewEra', 'DEG', 'HomieE', 'MilkTea', 'NaivePiggy'],
 };
 
 // Returns the disabled teams for a dataset as a plain string array for easy `.includes()` checks.
