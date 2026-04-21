@@ -31,10 +31,10 @@ const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
 
 function encodeFiltersForQuery(filters: EndlessFilters): string {
 	const regions = filters.regions ?? [];
-	if (regions.length === 0 && !filters.partnerOnly) return '';
+	if (regions.length === 0 && !filters.topTeamsOnly) return '';
 	const activeRegions = regions.length === 0 ? ALL_OWCS_S3_REGIONS : regions;
 	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
-	return `&region=${region}&partnerOnly=${filters.partnerOnly}`;
+	return `&region=${region}&partnerOnly=${filters.topTeamsOnly}`;
 }
 
 type Props = {
@@ -46,7 +46,7 @@ type Props = {
 
 export default function EndlessRightColumn({ stats, dataset, filters, onOpenLeaderboard }: Props) {
 	const clientId = useEndlessStore((s) => s.leaderboard.clientId);
-	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${(filters.regions ?? []).join(',')}-${filters.partnerOnly}`;
+	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${(filters.regions ?? []).join(',')}-${filters.topTeamsOnly}`;
 
 	const { data } = useQuery<{ entries: LeaderboardEntry[] }>({
 		queryKey: ['leaderboard-top5', dataset, filterKey],

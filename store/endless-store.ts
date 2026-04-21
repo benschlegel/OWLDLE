@@ -29,10 +29,10 @@ export type SessionGameEntry = {
 export type EndlessFilters = {
 	/** Active regions. Empty array means all regions are included. */
 	regions: string[];
-	partnerOnly: boolean;
+	topTeamsOnly: boolean;
 };
 
-const defaultFilters: EndlessFilters = { regions: [], partnerOnly: false };
+const defaultFilters: EndlessFilters = { regions: [], topTeamsOnly: false };
 
 export type DatasetStats = {
 	currentStreak: number;
@@ -225,13 +225,16 @@ export const useEndlessStore = create<EndlessStore>()(
 				if (merged.datasets) {
 					for (const key of Object.keys(merged.datasets) as Array<keyof typeof merged.datasets>) {
 						const entry = merged.datasets[key];
-						if (entry && (!entry.filters || !Array.isArray(entry.filters.regions))) {
+						const f = entry?.filters as (EndlessFilters & { partnerOnly?: boolean }) | undefined;
+						const needsSanitize = entry && (!f || !Array.isArray(f.regions) || f.topTeamsOnly === undefined);
+						if (needsSanitize) {
 							merged.datasets[key] = {
 								...entry,
 								filters: {
 									...defaultFilters,
-									...entry.filters,
-									regions: Array.isArray(entry.filters?.regions) ? entry.filters.regions : defaultFilters.regions,
+									...f,
+									regions: Array.isArray(f?.regions) ? f.regions : defaultFilters.regions,
+									topTeamsOnly: f?.topTeamsOnly ?? f?.partnerOnly ?? false,
 								},
 							};
 						}

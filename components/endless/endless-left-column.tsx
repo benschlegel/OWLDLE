@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import type { Dataset } from '@/data/datasets';
+import { getDatasetFilterConfig, hasEndlessFilters } from '@/data/endless-filter-config';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { useEndlessStore, type EndlessFilters } from '@/store/endless-store';
 import { Flame, Trophy } from 'lucide-react';
@@ -17,10 +18,7 @@ type EndlessStats = {
 	highestStreak: number;
 };
 
-const OWCS_S3_REGIONS = ['EMEA', 'NA', 'Korea', 'CN'] as const;
-type OwcsS3Region = (typeof OWCS_S3_REGIONS)[number];
-
-const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
+const DEFAULT_FILTERS: EndlessFilters = { regions: [], topTeamsOnly: false };
 
 export default function EndlessLeftColumn({ stats, dataset }: { stats: EndlessStats; dataset: Dataset }) {
 	return (
@@ -35,7 +33,6 @@ export default function EndlessLeftColumn({ stats, dataset }: { stats: EndlessSt
 						</CardHeader>
 						<AccordionContent className="p-0">
 							<CardContent className="p-4 pt-0">
-								{/* <Separator className="-mt-2" /> */}
 								<div className="grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
 									<StatCell label="Current" value={stats.currentStreak} icon={<Flame className="size-4 text-primary-foreground" />} />
 									<StatCell label="Best" value={stats.highestStreak} icon={<Trophy className="size-4 text-yellow-500" />} />
@@ -45,7 +42,7 @@ export default function EndlessLeftColumn({ stats, dataset }: { stats: EndlessSt
 					</AccordionItem>
 				</Accordion>
 			</Card>
-			{dataset === 'owcs-s3' && <FilterCard dataset={dataset} />}
+			{hasEndlessFilters(dataset) && <FilterCard dataset={dataset} />}
 		</div>
 	);
 }
@@ -63,31 +60,33 @@ function StatCell({ label, value, icon }: { label: string; value: number; icon: 
 }
 
 function FilterCard({ dataset }: { dataset: Dataset }) {
+	const config = getDatasetFilterConfig(dataset);
 	const filtersFromStore = useEndlessStore((s) => s.datasets[dataset]?.filters);
 	const filters: EndlessFilters = filtersFromStore ?? DEFAULT_FILTERS;
 	const updateFilters = useEndlessStore((s) => s.updateFilters);
 	const { setOpen: setTeamsOpen } = useDialogState('teams');
 
-	const isRegionActive = (region: OwcsS3Region) => (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
+	const regions = config?.regions ?? [];
 
-	const toggleRegion = (region: OwcsS3Region) => {
-		const allRegions = [...OWCS_S3_REGIONS];
+	const isRegionActive = (region: string) => (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
+
+	const toggleRegion = (region: string) => {
 		const current = filters.regions ?? [];
 		let newRegions: string[];
 		if (current.length === 0) {
-			newRegions = allRegions.filter((r) => r !== region);
+			newRegions = regions.filter((r) => r !== region);
 		} else if (current.includes(region)) {
 			newRegions = current.filter((r) => r !== region);
 			if (newRegions.length === 0) newRegions = [];
 		} else {
 			newRegions = [...current, region];
-			if (newRegions.length === allRegions.length) newRegions = [];
+			if (newRegions.length === regions.length) newRegions = [];
 		}
 		updateFilters(dataset, { ...filters, regions: newRegions });
 	};
 
-	const togglePartner = () => {
-		updateFilters(dataset, { ...filters, partnerOnly: !filters.partnerOnly });
+	const toggleTopTeams = () => {
+		updateFilters(dataset, { ...filters, topTeamsOnly: !filters.topTeamsOnly });
 	};
 
 	return (
@@ -101,8 +100,7 @@ function FilterCard({ dataset }: { dataset: Dataset }) {
 					</CardHeader>
 					<AccordionContent className="p-0">
 						<CardContent className="p-4 pt-0 space-y-2.5">
-							{/* <Separator /> */}
-							{OWCS_S3_REGIONS.map((region) => (
+							{regions.map((region) => (
 								<div key={region} className="flex items-center justify-between">
 									<Label htmlFor={`filter-region-${region}`} className="text-sm cursor-pointer w-full">
 										{region}
@@ -110,13 +108,15 @@ function FilterCard({ dataset }: { dataset: Dataset }) {
 									<Switch id={`filter-region-${region}`} checked={isRegionActive(region)} onCheckedChange={() => toggleRegion(region)} />
 								</div>
 							))}
-							<Separator />
-							<div className="flex items-center justify-between">
-								<Label htmlFor="filter-partner" className="text-sm cursor-pointer w-full">
-									Partner teams only
-								</Label>
-								<Switch id="filter-partner" checked={filters.partnerOnly} onCheckedChange={togglePartner} />
-							</div>
+							{regions.length > 0 && config?.topTeamsFilter && <Separator />}
+							{config?.topTeamsFilter && (
+								<div className="flex items-center justify-between">
+									<Label htmlFor="filter-top-teams" className="text-sm cursor-pointer w-full">
+										{config.topTeamsFilter.label}
+									</Label>
+									<Switch id="filter-top-teams" checked={filters.topTeamsOnly} onCheckedChange={toggleTopTeams} />
+								</div>
+							)}
 							<p className="text-xs text-muted-foreground pt-0.5">Changing filters resets your streak.</p>
 							<Button variant={'outline'} className="w-full py-1.5 h-auto justify-between" onClick={() => setTeamsOpen(true)}>
 								Show selected teams

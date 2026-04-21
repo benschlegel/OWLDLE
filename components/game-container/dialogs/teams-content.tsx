@@ -5,7 +5,8 @@ import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/compon
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { ENDLESS_PATHNAME, type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
-import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific, PARTNERED_TEAMS_OWCS_S3 } from '@/data/teams/teams';
+import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
+import { getDatasetFilterConfig } from '@/data/endless-filter-config';
 import { getDisabledTeams } from '@/data/disabledTeams';
 import { useDialogParams } from '@/hooks/use-dialog-param';
 import { useEndlessStore, type EndlessFilters } from '@/store/endless-store';
@@ -18,7 +19,7 @@ type Props = {
 	setOpen: (value: boolean) => void;
 };
 
-const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
+const DEFAULT_FILTERS: EndlessFilters = { regions: [], topTeamsOnly: false };
 
 function TeamGroup({ title, teams, disabledTeams = [] }: { title: string; teams: string[]; disabledTeams?: readonly string[] }) {
 	const sortedTeams = disabledTeams.length > 0 ? [...teams].sort((a, b) => Number(disabledTeams.includes(a)) - Number(disabledTeams.includes(b))) : teams;
@@ -56,13 +57,14 @@ function OWCSTeams({ dataset, isEndless }: { dataset: CombinedDatasetMetadata; i
 	const filtersFromStore = useEndlessStore((s) => s.datasets[dataset.dataset]?.filters);
 	const disabledTeams = isEndless ? [] : getDisabledTeams(dataset.dataset);
 
-	const isLatestSeason = isEndless && dataset.dataset === 'owcs-s3';
-	const filters: EndlessFilters = isLatestSeason && filtersFromStore ? filtersFromStore : DEFAULT_FILTERS;
+	const config = getDatasetFilterConfig(dataset.dataset);
+	const hasFilters = isEndless && !!config;
+	const filters: EndlessFilters = hasFilters && filtersFromStore ? filtersFromStore : DEFAULT_FILTERS;
 
-	const isRegionActive = (region: string) => !isLatestSeason || (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
+	const isRegionActive = (region: string) => !hasFilters || (filters.regions ?? []).length === 0 || (filters.regions ?? []).includes(region);
 
-	const partnerSet = new Set<string>(isLatestSeason && filters.partnerOnly ? (PARTNERED_TEAMS_OWCS_S3 as ReadonlyArray<string>) : []);
-	const filterTeams = (teams: readonly string[]) => (partnerSet.size > 0 ? teams.filter((t) => partnerSet.has(t)) : [...teams]);
+	const topTeamSet = new Set<string>(hasFilters && filters.topTeamsOnly && config?.topTeamsFilter ? (config.topTeamsFilter.teams as ReadonlyArray<string>) : []);
+	const filterTeams = (teams: readonly string[]) => (topTeamSet.size > 0 ? teams.filter((t) => topTeamSet.has(t)) : [...teams]);
 
 	const emeaTeams = filterTeams(getEmea(dataset.dataset) ?? []);
 	const naTeams = filterTeams(getNa(dataset.dataset) ?? []);
