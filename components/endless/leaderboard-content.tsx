@@ -37,10 +37,10 @@ const ROW_HEIGHT_PX = 40;
 
 function encodeFiltersForQuery(filters: EndlessFilters): string {
 	const regions = filters.regions ?? [];
-	if (regions.length === 0 && !filters.partnerOnly) return '';
+	if (regions.length === 0 && !filters.topTeamsOnly) return '';
 	const activeRegions = regions.length === 0 ? ALL_OWCS_S3_REGIONS : regions;
 	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
-	return `&region=${region}&partnerOnly=${filters.partnerOnly}`;
+	return `&region=${region}&partnerOnly=${filters.topTeamsOnly}`;
 }
 
 async function fetchLeaderboard(dataset: Dataset, page: number, filters: EndlessFilters, clientId?: string): Promise<LeaderboardResponse> {
@@ -69,7 +69,7 @@ export default function LeaderboardContent({ open, dataset, filters }: Props) {
 
 	const queryClient = useQueryClient();
 
-	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${(filters.regions ?? []).join(',')}-${filters.partnerOnly}`;
+	const filterKey = dataset !== 'owcs-s3' ? 'none' : `${(filters.regions ?? []).join(',')}-${filters.topTeamsOnly}`;
 
 	// Only request rank on page 1 (first load), cache it locally
 	const shouldFindRank = page === 1;

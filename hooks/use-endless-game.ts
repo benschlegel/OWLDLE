@@ -3,7 +3,7 @@
 import type { RowData } from '@/components/game-container/GameContainer';
 import { type Dataset, DEFAULT_DATASET, getDataset } from '@/data/datasets';
 import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
-import { PARTNERED_TEAMS_OWCS_S3 } from '@/data/teams/teams';
+import { getDatasetFilterConfig } from '@/data/endless-filter-config';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import { type CompactGuess, type EndlessFilters, useEndlessStore } from '@/store/endless-store';
@@ -12,16 +12,16 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 export const ENDLESS_BACKEND_DISABLED = false;
 
-const DEFAULT_FILTERS: EndlessFilters = { regions: [], partnerOnly: false };
+const DEFAULT_FILTERS: EndlessFilters = { regions: [], topTeamsOnly: false };
 const OWCS_S3_REGION_BITS: Record<string, number> = { EMEA: 1, NA: 2, Korea: 4, CN: 8 };
 const ALL_OWCS_S3_REGIONS = Object.keys(OWCS_S3_REGION_BITS);
 
 function encodeFiltersForDb(filters: EndlessFilters): { region: number; isPartnerOnly: boolean } | undefined {
 	const regions = filters.regions ?? [];
-	if (regions.length === 0 && !filters.partnerOnly) return undefined;
+	if (regions.length === 0 && !filters.topTeamsOnly) return undefined;
 	const activeRegions = regions.length === 0 ? ALL_OWCS_S3_REGIONS : regions;
 	const region = activeRegions.reduce((acc, r) => acc | (OWCS_S3_REGION_BITS[r] ?? 0), 0);
-	return { region, isPartnerOnly: filters.partnerOnly };
+	return { region, isPartnerOnly: filters.topTeamsOnly };
 }
 
 export type PendingSave = {
@@ -44,16 +44,18 @@ export function useEndlessGame(datasetName: Dataset) {
 	const filters = stats.filters ?? DEFAULT_FILTERS;
 
 	const filteredPlayers = useMemo(() => {
+		const config = getDatasetFilterConfig(datasetName);
 		let result = players;
 		const regions = filters.regions ?? [];
 		if (regions.length > 0) {
 			result = result.filter((p) => regions.includes(p.region ?? ''));
 		}
-		if (filters.partnerOnly) {
-			result = result.filter((p) => (PARTNERED_TEAMS_OWCS_S3 as readonly string[]).includes(p.team as string));
+		if (filters.topTeamsOnly && config?.topTeamsFilter) {
+			const topTeams = config.topTeamsFilter.teams as readonly string[];
+			result = result.filter((p) => topTeams.includes(p.team as string));
 		}
 		return result.length > 0 ? result : players;
-	}, [players, filters.regions, filters.partnerOnly]);
+	}, [players, filters.regions, filters.topTeamsOnly, datasetName]);
 
 	const validIndices = useMemo(() => filteredPlayers.map((fp) => players.findIndex((p) => p.id === fp.id)), [filteredPlayers, players]);
 
