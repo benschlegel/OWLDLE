@@ -5,7 +5,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
-import { DrawerClose, DrawerContent, DrawerFooter } from '@/components/ui/drawer';
+import { DrawerClose, DrawerContent, DrawerFooter, DrawerTitle } from '@/components/ui/drawer';
 import { SheetLinkButton } from '@/components/ui/sheet-link-button';
 import { DEFAULT_OWCS_DATASET_NAME, ENDLESS_PATHNAME, OWCS_PATHNAME, OWL_PATHNAME, OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
@@ -74,7 +74,8 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 	const defaultAccordion = PATHNAME_TO_ACCORDION[pathname] ?? '';
 
 	return (
-		<DrawerContent className={'sm:gap-2.5 gap-4 h-full rounded-none'}>
+		<DrawerContent className={'sm:gap-2.5 gap-4 h-full rounded-none'} aria-describedby={'Navigation menu'}>
+			<DrawerTitle className="sr-only">Navigation menu</DrawerTitle>
 			<div className="w-full h-12 bg-card shadow-sm sticky top-0 flex items-center justify-center">
 				<div className="bg-background shadow-sm sm:px-10 px-6 h-full flex items-center -skew-x-12">
 					<h1 className="sm:text-4xl text-3xl font-bold text-center w-full font-owl skew-x-12">
