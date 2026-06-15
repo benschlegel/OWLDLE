@@ -20,6 +20,10 @@
 .DS_Store
 *.pem
 
+# AI
+.claude/
+plans/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
