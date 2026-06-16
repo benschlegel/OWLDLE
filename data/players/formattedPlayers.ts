@@ -89,7 +89,9 @@ export const PLAYERS_S1 = SORTED_PLAYERS[0].players;
  * Returns random formatted player
  */
 export function getRandomPlayer(dataset: Dataset) {
-	const datasetIndex = DATASETS.findIndex((d) => d === dataset);
-	const datasetPlayers = SORTED_PLAYERS[datasetIndex].players;
+	const datasetPlayers = SORTED_PLAYERS.find((d) => d.dataset === dataset)?.players;
+	if (!datasetPlayers || datasetPlayers.length === 0) {
+		throw new Error(`getRandomPlayer: no players found for dataset "${dataset}"`);
+	}
 	return datasetPlayers[Math.floor(Math.random() * datasetPlayers.length)];
 }

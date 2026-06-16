@@ -153,10 +153,17 @@ export function isOwcsDataset(dataset: Dataset): boolean {
 	return datasetInfo.find((d) => d.dataset === dataset)?.league === 'owcs';
 }
 
-export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = datasetInfo.map(
-	(dataset, index) =>
-		({ ...dataset, playerData: SORTED_PLAYERS[index].players, teamData: LOGOS[index].data, teams: ALL_TEAMS[index].data }) as CombinedDatasetMetadata
-);
+export const FORMATTED_DATASETS: CombinedDatasetMetadata[] = datasetInfo.map((info) => {
+	const playerData = SORTED_PLAYERS.find((p) => p.dataset === info.dataset)?.players;
+	const teamData = LOGOS.find((l) => l.dataset === info.dataset)?.data;
+	const teams = ALL_TEAMS.find((t) => t.dataset === info.dataset)?.data;
+	if (!playerData || !teamData || !teams) {
+		throw new Error(
+			`Dataset "${info.dataset}" is missing data (players: ${!!playerData}, logos: ${!!teamData}, teams: ${!!teams}). Add it to SORTED_PLAYERS (formattedPlayers.ts), LOGOS (logos.ts), and ALL_TEAMS (teams.ts).`
+		);
+	}
+	return { ...info, playerData, teamData, teams } as CombinedDatasetMetadata;
+});
 
 export const DEFAULT_DATASET = FORMATTED_DATASETS[0];
 
