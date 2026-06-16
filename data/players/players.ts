@@ -1463,7 +1463,10 @@ export const owcsS2Players: Player<'owcs-s2'>[] = [
 	{ name: 'irony', country: 'KR', role: 'Support', team: 'OnsideGaming' },
 ];
 
-export const owcsS3Players: Player<'owcs-s3'>[] = [
+// Latest stage of OWCS S3. When a new stage ships: add `owcsS3Stage2Players`
+// below, move the prior stage's roster into data/stage-archive.ts, and repoint
+// `owcsS3Players` to the new latest-stage export.
+export const owcsS3Stage1Players: Player<'owcs-s3'>[] = [
 	/**
 	 *
 	 * EMEA
@@ -1668,4 +1671,7 @@ export type CombinedPlayers =
 	| Player<'owcs-s1'>[]
 	| Player<'owcs-s2'>[]
 	| Player<'owcs-s3'>[];
+/** Bare dataset roster always points at the latest stage. */
+export const owcsS3Players = owcsS3Stage1Players;
+
 export const ALL_PLAYERS: CombinedPlayers[] = [s1Players, s2Players, s3Players, s4Players, s5Players, s6Players, owcsS1Players, owcsS2Players, owcsS3Players];

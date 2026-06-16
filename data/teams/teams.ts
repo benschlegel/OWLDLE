@@ -192,6 +192,10 @@ const ALL_KR = [
 ];
 const ALL_CN = [{ dataset: 'owcs-s3', data: CN_OWCS_S3 }];
 
+// Latest stage of OWCS S3's team list. Next stage: add OWCS_S3_STAGE2_TEAMS and
+// repoint the ALL_TEAMS 'owcs-s3' entry to it.
+const OWCS_S3_STAGE1_TEAMS = [...EMEA_OWCS_S3, ...NA_OWCS_S3, ...KR_OWCS_S3, ...CN_OWCS_S3] as const;
+
 export const ALL_TEAMS = [
 	{ dataset: 'season1', data: [...EASTERN, ...WESTERN] },
 	{ dataset: 'season2', data: [...EASTERN_S2, ...WESTERN_S2] },

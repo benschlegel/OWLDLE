@@ -430,6 +430,9 @@ export const TEAM_LOGOS_OWCS_S3: TeamLogoData<'owcs-s3'>[] = [
 	...(teamLogosOWCS_S3_New.map((t) => ({ ...t, imgUrl: `/teams/owcs-s3/${t.teamName}.${GAME_CONFIG.teamLogoImgExtension}` })) as TeamLogoData<'owcs-s3'>[]),
 ];
 
+/** Bare dataset logos always point at the latest stage. */
+export const TEAM_LOGOS_OWCS_S3_LATEST = TEAM_LOGOS_OWCS_S3;
+
 export const LOGOS: CombinedLogoData[] = [
 	{ dataset: 'season1', data: TEAM_LOGOS_S1 },
 	{ dataset: 'season2', data: TEAM_LOGOS_S2 },

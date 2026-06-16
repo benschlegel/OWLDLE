@@ -1,5 +1,7 @@
 # Adding a New Dataset
 
+> Switching an existing season to a new stage? See "Switching a season to a new stage" in adding-datasets.md (and Plan 019 for the DB step).
+
 Checklist of files to update when adding a new dataset (e.g. `owcs-s4`).
 
 ## 1. `data/datasetIds.ts`
@@ -9,17 +11,16 @@ Checklist of files to update when adding a new dataset (e.g. `owcs-s4`).
 ## 2. `data/registry.ts`
 - Add one entry to `DATASET_REGISTRY` keyed by the new id, providing all metadata fields and `disabledTeams`.
 - The compiler will produce an error until this entry exists and every `disabledTeams` value is a valid team name for that dataset.
-- `datasetInfo` (in `datasets.ts`) and `DISABLED_TEAMS_CONFIG` (in `disabledTeams.ts`) are both derived from this registry automatically — no manual edits needed there.
+- `datasetInfo` (in `datasets.ts`) and `DISABLED_TEAMS_CONFIG` (in `disabledTeams.ts`) are both derived from this registry automatically, no manual edits needed there.
 
 ## 3. `data/players/players.ts`
-- Create and export a new player array (e.g. `export const owcsS4Players: Player<'owcs-s4'>[] = [...]`)
-- Add type to `CombinedPlayers` union
-- Add array to `ALL_PLAYERS`
+- Export a stage-named roster (`owcsS4Stage1Players`) + a bare alias (`owcsS4Players = owcsS4Stage1Players`), see adding-datasets.md §3 for the pattern
+- Add the bare alias to `CombinedPlayers` union and `ALL_PLAYERS`
 
 ## 4. `data/teams/teams.ts`
-- Add region team arrays (e.g. `EMEA_OWCS_S4`, `NA_OWCS_S4`, `KR_OWCS_S4`, `CN_OWCS_S4`)
-- Add entries to `ALL_EMEA`, `ALL_NA`, `ALL_KR`, `ALL_CN` (as applicable)
-- Add entry to `ALL_TEAMS` with all regions spread together
+- Add region team arrays (e.g. `EMEA_OWCS_S4`, `NA_OWCS_S4`, …)
+- Add entries to `ALL_EMEA`, `ALL_NA`, etc. (as applicable)
+- Export a named stage-1 team list (e.g. `OWCS_S4_STAGE1_TEAMS`) and reference it from `ALL_TEAMS`, see adding-datasets.md §5 for the pattern
 
 ## 5. `data/teams/logos.ts`
 - Create and export a new logos array (e.g. `TEAM_LOGOS_OWCS_S4`)
@@ -38,4 +39,4 @@ Checklist of files to update when adding a new dataset (e.g. `owcs-s4`).
 
 ## Notes
 - **Display ordering** is determined by position in the `DATASETS` array in `data/datasetIds.ts`. The integrity test guards data correctness; positional ordering of the other arrays (players, logos, teams) is not required.
-- Region getter functions (`getEmea`, `getNa`, `getKr`, `getCn`) and `HelpContent` work dynamically — no changes needed there unless adding a new region.
+- Region getter functions (`getEmea`, `getNa`, `getKr`, `getCn`) and `HelpContent` work dynamically,no changes needed there unless adding a new region.
