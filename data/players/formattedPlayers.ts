@@ -1,5 +1,5 @@
-import { DATASETS, type Dataset } from '@/data/datasets';
-import { ALL_PLAYERS, s1Players } from '@/data/players/players';
+import { DATASETS, type Dataset } from '@/data/datasetIds';
+import { ALL_PLAYERS } from '@/data/players/players';
 import { getRegion } from '@/data/teams/teams';
 import type { CountryCode } from '@/types/countries';
 import type { Player } from '@/types/players';
@@ -38,11 +38,9 @@ const customCountryImages: Partial<Record<CountryCode, string>> = {
 	'GB-NI': '/countries/GB-NI.avif',
 };
 
-// TODO: find out why using DATASETS causes "cant use before initialization"
-const datasets = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s1', 'owcs-s2', 'owcs-s3'] as const;
 for (let i = 0; i < ALL_PLAYERS.length; i++) {
 	const currentPlayers = ALL_PLAYERS[i];
-	const currDataset = datasets[i];
+	const currDataset = DATASETS[i];
 	const formattedPlayers = currentPlayers.map((player, index) => {
 		// Default url for vectorflags country flag api
 		let countryImg = `https://vectorflags.s3.amazonaws.com/flags/${player.country.toLowerCase()}-square-01.png`;
@@ -91,7 +89,7 @@ export const PLAYERS_S1 = SORTED_PLAYERS[0].players;
  * Returns random formatted player
  */
 export function getRandomPlayer(dataset: Dataset) {
-	const datasetIndex = datasets.findIndex((d) => d === dataset);
+	const datasetIndex = DATASETS.findIndex((d) => d === dataset);
 	const datasetPlayers = SORTED_PLAYERS[datasetIndex].players;
 	return datasetPlayers[Math.floor(Math.random() * datasetPlayers.length)];
 }

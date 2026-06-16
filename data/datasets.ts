@@ -1,8 +1,9 @@
 import { type CombinedFormattedPlayer, FormattedPlayer, SORTED_PLAYERS } from '@/data/players/formattedPlayers';
-import { s2Players } from '@/data/players/players';
 import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import { z } from 'zod';
+import { DATASETS, type Dataset, type DatasetMode } from '@/data/datasetIds';
+export { DATASETS, type Dataset, type DatasetMode };
 
 export const OWL_PATHNAME = '/owl' as const;
 export const OWCS_PATHNAME = '/owcs' as const;
@@ -10,9 +11,6 @@ export const ENDLESS_PATHNAME = '/endless' as const;
 export const STATISTICS_PATHNAME = '/statistics' as const;
 
 export const DEFAULT_DATASET_NAME: Dataset = 'season6';
-export const DATASETS = ['season1', 'season2', 'season3', 'season4', 'season5', 'season6', 'owcs-s1', 'owcs-s2', 'owcs-s3'] as const;
-export type Dataset = (typeof DATASETS)[number];
-export type DatasetMode = 'owl' | 'owcs';
 
 export const datasetSchema = z.enum(DATASETS);
 export type DatasetMetadata<T extends Dataset> = {
