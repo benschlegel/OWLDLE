@@ -5,16 +5,7 @@ import type { CountryCode } from '@/types/countries';
 import type { Player } from '@/types/players';
 
 export type FormattedPlayer<T extends Dataset = 'season1'> = Player<T> & { countryImg: string; regionImg: string; id: number };
-export type CombinedFormattedPlayer =
-	| FormattedPlayer<'season1'>
-	| FormattedPlayer<'season2'>
-	| FormattedPlayer<'season3'>
-	| FormattedPlayer<'season4'>
-	| FormattedPlayer<'season5'>
-	| FormattedPlayer<'season6'>
-	| FormattedPlayer<'owcs-s1'>
-	| FormattedPlayer<'owcs-s2'>
-	| FormattedPlayer<'owcs-s3'>;
+export type CombinedFormattedPlayer = { [D in Dataset]: FormattedPlayer<D> }[Dataset];
 
 export type PlayerDataset = {
 	dataset: Dataset;

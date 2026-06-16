@@ -387,16 +387,7 @@ type LogoData<T extends Dataset> = {
 	data: TeamLogoData<T>[];
 };
 
-export type CombinedLogoData =
-	| LogoData<'season1'>
-	| LogoData<'season2'>
-	| LogoData<'season3'>
-	| LogoData<'season4'>
-	| LogoData<'season5'>
-	| LogoData<'season6'>
-	| LogoData<'owcs-s1'>
-	| LogoData<'owcs-s2'>
-	| LogoData<'owcs-s3'>;
+export type CombinedLogoData = { [D in Dataset]: LogoData<D> }[Dataset];
 
 // New teams for OWCS S3 (not in S2)
 const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [

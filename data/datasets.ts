@@ -27,16 +27,7 @@ export type DatasetMetadata<T extends Dataset> = {
 	prettyHref: string;
 };
 
-export type CombinedDatasetMetadata =
-	| DatasetMetadata<'season1'>
-	| DatasetMetadata<'season2'>
-	| DatasetMetadata<'season3'>
-	| DatasetMetadata<'season4'>
-	| DatasetMetadata<'season5'>
-	| DatasetMetadata<'season6'>
-	| DatasetMetadata<'owcs-s1'>
-	| DatasetMetadata<'owcs-s2'>
-	| DatasetMetadata<'owcs-s3'>;
+export type CombinedDatasetMetadata = { [D in Dataset]: DatasetMetadata<D> }[Dataset];
 
 type BaseDatasetMetadata = {
 	dataset: Dataset;

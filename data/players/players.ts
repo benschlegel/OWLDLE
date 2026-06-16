@@ -1,3 +1,4 @@
+import type { Dataset } from '@/data/datasetIds';
 import type { Player } from '@/types/players';
 
 // * Season 1
