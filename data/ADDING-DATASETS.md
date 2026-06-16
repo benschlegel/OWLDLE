@@ -10,19 +10,24 @@ export const DATASETS = [..., 'owcs-s3', 'owcs-s4'] as const;
 
 `Dataset` and `DatasetMode` derive from this array automatically.
 
-## 2. Add metadata — `data/datasets.ts`
+## 2. Add metadata — `data/registry.ts`
 
-Append an entry to `datasetInfo` and extend the two union types:
+Add an entry to `DATASET_REGISTRY` keyed by the new dataset id:
 
 ```ts
-// datasetInfo array
-{ dataset: 'owcs-s4', formattedName: 'OWCS S4 (2027)', name: 'OWCS S4',
-  year: '2027', shorthand: 'S4', league: 'owcs',
-  href: 'owcs?season=s4', prettyHref: '/owcs/season4' },
-
-// CombinedDatasetMetadata union
-| DatasetMetadata<'owcs-s4'>
+'owcs-s4': {
+  formattedName: 'OWCS S4 (2027)',
+  name: 'OWCS S4',
+  year: '2027',
+  shorthand: 'S4',
+  league: 'owcs',
+  href: 'owcs?season=s4',
+  prettyHref: '/owcs/season4',
+  disabledTeams: [],
+},
 ```
+
+`datasetInfo` and `CombinedDatasetMetadata` in `datasets.ts` derive from this automatically — no changes needed there.
 
 ## 3. Add player data — `data/players/players.ts`
 
@@ -56,13 +61,7 @@ const OWCS_S4_STAGE1_TEAMS = [...EMEA_OWCS_S4, ...NA_OWCS_S4, ...KR_OWCS_S4] as 
 { dataset: 'owcs-s4', data: OWCS_S4_STAGE1_TEAMS },
 ```
 
-## 6. Extend `CombinedFormattedPlayer` — `data/players/formattedPlayers.ts`
-
-```ts
-| FormattedPlayer<'owcs-s4'>
-```
-
-## 7. Verify
+## 6. Verify
 
 ```
 bun run verify && bun run build
@@ -105,6 +104,52 @@ arrays are reordered.
 
 ### Database side (production)
 
-Archiving the live records (e.g. `owcs-s3` → `owcs-s3-stage1`) and seeding the
-new stage is done by the guarded switchover script. Do NOT hand-run rename + reseed scripts against prod, the
-switchover script does it atomically and reversibly.
+**Do this after the data-side steps above are deployed.** The switch script
+reads the new roster directly from the deployed code (`SORTED_PLAYERS`) to pick
+the carry-over answer — so the new stage data must be live before you run it.
+
+Archiving the live records and seeding the new stage is done by
+`db-scripts/switchStage.ts`, a guarded, atomic, reversible script. Do NOT
+hand-run rename + reseed scripts against prod.
+
+#### Database swap (run once, after the data-side deploy is live)
+
+In `db-scripts/switchStage.ts`:
+
+1. Set `const BASE: Dataset = 'owcs-s3'`, `const ENDING_STAGE = 1` (the stage
+   number being archived), and the first/second reset dates.
+2. Set `ROLLBACK = false` and `I_KNOW_WHAT_I_AM_DOING = true`.
+3. Run: `bun db-scripts/switchStage.ts`
+
+It **prepares** the new stage under a staging key (no live impact), then **swaps
+atomically** in a transaction: archives the live `owcs-s3` records (all five
+collections: players, backlog, answers, iterations, game_logs) to
+`owcs-s3-stage1` and promotes the staged records onto `owcs-s3`. The first live
+answer is auto-chosen as a **carry-over player** (present in both the old and new
+rosters) so the daily puzzle is solvable regardless of deploy timing.
+
+#### Verify after the swap
+
+- The site loads `owcs-s3` with the new roster.
+- `/api/validate?dataset=owcs-s3` returns the carry-over answer.
+- Cron rolls to the new-stage `next` answer at the following daily reset.
+
+#### Rolling back
+
+If the switch went wrong, set `ROLLBACK = true` (and the same `BASE` /
+`ENDING_STAGE`) in `db-scripts/switchStage.ts` and re-run. It restores the
+archived stage onto the live `owcs-s3` key. Safest immediately after the swap; if
+the new stage has already accumulated daily iterations, those move to the staging
+key on rollback.
+
+#### Safety properties
+
+- **No live broken window** — the new stage is fully prepared off the live key,
+  then swapped atomically in one transaction (readers never see a partial state).
+- **No unsolvable puzzle** — the first live answer is a carry-over player valid in
+  both rosters.
+- **Idempotent + reversible** — re-running detects the archive and aborts;
+  `ROLLBACK` restores the previous stage.
+- **All collections archived** — players, backlog, answers (current + next),
+  iterations, and game_logs all move together (unlike the old `migrateStage.ts`
+  which left answers and backlog behind).

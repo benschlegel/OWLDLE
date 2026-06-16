@@ -46,8 +46,8 @@ const iterationsId = 'iterations';
 const feedbackID = 'feedback';
 
 // Use connect method to connect to the server
-const dbClient = new MongoClient(uri);
-const database = dbClient.db(dbName);
+export const dbClient = new MongoClient(uri);
+export const database = dbClient.db(dbName);
 // TODO: dbClient.connect needed?
 
 // Define collections
@@ -748,35 +748,6 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
 			return gameLogCollection.insertOne({ iteration: currIteration, finishedAt: timestamp, dataset: dataset, gameData: gameData, gameResult: gameResult });
 		}
 		Promise.reject(new Error('Could not get current iteration from db.'));
-	}
-}
-
-/**
- * Migrates the dataset of iterations (e.g. when new stage comes out, migrate "owcs-s2" to "owcs-s2-stage1")
- */
-export async function migrateIterationDataset(datasetOld: Dataset | string, datasetNew: Dataset | string) {
-	await iterationCollection.updateMany({ dataset: datasetOld as Dataset }, { $set: { dataset: datasetNew as Dataset } });
-}
-
-/**
- * Migrates data set of game logs (e.g. when new stage comes out, migrate "owcs-s2" to "owcs-s2-stage1")
- */
-export async function migrateGameLogDataset(datasetOld: Dataset | string, datasetNew: Dataset | string) {
-	await gameLogCollection.updateMany({ dataset: datasetOld as Dataset }, { $set: { dataset: datasetNew as Dataset } });
-}
-
-/**
- * Deletes and inserts new document to update player dataset
- */
-export async function migratePlayerDataset(datasetOld: Dataset | string, datasetNew: Dataset | string) {
-	const doc = await playerCollection.findOne({ _id: datasetOld as Dataset });
-	if (doc) {
-		// Update id, insert with new id
-		doc._id = datasetNew as Dataset;
-		await playerCollection.insertOne(doc);
-
-		// Delete doc with old id
-		await playerCollection.deleteOne({ _id: datasetOld as Dataset });
 	}
 }
 
