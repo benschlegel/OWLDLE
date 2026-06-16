@@ -318,7 +318,7 @@ if (oldGlads) {
 }
 
 const teamLogosS6Raw = [...TEAM_LOGOS_S5] as unknown as TeamLogoData<'season6'>[];
-const TEAM_LOGOS_S6 = teamLogosS6Raw.filter((l) => l.teamName !== ('PhiladelphiaFusion' as string) && l.teamName !== ('ParisEternal' as string));
+const TEAM_LOGOS_S6 = teamLogosS6Raw.filter((l) => l.teamName !== ('PhiladelphiaFusion' as string) && l.teamName !== ('ParisEternal' as string) && l.teamName !== ('ChengduHunters' as string));
 TEAM_LOGOS_S6.push(teamLogosS6[0]);
 TEAM_LOGOS_S6.push(teamLogosS6[1]);
 

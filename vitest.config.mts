@@ -10,5 +10,6 @@ export default defineConfig({
 		env: loadEnv('', process.cwd(), ''),
 		setupFiles: ['tests/vitest.setup.ts'],
 		environment: 'node',
+		exclude: ['node_modules', '.claude/**'],
 	}
 });
