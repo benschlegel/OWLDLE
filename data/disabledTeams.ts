@@ -1,38 +1,14 @@
-import type { Dataset } from '@/data/datasets';
+import { DATASETS, type Dataset } from '@/data/datasetIds';
+import { DATASET_REGISTRY } from '@/data/registry';
 import type { TeamName } from '@/data/teams/teams';
 
 type DisabledTeamsConfig = { [T in Dataset]: readonly TeamName<T>[] };
 
 // Disabled teams won't be included as answers when the backlog regenerates (use script to remove existing disabled players from backlog).
 // They remain valid in endless mode
-export const DISABLED_TEAMS_CONFIG: DisabledTeamsConfig = {
-	season1: [],
-	season2: [],
-	season3: [],
-	season4: [],
-	season5: [],
-	season6: [],
-	'owcs-s1': [
-		'WASPXOHHHHNO',
-		'AOneManArmy',
-		'ExOblivione',
-		'TeamG4mbit',
-		'NegMentalAttitude',
-		'Hypnos',
-		'Metaboiz',
-		'Vendetta',
-		'TanukiTapire',
-		'EXNZenith',
-		'Ramattrapunch',
-		'Absolution',
-		'TeamZ',
-		'RadxAvidity',
-		'BlastOffBuds',
-		'YFPGaming',
-	],
-	'owcs-s2': [],
-	'owcs-s3': ['Cheeseburger', 'PokerFace', 'NewEra', 'DEG', 'HomieE', 'MilkTea', 'NaivePiggy'],
-};
+export const DISABLED_TEAMS_CONFIG: DisabledTeamsConfig = Object.fromEntries(
+	DATASETS.map((d) => [d, DATASET_REGISTRY[d].disabledTeams])
+) as DisabledTeamsConfig;
 
 // Returns the disabled teams for a dataset as a plain string array for easy `.includes()` checks.
 export function getDisabledTeams(dataset: Dataset): readonly string[] {

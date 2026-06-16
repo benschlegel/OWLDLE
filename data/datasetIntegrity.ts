@@ -1,9 +1,10 @@
-import { DATASETS, getDataset } from '@/data/datasets';
+import { DATASETS, getDataset, datasetInfo } from '@/data/datasets';
 import { SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import { DISABLED_TEAMS_CONFIG, getDisabledTeams } from '@/data/disabledTeams';
 import { ENDLESS_FILTER_CONFIGS } from '@/data/endless-filter-config';
+import { DATASET_REGISTRY } from '@/data/registry';
 
 /**
  * Validates the integrity of dataset structures that are assembled by parallel
@@ -146,6 +147,16 @@ export function validateDatasetIntegrity(): string[] {
 			if (!teamList.includes(team)) {
 				problems.push(`dataset "${d}": endless-filter topTeamsFilter team "${team}" not in ALL_TEAMS[${d}]`);
 			}
+		}
+	}
+
+	// Check 9: datasetInfo derivation matches DATASET_REGISTRY values.
+	for (const d of DATASETS) {
+		const info = datasetInfo.find((i) => i.dataset === d);
+		if (info && info.formattedName !== DATASET_REGISTRY[d].formattedName) {
+			problems.push(
+				`dataset "${d}": datasetInfo.formattedName ("${info.formattedName}") does not match DATASET_REGISTRY formattedName ("${DATASET_REGISTRY[d].formattedName}")`
+			);
 		}
 	}
 

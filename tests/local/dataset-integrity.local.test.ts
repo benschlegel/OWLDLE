@@ -1,5 +1,5 @@
 import { validateDatasetIntegrity } from '@/data/datasetIntegrity';
-import { DATASETS, getDataset } from '@/data/datasets';
+import { DATASETS, getDataset, datasetInfo } from '@/data/datasets';
 import { SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
@@ -14,6 +14,10 @@ test('parallel arrays have the same length as DATASETS', () => {
 	expect(SORTED_PLAYERS, `SORTED_PLAYERS length mismatch`).toHaveLength(DATASETS.length);
 	expect(LOGOS, `LOGOS length mismatch`).toHaveLength(DATASETS.length);
 	expect(ALL_TEAMS, `ALL_TEAMS length mismatch`).toHaveLength(DATASETS.length);
+});
+
+test('datasetInfo order matches DATASETS order', () => {
+	expect(datasetInfo.map((d) => d.dataset)).toEqual([...DATASETS]);
 });
 
 describe.each(DATASETS)('dataset: %s', (d) => {

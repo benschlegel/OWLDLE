@@ -3,6 +3,7 @@ import { type CombinedLogoData, LOGOS } from '@/data/teams/logos';
 import { ALL_TEAMS } from '@/data/teams/teams';
 import { z } from 'zod';
 import { DATASETS, type Dataset, type DatasetMode } from '@/data/datasetIds';
+import { DATASET_REGISTRY } from '@/data/registry';
 export { DATASETS, type Dataset, type DatasetMode };
 
 export const OWL_PATHNAME = '/owl' as const;
@@ -41,98 +42,19 @@ type BaseDatasetMetadata = {
 	prettyHref: string;
 };
 
-export const datasetInfo: BaseDatasetMetadata[] = [
-	{
-		dataset: 'season1',
-		formattedName: 'Season 1 (2018)',
-		name: 'Season 1',
-		year: '2018',
-		shorthand: 'S1',
-		league: 'owl',
-		href: 'owl?season=1',
-		prettyHref: '/owl/season1',
-	},
-	{
-		dataset: 'season2',
-		formattedName: 'Season 2 (2019)',
-		name: 'Season 2',
-		year: '2019',
-		shorthand: 'S2',
-		league: 'owl',
-		href: 'owl?season=2',
-		prettyHref: '/owl/season2',
-	},
-	{
-		dataset: 'season3',
-		formattedName: 'Season 3 (2020)',
-		name: 'Season 3',
-		year: '2020',
-		shorthand: 'S3',
-		league: 'owl',
-		href: 'owl?season=3',
-		prettyHref: '/owl/season3',
-	},
-	{
-		dataset: 'season4',
-		formattedName: 'Season 4 (2021)',
-		name: 'Season 4',
-		year: '2021',
-		shorthand: 'S4',
-		league: 'owl',
-		href: 'owl?season=4',
-		prettyHref: '/owl/season4',
-	},
-	{
-		dataset: 'season5',
-		formattedName: 'Season 5 (2022)',
-		name: 'Season 5',
-		year: '2022',
-		shorthand: 'S5',
-		league: 'owl',
-		href: 'owl?season=5',
-		prettyHref: '/owl/season5',
-	},
-	{
-		dataset: 'season6',
-		formattedName: 'Season 6 (2023)',
-		name: 'Season 6',
-		year: '2023',
-		shorthand: 'S6',
-		league: 'owl',
-		href: 'owl?season=6',
-		prettyHref: '/owl/season6',
-	},
-	{
-		dataset: 'owcs-s1',
-		formattedName: 'OWCS S1 (2024)',
-		name: 'OWCS S1',
-		year: '2024',
-		shorthand: 'S1',
-		league: 'owcs',
-		href: 'owcs?season=s1',
-		prettyHref: '/owcs/season1',
-	},
-	{
-		dataset: 'owcs-s2',
-		formattedName: 'OWCS S2 (2025)',
-		name: 'OWCS S2',
-		year: '2025',
-		shorthand: 'S2',
-		league: 'owcs',
-		href: 'owcs?season=s2',
-		prettyHref: '/owcs/season2',
-	},
-	{
-		dataset: 'owcs-s3',
-		formattedName: 'OWCS S3 (2026)',
-		name: 'OWCS S3',
-		year: '2026',
-		shorthand: 'S3',
-		league: 'owcs',
-		href: 'owcs?season=s3',
-		prettyHref: '/owcs/season3',
-	},
-] as const;
+export const datasetInfo: BaseDatasetMetadata[] = DATASETS.map((dataset) => {
+	const def = DATASET_REGISTRY[dataset];
+	return {
+		dataset,
+		formattedName: def.formattedName,
+		name: def.name,
+		year: def.year,
+		shorthand: def.shorthand,
+		league: def.league,
+		href: def.href,
+		prettyHref: def.prettyHref,
+	};
+});
 
 export const OWL_DATASETS = datasetInfo.filter((d) => d.league === 'owl');
 export const OWCS_DATASETS = datasetInfo.filter((d) => d.league === 'owcs');
