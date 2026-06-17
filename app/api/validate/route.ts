@@ -31,8 +31,12 @@ const getLimiter = new RateLimiterMemory({
  * @returns ({nextReset: Date, correctPlayer: Player, iteration: number})
  */
 export async function GET(req: NextRequest) {
-	// try {
-	// 	await getLimiter.consume(req.ip ?? 'anonymous');
+	const ip = req.headers.get('cf-connecting-ip') ?? req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonymous';
+	try {
+		await getLimiter.consume(ip);
+	} catch {
+		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
+	}
 	// Get query parameter
 	const searchParams = req.nextUrl.searchParams;
 	const dataset = searchParams.get('dataset') ?? 'season1';
@@ -115,9 +119,6 @@ export async function GET(req: NextRequest) {
 			'Cache-Control': `max-age=0, s-maxage=${secondsUntilNextReset}`,
 		},
 	});
-	// } catch (error) {
-	// 	return new Response(JSON.stringify({ message: `Too Many Requests: ${error}` }), { status: 429 });
-	// }
 }
 
 export async function PATCH(req: NextRequest) {

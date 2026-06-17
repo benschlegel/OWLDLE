@@ -5,14 +5,17 @@ import type { DbFeedback } from '@/types/database';
 import { feedbackSchema } from '@/types/server';
 
 const rateLimiter = new RateLimiterMemory({
-	points: 4, // Number of requests
+	points: 20, // Number of requests
 	duration: 60, // Per 60 second
 });
 
 export async function POST(request: NextRequest) {
-	// Apply rate limiter
-	// try {
-	// 	await rateLimiter.consume(ip ?? 'anonymous');
+	const ip = request.headers.get('cf-connecting-ip') ?? request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'anonymous';
+	try {
+		await rateLimiter.consume(ip);
+	} catch {
+		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
+	}
 
 	// Try to parse request
 	const parsedBody = await request.json();
@@ -37,7 +40,4 @@ export async function POST(request: NextRequest) {
 	}
 
 	return new Response(JSON.stringify({ message: "Couldn't add feedback." }), { status: 500 });
-	// } catch (error) {
-	// 	return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
-	// }
 }
