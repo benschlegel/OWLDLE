@@ -56,7 +56,7 @@ describe('leaderboardNameSchema', () => {
 	});
 
 	test('trims whitespace before checking min length', () => {
-		// "  A  " trims to "A" which is 1 char — should fail min(2)
+		// "  A  " trims to "A" which is 1 char, should fail min(2)
 		const result = leaderboardNameSchema.safeParse('  A  ');
 		expect(result.success).toBe(false);
 	});

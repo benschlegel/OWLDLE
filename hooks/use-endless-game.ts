@@ -7,6 +7,7 @@ import { getDatasetFilterConfig } from '@/data/endless-filter-config';
 import { GAME_CONFIG } from '@/lib/config';
 import { validateGuess } from '@/lib/server';
 import { type CompactGuess, type EndlessFilters, useEndlessStore } from '@/store/endless-store';
+import { postWithRetry } from '@/lib/save-with-retry';
 import { useQueryClient } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -96,23 +97,19 @@ export function useEndlessGame(datasetName: Dataset) {
 				return;
 			}
 			const { clientId } = leaderboard;
-			fetch(`/api/save-endless?dataset=${save.dataset}`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					streakLength: save.streakLength,
-					games: save.games,
-					...(save.filters !== undefined && { filters: save.filters }),
-					...(name !== undefined ? { name, clientId } : { anonymous: true, clientId }),
-				}),
-			}).then((res) => {
-				if (res.ok) {
-					queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
-					queryClient.invalidateQueries({ queryKey: ['leaderboard-top5', save.dataset] });
-				}
-			});
 			setPendingSave(null);
 			pendingSaveRef.current = null;
+			postWithRetry(`/api/save-endless?dataset=${save.dataset}`, {
+				streakLength: save.streakLength,
+				games: save.games,
+				...(save.filters !== undefined && { filters: save.filters }),
+				...(name !== undefined ? { name, clientId } : { anonymous: true, clientId }),
+			})
+				.then(() => {
+					queryClient.invalidateQueries({ queryKey: ['leaderboard', save.dataset] });
+					queryClient.invalidateQueries({ queryKey: ['leaderboard-top5', save.dataset] });
+				})
+				.catch(() => {});
 		},
 		[leaderboard, queryClient]
 	);

@@ -74,7 +74,7 @@ export function validateDatasetIntegrity(): string[] {
 			const keyedNames = nameKeyedPlayers.players.map((p) => p.name);
 			if (JSON.stringify(consumedNames) !== JSON.stringify(keyedNames)) {
 				problems.push(
-					`dataset "${d}": FORMATTED_DATASETS playerData (assembled by index) does not match SORTED_PLAYERS[dataset="${d}"] (name-keyed) — index-ordering drift detected`
+					`dataset "${d}": FORMATTED_DATASETS playerData (assembled by index) does not match SORTED_PLAYERS[dataset="${d}"] (name-keyed), index-ordering drift detected`
 				);
 			}
 		}
@@ -84,7 +84,7 @@ export function validateDatasetIntegrity(): string[] {
 			const keyedTeams = [...nameKeyedTeams.data];
 			if (JSON.stringify(consumedTeams) !== JSON.stringify(keyedTeams)) {
 				problems.push(
-					`dataset "${d}": FORMATTED_DATASETS teams (assembled by index) does not match ALL_TEAMS[dataset="${d}"] (name-keyed) — index-ordering drift detected`
+					`dataset "${d}": FORMATTED_DATASETS teams (assembled by index) does not match ALL_TEAMS[dataset="${d}"] (name-keyed), index-ordering drift detected`
 				);
 			}
 		}
@@ -94,7 +94,7 @@ export function validateDatasetIntegrity(): string[] {
 			const keyedLogoNames = nameKeyedLogos.data.map((l) => l.teamName);
 			if (JSON.stringify(consumedLogoNames) !== JSON.stringify(keyedLogoNames)) {
 				problems.push(
-					`dataset "${d}": FORMATTED_DATASETS teamData (assembled by index) does not match LOGOS[dataset="${d}"] (name-keyed) — index-ordering drift detected`
+					`dataset "${d}": FORMATTED_DATASETS teamData (assembled by index) does not match LOGOS[dataset="${d}"] (name-keyed), index-ordering drift detected`
 				);
 			}
 		}

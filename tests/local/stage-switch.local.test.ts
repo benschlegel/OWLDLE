@@ -228,7 +228,7 @@ describe('stage-switch: answers + backlog archival (all five collections archive
 	});
 });
 
-describe('stage-switch: idempotency precondition guard — archive already exists', () => {
+describe('stage-switch: idempotency precondition guard, archive already exists', () => {
 	beforeEach(async () => {
 		await clearAll();
 		await seedLiveState();
@@ -252,7 +252,7 @@ describe('stage-switch: idempotency precondition guard — archive already exist
 	});
 });
 
-describe('stage-switch: idempotency precondition guard — clean state', () => {
+describe('stage-switch: idempotency precondition guard, clean state', () => {
 	beforeEach(async () => {
 		await clearAll();
 		// Only seed live state (no staging), so preconditions should be satisfied
@@ -266,7 +266,7 @@ describe('stage-switch: idempotency precondition guard — clean state', () => {
 	});
 });
 
-describe('stage-switch: idempotency precondition guard — stale staging', () => {
+describe('stage-switch: idempotency precondition guard, stale staging', () => {
 	beforeEach(async () => {
 		await clearAll();
 	});

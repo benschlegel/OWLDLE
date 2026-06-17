@@ -9,6 +9,7 @@ import { validateGuess } from '@/lib/server';
 import type { DbSaveData } from '@/types/database';
 import type { PlausibleEvents } from '@/types/plausible';
 import type { GuessResponse } from '@/types/server';
+import { postWithNetworkRetry } from '@/lib/save-with-retry';
 import { usePlausible } from 'next-plausible';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { markGameCompleted } from '@/components/pwa-provider';
@@ -106,7 +107,7 @@ export default function useGameState({ slug }: Props) {
 
 	const saveGame = useCallback(
 		(data: DbSaveData) => {
-			fetch(`/api/save?dataset=${dataset.dataset}`, { method: 'POST', body: JSON.stringify(data) })
+			postWithNetworkRetry(`/api/save?dataset=${dataset.dataset}`, data)
 				.then(async (r) => {
 					if (r.status === 200) {
 						plausible('finishGame', { props: { didSucceed: true, state: data.gameResult, dataset: dataset.dataset } });
@@ -118,11 +119,15 @@ export default function useGameState({ slug }: Props) {
 								setStats(json.stats);
 							}
 						} catch {
-							// Response may not have JSON body — stats update failed silently
+							// Response may not have JSON body, stats update failed silently
 						}
+					} else {
+						plausible('finishGame', { props: { didSucceed: false, state: data.gameResult, dataset: dataset.dataset } });
 					}
 				})
-				.catch((e) => plausible('finishGame', { props: { didSucceed: false, state: data.gameResult, dataset: dataset.dataset } }));
+				.catch(() => {
+					plausible('finishGame', { props: { didSucceed: false, state: data.gameResult, dataset: dataset.dataset } });
+				});
 		},
 		[plausible, dataset.dataset, setStats]
 	);
@@ -173,7 +178,19 @@ export default function useGameState({ slug }: Props) {
 			isRollbackRef.current = true;
 			setPlayerGuesses((old) => old.slice(0, -1));
 		}
-	}, [gameState, validatedData, playerGuesses, setGameState, evaluatedGuesses, setPlayerGuesses, saveGame, setEvaluatedGuesses, dataset.dataset, recordWin, recordLoss]);
+	}, [
+		gameState,
+		validatedData,
+		playerGuesses,
+		setGameState,
+		evaluatedGuesses,
+		setPlayerGuesses,
+		saveGame,
+		setEvaluatedGuesses,
+		dataset.dataset,
+		recordWin,
+		recordLoss,
+	]);
 
 	const isDatasetSynced = syncedDatasetRef.current === dataset.dataset;
 	return [evaluatedGuesses, isDatasetSynced ? gameState : 'in-progress', validatedData, isDismissing] as const;

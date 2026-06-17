@@ -106,7 +106,7 @@ export async function rollbackStage(db: Db, base: Dataset, n: number, session: C
 /**
  * Seed the new stage's full DB state under stagingKey(base).
  * Writes: players doc, backlog doc, current + next answers, first iterations doc.
- * Safe to call without a transaction — nothing reads the staging key.
+ * Safe to call without a transaction, nothing reads the staging key.
  */
 export async function prepareStaging(db: Db, base: Dataset, currentPlayer: DbPlayer, nextPlayer: DbPlayer, firstReset: Date, secondReset: Date): Promise<void> {
 	const sk = stagingKey(base);

@@ -135,7 +135,7 @@ describe('game stats - updateGameStats', () => {
 		expect(result2.wins === 1).toBe(false);
 	});
 
-	test('loss before any win — first win still detectable', async () => {
+	test('loss before any win, first win still detectable', async () => {
 		const lossResult = assertDefined(await updateGameStats(ds, 1, 'lost', 7));
 		expect(lossResult.wins).toBe(0);
 

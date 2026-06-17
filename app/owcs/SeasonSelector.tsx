@@ -15,7 +15,7 @@ export default function SeasonSelector() {
 	const handleChange = useCallback(
 		(value: string) => {
 			if (value.startsWith('owcs')) {
-				// Same page — update URL param
+				// Same page, update URL param
 				viewTransition(() => setSeason(value as Dataset));
 			} else {
 				// Navigate to OWL page
