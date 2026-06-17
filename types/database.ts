@@ -3,6 +3,14 @@ import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
 import { type Feedback, GuessSchema } from '@/types/server';
 import { z } from 'zod';
 
+// Display-name policy shared by leaderboard submission and rename.
+export const leaderboardNameSchema = z
+	.string()
+	.trim()
+	.min(2)
+	.max(20)
+	.regex(/^[\p{L}\p{N} _.\-]+$/u, 'Name contains invalid characters.');
+
 export type DbAnswerPrefix = 'current' | 'next';
 
 export type AnswerKey = `${DbAnswerPrefix}_${Dataset}`;
@@ -156,7 +164,7 @@ export const endlessSaveValidator = z.object({
 			isPartnerOnly: z.boolean(),
 		})
 		.optional(),
-	name: z.string().min(2).max(20).optional(),
+	name: leaderboardNameSchema.optional(),
 	clientId: z.string().uuid().optional(),
 	anonymous: z.boolean().optional(),
 });
