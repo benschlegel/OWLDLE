@@ -91,5 +91,5 @@ export function useAnswerQuery(dataset: Dataset) {
 		},
 	});
 
-	return { ...query, isStale: isStaleRef };
+	return { ...query, isStale: isStaleRef.current };
 }

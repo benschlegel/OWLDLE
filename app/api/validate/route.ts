@@ -64,7 +64,7 @@ export async function GET(req: NextRequest) {
 		}
 
 		// Calculate seconds until next reset (based on first valid answer, same for all datasets. Default to next reset in 0 seconds if undefined)
-		const secondsUntilNextReset = Math.floor((validAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000);
+		const secondsUntilNextReset = Math.max(0, Math.floor((validAnswers[0].answer.nextReset.getTime() - now.getTime()) / 1000));
 		return new Response(JSON.stringify(validAnswers), {
 			status: 200,
 			headers: {
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
 	const validatedCurrAnswer = getLocalCurrentAnswer(datasetParsed.data);
 	// Will always be valid, answers were initialized + dataset was validated
 	if (!validatedCurrAnswer) {
-		return;
+		return new Response('Answer unavailable.', { status: 500 });
 	}
 
 	if (now >= validatedCurrAnswer.nextReset) {
@@ -112,7 +112,7 @@ export async function GET(req: NextRequest) {
 		iteration: validatedCurrAnswer.iteration,
 	};
 
-	const secondsUntilNextReset = Math.floor((validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000);
+	const secondsUntilNextReset = Math.max(0, Math.floor((validatedCurrAnswer.nextReset.getTime() - now.getTime()) / 1000));
 	return new Response(JSON.stringify(res), {
 		status: 200,
 		headers: {

@@ -674,7 +674,7 @@ export async function insertManyBacklog(players: DbPlayer[], dataset: Dataset) {
 	let isInputUnique = true;
 	// Check if all input players are unique
 	for (const player of players) {
-		const isLocalUnique = isPlayerUnique(player, dataset, true);
+		const isLocalUnique = await isPlayerUnique(player, dataset, true);
 		if (!isLocalUnique) {
 			isInputUnique = false;
 		}
@@ -749,7 +749,7 @@ export async function logGame(gameData: DbGuess[], gameResult: DbGameResult, tim
 		if (currIteration && currIteration > 0) {
 			return gameLogCollection.insertOne({ iteration: currIteration, finishedAt: timestamp, dataset: dataset, gameData: gameData, gameResult: gameResult });
 		}
-		Promise.reject(new Error('Could not get current iteration from db.'));
+		throw new Error('Could not get current iteration from db.');
 	}
 }
 

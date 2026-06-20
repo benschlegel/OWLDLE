@@ -40,12 +40,12 @@ export default function EndlessResult({ state, correctPlayer, onRestart, onNextG
 		const handleKeyDown = (e: KeyboardEvent) => {
 			if (e.ctrlKey && e.code === 'Space') {
 				e.preventDefault();
-				onNextGame();
+				onRestart();
 			}
 		};
 		window.addEventListener('keydown', handleKeyDown);
 		return () => window.removeEventListener('keydown', handleKeyDown);
-	}, [onNextGame]);
+	}, [onRestart]);
 
 	if (state === 'won') {
 		return (
