@@ -25,19 +25,12 @@ export async function GET(request: Request) {
 		for (const dataset of DATASETS) {
 			await goNextIteration(GAME_CONFIG.nextResetHours, dataset, GAME_CONFIG.backlogMaxSize);
 			const url = `https://www.owldle.com?dataset=${dataset}`;
-			const headers = new Headers({
-				'Content-Type': 'application/json',
-				// Add other headers as needed
-			});
 
-			// Create a new NextRequest
-			const request = new NextRequest(url, {
-				method: 'PATCH',
-				headers: headers,
-			});
-
-			// Call your route handler
-			await RoutePatch(request);
+			const req = new NextRequest(url, { method: 'PATCH', headers });
+			const res = await RoutePatch(req);
+			if (!res.ok) {
+				throw new Error(`Cache warm failed for ${dataset}: ${res.status}`);
+			}
 		}
 		return new Response('Successfully set next iteration and re-fetched on server', { status: 200 });
 	} catch (e) {
