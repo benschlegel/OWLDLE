@@ -40,9 +40,11 @@ export const dbName = !useDevDatabase ? PROD_NAME : DEV_NAME;
 export const answerCollectionName = 'answers';
 export const playerCollectionName = 'players';
 export const backlogCollectionName = 'backlog';
+export const iterationsCollectionName = 'iterations';
+export const endlessLogCollectionName = 'endless_game_logs';
 const season1ID: Dataset = 'season1';
 const gameLogs = 'game_logs';
-const iterationsId = 'iterations';
+const iterationsId = iterationsCollectionName;
 const feedbackID = 'feedback';
 
 // Use connect method to connect to the server
@@ -61,7 +63,7 @@ const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
 const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });
 
-const endlessLogCollection = database.collection<DbLoggedEndlessSession>('endless_game_logs');
+const endlessLogCollection = database.collection<DbLoggedEndlessSession>(endlessLogCollectionName);
 endlessLogCollection.createIndex({ dataset: 1, name: 1, streakLength: -1 });
 
 const gameStatsCollection = database.collection<DbGameStats>('game_stats');

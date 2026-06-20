@@ -7,6 +7,8 @@ import {
 	dbName,
 	backlogCollectionName,
 	playerCollectionName,
+	answerCollectionName,
+	iterationsCollectionName,
 } from '@/lib/databaseAccess';
 import type { Dataset } from '@/data/datasets';
 import type { DbAnswer, DbPlayer } from '@/types/database';
@@ -35,7 +37,14 @@ async function clearAll() {
 	const client = getClient();
 	try {
 		await client.connect();
-		await client.db(dbName).dropDatabase();
+		const db = client.db(dbName);
+		await Promise.all([
+			db.collection(playerCollectionName).deleteMany({}),
+			db.collection(backlogCollectionName).deleteMany({}),
+			db.collection(answerCollectionName).deleteMany({}),
+			db.collection(iterationsCollectionName).deleteMany({}),
+			db.collection('game_stats').deleteMany({}),
+		]);
 	} finally {
 		await client.close();
 	}
