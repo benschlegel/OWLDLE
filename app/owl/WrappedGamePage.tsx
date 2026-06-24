@@ -24,7 +24,7 @@ export default function SeasonPageWrapper() {
 	// Check if valid season was provided
 	if (validSeasons.includes(season as unknown as Dataset)) {
 		return (
-			<div className="relative animate-in fade-in duration-300">
+			<div className="relative animate-in fade-in duration-300 w-full max-w-lg mx-auto">
 				<LeftColumn />
 				<RightColumn />
 				<UpdateMetadata />

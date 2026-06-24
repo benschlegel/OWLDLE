@@ -30,7 +30,7 @@ export default function EndlessPageWrapper() {
 
 	return (
 		<DatasetContext.Provider value={datasetContextValue}>
-			<div className="relative animate-in fade-in duration-300">
+			<div className="relative animate-in fade-in duration-300 w-full max-w-lg mx-auto">
 				<EndlessGameHeader
 					topLabel={<EndlessHeaderBadge />}
 					modeLabel={modeLabel}

@@ -1,0 +1,77 @@
+'use client';
+
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import type { TimeframeRange } from '@/types/statistics';
+import { CalendarIcon } from 'lucide-react';
+import { useState } from 'react';
+import type { DateRange } from 'react-day-picker';
+
+const PRESETS: { value: TimeframeRange; label: string }[] = [
+	{ value: 'yesterday', label: 'Yesterday' },
+	{ value: 'last7', label: 'Last 7 days' },
+	{ value: 'last30', label: 'Last 30 days' },
+	{ value: 'all', label: 'All time' },
+];
+
+/** Local YYYY-MM-DD in UTC to match the server's date parsing. */
+function toYmd(d: Date): string {
+	return d.toISOString().slice(0, 10);
+}
+
+type Props = {
+	range: TimeframeRange;
+	from: string | null;
+	to: string | null;
+	onPreset: (range: TimeframeRange) => void; // sets range, clears from/to
+	onCustom: (from: string, to: string) => void; // sets range='custom' + dates
+};
+
+export default function TimeframeSelect({ range, from, to, onPreset, onCustom }: Props) {
+	const [open, setOpen] = useState(false);
+	// disable today and later (yesterday is the latest selectable day)
+	const today = new Date();
+	const disabledAfter = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate() - 1));
+	const selected: DateRange | undefined = range === 'custom' && from && to ? { from: new Date(from), to: new Date(to) } : undefined;
+
+	return (
+		<div className="flex items-center gap-2">
+			<Select value={range === 'custom' ? '' : range} onValueChange={(v) => onPreset(v as TimeframeRange)}>
+				<SelectTrigger className="w-auto min-w-[8.5rem] h-9 text-sm" aria-label="Select timeframe">
+					<SelectValue placeholder={range === 'custom' ? 'Custom range' : 'Timeframe'} />
+				</SelectTrigger>
+				<SelectContent>
+					{PRESETS.map((p) => (
+						<SelectItem key={p.value} value={p.value}>
+							{p.label}
+						</SelectItem>
+					))}
+				</SelectContent>
+			</Select>
+
+			<Popover open={open} onOpenChange={setOpen}>
+				<PopoverTrigger asChild>
+					<Button variant="outline" size="sm" className="h-9 gap-2" aria-label="Pick a custom date range">
+						<CalendarIcon className="size-4" />
+						<span className="hidden sm:inline">{range === 'custom' && from && to ? `${from} → ${to}` : 'Custom'}</span>
+					</Button>
+				</PopoverTrigger>
+				<PopoverContent className="w-auto p-0" align="end">
+					<Calendar
+						mode="range"
+						selected={selected}
+						disabled={{ after: disabledAfter }}
+						onSelect={(r?: DateRange) => {
+							if (r?.from && r?.to) {
+								onCustom(toYmd(r.from), toYmd(r.to));
+								setOpen(false);
+							}
+						}}
+					/>
+				</PopoverContent>
+			</Popover>
+		</div>
+	);
+}
