@@ -24,6 +24,11 @@ export async function getStatsBoundaryMs(dataset: Dataset): Promise<number | nul
 	return new Date(answer.nextReset).getTime() - GAME_CONFIG.nextResetHours * HOUR_MS;
 }
 
+/** Total games ever logged across every dataset/mode. Uses collection metadata (O(1)). */
+export async function getGlobalGamesPlayed(): Promise<number> {
+	return gameLogCollection.estimatedDocumentCount();
+}
+
 /** Run all statistics aggregation for a dataset over [fromMs, toMs). */
 export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number): Promise<RawStatistics> {
 	if (fromMs >= toMs) return EMPTY_RAW;
@@ -92,7 +97,7 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
 		.filter((r: { played: number }) => r.played >= MIN_HARDEST_SAMPLE)
 		.map((r: { _id: number; played: number; wins: number }) => ({ iteration: r._id, played: r.played, wins: r.wins }))
 		.sort((a: { wins: number; played: number }, b: { wins: number; played: number }) => a.wins / a.played - b.wins / b.played)
-		.slice(0, 5);
+		.slice(0, 20);
 
 	let hardestPuzzles: RawStatistics['hardestPuzzles'] = [];
 	if (ranked.length > 0) {

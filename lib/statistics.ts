@@ -55,7 +55,7 @@ export function shapeStatistics(
 		idToTeam: Map<number, string>;
 		maxGuesses: number;
 	}
-): StatisticsResponse {
+): Omit<StatisticsResponse, 'globalGamesPlayed'> {
 	const { gamesPlayed, wins, winGuessSum, solvedFirst } = raw.summary;
 	const losses = gamesPlayed - wins;
 
@@ -65,8 +65,10 @@ export function shapeStatistics(
 	for (let i = 1; i <= opts.maxGuesses; i++) guessDistribution.push({ bucket: String(i), count: distMap.get(String(i)) ?? 0 });
 	guessDistribution.push({ bucket: 'failed', count: distMap.get('failed') ?? 0 });
 
-	// First-guess names (already count-desc from the DB).
-	const topFirstGuesses = raw.firstGuesses.slice(0, 10).map((g) => ({ name: g.name, count: g.count }));
+	// First-guess names (already count-desc from the DB). Up to 50 so the
+	// expand-to-fullscreen dialog has a long, searchable list; the card previews
+	// only the first few.
+	const topFirstGuesses = raw.firstGuesses.slice(0, 50).map((g) => ({ name: g.name, count: g.count }));
 
 	// First-guess teams: fold id → team and re-aggregate.
 	const teamTotals = new Map<string, number>();
@@ -77,7 +79,7 @@ export function shapeStatistics(
 	const topFirstTeams = [...teamTotals.entries()]
 		.map(([team, count]) => ({ team, count }))
 		.sort((a, b) => b.count - a.count)
-		.slice(0, 8);
+		.slice(0, 50);
 
 	return {
 		dataset: opts.dataset,

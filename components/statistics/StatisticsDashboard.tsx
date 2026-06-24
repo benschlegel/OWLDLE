@@ -10,11 +10,13 @@ import {
 	FirstGuessChart,
 	FirstTeamChart,
 	GamesPerDayChart,
+	GlobalGamesCard,
 	GuessDistributionChart,
 	HardestPuzzlesChart,
 	SummaryCards,
 	WinRatePerDayChart,
 } from '@/components/statistics/StatCharts';
+import { injectDevMock, USE_DEV_MOCK } from '@/components/statistics/dev-mock';
 
 function DashboardSkeleton() {
 	return (
@@ -40,7 +42,8 @@ function DashboardSkeleton() {
 
 export default function StatisticsDashboard() {
 	const [params, setParams] = useStatisticsParams();
-	const { data, isLoading, isError } = useStatistics(params);
+	const { data: rawData, isLoading, isError } = useStatistics(params);
+	const data = USE_DEV_MOCK && rawData ? injectDevMock(rawData) : rawData;
 	const shorthand = datasetInfo.find((d) => d.dataset === params.dataset)?.shorthand ?? params.dataset;
 
 	return (
@@ -48,11 +51,7 @@ export default function StatisticsDashboard() {
 			<header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				<h1 className="text-3xl font-owl text-primary-foreground">Statistics</h1>
 				<div className="flex items-center gap-2 flex-wrap">
-					<SeasonSelectDropdown
-						value={params.dataset}
-						currentShorthand={shorthand}
-						onValueChange={(v) => setParams({ dataset: v as typeof params.dataset })}
-					/>
+					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset })} />
 					<TimeframeSelect
 						range={params.range}
 						from={params.from}
@@ -63,36 +62,45 @@ export default function StatisticsDashboard() {
 				</div>
 			</header>
 
-			{data?.timeframe.label && (
+			{isLoading ? (
+				<Skeleton className="h-5 w-28 -mt-2" />
+			) : data?.timeframe.label ? (
 				<p className="text-sm text-muted-foreground -mt-2">{data.timeframe.label}</p>
-			)}
+			) : null}
 
-			{isLoading && <DashboardSkeleton />}
+			{isLoading && (
+				<>
+					<Skeleton className="h-20 rounded-lg" />
+					<DashboardSkeleton />
+				</>
+			)}
 			{isError && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
 
 			{data && !isLoading && (
-				data.summary.gamesPlayed === 0 ? (
-					<p className="text-center text-muted-foreground py-16 font-owl text-xl">
-						No games played in this timeframe.
-					</p>
-				) : (
-					<>
-						<SummaryCards summary={data.summary} />
+				<>
+					{data.globalGamesPlayed != null && <GlobalGamesCard total={data.globalGamesPlayed} />}
 
-						<div className="grid gap-4 sm:grid-cols-2">
-							<GuessDistributionChart data={data.guessDistribution} />
-							<FirstGuessChart data={data.topFirstGuesses} />
-						</div>
+					{data.summary.gamesPlayed === 0 ? (
+						<p className="text-center text-muted-foreground py-16 font-owl text-xl">No games played in this timeframe.</p>
+					) : (
+						<>
+							<SummaryCards summary={data.summary} />
 
-						<GamesPerDayChart data={data.gamesPerDay} />
-						<WinRatePerDayChart data={data.gamesPerDay} />
+							<div className="grid gap-4 sm:grid-cols-2">
+								<GuessDistributionChart data={data.guessDistribution} />
+								<FirstGuessChart data={data.topFirstGuesses} previewCount={data.guessDistribution.length} />
+							</div>
 
-						<div className="grid gap-4 sm:grid-cols-2">
-							<FirstTeamChart data={data.topFirstTeams} />
-							<HardestPuzzlesChart data={data.hardestPuzzles} />
-						</div>
-					</>
-				)
+							<GamesPerDayChart data={data.gamesPerDay} />
+							<WinRatePerDayChart data={data.gamesPerDay} />
+
+							<div className="grid gap-4 sm:grid-cols-2">
+								<FirstTeamChart data={data.topFirstTeams} previewCount={data.guessDistribution.length} />
+								<HardestPuzzlesChart data={data.hardestPuzzles} previewCount={data.guessDistribution.length} />
+							</div>
+						</>
+					)}
+				</>
 			)}
 		</div>
 	);

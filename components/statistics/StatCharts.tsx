@@ -1,12 +1,17 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { Maximize2 } from 'lucide-react';
+import { type ReactNode, useState } from 'react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { type ChartConfig, ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { useIsMobile } from '@/hooks/use-mobile';
 import type { DayPoint, GuessBucket, HardPuzzle, NamedCount, TeamCount } from '@/types/statistics';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, XAxis, YAxis } from 'recharts';
 
 // Summary Cards
 
@@ -23,7 +28,7 @@ export function SummaryCards({ summary }: { summary: SummaryData }) {
 	const stats: { label: string; value: string | number }[] = [
 		{ label: 'Games Played', value: summary.gamesPlayed.toLocaleString() },
 		{ label: 'Win Rate', value: `${summary.winRate}%` },
-		{ label: 'Avg Guesses', value: summary.averageGuesses?.toFixed(1) ?? '-' },
+		{ label: 'Avg Guesses', value: summary.averageGuesses?.toFixed(1) ?? '—' },
 		{ label: '1st Guess Wins', value: `${summary.solvedFirstGuessRate}%` },
 		{ label: 'Total Wins', value: summary.wins.toLocaleString() },
 	];
@@ -42,13 +47,43 @@ export function SummaryCards({ summary }: { summary: SummaryData }) {
 	);
 }
 
+// Global all-time games
+
+/** Timeframe-independent: total games ever logged across every dataset/mode. */
+export function GlobalGamesCard({ total }: { total: number }) {
+	return (
+		<Card className="overflow-hidden border-primary-foreground/30 bg-primary-foreground/3">
+			<CardContent className="p-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+				<div className="flex flex-col">
+					<p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">Total Games Played</p>
+					<p className="text-4xl font-owl text-primary-foreground">{total.toLocaleString()}</p>
+				</div>
+				<p className="text-sm text-muted-foreground sm:text-right">All-time, across every season &amp; mode</p>
+			</CardContent>
+		</Card>
+	);
+}
+
 // Shared chart card wrapper
 
-function StatChartCard({ title, children }: { title: string; children: ReactNode }) {
+/** Card shell with a title, separator, and an optional expand-to-fullscreen button. */
+function ChartCard({ title, onExpand, children }: { title: string; onExpand?: () => void; children: ReactNode }) {
 	return (
 		<Card className="overflow-hidden">
 			<CardHeader className="p-4 pb-2">
-				<CardTitle className="text-lg font-owl">{title}</CardTitle>
+				<div className="flex items-center justify-between gap-2">
+					<CardTitle className="text-lg font-owl">{title}</CardTitle>
+					{onExpand && (
+						<Button
+							variant="ghost"
+							size="icon"
+							className="size-7 -mr-1 text-muted-foreground hover:text-foreground"
+							onClick={onExpand}
+							aria-label={`Expand ${title}`}>
+							<Maximize2 className="size-4" />
+						</Button>
+					)}
+				</div>
 				<Separator />
 			</CardHeader>
 			<CardContent className="p-4 pt-2">{children}</CardContent>
@@ -56,94 +91,283 @@ function StatChartCard({ title, children }: { title: string; children: ReactNode
 	);
 }
 
+// Reusable horizontal bar chart
+
+type BarDatum = { label: string; value: number; tip: string; rank?: number };
+
+function HorizontalBarChart({
+	data,
+	config,
+	labelWidth,
+	domain,
+	valueFormatter,
+	showRank = false,
+}: {
+	data: BarDatum[];
+	config: ChartConfig;
+	labelWidth: number;
+	domain?: [number, number];
+	valueFormatter?: (v: number) => string;
+	showRank?: boolean;
+}) {
+	const isMobile = useIsMobile();
+	const height = data.length * 40 + 16;
+	return (
+		<ChartContainer config={config} style={{ height }} className={`w-full aspect-auto ${isMobile ? '**:outline-none!' : ''}`}>
+			<BarChart accessibilityLayer={!isMobile} data={data} layout="vertical" margin={{ right: valueFormatter ? 56 : 48, left: 4 }}>
+				<CartesianGrid horizontal={false} />
+				<YAxis dataKey="label" type="category" tickLine={false} axisLine={false} tickMargin={8} width={labelWidth} />
+				<XAxis type="number" domain={domain} hide />
+				<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" formatter={(_v, _n, item) => (item?.payload as BarDatum)?.tip ?? ''} />} />
+				<Bar dataKey="value" radius={4} className="fill-secondary">
+					{showRank && (
+						<LabelList
+							dataKey="rank"
+							position="insideLeft"
+							offset={8}
+							className="fill-secondary-foreground text-xs font-medium"
+							formatter={(v: unknown) => `#${v}`}
+						/>
+					)}
+					<LabelList
+						dataKey="value"
+						position="right"
+						offset={8}
+						className="fill-foreground text-xs"
+						formatter={valueFormatter ? (v: unknown) => valueFormatter(Number(v)) : undefined}
+					/>
+				</Bar>
+			</BarChart>
+		</ChartContainer>
+	);
+}
+
+/**
+ * A chart card backed by a bar list. Shows the first `previewCount` bars and an
+ * expand button opening a fullscreen dialog with the full (scrollable) list,
+ * plus optional client-side search when `searchPlaceholder` is provided.
+ */
+function BarChartCard({
+	title,
+	data,
+	config,
+	labelWidth,
+	dialogLabelWidth,
+	previewCount = 8,
+	domain,
+	valueFormatter,
+	searchPlaceholder,
+	showRank = false,
+}: {
+	title: string;
+	data: BarDatum[];
+	config: ChartConfig;
+	labelWidth: number;
+	/** Wider y-axis label width for the fullscreen dialog (defaults to labelWidth). */
+	dialogLabelWidth?: number;
+	previewCount?: number;
+	domain?: [number, number];
+	valueFormatter?: (v: number) => string;
+	searchPlaceholder?: string;
+	showRank?: boolean;
+}) {
+	const [open, setOpen] = useState(false);
+	const [query, setQuery] = useState('');
+
+	const preview = data.slice(0, previewCount);
+	const filtered = query.trim() ? data.filter((d) => d.label.toLowerCase().includes(query.trim().toLowerCase())) : data;
+
+	return (
+		<ChartCard title={title} onExpand={() => setOpen(true)}>
+			<HorizontalBarChart data={preview} config={config} labelWidth={labelWidth} domain={domain} valueFormatter={valueFormatter} showRank={showRank} />
+
+			<Dialog open={open} onOpenChange={setOpen}>
+				<DialogContent className="sm:max-w-3xl" aria-describedby={`${title} chart`}>
+					<DialogHeader>
+						<DialogTitle className="font-owl">{title}</DialogTitle>
+					</DialogHeader>
+					{searchPlaceholder && <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder={searchPlaceholder} className="h-9" />}
+					<ScrollArea className="max-h-[60vh] pr-3">
+						{filtered.length > 0 ? (
+							<HorizontalBarChart
+								data={filtered}
+								config={config}
+								labelWidth={dialogLabelWidth ?? labelWidth}
+								domain={domain}
+								valueFormatter={valueFormatter}
+								showRank={showRank}
+							/>
+						) : (
+							<p className="text-sm text-muted-foreground py-12 text-center">No matches.</p>
+						)}
+					</ScrollArea>
+				</DialogContent>
+			</Dialog>
+		</ChartCard>
+	);
+}
+
+// Reusable area (per-day) chart
+
+function AreaChartBody({
+	data,
+	config,
+	dataKey,
+	gradientId,
+	className,
+	domain,
+	valueFormatter,
+}: {
+	data: DayPoint[];
+	config: ChartConfig;
+	dataKey: 'played' | 'winRate';
+	gradientId: string;
+	className: string;
+	domain?: [number, number];
+	valueFormatter?: (v: number) => string;
+}) {
+	const isMobile = useIsMobile();
+	return (
+		<ChartContainer config={config} className={`${className} aspect-auto ${isMobile ? '**:outline-none!' : ''}`}>
+			<AreaChart accessibilityLayer={!isMobile} data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
+				<defs>
+					<linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
+						<stop offset="5%" stopColor="var(--primary-foreground)" stopOpacity={0.25} />
+						<stop offset="95%" stopColor="var(--primary-foreground)" stopOpacity={0.02} />
+					</linearGradient>
+				</defs>
+				<CartesianGrid vertical={false} />
+				<XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} minTickGap={28} tickFormatter={dayLabel} interval="preserveStartEnd" />
+				<YAxis domain={domain} tickLine={false} axisLine={false} tickMargin={4} width={domain ? 40 : 36} tickFormatter={valueFormatter} />
+				<ChartTooltip
+					cursor={false}
+					content={
+						<ChartTooltipContent
+							indicator="line"
+							labelFormatter={(label) => dayLabel(String(label))}
+							formatter={valueFormatter ? (v) => valueFormatter(Number(v)) : undefined}
+						/>
+					}
+				/>
+				<Area dataKey={dataKey} type="monotone" stroke="var(--primary-foreground)" strokeWidth={2} fill={`url(#${gradientId})`} />
+			</AreaChart>
+		</ChartContainer>
+	);
+}
+
+/** Per-day area chart card with an expand-to-fullscreen (taller) view. */
+function AreaChartCard({
+	title,
+	data,
+	config,
+	dataKey,
+	gradientId,
+	domain,
+	valueFormatter,
+}: {
+	title: string;
+	data: DayPoint[];
+	config: ChartConfig;
+	dataKey: 'played' | 'winRate';
+	gradientId: string;
+	domain?: [number, number];
+	valueFormatter?: (v: number) => string;
+}) {
+	const [open, setOpen] = useState(false);
+	return (
+		<ChartCard title={title} onExpand={() => setOpen(true)}>
+			<AreaChartBody
+				data={data}
+				config={config}
+				dataKey={dataKey}
+				gradientId={gradientId}
+				domain={domain}
+				valueFormatter={valueFormatter}
+				className="h-56 w-full"
+			/>
+
+			<Dialog open={open} onOpenChange={setOpen}>
+				<DialogContent className="sm:max-w-5xl" aria-describedby={`${title} chart`}>
+					<DialogHeader>
+						<DialogTitle className="font-owl">{title}</DialogTitle>
+					</DialogHeader>
+					<AreaChartBody
+						data={data}
+						config={config}
+						dataKey={dataKey}
+						gradientId={`${gradientId}-lg`}
+						domain={domain}
+						valueFormatter={valueFormatter}
+						className="h-[55vh] w-full"
+					/>
+				</DialogContent>
+			</Dialog>
+		</ChartCard>
+	);
+}
+
+// Helpers
+
+const playerCount = (n: number) => `${n.toLocaleString()} ${n === 1 ? 'player' : 'players'}`;
+const pctValue = (v: number) => `${v}%`;
+
+/** Localized "Jun 5"-style label for a YYYY-MM-DD day, parsed/formatted in UTC so the
+ *  calendar day never shifts across timezones. Uses the browser's locale. */
+const dayLabel = (date: string) => new Date(`${date}T00:00:00.000Z`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+
 // Guess Distribution
 
-const guessDistConfig = { pct: { label: 'Share', color: 'var(--secondary)' } } satisfies ChartConfig;
+const guessDistConfig = { value: { label: 'Share', color: 'var(--secondary)' } } satisfies ChartConfig;
 
 export function GuessDistributionChart({ data }: { data: GuessBucket[] }) {
-	const isMobile = useIsMobile();
 	if (data.length === 0) return null;
 	const total = data.reduce((sum, d) => sum + d.count, 0);
-	const chartData = data.map((d) => ({
-		...d,
-		pct: total > 0 ? Math.round((d.count / total) * 100) : 0,
+	const bars: BarDatum[] = data.map((d) => ({
+		label: d.bucket,
+		value: total > 0 ? Math.round((d.count / total) * 100) : 0,
+		tip: playerCount(d.count),
 	}));
-	const chartHeight = data.length * 40 + 16;
-	return (
-		<StatChartCard title="Guess Distribution">
-			<ChartContainer config={guessDistConfig} style={{ height: chartHeight }} className={`w-full ${isMobile ? '**:outline-none!' : ''}`}>
-				<BarChart accessibilityLayer={!isMobile} data={chartData} layout="vertical" margin={{ right: 48, left: 4 }}>
-					<CartesianGrid horizontal={false} />
-					<YAxis dataKey="bucket" type="category" tickLine={false} axisLine={false} tickMargin={8} width={50} />
-					<XAxis type="number" hide />
-					<ChartTooltip
-						cursor={false}
-						content={
-							<ChartTooltipContent
-								indicator="line"
-								formatter={(_, __, item) => {
-									const { count } = item.payload as { count: number };
-									return `${count} ${count === 1 ? 'player' : 'players'}`;
-								}}
-							/>
-						}
-					/>
-					<Bar dataKey="pct" radius={4} className="fill-secondary">
-						<LabelList dataKey="pct" position="right" offset={8} className="fill-foreground text-xs" formatter={(v: unknown) => `${v}%`} />
-					</Bar>
-				</BarChart>
-			</ChartContainer>
-		</StatChartCard>
-	);
+	return <BarChartCard title="Guess Distribution" data={bars} config={guessDistConfig} labelWidth={50} previewCount={bars.length} valueFormatter={pctValue} />;
 }
 
 // Most Popular First Guess
 
-const firstGuessConfig = { count: { label: 'Players', color: 'var(--secondary)' } } satisfies ChartConfig;
+const firstGuessConfig = { value: { label: 'Players', color: 'var(--secondary)' } } satisfies ChartConfig;
 
-export function FirstGuessChart({ data }: { data: NamedCount[] }) {
-	const isMobile = useIsMobile();
+export function FirstGuessChart({ data, previewCount }: { data: NamedCount[]; previewCount?: number }) {
 	if (data.length === 0) return null;
-	const chartHeight = data.length * 40 + 16;
+	const bars: BarDatum[] = data.map((d, i) => ({ label: d.name, value: d.count, rank: i + 1, tip: `#${i + 1} · ${playerCount(d.count)}` }));
 	return (
-		<StatChartCard title="Most Popular First Guess">
-			<ChartContainer config={firstGuessConfig} style={{ height: chartHeight }} className={`w-full ${isMobile ? '**:outline-none!' : ''}`}>
-				<BarChart accessibilityLayer={!isMobile} data={data} layout="vertical" margin={{ right: 48, left: 4 }}>
-					<CartesianGrid horizontal={false} />
-					<YAxis dataKey="name" type="category" tickLine={false} axisLine={false} tickMargin={8} width={88} />
-					<XAxis type="number" hide />
-					<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-					<Bar dataKey="count" radius={4} className="fill-secondary">
-						<LabelList dataKey="count" position="right" offset={8} className="fill-foreground text-xs" />
-					</Bar>
-				</BarChart>
-			</ChartContainer>
-		</StatChartCard>
+		<BarChartCard
+			title="Most Popular First Guess"
+			data={bars}
+			config={firstGuessConfig}
+			labelWidth={88}
+			previewCount={previewCount}
+			searchPlaceholder="Search player…"
+			showRank
+		/>
 	);
 }
 
 // Most Popular First Team
 
-const firstTeamConfig = { count: { label: 'Players', color: 'var(--secondary)' } } satisfies ChartConfig;
+const firstTeamConfig = { value: { label: 'Players', color: 'var(--secondary)' } } satisfies ChartConfig;
 
-export function FirstTeamChart({ data }: { data: TeamCount[] }) {
-	const isMobile = useIsMobile();
+export function FirstTeamChart({ data, previewCount }: { data: TeamCount[]; previewCount?: number }) {
 	if (data.length === 0) return null;
-	const chartHeight = data.length * 40 + 16;
+	const bars: BarDatum[] = data.map((d, i) => ({ label: d.team, value: d.count, rank: i + 1, tip: `#${i + 1} · ${playerCount(d.count)}` }));
 	return (
-		<StatChartCard title="Most Popular First Team">
-			<ChartContainer config={firstTeamConfig} style={{ height: chartHeight }} className={`w-full ${isMobile ? '**:outline-none!' : ''}`}>
-				<BarChart accessibilityLayer={!isMobile} data={data} layout="vertical" margin={{ right: 48, left: 4 }}>
-					<CartesianGrid horizontal={false} />
-					<YAxis dataKey="team" type="category" tickLine={false} axisLine={false} tickMargin={8} width={88} />
-					<XAxis type="number" hide />
-					<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-					<Bar dataKey="count" radius={4} className="fill-secondary">
-						<LabelList dataKey="count" position="right" offset={8} className="fill-foreground text-xs" />
-					</Bar>
-				</BarChart>
-			</ChartContainer>
-		</StatChartCard>
+		<BarChartCard
+			title="Most Popular First Team"
+			data={bars}
+			config={firstTeamConfig}
+			labelWidth={110}
+			dialogLabelWidth={150}
+			previewCount={previewCount}
+			searchPlaceholder="Search team…"
+			showRank
+		/>
 	);
 }
 
@@ -152,27 +376,8 @@ export function FirstTeamChart({ data }: { data: TeamCount[] }) {
 const gamesPerDayConfig = { played: { label: 'Games', color: 'var(--primary-foreground)' } } satisfies ChartConfig;
 
 export function GamesPerDayChart({ data }: { data: DayPoint[] }) {
-	const isMobile = useIsMobile();
 	if (data.length === 0) return null;
-	return (
-		<StatChartCard title="Games Played Per Day">
-			<ChartContainer config={gamesPerDayConfig} className={`h-56 w-full ${isMobile ? '**:outline-none!' : ''}`}>
-				<AreaChart accessibilityLayer={!isMobile} data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-					<defs>
-						<linearGradient id="gamesAreaFill" x1="0" y1="0" x2="0" y2="1">
-							<stop offset="5%" stopColor="var(--primary-foreground)" stopOpacity={0.25} />
-							<stop offset="95%" stopColor="var(--primary-foreground)" stopOpacity={0.02} />
-						</linearGradient>
-					</defs>
-					<CartesianGrid vertical={false} />
-					<XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(v: string) => v.slice(5)} interval="preserveStartEnd" />
-					<YAxis tickLine={false} axisLine={false} tickMargin={4} width={36} />
-					<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-					<Area dataKey="played" type="monotone" stroke="var(--primary-foreground)" strokeWidth={2} fill="url(#gamesAreaFill)" />
-				</AreaChart>
-			</ChartContainer>
-		</StatChartCard>
-	);
+	return <AreaChartCard title="Games Played Per Day" data={data} config={gamesPerDayConfig} dataKey="played" gradientId="gamesAreaFill" />;
 }
 
 // Win Rate Per Day
@@ -180,50 +385,43 @@ export function GamesPerDayChart({ data }: { data: DayPoint[] }) {
 const winRateConfig = { winRate: { label: 'Win Rate', color: 'var(--primary-foreground)' } } satisfies ChartConfig;
 
 export function WinRatePerDayChart({ data }: { data: DayPoint[] }) {
-	const isMobile = useIsMobile();
 	if (data.length === 0) return null;
 	return (
-		<StatChartCard title="Win Rate Per Day">
-			<ChartContainer config={winRateConfig} className={`h-56 w-full ${isMobile ? '**:outline-none!' : ''}`}>
-				<AreaChart accessibilityLayer={!isMobile} data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-					<defs>
-						<linearGradient id="winRateAreaFill" x1="0" y1="0" x2="0" y2="1">
-							<stop offset="5%" stopColor="var(--primary-foreground)" stopOpacity={0.25} />
-							<stop offset="95%" stopColor="var(--primary-foreground)" stopOpacity={0.02} />
-						</linearGradient>
-					</defs>
-					<CartesianGrid vertical={false} />
-					<XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} tickFormatter={(v: string) => v.slice(5)} interval="preserveStartEnd" />
-					<YAxis domain={[0, 100]} tickLine={false} axisLine={false} tickMargin={4} width={40} tickFormatter={(v) => `${v}%`} />
-					<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" formatter={(value) => `${value}%`} />} />
-					<Area dataKey="winRate" type="monotone" stroke="var(--primary-foreground)" strokeWidth={2} fill="url(#winRateAreaFill)" />
-				</AreaChart>
-			</ChartContainer>
-		</StatChartCard>
+		<AreaChartCard
+			title="Win Rate Per Day"
+			data={data}
+			config={winRateConfig}
+			dataKey="winRate"
+			gradientId="winRateAreaFill"
+			domain={[0, 100]}
+			valueFormatter={pctValue}
+		/>
 	);
 }
 
-// Hardest Puzzles
+// Hardest Answers
 
-const hardestConfig = { winRate: { label: 'Win Rate', color: 'var(--secondary)' } } satisfies ChartConfig;
+const hardestConfig = { value: { label: 'Win Rate', color: 'var(--secondary)' } } satisfies ChartConfig;
 
-export function HardestPuzzlesChart({ data }: { data: HardPuzzle[] }) {
-	const isMobile = useIsMobile();
+export function HardestPuzzlesChart({ data, previewCount }: { data: HardPuzzle[]; previewCount?: number }) {
 	if (data.length === 0) return null;
-	const chartHeight = data.length * 40 + 16;
+	const bars: BarDatum[] = data.map((d, i) => ({
+		label: d.player,
+		value: d.winRate,
+		rank: i + 1,
+		tip: `#${i + 1} · ${d.winRate}% win rate · ${playerCount(d.played)}`,
+	}));
 	return (
-		<StatChartCard title="Hardest Puzzles">
-			<ChartContainer config={hardestConfig} style={{ height: chartHeight }} className={`w-full ${isMobile ? '**:outline-none!' : ''}`}>
-				<BarChart accessibilityLayer={!isMobile} data={data} layout="vertical" margin={{ right: 56, left: 4 }}>
-					<CartesianGrid horizontal={false} />
-					<YAxis dataKey="player" type="category" tickLine={false} axisLine={false} tickMargin={8} width={88} />
-					<XAxis type="number" domain={[0, 100]} hide />
-					<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
-					<Bar dataKey="winRate" radius={4} className="fill-secondary">
-						<LabelList dataKey="winRate" position="right" offset={8} className="fill-foreground text-xs" formatter={(v: unknown) => `${v}%`} />
-					</Bar>
-				</BarChart>
-			</ChartContainer>
-		</StatChartCard>
+		<BarChartCard
+			title="Hardest Answers"
+			data={bars}
+			config={hardestConfig}
+			labelWidth={88}
+			previewCount={previewCount}
+			domain={[0, 100]}
+			valueFormatter={pctValue}
+			searchPlaceholder="Search player…"
+			showRank
+		/>
 	);
 }

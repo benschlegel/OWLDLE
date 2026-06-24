@@ -28,6 +28,7 @@ export type HardPuzzle = { iteration: number; player: string; winRate: number; p
 
 export type StatisticsResponse = {
 	dataset: Dataset;
+	globalGamesPlayed: number; // total games ever logged across every dataset/mode (timeframe-independent)
 	timeframe: { range: TimeframeRange; fromIso: string; toIso: string; label: string };
 	summary: {
 		gamesPlayed: number;
@@ -38,8 +39,8 @@ export type StatisticsResponse = {
 		solvedFirstGuessRate: number; // 0–100, integer; share of all games won in exactly 1 guess
 	};
 	guessDistribution: GuessBucket[]; // ordered: '1'..maxGuesses then 'failed'; every bucket present
-	topFirstGuesses: NamedCount[]; // up to 10, count desc
-	topFirstTeams: TeamCount[]; // up to 8, count desc
+	topFirstGuesses: NamedCount[]; // up to 50, count desc
+	topFirstTeams: TeamCount[]; // up to 50, count desc
 	gamesPerDay: DayPoint[]; // date asc (YYYY-MM-DD)
-	hardestPuzzles: HardPuzzle[]; // up to 5, winRate asc; may be empty
+	hardestPuzzles: HardPuzzle[]; // up to 20, winRate asc; may be empty
 };
