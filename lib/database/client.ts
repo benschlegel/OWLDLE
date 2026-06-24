@@ -46,6 +46,7 @@ export const answerCollection = database.collection<DbAnswerFull>(answerCollecti
 export const backlogCollection = database.collection<DbFormattedPlayers>(backlogCollectionName);
 export const feedbackCollection = database.collection<DbFeedback>(feedbackID);
 export const gameLogCollection = database.collection<DbLoggedGame>(gameLogs);
+gameLogCollection.createIndex({ dataset: 1, finishedAt: 1 });
 
 export const iterationCollection = database.collection<DbIteration>(iterationsId);
 iterationCollection.createIndex({ iteration: 1, dataset: 1 }, { unique: true });

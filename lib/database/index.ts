@@ -8,3 +8,4 @@ export * from './feedback';
 export * from './game-logs';
 export * from './game-stats';
 export * from './orchestration';
+export * from './statistics';
