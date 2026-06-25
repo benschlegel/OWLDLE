@@ -1,7 +1,5 @@
-// remove import in StatisticsDashboard to totally remove
 import type { StatisticsResponse } from '@/types/statistics';
 
-/** Flip to false (or delete the wiring) to use only real data. */
 export const USE_DEV_MOCK = false;
 
 const NAMES = [

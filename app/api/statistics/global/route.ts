@@ -2,7 +2,7 @@ import type { NextRequest } from 'next/server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { getGlobalGamesPlayed } from '@/lib/databaseAccess';
 
-// Total games played all-time. This endpoint is intentionally never cached since estimateDocumentCount is O(1) and cheap.
+// Total games played all-time. This endpoint is intentionally never cached (estimateDocumentCount is cheap).
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
