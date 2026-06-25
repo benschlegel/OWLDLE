@@ -55,7 +55,7 @@ export function shapeStatistics(
 		idToTeam: Map<number, string>;
 		maxGuesses: number;
 	}
-): Omit<StatisticsResponse, 'globalGamesPlayed'> {
+): StatisticsResponse {
 	const { gamesPlayed, wins, winGuessSum, solvedFirst } = raw.summary;
 	const losses = gamesPlayed - wins;
 

@@ -10,12 +10,12 @@ import {
 	FirstGuessChart,
 	FirstTeamChart,
 	GamesPerDayChart,
-	GlobalGamesCard,
 	GuessDistributionChart,
 	HardestPuzzlesChart,
 	SummaryCards,
 	WinRatePerDayChart,
 } from '@/components/statistics/StatCharts';
+import { GlobalGamesCard } from '@/components/statistics/GlobalGamesCard';
 import { injectDevMock, USE_DEV_MOCK } from '@/components/statistics/dev-mock';
 
 function DashboardSkeleton() {
@@ -68,18 +68,14 @@ export default function StatisticsDashboard() {
 				<p className="text-sm text-muted-foreground -mt-2">{data.timeframe.label}</p>
 			) : null}
 
-			{isLoading && (
-				<>
-					<Skeleton className="h-20 rounded-lg" />
-					<DashboardSkeleton />
-				</>
-			)}
+			{/* Live, never-cached all-time count — independent of the timeframe data below. */}
+			<GlobalGamesCard />
+
+			{isLoading && <DashboardSkeleton />}
 			{isError && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
 
 			{data && !isLoading && (
 				<>
-					{data.globalGamesPlayed != null && <GlobalGamesCard total={data.globalGamesPlayed} />}
-
 					{data.summary.gamesPlayed === 0 ? (
 						<p className="text-center text-muted-foreground py-16 font-owl text-xl">No games played in this timeframe.</p>
 					) : (

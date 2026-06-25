@@ -3,17 +3,16 @@ import type { NextRequest } from 'next/server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { type Dataset, getDataset } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
-import { getGlobalGamesPlayed, getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
+import { getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
 import { resolveTimeframe, shapeStatistics } from '@/lib/statistics';
 import { statisticsQuerySchema, type StatisticsResponse, type TimeframeRange } from '@/types/statistics';
 
 const rateLimiter = new RateLimiterMemory({ points: 30, duration: 60 });
 
-function emptyResponse(dataset: Dataset, range: TimeframeRange, globalGamesPlayed: number): StatisticsResponse {
+function emptyResponse(dataset: Dataset, range: TimeframeRange): StatisticsResponse {
 	const nowIso = new Date().toISOString();
 	return {
 		dataset,
-		globalGamesPlayed,
 		timeframe: { range, fromIso: nowIso, toIso: nowIso, label: '' },
 		summary: { gamesPlayed: 0, wins: 0, losses: 0, winRate: 0, averageGuesses: null, solvedFirstGuessRate: 0 },
 		guessDistribution: [],
@@ -24,33 +23,20 @@ function emptyResponse(dataset: Dataset, range: TimeframeRange, globalGamesPlaye
 	};
 }
 
-// The global "games played all-time" count is timeframe- and dataset-independent,
-// so it gets its own cache key (refreshed hourly) rather than being recomputed for
-// every (dataset, range) combination.
-function getCachedGlobalGamesPlayed() {
-	return unstable_cache(() => getGlobalGamesPlayed(), ['statistics', 'global-games-played'], {
-		revalidate: 3600,
-		tags: ['statistics:global'],
-	})();
-}
-
 async function buildStatistics(dataset: Dataset, range: TimeframeRange, from?: string, to?: string): Promise<StatisticsResponse> {
-	const [boundaryMs, globalGamesPlayed] = await Promise.all([getStatsBoundaryMs(dataset), getCachedGlobalGamesPlayed()]);
-	if (boundaryMs === null) return emptyResponse(dataset, range, globalGamesPlayed);
+	const boundaryMs = await getStatsBoundaryMs(dataset);
+	if (boundaryMs === null) return emptyResponse(dataset, range);
 
 	const tf = resolveTimeframe(range, from, to, boundaryMs, GAME_CONFIG.nextResetHours);
 	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs);
 
 	const idToTeam = new Map((getDataset(dataset)?.playerData ?? []).map((p) => [p.id, p.team]));
-	return {
-		...shapeStatistics(raw, {
-			dataset,
-			timeframe: { range, fromIso: new Date(tf.fromMs).toISOString(), toIso: new Date(tf.toMs).toISOString(), label: tf.label },
-			idToTeam,
-			maxGuesses: GAME_CONFIG.maxGuesses,
-		}),
-		globalGamesPlayed,
-	};
+	return shapeStatistics(raw, {
+		dataset,
+		timeframe: { range, fromIso: new Date(tf.fromMs).toISOString(), toIso: new Date(tf.toMs).toISOString(), label: tf.label },
+		idToTeam,
+		maxGuesses: GAME_CONFIG.maxGuesses,
+	});
 }
 
 // Cached per (dataset, range, from, to). Historical timeframes only change once

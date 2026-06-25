@@ -47,23 +47,6 @@ export function SummaryCards({ summary }: { summary: SummaryData }) {
 	);
 }
 
-// Global all-time games
-
-/** Timeframe-independent: total games ever logged across every dataset/mode. */
-export function GlobalGamesCard({ total }: { total: number }) {
-	return (
-		<Card className="overflow-hidden border-primary-foreground/30 bg-primary-foreground/3">
-			<CardContent className="p-5 flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
-				<div className="flex flex-col">
-					<p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">Total Games Played</p>
-					<p className="text-4xl font-owl text-primary-foreground">{total.toLocaleString()}</p>
-				</div>
-				<p className="text-sm text-muted-foreground sm:text-right">All-time, across every season &amp; mode</p>
-			</CardContent>
-		</Card>
-	);
-}
-
 // Shared chart card wrapper
 
 /** Card shell with a title, separator, and an optional expand-to-fullscreen button. */
@@ -102,6 +85,7 @@ function HorizontalBarChart({
 	domain,
 	valueFormatter,
 	showRank = false,
+	minPointSize,
 }: {
 	data: BarDatum[];
 	config: ChartConfig;
@@ -109,6 +93,8 @@ function HorizontalBarChart({
 	domain?: [number, number];
 	valueFormatter?: (v: number) => string;
 	showRank?: boolean;
+	/** Minimum bar length in px so zero/near-zero values stay visible (matches the in-game distribution). */
+	minPointSize?: number;
 }) {
 	const isMobile = useIsMobile();
 	const height = data.length * 40 + 16;
@@ -119,7 +105,7 @@ function HorizontalBarChart({
 				<YAxis dataKey="label" type="category" tickLine={false} axisLine={false} tickMargin={8} width={labelWidth} />
 				<XAxis type="number" domain={domain} hide />
 				<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" formatter={(_v, _n, item) => (item?.payload as BarDatum)?.tip ?? ''} />} />
-				<Bar dataKey="value" radius={4} className="fill-secondary">
+				<Bar dataKey="value" radius={4} className="fill-secondary" minPointSize={minPointSize}>
 					{showRank && (
 						<LabelList
 							dataKey="rank"
@@ -158,6 +144,7 @@ function BarChartCard({
 	valueFormatter,
 	searchPlaceholder,
 	showRank = false,
+	minPointSize,
 }: {
 	title: string;
 	data: BarDatum[];
@@ -170,6 +157,7 @@ function BarChartCard({
 	valueFormatter?: (v: number) => string;
 	searchPlaceholder?: string;
 	showRank?: boolean;
+	minPointSize?: number;
 }) {
 	const [open, setOpen] = useState(false);
 	const [query, setQuery] = useState('');
@@ -179,7 +167,15 @@ function BarChartCard({
 
 	return (
 		<ChartCard title={title} onExpand={() => setOpen(true)}>
-			<HorizontalBarChart data={preview} config={config} labelWidth={labelWidth} domain={domain} valueFormatter={valueFormatter} showRank={showRank} />
+			<HorizontalBarChart
+				data={preview}
+				config={config}
+				labelWidth={labelWidth}
+				domain={domain}
+				valueFormatter={valueFormatter}
+				showRank={showRank}
+				minPointSize={minPointSize}
+			/>
 
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-3xl" aria-describedby={`${title} chart`}>
@@ -196,6 +192,7 @@ function BarChartCard({
 								domain={domain}
 								valueFormatter={valueFormatter}
 								showRank={showRank}
+								minPointSize={minPointSize}
 							/>
 						) : (
 							<p className="text-sm text-muted-foreground py-12 text-center">No matches.</p>
@@ -327,7 +324,17 @@ export function GuessDistributionChart({ data }: { data: GuessBucket[] }) {
 		value: total > 0 ? Math.round((d.count / total) * 100) : 0,
 		tip: playerCount(d.count),
 	}));
-	return <BarChartCard title="Guess Distribution" data={bars} config={guessDistConfig} labelWidth={50} previewCount={bars.length} valueFormatter={pctValue} />;
+	return (
+		<BarChartCard
+			title="Guess Distribution"
+			data={bars}
+			config={guessDistConfig}
+			labelWidth={50}
+			previewCount={bars.length}
+			valueFormatter={pctValue}
+			minPointSize={8}
+		/>
+	);
 }
 
 // Most Popular First Guess

@@ -28,7 +28,6 @@ export type HardPuzzle = { iteration: number; player: string; winRate: number; p
 
 export type StatisticsResponse = {
 	dataset: Dataset;
-	globalGamesPlayed: number; // total games ever logged across every dataset/mode (timeframe-independent)
 	timeframe: { range: TimeframeRange; fromIso: string; toIso: string; label: string };
 	summary: {
 		gamesPlayed: number;

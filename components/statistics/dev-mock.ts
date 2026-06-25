@@ -94,7 +94,6 @@ export function injectDevMock(data: StatisticsResponse): StatisticsResponse {
 
 	return {
 		...data,
-		globalGamesPlayed: 1_284_502,
 		summary: {
 			gamesPlayed,
 			wins,
