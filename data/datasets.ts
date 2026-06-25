@@ -11,7 +11,7 @@ export const OWCS_PATHNAME = '/owcs' as const;
 export const ENDLESS_PATHNAME = '/endless' as const;
 export const STATISTICS_PATHNAME = '/statistics' as const;
 
-export const DEFAULT_DATASET_NAME: Dataset = 'season6';
+export const DEFAULT_DATASET_NAME: Dataset = 'owcs-s3';
 
 export const datasetSchema = z.enum(DATASETS);
 export type DatasetMetadata<T extends Dataset> = {

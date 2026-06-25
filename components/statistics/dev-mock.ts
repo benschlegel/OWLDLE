@@ -1,6 +1,6 @@
 import type { StatisticsResponse } from '@/types/statistics';
 
-export const USE_DEV_MOCK = false;
+export const USE_DEV_MOCK = true;
 
 const NAMES = [
 	'Profit',

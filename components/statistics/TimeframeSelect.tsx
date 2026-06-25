@@ -9,11 +9,14 @@ import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 import type { DateRange } from 'react-day-picker';
 
-const PRESETS: { value: TimeframeRange; label: string }[] = [
-	{ value: 'yesterday', label: 'Yesterday' },
-	{ value: 'last7', label: 'Last 7 days' },
-	{ value: 'last30', label: 'Last 30 days' },
-	{ value: 'all', label: 'All time' },
+/** Preset timeframes in display order, each with its keyboard shortcut (active on /statistics). */
+export const TIMEFRAME_PRESETS: { value: TimeframeRange; label: string; key: string }[] = [
+	{ value: 'yesterday', label: 'Yesterday', key: 'w' },
+	{ value: 'last7', label: 'Last 7 days', key: 'd' },
+	{ value: 'last30', label: 'Last 30 days', key: 's' },
+	{ value: 'last90', label: 'Last 90 days', key: 'x' },
+	{ value: 'lastYear', label: 'Last year', key: 'c' },
+	{ value: 'all', label: 'All time', key: 'a' },
 ];
 
 /** Local YYYY-MM-DD in UTC to match the server's date parsing. */
@@ -43,9 +46,14 @@ export default function TimeframeSelect({ range, from, to, onPreset, onCustom }:
 					<SelectValue placeholder={range === 'custom' ? 'Custom range' : 'Timeframe'} />
 				</SelectTrigger>
 				<SelectContent>
-					{PRESETS.map((p) => (
+					{TIMEFRAME_PRESETS.map((p) => (
 						<SelectItem key={p.value} value={p.value}>
-							{p.label}
+							<span className="flex items-center gap-3">
+								<span className="min-w-26">{p.label}</span>
+								<kbd className="hidden h-5 min-w-5 items-center justify-center rounded border bg-muted px-1 text-[0.65rem] font-medium uppercase text-muted-foreground sm:inline-flex">
+									{p.key}
+								</kbd>
+							</span>
 						</SelectItem>
 					))}
 				</SelectContent>

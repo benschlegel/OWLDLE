@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { type Dataset, datasetSchema } from '@/data/datasets';
 
-export const TIMEFRAME_RANGES = ['yesterday', 'last7', 'last30', 'all', 'custom'] as const;
+export const TIMEFRAME_RANGES = ['yesterday', 'last7', 'last30', 'last90', 'lastYear', 'all', 'custom'] as const;
 export type TimeframeRange = (typeof TIMEFRAME_RANGES)[number];
 
 /** YYYY-MM-DD */

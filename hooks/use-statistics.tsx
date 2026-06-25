@@ -1,5 +1,5 @@
 import type { StatisticsResponse, TimeframeRange } from '@/types/statistics';
-import { useQuery } from '@tanstack/react-query';
+import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 type Params = { dataset: string; range: TimeframeRange; from: string | null; to: string | null };
 
@@ -20,5 +20,8 @@ export function useStatistics(params: Params) {
 		queryFn: () => fetchStatistics(params),
 		staleTime: 5 * 60 * 1000,
 		refetchOnWindowFocus: false,
+		// Keep showing the previous dataset/timeframe's data while the new one loads so
+		// the charts stay mounted and visibly morph into the new values once it arrives.
+		placeholderData: keepPreviousData,
 	});
 }

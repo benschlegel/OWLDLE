@@ -1,10 +1,12 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useStatisticsParams } from '@/hooks/use-statistics-params';
 import { useStatistics } from '@/hooks/use-statistics';
 import SeasonSelectDropdown from '@/components/season-selector/SeasonSelectDropdown';
-import TimeframeSelect from '@/components/statistics/TimeframeSelect';
+import TimeframeSelect, { TIMEFRAME_PRESETS } from '@/components/statistics/TimeframeSelect';
 import { Skeleton } from '@/components/ui/skeleton';
+import { cn } from '@/lib/utils';
 import { datasetInfo } from '@/data/datasets';
 import {
 	FirstGuessChart,
@@ -17,6 +19,7 @@ import {
 } from '@/components/statistics/StatCharts';
 import { GlobalGamesCard } from '@/components/statistics/GlobalGamesCard';
 import { injectDevMock, USE_DEV_MOCK } from '@/components/statistics/dev-mock';
+import { useCloseChartDialog } from '@/hooks/use-chart-dialog';
 
 function DashboardSkeleton() {
 	return (
@@ -42,9 +45,33 @@ function DashboardSkeleton() {
 
 export default function StatisticsDashboard() {
 	const [params, setParams] = useStatisticsParams();
-	const { data: rawData, isLoading, isError } = useStatistics(params);
+	const { data: rawData, isLoading, isError, isPlaceholderData } = useStatistics(params);
 	const data = USE_DEV_MOCK && rawData ? injectDevMock(rawData) : rawData;
 	const shorthand = datasetInfo.find((d) => d.dataset === params.dataset)?.shorthand ?? params.dataset;
+
+	const closeChartDialog = useCloseChartDialog();
+
+	// Keyboard shortcuts, scoped to this page (the dashboard only mounts on /statistics):
+	//  • Alt+F closes any open chart dialog (works even from a search box).
+	//  • w/d/s/x/c/a switch timeframe presets (ignored while typing in an input).
+	useEffect(() => {
+		const onKey = (e: KeyboardEvent) => {
+			if (e.altKey && !e.metaKey && !e.ctrlKey && e.key.toLowerCase() === 'f') {
+				e.preventDefault();
+				closeChartDialog();
+				return;
+			}
+			if (e.metaKey || e.ctrlKey || e.altKey) return;
+			const target = e.target as HTMLElement | null;
+			if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
+			const preset = TIMEFRAME_PRESETS.find((p) => p.key === e.key.toLowerCase());
+			if (!preset) return;
+			e.preventDefault();
+			setParams({ range: preset.value, from: null, to: null });
+		};
+		window.addEventListener('keydown', onKey);
+		return () => window.removeEventListener('keydown', onKey);
+	}, [setParams, closeChartDialog]);
 
 	return (
 		<div className="mx-auto w-full max-w-7xl px-4 py-6 flex flex-col gap-4">
@@ -72,10 +99,12 @@ export default function StatisticsDashboard() {
 			<GlobalGamesCard />
 
 			{isLoading && <DashboardSkeleton />}
-			{isError && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
+			{isError && !data && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
 
 			{data && !isLoading && (
-				<>
+				// While new data loads (dataset/timeframe switch) keep the previous charts mounted but
+				// disabled + dimmed; recharts then morphs them into the new values once it arrives.
+				<div className={cn('flex flex-col gap-4 transition-opacity duration-300', isPlaceholderData && 'pointer-events-none opacity-50')}>
 					{data.summary.gamesPlayed === 0 ? (
 						<p className="text-center text-muted-foreground py-16 font-owl text-xl">No games played in this timeframe.</p>
 					) : (
@@ -83,7 +112,7 @@ export default function StatisticsDashboard() {
 							<SummaryCards summary={data.summary} />
 
 							<div className="grid gap-4 sm:grid-cols-2">
-								<GuessDistributionChart data={data.guessDistribution} />
+								<GuessDistributionChart data={data.guessDistribution} averageGuesses={data.summary.averageGuesses} />
 								<FirstGuessChart data={data.topFirstGuesses} previewCount={data.guessDistribution.length} />
 							</div>
 
@@ -96,7 +125,7 @@ export default function StatisticsDashboard() {
 							</div>
 						</>
 					)}
-				</>
+				</div>
 			)}
 		</div>
 	);

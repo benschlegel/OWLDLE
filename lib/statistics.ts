@@ -35,6 +35,10 @@ export function resolveTimeframe(
 			return { fromMs: boundaryMs - 7 * DAY_MS, toMs: boundaryMs, label: 'Last 7 days' };
 		case 'last30':
 			return { fromMs: boundaryMs - 30 * DAY_MS, toMs: boundaryMs, label: 'Last 30 days' };
+		case 'last90':
+			return { fromMs: boundaryMs - 90 * DAY_MS, toMs: boundaryMs, label: 'Last 90 days' };
+		case 'lastYear':
+			return { fromMs: boundaryMs - 365 * DAY_MS, toMs: boundaryMs, label: 'Last year' };
 		case 'all':
 			return { fromMs: 0, toMs: boundaryMs, label: 'All time' };
 		case 'custom': {
