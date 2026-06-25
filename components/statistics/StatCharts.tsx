@@ -175,7 +175,14 @@ function HorizontalBarChart({
 		if (!d) return null;
 		const accent = d.rank <= 3;
 		return (
-			<text x={Number(x)} y={Number(y)} dy={4} textAnchor="end" fontSize={12} fontWeight={accent ? 600 : 400} className={accent ? 'fill-primary-foreground' : 'fill-muted-foreground'}>
+			<text
+				x={Number(x)}
+				y={Number(y)}
+				dy={4}
+				textAnchor="end"
+				fontSize={12}
+				fontWeight={accent ? 600 : 400}
+				className={accent ? 'fill-primary-foreground' : 'fill-muted-foreground'}>
 				{`#${d.rank}`}
 			</text>
 		);
@@ -221,7 +228,10 @@ function HorizontalBarChart({
 				<CartesianGrid horizontal={false} />
 				<YAxis dataKey="label" type="category" tickLine={false} axisLine={false} tickMargin={8} width={labelWidth} interval={0} tick={RankTick} />
 				<XAxis type="number" domain={domain} hide />
-				<ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" hideLabel formatter={(_v, _n, item) => (item?.payload as BarDatum)?.tip ?? ''} />} />
+				<ChartTooltip
+					cursor={false}
+					content={<ChartTooltipContent indicator="line" hideLabel formatter={(_v, _n, item) => (item?.payload as BarDatum)?.tip ?? ''} />}
+				/>
 				<Bar dataKey="value" radius={4} minPointSize={valueInside ? 30 : 2}>
 					{data.map((d) => (
 						<Cell key={`${d.rank}-${d.label}`} fill={barFill(d.rank)} />
@@ -484,7 +494,7 @@ function GuessDonut({
 					stroke="var(--card)"
 					strokeWidth={2}
 					shape={({ index, outerRadius = 0, ...props }: PieSectorDataItem & { index?: number }) =>
-						index === activeIndex ? <Sector {...props} outerRadius={outerRadius + 6} /> : <Sector {...props} outerRadius={outerRadius} />
+						index === activeIndex ? <Sector {...props} outerRadius={outerRadius + 8} /> : <Sector {...props} outerRadius={outerRadius} />
 					}>
 					<Label
 						content={({ viewBox }) => {
@@ -569,7 +579,15 @@ export function FirstGuessChart({ data, previewCount }: { data: NamedCount[]; pr
 	if (data.length === 0) return null;
 	const bars: BarDatum[] = data.map((d, i) => ({ label: d.name, value: d.count, rank: i + 1, tip: `${d.name}, #${i + 1} · ${playerCount(d.count)}` }));
 	return (
-		<BarChartCard title="Most Popular First Guess" chartKey="firstGuess" data={bars} config={firstGuessConfig} labelWidth={44} previewCount={previewCount} searchPlaceholder="Search player…" />
+		<BarChartCard
+			title="Most Popular First Guess"
+			chartKey="firstGuess"
+			data={bars}
+			config={firstGuessConfig}
+			labelWidth={44}
+			previewCount={previewCount}
+			searchPlaceholder="Search player…"
+		/>
 	);
 }
 
@@ -581,7 +599,15 @@ export function FirstTeamChart({ data, previewCount }: { data: TeamCount[]; prev
 	if (data.length === 0) return null;
 	const bars: BarDatum[] = data.map((d, i) => ({ label: d.team, value: d.count, rank: i + 1, tip: `${d.team}, #${i + 1} · ${playerCount(d.count)}` }));
 	return (
-		<BarChartCard title="Most Popular First Team" chartKey="firstTeam" data={bars} config={firstTeamConfig} labelWidth={44} previewCount={previewCount} searchPlaceholder="Search team…" />
+		<BarChartCard
+			title="Most Popular First Team"
+			chartKey="firstTeam"
+			data={bars}
+			config={firstTeamConfig}
+			labelWidth={44}
+			previewCount={previewCount}
+			searchPlaceholder="Search team…"
+		/>
 	);
 }
 
@@ -591,7 +617,9 @@ const gamesPerDayConfig = { played: { label: 'Games', color: 'var(--primary-fore
 
 export function GamesPerDayChart({ data }: { data: DayPoint[] }) {
 	if (data.length === 0) return null;
-	return <AreaChartCard title="Games Played Per Day" chartKey="gamesPerDay" data={data} config={gamesPerDayConfig} dataKey="played" gradientId="gamesAreaFill" />;
+	return (
+		<AreaChartCard title="Games Played Per Day" chartKey="gamesPerDay" data={data} config={gamesPerDayConfig} dataKey="played" gradientId="gamesAreaFill" />
+	);
 }
 
 // Win Rate Per Day
