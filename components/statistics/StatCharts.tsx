@@ -343,7 +343,7 @@ const pctValue = (v: number) => `${v}%`;
 
 // Guess Distribution (donut)
 
-type DonutSlice = { bucket: string; label: string; count: number; pct: number; fill: string };
+export type DonutSlice = { bucket: string; label: string; count: number; pct: number; fill: string };
 
 // Slices carry their own `fill` and the tooltip uses a custom formatter, so the chart config
 // only needs a benign entry (avoids ChartStyle emitting CSS vars from spaced label keys).
@@ -401,7 +401,7 @@ function renderSliceLabel(
 	);
 }
 
-function GuessDonut({
+export function GuessDonut({
 	slices,
 	center,
 	activeIndex,
@@ -453,7 +453,7 @@ function GuessDonut({
 							const cy = viewBox.cy ?? 0;
 							return (
 								<text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
-									<tspan x={cx} y={cy - 6} className="fill-foreground text-3xl font-owl">
+									<tspan x={cx} y={cy - 6} className="fill-foreground sm:text-2xl text-xl font-owl">
 										{center.value}
 									</tspan>
 									<tspan x={cx} y={cy + 18} className="fill-muted-foreground text-xs">

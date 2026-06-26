@@ -5,7 +5,7 @@ import { parseAsStringLiteral, useQueryState } from 'nuqs';
 const KEY_NAME = 'chart';
 
 /** Identifies which statistics chart is expanded to fullscreen (shareable via URL). */
-const charts = ['none', 'guess', 'firstGuess', 'firstTeam', 'gamesPerDay', 'winRate', 'hardest'] as const;
+const charts = ['none', 'guess', 'firstGuess', 'firstTeam', 'gamesPerDay', 'winRate', 'hardest', 'ovDatasetDonut', 'ovDatasetBars', 'ovWeekday', 'ovHour', 'ovRoles', 'ovPerf', 'ovHeatmap'] as const;
 export type ChartKey = (typeof charts)[number];
 
 /** Boolean open/close state for a chart's fullscreen dialog, backed by the `?chart=` query param. */
