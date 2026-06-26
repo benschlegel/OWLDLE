@@ -75,9 +75,10 @@ export default function TimeframeSelect({ range, from, to, onPreset, onCustom }:
 						selected={selected}
 						disabled={{ after: disabledAfter }}
 						onSelect={(r?: DateRange) => {
+							// Update as the range is picked, but leave the popover open until the user
+							// clicks away (closing it mid-selection felt abrupt).
 							if (r?.from && r?.to) {
 								onCustom(toYmd(r.from), toYmd(r.to));
-								setOpen(false);
 							}
 						}}
 					/>

@@ -19,7 +19,6 @@ import {
 	WinRatePerDayChart,
 } from '@/components/statistics/StatCharts';
 import { GlobalGamesCard } from '@/components/statistics/GlobalGamesCard';
-import { injectDevMock, USE_DEV_MOCK } from '@/components/statistics/dev-mock';
 import { useCloseChartDialog } from '@/hooks/use-chart-dialog';
 
 function DashboardSkeleton() {
@@ -49,17 +48,13 @@ const BAR_CHART_PREVIEW_AMOUNT = 8;
 export default function StatisticsDashboard() {
 	const [params, setParams] = useStatisticsParams();
 
-	// Dev-only toggles (never shown or applied in a production build):
-	//  • mock: swap real statistics for deterministic placeholder data (style without a populated DB).
-	//  • prod: read the real production database instead of the dev one (verify against real data).
+	// Dev-only toggle (never shown or applied in a production build): read the real production
+	// database instead of the dev one, to verify the dashboard against real data.
 	const isDev = process.env.NODE_ENV !== 'production';
-	const [useMock, setUseMock] = useState(USE_DEV_MOCK);
 	const [useProd, setUseProd] = useState(false);
-	const mockOn = isDev && useMock;
 	const prodOn = isDev && useProd;
 
-	const { data: rawData, isLoading, isError, isPlaceholderData } = useStatistics({ ...params, prod: prodOn });
-	const data = mockOn && rawData ? injectDevMock(rawData) : rawData;
+	const { data, isLoading, isError, isPlaceholderData } = useStatistics({ ...params, prod: prodOn });
 
 	const dataset = datasetInfo.find((d) => d.dataset === params.dataset);
 	const shorthand = dataset?.shorthand ?? params.dataset;
@@ -102,16 +97,10 @@ export default function StatisticsDashboard() {
 				</div>
 				<div className="flex items-center gap-2 flex-wrap">
 					{isDev && (
-						<>
-							<label className="flex items-center gap-2 text-xs text-muted-foreground select-none">
-								<Switch size="sm" checked={useMock} onCheckedChange={(checked) => setUseMock(checked)} />
-								Mock data
-							</label>
-							<label className="flex items-center gap-2 text-xs text-muted-foreground select-none">
-								<Switch size="sm" checked={useProd} onCheckedChange={(checked) => setUseProd(checked)} />
-								Prod DB
-							</label>
-						</>
+						<label className="flex items-center gap-2 text-xs text-muted-foreground select-none">
+							<Switch size="sm" checked={useProd} onCheckedChange={(checked) => setUseProd(checked)} />
+							Prod DB
+						</label>
 					)}
 					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset })} />
 					<TimeframeSelect

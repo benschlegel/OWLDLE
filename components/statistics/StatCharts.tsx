@@ -525,7 +525,7 @@ function AreaChartCard({
 
 // Helpers
 
-const playerCount = (n: number) => `${n.toLocaleString()} ${n === 1 ? 'player' : 'players'}`;
+const playerCount = (n: number) => `${n.toLocaleString()} ${n === 1 ? 'guess' : 'guesses'}`;
 const pctValue = (v: number) => `${v}%`;
 
 /** Localized "Jun 5"-style label for a YYYY-MM-DD day, parsed/formatted in UTC so the
