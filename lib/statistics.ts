@@ -109,13 +109,6 @@ export function shapeStatistics(
 		guessDistribution,
 		topFirstGuesses,
 		topFirstTeams,
-		gamesPerDay: raw.perDay.map((d) => ({
-			date: d.date,
-			played: d.played,
-			winRate: pct(d.wins, d.played),
-			totalGuesses: d.totalGuesses,
-			avgGuesses: d.wins > 0 ? Math.round((d.winGuessSum / d.wins) * 10) / 10 : null,
-		})),
 		// The same player can be the answer on several days; the raw list is hardest-first, so keep
 		// only each player's hardest puzzle to avoid duplicate names in the chart.
 		hardestPuzzles: dedupeByPlayer(raw.hardestPuzzles).map((p) => ({

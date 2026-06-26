@@ -9,17 +9,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { datasetInfo } from '@/data/datasets';
-import {
-	FirstGuessChart,
-	FirstTeamChart,
-	GamesPerDayChart,
-	GuessDistributionChart,
-	HardestPuzzlesChart,
-	SummaryCards,
-	WinRatePerDayChart,
-} from '@/components/statistics/StatCharts';
+import { FirstGuessChart, FirstTeamChart, GuessDistributionChart, HardestPuzzlesChart } from '@/components/statistics/StatCharts';
+import { defaultGrouping, GamesPerDayChart, GROUPING_HOTKEYS, type PerDayParams, SCOPE_HOTKEYS, WinRatePerDayChart } from '@/components/statistics/PerDayChart';
+import { AvgGuessesCard, GamesRadialCard } from '@/components/statistics/SummaryCharts';
 import { GlobalGamesCard } from '@/components/statistics/GlobalGamesCard';
+import { StatisticsInfoDialog } from '@/components/statistics/StatisticsInfoDialog';
 import { useCloseChartDialog } from '@/hooks/use-chart-dialog';
+import type { DayGrouping, DayScope } from '@/types/statistics';
 
 function DashboardSkeleton() {
 	return (
@@ -55,6 +51,14 @@ export default function StatisticsDashboard() {
 	const prodOn = isDev && useProd;
 
 	const { data, isLoading, isError, isPlaceholderData } = useStatistics({ ...params, prod: prodOn });
+	const perDayParams: PerDayParams = { dataset: params.dataset, range: params.range, from: params.from, to: params.to, prod: prodOn };
+
+	// Per-day grouping + scope are shared across every area chart (and driven by the
+	// hotkeys). Grouping has an explicit override; until set it follows the timeframe length.
+	const [scope, setScope] = useState<DayScope>('current');
+	const [groupingOverride, setGroupingOverride] = useState<DayGrouping | null>(null);
+	const grouping = groupingOverride ?? defaultGrouping(data?.timeframe.fromIso, data?.timeframe.toIso);
+	const perDayControls = { grouping, setGrouping: setGroupingOverride, scope, setScope };
 
 	const dataset = datasetInfo.find((d) => d.dataset === params.dataset);
 	const shorthand = dataset?.shorthand ?? params.dataset;
@@ -65,8 +69,6 @@ export default function StatisticsDashboard() {
 	const closeChartDialog = useCloseChartDialog();
 
 	// Keyboard shortcuts, scoped to this page (the dashboard only mounts on /statistics):
-	//  • Alt+F closes any open chart dialog (works even from a search box).
-	//  • w/d/s/x/c/a switch timeframe presets (ignored while typing in an input).
 	useEffect(() => {
 		const onKey = (e: KeyboardEvent) => {
 			if (e.altKey && !e.metaKey && !e.ctrlKey && e.key.toLowerCase() === 'f') {
@@ -77,10 +79,25 @@ export default function StatisticsDashboard() {
 			if (e.metaKey || e.ctrlKey || e.altKey) return;
 			const target = e.target as HTMLElement | null;
 			if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) return;
-			const preset = TIMEFRAME_PRESETS.find((p) => p.key === e.key.toLowerCase());
-			if (!preset) return;
-			e.preventDefault();
-			setParams({ range: preset.value, from: null, to: null });
+			const key = e.key.toLowerCase();
+
+			const preset = TIMEFRAME_PRESETS.find((p) => p.key === key);
+			if (preset) {
+				e.preventDefault();
+				setParams({ range: preset.value, from: null, to: null });
+				return;
+			}
+			const groupingHotkey = GROUPING_HOTKEYS.find((g) => g.key === key);
+			if (groupingHotkey) {
+				e.preventDefault();
+				setGroupingOverride(groupingHotkey.value);
+				return;
+			}
+			const scopeHotkey = SCOPE_HOTKEYS.find((s) => s.key === key);
+			if (scopeHotkey) {
+				e.preventDefault();
+				setScope(scopeHotkey.value);
+			}
 		};
 		window.addEventListener('keydown', onKey);
 		return () => window.removeEventListener('keydown', onKey);
@@ -110,11 +127,12 @@ export default function StatisticsDashboard() {
 						onPreset={(range) => setParams({ range, from: null, to: null })}
 						onCustom={(from, to) => setParams({ range: 'custom', from, to })}
 					/>
+					<StatisticsInfoDialog />
 				</div>
 			</header>
 
 			{/* Live, never-cached all-time count — independent of the timeframe data below. */}
-			<GlobalGamesCard prod={prodOn} />
+			<GlobalGamesCard dataset={params.dataset} prod={prodOn} />
 
 			{isLoading && <DashboardSkeleton />}
 			{isError && !data && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
@@ -127,15 +145,18 @@ export default function StatisticsDashboard() {
 						<p className="text-center text-muted-foreground py-16 font-owl text-xl">No games played in this timeframe.</p>
 					) : (
 						<>
-							<SummaryCards summary={data.summary} />
-
 							<div className="grid gap-4 sm:grid-cols-2">
-								<GuessDistributionChart data={data.guessDistribution} averageGuesses={data.summary.averageGuesses} />
+								<GuessDistributionChart data={data.guessDistribution} />
 								<FirstGuessChart data={data.topFirstGuesses} previewCount={BAR_CHART_PREVIEW_AMOUNT} />
 							</div>
 
-							<GamesPerDayChart data={data.gamesPerDay} />
-							<WinRatePerDayChart data={data.gamesPerDay} />
+							<GamesPerDayChart params={perDayParams} {...perDayControls} />
+							<WinRatePerDayChart params={perDayParams} {...perDayControls} />
+
+							<div className="grid gap-4 sm:grid-cols-2">
+								<AvgGuessesCard params={perDayParams} averageGuesses={data.summary.averageGuesses} />
+								<GamesRadialCard summary={data.summary} />
+							</div>
 
 							<div className="grid gap-4 sm:grid-cols-2">
 								<FirstTeamChart data={data.topFirstTeams} previewCount={BAR_CHART_PREVIEW_AMOUNT} />

@@ -18,7 +18,6 @@ function emptyResponse(dataset: Dataset, range: TimeframeRange): StatisticsRespo
 		guessDistribution: [],
 		topFirstGuesses: [],
 		topFirstTeams: [],
-		gamesPerDay: [],
 		hardestPuzzles: [],
 	};
 }

@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
+import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
 import { resolveTimeframe, shapeStatistics } from '@/lib/statistics';
 import type { RawStatistics } from '@/lib/database/statistics';
 import type { Dataset } from '@/data/datasets';
@@ -181,15 +181,14 @@ describe('getRawStatistics, window boundaries', () => {
 		expect(raw.summary.wins).toBe(0);
 		expect(raw.distribution).toHaveLength(0);
 		expect(raw.firstGuesses).toHaveLength(0);
-		expect(raw.perDay).toHaveLength(0);
 		expect(raw.hardestPuzzles).toHaveLength(0);
 	});
 });
 
-describe('getRawStatistics, perDay', () => {
+describe('getPerDaySeries', () => {
 	beforeEach(clearCollections);
 
-	test('produces ascending perDay rows with correct played/wins counts', async () => {
+	test('produces ascending per-day rows with correct played/wins counts', async () => {
 		const client = getClient();
 		try {
 			await client.connect();
@@ -208,11 +207,15 @@ describe('getRawStatistics, perDay', () => {
 			await client.close();
 		}
 
-		const raw = await getRawStatistics(ds, new Date('2026-06-20T00:00:00Z').getTime(), new Date('2026-06-22T00:00:00Z').getTime());
+		const perDay = await getPerDaySeries(ds, new Date('2026-06-20T00:00:00Z').getTime(), new Date('2026-06-22T00:00:00Z').getTime(), 'current');
 
-		expect(raw.perDay).toHaveLength(2);
-		expect(raw.perDay[0]).toMatchObject({ date: '2026-06-20', played: 2, wins: 1 });
-		expect(raw.perDay[1]).toMatchObject({ date: '2026-06-21', played: 2, wins: 2 });
+		expect(perDay).toHaveLength(2);
+		expect(perDay[0]).toMatchObject({ date: '2026-06-20', played: 2, wins: 1 });
+		expect(perDay[1]).toMatchObject({ date: '2026-06-21', played: 2, wins: 2 });
+	});
+
+	test('returns empty when fromMs >= toMs', async () => {
+		expect(await getPerDaySeries(ds, 1000, 1000, 'current')).toHaveLength(0);
 	});
 });
 
@@ -261,7 +264,6 @@ describe('shapeStatistics, pure function', () => {
 				{ bucket: 'failed', count: 1 },
 			],
 			firstGuesses: [],
-			perDay: [],
 			hardestPuzzles: [],
 		};
 
@@ -280,7 +282,6 @@ describe('shapeStatistics, pure function', () => {
 			summary: { gamesPlayed: 4, wins: 2, winGuessSum: 5, solvedFirst: 1 },
 			distribution: [],
 			firstGuesses: [],
-			perDay: [],
 			hardestPuzzles: [],
 		};
 
@@ -297,7 +298,6 @@ describe('shapeStatistics, pure function', () => {
 			summary: { gamesPlayed: 2, wins: 0, winGuessSum: 0, solvedFirst: 0 },
 			distribution: [],
 			firstGuesses: [],
-			perDay: [],
 			hardestPuzzles: [],
 		};
 
@@ -314,7 +314,6 @@ describe('shapeStatistics, pure function', () => {
 				{ id: 1, name: 'B', count: 2 },
 				{ id: 2, name: 'C', count: 1 },
 			],
-			perDay: [],
 			hardestPuzzles: [],
 		};
 
@@ -337,7 +336,6 @@ describe('shapeStatistics, pure function', () => {
 			summary: { gamesPlayed: 0, wins: 0, winGuessSum: 0, solvedFirst: 0 },
 			distribution: [],
 			firstGuesses: [],
-			perDay: [],
 			hardestPuzzles: [],
 		};
 
@@ -351,7 +349,6 @@ describe('shapeStatistics, pure function', () => {
 		expect(result.guessDistribution.every((b) => b.count === 0)).toBe(true);
 		expect(result.topFirstGuesses).toHaveLength(0);
 		expect(result.topFirstTeams).toHaveLength(0);
-		expect(result.gamesPerDay).toHaveLength(0);
 		expect(result.hardestPuzzles).toHaveLength(0);
 	});
 });

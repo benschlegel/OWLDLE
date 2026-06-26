@@ -2,7 +2,7 @@
 
 import { Maximize2, X } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Label, LabelList, Pie, PieChart, ReferenceLine, Sector, XAxis, YAxis } from 'recharts';
+import { Bar, BarChart, CartesianGrid, Cell, Label, LabelList, Pie, PieChart, Sector, XAxis, YAxis } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,41 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { type ChartKey, useChartDialog } from '@/hooks/use-chart-dialog';
 import { useIsMobile } from '@/hooks/use-mobile';
-import type { DayPoint, GuessBucket, HardPuzzle, NamedCount, TeamCount } from '@/types/statistics';
-
-// Summary Cards
-
-type SummaryData = {
-	gamesPlayed: number;
-	wins: number;
-	losses: number;
-	winRate: number;
-	averageGuesses: number | null;
-	solvedFirstGuessRate: number;
-};
-
-export function SummaryCards({ summary }: { summary: SummaryData }) {
-	const stats: { label: string; value: string | number }[] = [
-		{ label: 'Games Played', value: summary.gamesPlayed.toLocaleString() },
-		{ label: 'Win Rate', value: `${summary.winRate}%` },
-		{ label: 'Avg Guesses', value: summary.averageGuesses?.toFixed(1) ?? '—' },
-		{ label: '1st Guess Wins', value: `${summary.solvedFirstGuessRate}%` },
-		{ label: 'Total Wins', value: summary.wins.toLocaleString() },
-	];
-
-	return (
-		<div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
-			{stats.map((stat) => (
-				<Card key={stat.label}>
-					<CardContent className="p-5">
-						<p className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2">{stat.label}</p>
-						<p className="text-3xl font-owl text-primary-foreground">{stat.value}</p>
-					</CardContent>
-				</Card>
-			))}
-		</div>
-	);
-}
+import type { GuessBucket, HardPuzzle, NamedCount, TeamCount } from '@/types/statistics';
 
 // Shared chart card wrapper
 
@@ -55,17 +21,20 @@ export function SummaryCards({ summary }: { summary: SummaryData }) {
  *  Hotkeys: "f" while hovering the card opens its dialog; "f" again closes it for non-search
  *  dialogs (search dialogs close via Esc or Alt+F). Hover is read from CSS `:hover` at keypress
  *  time (not a tracked flag) so an occluding overlay can never leave a card stuck "hovered". */
-function ChartCard({
+export function ChartCard({
 	title,
 	open,
 	setOpen,
 	searchable = false,
+	headerActions,
 	children,
 }: {
 	title: string;
 	open: boolean;
 	setOpen: (value: boolean) => void;
 	searchable?: boolean;
+	/** Optional controls rendered in the header row, before the expand button. */
+	headerActions?: ReactNode;
 	children: ReactNode;
 }) {
 	const cardRef = useRef<HTMLDivElement>(null);
@@ -100,15 +69,20 @@ function ChartCard({
 			<CardHeader className="p-4 pb-2">
 				<div className="flex items-center justify-between gap-2">
 					<CardTitle className="text-lg font-owl">{title}</CardTitle>
-					<Button
-						variant="ghost"
-						size="icon"
-						className="size-7 -mr-1 text-muted-foreground hover:text-foreground"
-						onClick={() => setOpen(true)}
-						aria-label={`Expand ${title}`}>
-						<Maximize2 className="size-4" />
-					</Button>
+					<div className="flex items-center gap-2">
+						{/* Desktop: controls sit inline with the title. Mobile: they drop to their own row below. */}
+						{headerActions && <div className="hidden items-center gap-2 sm:flex">{headerActions}</div>}
+						<Button
+							variant="ghost"
+							size="icon"
+							className="size-7 -mr-1 text-muted-foreground hover:text-foreground"
+							onClick={() => setOpen(true)}
+							aria-label={`Expand ${title}`}>
+							<Maximize2 className="size-4" />
+						</Button>
+					</div>
 				</div>
+				{headerActions && <div className="mt-2 flex justify-center sm:hidden">{headerActions}</div>}
 				<Separator />
 			</CardHeader>
 			<CardContent className="flex flex-1 flex-col p-4 pt-2">{children}</CardContent>
@@ -126,7 +100,7 @@ const CHAR_PX = 6.6;
 
 /** Orange ramp stop (t: 0 = vivid accent → 1 = soft), shared by the donut slices and the top-3
  *  bar fills so both charts use the same palette. */
-function rampStop(t: number): string {
+export function rampStop(t: number): string {
 	const light = Math.round(50 + t * 16); // 50% → 66%
 	const sat = Math.round(88 - t * 22); // 88% → 66%
 	return `hsl(21 ${sat}% ${light}%)`;
@@ -148,6 +122,7 @@ function HorizontalBarChart({
 	domain,
 	valueFormatter,
 	variant = 'name-inside',
+	nameOutsideAfterRank,
 }: {
 	data: BarDatum[];
 	config: ChartConfig;
@@ -157,6 +132,10 @@ function HorizontalBarChart({
 	/** 'name-inside': name inside the bar, value on the right (counts).
 	 *  'value-inside': value inside the bar, name on the right (used when the value is short, e.g. a %). */
 	variant?: BarVariant;
+	/** For 'name-inside': once the rank passes this, the name moves to the right of the bar (and the
+	 *  value goes inside). Flipping on a fixed rank rather than on measured width keeps the layout
+	 *  stable instead of toggling back and forth as bar widths change. */
+	nameOutsideAfterRank?: number;
 }) {
 	const isMobile = useIsMobile();
 	const height = data.length * 40 + 16;
@@ -170,13 +149,10 @@ function HorizontalBarChart({
 		if (maxChars < 2) return null;
 		return raw.length > maxChars ? `${raw.slice(0, Math.max(1, maxChars - 1))}…` : raw;
 	};
-	// Does the full (untruncated) name fit inside a bar this wide?
-	const nameFitsInside = (raw: string, width: number) => width > 28 && Math.floor((width - 14) / CHAR_PX) >= raw.length;
 
-	// Per-bar layout: 'value-inside' always shows the name on the right; 'name-inside' keeps the
-	// name inside while it fits and otherwise flips to value-inside/name-right (so long names in the
-	// short lower bars aren't truncated to the point of being unreadable).
-	const showNameOutside = (d: BarDatum, width: number) => valueInside || !nameFitsInside(d.label, width);
+	// Per-bar layout: 'value-inside' always shows the name on the right; 'name-inside' keeps the name
+	// inside up to `nameOutsideAfterRank`, then flips to value-inside / name-on-the-right.
+	const showNameOutside = (d: BarDatum) => valueInside || (nameOutsideAfterRank !== undefined && d.rank > nameOutsideAfterRank);
 
 	// y-axis tick: rank (#1…), top 3 in the accent color.
 	const RankTick = ({ x, y, payload }: { x?: number | string; y?: number | string; payload?: { index?: number } }) => {
@@ -205,7 +181,7 @@ function HorizontalBarChart({
 		const h = Number(props.height ?? 0);
 		const d = data[props.index ?? -1];
 		if (!d) return null;
-		const raw = showNameOutside(d, width) ? fmtValue(d.value) : d.label;
+		const raw = showNameOutside(d) ? fmtValue(d.value) : d.label;
 		const text = truncate(raw, width - 14);
 		if (!text) return null;
 		return (
@@ -223,9 +199,10 @@ function HorizontalBarChart({
 		const h = Number(props.height ?? 0);
 		const d = data[props.index ?? -1];
 		if (!d) return null;
-		const nameOutside = showNameOutside(d, width);
-		const raw = nameOutside ? d.label : fmtValue(d.value);
-		const text = truncate(raw, rightMargin - 12) ?? raw;
+		const nameOutside = showNameOutside(d);
+		// Names sit beside short (lower-ranked) bars, so there's room to show them in full; only the
+		// (always-short) value is truncate-guarded.
+		const text = nameOutside ? d.label : truncate(fmtValue(d.value), rightMargin - 12) ?? fmtValue(d.value);
 		const accent = nameOutside && d.rank <= 3;
 		return (
 			<text
@@ -279,12 +256,16 @@ function BarChartCard({
 	valueFormatter,
 	searchPlaceholder,
 	variant = 'name-inside',
+	nameOutsideAfterRank,
+	description,
 }: {
 	title: string;
 	chartKey: Exclude<ChartKey, 'none'>;
 	data: BarDatum[];
 	config: ChartConfig;
 	labelWidth: number;
+	/** Short caption shown under the title, like the donut card. */
+	description?: string;
 	/** Wider y-axis label width for the fullscreen dialog (defaults to labelWidth). */
 	dialogLabelWidth?: number;
 	previewCount?: number;
@@ -292,6 +273,7 @@ function BarChartCard({
 	valueFormatter?: (v: number) => string;
 	searchPlaceholder?: string;
 	variant?: BarVariant;
+	nameOutsideAfterRank?: number;
 }) {
 	const { open, setOpen } = useChartDialog(chartKey);
 	const [query, setQuery] = useState('');
@@ -301,7 +283,16 @@ function BarChartCard({
 
 	return (
 		<ChartCard title={title} open={open} setOpen={setOpen} searchable={Boolean(searchPlaceholder)}>
-			<HorizontalBarChart data={preview} config={config} labelWidth={labelWidth} domain={domain} valueFormatter={valueFormatter} variant={variant} />
+			{description && <p className="-mt-1 mb-2 text-xs text-muted-foreground">{description}</p>}
+			<HorizontalBarChart
+				data={preview}
+				config={config}
+				labelWidth={labelWidth}
+				domain={domain}
+				valueFormatter={valueFormatter}
+				variant={variant}
+				nameOutsideAfterRank={nameOutsideAfterRank}
+			/>
 
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-3xl" aria-describedby={`${title} chart`}>
@@ -333,6 +324,7 @@ function BarChartCard({
 								domain={domain}
 								valueFormatter={valueFormatter}
 								variant={variant}
+								nameOutsideAfterRank={nameOutsideAfterRank}
 							/>
 						) : (
 							<p className="flex h-full items-center justify-center text-sm text-muted-foreground">No matches.</p>
@@ -344,193 +336,10 @@ function BarChartCard({
 	);
 }
 
-// Reusable area (per-day) chart
-
-/** Lighter orange (the 3rd ramp stop, matching the donut/top-3 bars) for the secondary per-day
- *  series — distinct from the vivid primary area but in the same palette. */
-const SECONDARY_LINE = rampStop(4 / 6);
-
-/** One plotted series (filled gradient area) in a per-day chart. Series sharing the left axis
- *  keep their real magnitudes (a bigger series sits visibly above a smaller one); a series with a
- *  wildly different scale (e.g. avg guesses vs. win-rate %) sets `secondaryAxis` to get its own
- *  right axis instead of being squashed flat. The tooltip always shows real values. */
-type DaySeries = {
-	dataKey: 'played' | 'winRate' | 'totalGuesses' | 'avgGuesses';
-	color: string;
-	/** Render against an independent right-hand axis rather than the shared left one. */
-	secondaryAxis?: boolean;
-	domain?: [number, number];
-	axisFormatter?: (v: number) => string;
-	tipFormatter?: (v: number) => string;
-};
-
-function AreaChartBody({
-	data,
-	config,
-	series,
-	idPrefix,
-	className,
-	asLines = false,
-	referenceLines,
-}: {
-	data: DayPoint[];
-	config: ChartConfig;
-	series: DaySeries[];
-	/** Unique per render so the gradient <defs> id never collides between the card and its dialog. */
-	idPrefix: string;
-	className: string;
-	/** Render series as plain lines (no gradient fill). */
-	asLines?: boolean;
-	/** Horizontal dotted guide lines on the left axis (e.g. [25, 50, 75] for a 0–100 chart). */
-	referenceLines?: number[];
-}) {
-	const isMobile = useIsMobile();
-	return (
-		<ChartContainer config={config} className={`${className} aspect-auto ${isMobile ? '**:outline-none!' : ''}`}>
-			<AreaChart accessibilityLayer={!isMobile} data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
-				<defs>
-					{series.map((s, i) => (
-						<linearGradient key={s.dataKey} id={`${idPrefix}-fill-${i}`} x1="0" y1="0" x2="0" y2="1">
-							<stop offset="5%" stopColor={s.color} stopOpacity={0.25} />
-							<stop offset="95%" stopColor={s.color} stopOpacity={0.02} />
-						</linearGradient>
-					))}
-				</defs>
-				<CartesianGrid vertical={false} />
-				<XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} minTickGap={28} tickFormatter={dayLabel} interval="preserveStartEnd" />
-				{(() => {
-					// The left axis is driven by the first non-secondary series; an optional right axis is
-					// added only when some series opts into its own scale.
-					const left = series.find((s) => !s.secondaryAxis) ?? series[0];
-					const right = series.find((s) => s.secondaryAxis);
-					return (
-						<>
-							<YAxis
-								yAxisId="left"
-								domain={left.domain}
-								tickLine={false}
-								axisLine={false}
-								tickMargin={4}
-								width={left.domain || left.axisFormatter ? 40 : 36}
-								tickFormatter={left.axisFormatter}
-							/>
-							{right && (
-								<YAxis
-									yAxisId="right"
-									orientation="right"
-									domain={right.domain}
-									tickLine={false}
-									axisLine={false}
-									tickMargin={4}
-									width={right.domain || right.axisFormatter ? 40 : 36}
-									tickFormatter={right.axisFormatter}
-								/>
-							)}
-						</>
-					);
-				})()}
-				{referenceLines?.map((y) => (
-					<ReferenceLine key={y} yAxisId="left" y={y} stroke="var(--muted-foreground)" strokeDasharray="2 4" strokeOpacity={0.5} />
-				))}
-				<ChartTooltip
-					cursor={false}
-					content={
-						<ChartTooltipContent
-							indicator="line"
-							labelFormatter={(label) => dayLabel(String(label))}
-							formatter={(value, name, item) => {
-								const s = series.find((x) => x.dataKey === name);
-								const formatted = s?.tipFormatter ? s.tipFormatter(Number(value)) : Number(value).toLocaleString();
-								return (
-									<div className="flex w-full items-center justify-between gap-3">
-										<span className="flex items-center gap-1.5 text-muted-foreground">
-											<span className="h-2.5 w-1 shrink-0 rounded-[2px]" style={{ backgroundColor: item.color }} />
-											{config[name as string]?.label ?? name}
-										</span>
-										<span className="font-mono font-medium tabular-nums text-foreground">{formatted}</span>
-									</div>
-								);
-							}}
-						/>
-					}
-				/>
-				{series.map((s, i) => (
-					<Area
-						key={s.dataKey}
-						yAxisId={s.secondaryAxis ? 'right' : 'left'}
-						dataKey={s.dataKey}
-						type="monotone"
-						stroke={s.color}
-						strokeWidth={2}
-						fill={asLines ? 'none' : `url(#${idPrefix}-fill-${i})`}
-						dot={false}
-						connectNulls
-					/>
-				))}
-			</AreaChart>
-		</ChartContainer>
-	);
-}
-
-/** Per-day area chart card with an expand-to-fullscreen (taller) view. */
-function AreaChartCard({
-	title,
-	chartKey,
-	data,
-	config,
-	series,
-	asLines,
-	referenceLines,
-}: {
-	title: string;
-	chartKey: Exclude<ChartKey, 'none'>;
-	data: DayPoint[];
-	config: ChartConfig;
-	series: DaySeries[];
-	asLines?: boolean;
-	referenceLines?: number[];
-}) {
-	const { open, setOpen } = useChartDialog(chartKey);
-	return (
-		<ChartCard title={title} open={open} setOpen={setOpen}>
-			<AreaChartBody
-				data={data}
-				config={config}
-				series={series}
-				asLines={asLines}
-				referenceLines={referenceLines}
-				idPrefix={`${chartKey}-card`}
-				className="h-56 w-full"
-			/>
-
-			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="sm:max-w-6xl lg:max-w-7xl" aria-describedby={`${title} chart`}>
-					<DialogHeader>
-						<DialogTitle className="font-owl">{title}</DialogTitle>
-					</DialogHeader>
-					<AreaChartBody
-						data={data}
-						config={config}
-						series={series}
-						asLines={asLines}
-						referenceLines={referenceLines}
-						idPrefix={`${chartKey}-lg`}
-						className="h-[60vh] w-full"
-					/>
-				</DialogContent>
-			</Dialog>
-		</ChartCard>
-	);
-}
-
 // Helpers
 
-const playerCount = (n: number) => `${n.toLocaleString()} ${n === 1 ? 'guess' : 'guesses'}`;
+const playerCount = (n: number) => `${n.toLocaleString()} ${n === 1 ? 'player' : 'players'}`;
 const pctValue = (v: number) => `${v}%`;
-
-/** Localized "Jun 5"-style label for a YYYY-MM-DD day, parsed/formatted in UTC so the
- *  calendar day never shifts across timezones. Uses the browser's locale. */
-const dayLabel = (date: string) => new Date(`${date}T00:00:00.000Z`).toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
 
 // Guess Distribution (donut)
 
@@ -582,7 +391,8 @@ function renderSliceLabel(
 	const right = cos >= 0;
 	const x2 = x1 + (right ? 12 : -12);
 	return (
-		<g>
+		// Fade the labels in once the pie has drawn.
+		<g className="animate-in fade-in duration-400 fill-mode-both">
 			<polyline points={`${x0},${y0} ${x1},${y1} ${x2},${y1}`} className="fill-none stroke-foreground" strokeWidth={1} />
 			<text x={x2 + (right ? 4 : -4)} y={y1} textAnchor={right ? 'start' : 'end'} dominantBaseline="central" className="fill-foreground text-xs">
 				{payload.label}
@@ -593,12 +403,13 @@ function renderSliceLabel(
 
 function GuessDonut({
 	slices,
-	averageGuesses,
+	center,
 	activeIndex,
 	className,
 }: {
 	slices: DonutSlice[];
-	averageGuesses: number | null;
+	/** Big value + caption shown in the donut hole. */
+	center: { value: string; label: string };
 	activeIndex: number;
 	className: string;
 }) {
@@ -643,10 +454,10 @@ function GuessDonut({
 							return (
 								<text x={cx} y={cy} textAnchor="middle" dominantBaseline="middle">
 									<tspan x={cx} y={cy - 6} className="fill-foreground text-3xl font-owl">
-										{averageGuesses?.toFixed(1) ?? '—'}
+										{center.value}
 									</tspan>
 									<tspan x={cx} y={cy + 18} className="fill-muted-foreground text-xs">
-										avg guesses
+										{center.label}
 									</tspan>
 								</text>
 							);
@@ -658,11 +469,13 @@ function GuessDonut({
 	);
 }
 
-export function GuessDistributionChart({ data, averageGuesses }: { data: GuessBucket[]; averageGuesses: number | null }) {
+export function GuessDistributionChart({ data }: { data: GuessBucket[] }) {
 	const { open, setOpen } = useChartDialog('guess');
 	if (data.length === 0) return null;
 
+	// Sum of all buckets (wins + failed) = total completed games in the timeframe.
 	const total = data.reduce((sum, d) => sum + d.count, 0);
+	const center = { value: total.toLocaleString(), label: 'games played' };
 	const nonFailed = data.filter((d) => d.bucket !== 'failed').length;
 	const slices: DonutSlice[] = data.map((d) => {
 		const isFailed = d.bucket === 'failed';
@@ -686,7 +499,7 @@ export function GuessDistributionChart({ data, averageGuesses }: { data: GuessBu
 				{/* flex-1 + min-height lets the donut grow to fill the card (matching the taller bar-chart
 				    neighbour on desktop) while still having a sensible size when stacked on mobile. */}
 				<div className="flex min-h-72 flex-1 items-center justify-center">
-					<GuessDonut slices={slices} averageGuesses={averageGuesses} activeIndex={activeIndex} className="aspect-auto size-full max-w-2xl" />
+					<GuessDonut slices={slices} center={center} activeIndex={activeIndex} className="aspect-auto size-full max-w-2xl" />
 				</div>
 			</div>
 
@@ -696,7 +509,7 @@ export function GuessDistributionChart({ data, averageGuesses }: { data: GuessBu
 						<DialogTitle className="font-owl">Guess Distribution</DialogTitle>
 					</DialogHeader>
 					<p className="text-sm text-muted-foreground">Share of games by how many guesses it took to win</p>
-					<GuessDonut slices={slices} averageGuesses={averageGuesses} activeIndex={activeIndex} className="aspect-square w-full max-w-115" />
+					<GuessDonut slices={slices} center={center} activeIndex={activeIndex} className="aspect-square w-full max-w-115" />
 				</DialogContent>
 			</Dialog>
 		</ChartCard>
@@ -718,7 +531,9 @@ export function FirstGuessChart({ data, previewCount }: { data: NamedCount[]; pr
 			config={firstGuessConfig}
 			labelWidth={44}
 			previewCount={previewCount}
+			description="Players guessed first most often. Expand to see the top 50"
 			searchPlaceholder="Search player…"
+			nameOutsideAfterRank={15}
 		/>
 	);
 }
@@ -738,57 +553,9 @@ export function FirstTeamChart({ data, previewCount }: { data: TeamCount[]; prev
 			config={firstTeamConfig}
 			labelWidth={44}
 			previewCount={previewCount}
+			description="Teams of the most-guessed first players. Expand to see the top 50"
 			searchPlaceholder="Search team…"
-		/>
-	);
-}
-
-// Games Played Per Day
-
-const gamesPerDayConfig = {
-	played: { label: 'Games', color: 'var(--primary-foreground)' },
-	totalGuesses: { label: 'Total Guesses', color: SECONDARY_LINE },
-} satisfies ChartConfig;
-
-export function GamesPerDayChart({ data }: { data: DayPoint[] }) {
-	if (data.length === 0) return null;
-	return (
-		<AreaChartCard
-			title="Games Played Per Day"
-			chartKey="gamesPerDay"
-			data={data}
-			config={gamesPerDayConfig}
-			series={[
-				{ dataKey: 'played', color: 'var(--primary-foreground)' },
-				{ dataKey: 'totalGuesses', color: SECONDARY_LINE },
-			]}
-		/>
-	);
-}
-
-// Win Rate Per Day
-
-const winRateConfig = {
-	winRate: { label: 'Win Rate', color: SECONDARY_LINE },
-	avgGuesses: { label: 'Avg Guesses', color: 'var(--primary-foreground)' },
-} satisfies ChartConfig;
-
-export function WinRatePerDayChart({ data }: { data: DayPoint[] }) {
-	if (data.length === 0) return null;
-	return (
-		<AreaChartCard
-			title="Win Rate Per Day"
-			chartKey="winRate"
-			data={data}
-			config={winRateConfig}
-			asLines
-			referenceLines={[25, 50, 75]}
-			series={[
-				{ dataKey: 'winRate', color: SECONDARY_LINE, domain: [0, 100], axisFormatter: pctValue, tipFormatter: pctValue },
-				// Avg guesses lives on a far smaller scale than win-rate %, so it gets its own right axis;
-				// the generous top keeps it reading as a low band beneath the win-rate area.
-				{ dataKey: 'avgGuesses', color: 'var(--primary-foreground)', secondaryAxis: true, domain: [0, 10], tipFormatter: (v) => v.toFixed(1) },
-			]}
+			nameOutsideAfterRank={10}
 		/>
 	);
 }
@@ -814,8 +581,9 @@ export function HardestPuzzlesChart({ data, previewCount }: { data: HardPuzzle[]
 			config={hardestConfig}
 			labelWidth={44}
 			previewCount={previewCount}
-			domain={[0, 100]}
+			description="Answers with the lowest win rate. Expand to see the top 20"
 			valueFormatter={pctValue}
+			domain={[0, 100]}
 			searchPlaceholder="Search player…"
 			variant="value-inside"
 		/>
