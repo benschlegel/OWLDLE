@@ -15,7 +15,12 @@ export type RawStatistics = {
 	hardestPuzzles: { iteration: number; player: string; played: number; wins: number }[];
 };
 
-const EMPTY_RAW: RawStatistics = { summary: { gamesPlayed: 0, wins: 0, winGuessSum: 0, solvedFirst: 0 }, distribution: [], firstGuesses: [], hardestPuzzles: [] };
+const EMPTY_RAW: RawStatistics = {
+	summary: { gamesPlayed: 0, wins: 0, winGuessSum: 0, solvedFirst: 0 },
+	distribution: [],
+	firstGuesses: [],
+	hardestPuzzles: [],
+};
 
 /** Start of today's in-progress puzzle (ms). Games finishing before this are completed. */
 export async function getStatsBoundaryMs(dataset: Dataset, useProd = false): Promise<number | null> {
@@ -75,9 +80,7 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
 						},
 						{ $sort: { count: -1 } },
 					],
-					perIteration: [
-						{ $group: { _id: '$iteration', played: { $sum: 1 }, wins: { $sum: cond(isWon) } } },
-					],
+					perIteration: [{ $group: { _id: '$iteration', played: { $sum: 1 }, wins: { $sum: cond(isWon) } } }],
 				},
 			},
 		] as any)
@@ -170,6 +173,88 @@ async function getPerDayCurrent(dataset: Dataset, fromMs: number, toMs: number, 
 	}
 
 	return points;
+}
+
+export type RawOverview = {
+	byDataset: { dataset: string; played: number; wins: number; winGuessSum: number }[];
+	byWeekdayHour: { weekday: number; hour: number; dataset: string; played: number }[];
+	firstRole: { dataset: string; id: number | null; count: number }[];
+	allRole: { dataset: string; id: number | null; count: number }[];
+};
+
+const EMPTY_OVERVIEW: RawOverview = { byDataset: [], byWeekdayHour: [], firstRole: [], allRole: [] };
+
+/**
+ * All-time, all-dataset aggregates for the "Big Picture" overview section. No timeframe or dataset
+ * filter, these are aggregate counts only (they reveal no answers), so today's in-progress games
+ * are intentionally included. `byWeekdayHour` (grouped by dataset) drives the weekday bars, the
+ * hour-of-day area, and the heatmap; `firstRole`/`allRole` carry (dataset, id) so roles can be
+ * resolved server-side against the roster (the log has no role).
+ */
+export async function getOverviewStatistics(useProd = false): Promise<RawOverview> {
+	const { gameLogCollection } = getStatisticsCollections(useProd);
+	const isWon = { $eq: ['$gameResult', 'won'] };
+	const tz = 'UTC';
+
+	const [agg] = await gameLogCollection
+		.aggregate([
+			{
+				$facet: {
+					byDataset: [
+						{
+							$group: {
+								_id: '$dataset',
+								played: { $sum: 1 },
+								wins: { $sum: { $cond: [isWon, 1, 0] } },
+								winGuessSum: { $sum: { $cond: [isWon, { $size: '$gameData' }, 0] } },
+							},
+						},
+					],
+					byWeekdayHour: [
+						{
+							$group: {
+								_id: {
+									weekday: { $isoDayOfWeek: { date: '$finishedAt', timezone: tz } },
+									hour: { $hour: { date: '$finishedAt', timezone: tz } },
+									dataset: '$dataset',
+								},
+								played: { $sum: 1 },
+							},
+						},
+					],
+					firstRole: [{ $group: { _id: { dataset: '$dataset', id: { $arrayElemAt: ['$gameData.player.id', 0] } }, count: { $sum: 1 } } }],
+					allRole: [{ $unwind: '$gameData' }, { $group: { _id: { dataset: '$dataset', id: '$gameData.player.id' }, count: { $sum: 1 } } }],
+				},
+			},
+		] as any)
+		.toArray();
+
+	if (!agg) return EMPTY_OVERVIEW;
+
+	return {
+		byDataset: (agg.byDataset ?? []).map((d: { _id: string; played: number; wins: number; winGuessSum: number }) => ({
+			dataset: d._id,
+			played: d.played,
+			wins: d.wins,
+			winGuessSum: d.winGuessSum,
+		})),
+		byWeekdayHour: (agg.byWeekdayHour ?? []).map((d: { _id: { weekday: number; hour: number; dataset: string }; played: number }) => ({
+			weekday: d._id.weekday,
+			hour: d._id.hour,
+			dataset: d._id.dataset,
+			played: d.played,
+		})),
+		firstRole: (agg.firstRole ?? []).map((d: { _id: { dataset: string; id: number | null }; count: number }) => ({
+			dataset: d._id.dataset,
+			id: d._id.id,
+			count: d.count,
+		})),
+		allRole: (agg.allRole ?? []).map((d: { _id: { dataset: string; id: number | null }; count: number }) => ({
+			dataset: d._id.dataset,
+			id: d._id.id,
+			count: d.count,
+		})),
+	};
 }
 
 /** Every-dataset per-day series: grouped by (day, dataset) so each day carries a per-mode breakdown plus the summed totals. */

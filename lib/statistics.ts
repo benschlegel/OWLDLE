@@ -1,6 +1,7 @@
 import type { Dataset } from '@/data/datasets';
-import type { RawStatistics } from '@/lib/database/statistics';
-import type { StatisticsResponse, TimeframeRange } from '@/types/statistics';
+import type { RawOverview, RawStatistics } from '@/lib/database/statistics';
+import { OVERVIEW_ROLES } from '@/types/statistics';
+import type { OverviewMode, OverviewResponse, OverviewRole, StatisticsResponse, TimeframeRange } from '@/types/statistics';
 
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
@@ -118,4 +119,95 @@ export function shapeStatistics(
 			winRate: pct(p.wins, p.played),
 		})),
 	};
+}
+
+/** Strip a "-stage<N>" suffix so logged stage datasets fold into their base dataset. */
+export function baseDataset(dataset: string): string {
+	return dataset.replace(/-stage\d+$/, '');
+}
+
+/**
+ * Shape the raw overview aggregation into the API response. Pure — roster/metadata lookups are
+ * passed in (keyed by BASE dataset), mirroring `shapeStatistics`'s `idToTeam`. Folds stage logs
+ * into their base, derives weekday/hour/heatmap from `byWeekdayHour`, and resolves roles via
+ * (base dataset, id).
+ */
+export function shapeOverview(
+	raw: RawOverview,
+	opts: {
+		datasetMeta: Map<string, { label: string; shorthand: string; mode: OverviewMode }>;
+		roleByDatasetId: Map<string, Map<number, OverviewRole>>;
+	}
+): OverviewResponse {
+	const modeOf = (base: string): OverviewMode => opts.datasetMeta.get(base)?.mode ?? (base.startsWith('season') ? 'owl' : 'owcs');
+
+	// byDataset — fold stages into base, sort played desc.
+	const dsMap = new Map<string, { played: number; wins: number; winGuessSum: number }>();
+	for (const r of raw.byDataset) {
+		const base = baseDataset(r.dataset);
+		const acc = dsMap.get(base) ?? { played: 0, wins: 0, winGuessSum: 0 };
+		acc.played += r.played;
+		acc.wins += r.wins;
+		acc.winGuessSum += r.winGuessSum;
+		dsMap.set(base, acc);
+	}
+	const byDataset = [...dsMap.entries()]
+		.map(([base, c]) => {
+			const meta = opts.datasetMeta.get(base);
+			return {
+				dataset: base,
+				label: meta?.label ?? base,
+				shorthand: meta?.shorthand ?? base,
+				mode: modeOf(base),
+				played: c.played,
+				wins: c.wins,
+				winRate: pct(c.wins, c.played),
+				avgGuesses: c.wins > 0 ? Math.round((c.winGuessSum / c.wins) * 10) / 10 : null,
+			};
+		})
+		.sort((a, b) => b.played - a.played);
+
+	const totalGames = byDataset.reduce((s, d) => s + d.played, 0);
+
+	// byWeekday (1..7) / byHour (0..23) / heatmap — all derived from byWeekdayHour.
+	const byWeekday = Array.from({ length: 7 }, (_, i) => ({ weekday: i + 1, played: 0, owl: 0, owcs: 0 }));
+	const byHour = Array.from({ length: 24 }, (_, i) => ({ hour: i, played: 0, owl: 0, owcs: 0 }));
+	const heatCells = new Map<string, { weekday: number; hour: number; played: number }>();
+	for (const r of raw.byWeekdayHour) {
+		const mode = modeOf(baseDataset(r.dataset));
+		const w = byWeekday[r.weekday - 1];
+		if (w) {
+			w.played += r.played;
+			w[mode] += r.played;
+		}
+		const h = byHour[r.hour];
+		if (h) {
+			h.played += r.played;
+			h[mode] += r.played;
+		}
+		const key = `${r.weekday}-${r.hour}`;
+		const cell = heatCells.get(key) ?? { weekday: r.weekday, hour: r.hour, played: 0 };
+		cell.played += r.played;
+		heatCells.set(key, cell);
+	}
+
+	// byRole — resolve role via (base dataset, id); skip unresolved/null ids.
+	const roleTotals = new Map<OverviewRole, { first: number; all: number }>(OVERVIEW_ROLES.map((r) => [r, { first: 0, all: 0 }]));
+	const fold = (rows: { dataset: string; id: number | null; count: number }[], key: 'first' | 'all') => {
+		for (const r of rows) {
+			if (r.id == null) continue;
+			const role = opts.roleByDatasetId.get(baseDataset(r.dataset))?.get(r.id);
+			if (!role) continue;
+			const t = roleTotals.get(role);
+			if (t) t[key] += r.count;
+		}
+	};
+	fold(raw.firstRole, 'first');
+	fold(raw.allRole, 'all');
+	const byRole = OVERVIEW_ROLES.map((role) => {
+		const t = roleTotals.get(role) ?? { first: 0, all: 0 };
+		return { role, first: t.first, all: t.all };
+	});
+
+	return { totalGames, byDataset, byWeekday, byHour, heatmap: [...heatCells.values()], byRole };
 }

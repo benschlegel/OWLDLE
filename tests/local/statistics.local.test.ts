@@ -1,10 +1,11 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
-import { resolveTimeframe, shapeStatistics } from '@/lib/statistics';
-import type { RawStatistics } from '@/lib/database/statistics';
+import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs, getOverviewStatistics } from '@/lib/databaseAccess';
+import { resolveTimeframe, shapeStatistics, baseDataset, shapeOverview } from '@/lib/statistics';
+import type { RawStatistics, RawOverview } from '@/lib/database/statistics';
 import type { Dataset } from '@/data/datasets';
 import type { DbAnswer, DbPlayer } from '@/types/database';
 import { dbName, answerCollectionName, iterationsCollectionName } from '@/lib/databaseAccess';
+import type { OverviewMode, OverviewRole } from '@/types/statistics';
 import { MongoClient } from 'mongodb';
 
 const ds: Dataset = 'season1';
@@ -47,8 +48,7 @@ function makeLog(opts: {
 	};
 }
 
-// ─── getRawStatistics ────────────────────────────────────────────────────────
-
+// getRawStatistics
 describe('getRawStatistics, summary & distribution', () => {
 	beforeEach(clearCollections);
 
@@ -219,8 +219,7 @@ describe('getPerDaySeries', () => {
 	});
 });
 
-// ─── getStatsBoundaryMs ──────────────────────────────────────────────────────
-
+// getStatsBoundaryMs
 describe('getStatsBoundaryMs', () => {
 	beforeEach(clearCollections);
 
@@ -249,8 +248,7 @@ describe('getStatsBoundaryMs', () => {
 	});
 });
 
-// ─── shapeStatistics (pure) ──────────────────────────────────────────────────
-
+// shapeStatistics (pure)
 describe('shapeStatistics, pure function', () => {
 	const baseTimeframe = { range: 'last7' as const, fromIso: '2026-06-14T00:00:00.000Z', toIso: '2026-06-21T00:00:00.000Z', label: 'Last 7 days' };
 	const maxGuesses = 7;
@@ -353,8 +351,7 @@ describe('shapeStatistics, pure function', () => {
 	});
 });
 
-// ─── resolveTimeframe (pure) ─────────────────────────────────────────────────
-
+// resolveTimeframe (pure)
 describe('resolveTimeframe', () => {
 	const BOUNDARY_MS = new Date('2026-06-25T12:00:00Z').getTime();
 	const NEXT_RESET_HOURS = 24;
@@ -396,5 +393,173 @@ describe('resolveTimeframe', () => {
 		// to=June 22 00:00Z + 1 day = June 23 00:00Z — still before boundary
 		const expectedTo = new Date('2026-06-23T00:00:00Z').getTime();
 		expect(tf.toMs).toBe(expectedTo);
+	});
+});
+
+describe('baseDataset', () => {
+	test('strips -stage<N> suffix', () => {
+		expect(baseDataset('owcs-s3-stage1')).toBe('owcs-s3');
+		expect(baseDataset('owcs-s3-stage12')).toBe('owcs-s3');
+	});
+
+	test('leaves non-stage dataset ids unchanged', () => {
+		expect(baseDataset('season6')).toBe('season6');
+		expect(baseDataset('owcs-s3')).toBe('owcs-s3');
+	});
+});
+
+// getOverviewStatistics (DB shape)
+describe('getOverviewStatistics', () => {
+	beforeEach(clearCollections);
+
+	test('produces correct byDataset, byWeekdayHour, firstRole, allRole shapes', async () => {
+		const client = getClient();
+		try {
+			await client.connect();
+			await client
+				.db(dbName)
+				.collection(GAME_LOGS)
+				.insertMany([
+					// season1, won, Mon 2026-06-22 09:00 UTC (ISO weekday 1, hour 9), 2 guesses
+					makeLog({
+						dataset: 'season1',
+						gameResult: 'won',
+						finishedAt: new Date('2026-06-22T09:00:00Z'),
+						gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
+					}),
+					// season1, lost, Mon 2026-06-22 09:30 UTC (ISO weekday 1, hour 9), 1 guess
+					makeLog({
+						dataset: 'season1',
+						gameResult: 'lost',
+						finishedAt: new Date('2026-06-22T09:30:00Z'),
+						gameData: [{ player: { name: 'A', id: 0 } }],
+					}),
+					// owcs-s3, won, Sun 2026-06-28 20:00 UTC (ISO weekday 7, hour 20), 1 guess
+					makeLog({
+						dataset: 'owcs-s3',
+						gameResult: 'won',
+						finishedAt: new Date('2026-06-28T20:00:00Z'),
+						gameData: [{ player: { name: 'X', id: 0 } }],
+					}),
+				] as any);
+		} finally {
+			await client.close();
+		}
+
+		const raw = await getOverviewStatistics();
+
+		// byDataset, sort before asserting (facet order unspecified)
+		const sorted = [...raw.byDataset].sort((a, b) => a.dataset.localeCompare(b.dataset));
+		const s1 = sorted.find((d) => d.dataset === 'season1');
+		const o3 = sorted.find((d) => d.dataset === 'owcs-s3');
+		expect(s1).toMatchObject({ dataset: 'season1', played: 2, wins: 1, winGuessSum: 2 });
+		expect(o3).toMatchObject({ dataset: 'owcs-s3', played: 1, wins: 1, winGuessSum: 1 });
+
+		// byWeekdayHour
+		const wh = [...raw.byWeekdayHour].sort((a, b) => a.weekday - b.weekday || a.hour - b.hour);
+		const mon9 = wh.find((r) => r.weekday === 1 && r.hour === 9 && r.dataset === 'season1');
+		const sun20 = wh.find((r) => r.weekday === 7 && r.hour === 20 && r.dataset === 'owcs-s3');
+		expect(mon9).toMatchObject({ weekday: 1, hour: 9, dataset: 'season1', played: 2 });
+		expect(sun20).toMatchObject({ weekday: 7, hour: 20, dataset: 'owcs-s3', played: 1 });
+
+		// firstRole, both season1 games start with id 0
+		const fr = [...raw.firstRole].sort((a, b) => a.dataset.localeCompare(b.dataset) || (a.id ?? 0) - (b.id ?? 0));
+		expect(fr.find((r) => r.dataset === 'season1' && r.id === 0)).toMatchObject({ dataset: 'season1', id: 0, count: 2 });
+		expect(fr.find((r) => r.dataset === 'owcs-s3' && r.id === 0)).toMatchObject({ dataset: 'owcs-s3', id: 0, count: 1 });
+
+		// allRole, season1 id:0 ×2, season1 id:1 ×1 (from the 2-guess win), owcs-s3 id:0 ×1
+		const ar = [...raw.allRole].sort((a, b) => a.dataset.localeCompare(b.dataset) || (a.id ?? 0) - (b.id ?? 0));
+		expect(ar.find((r) => r.dataset === 'season1' && r.id === 0)).toMatchObject({ count: 2 });
+		expect(ar.find((r) => r.dataset === 'season1' && r.id === 1)).toMatchObject({ count: 1 });
+		expect(ar.find((r) => r.dataset === 'owcs-s3' && r.id === 0)).toMatchObject({ count: 1 });
+	});
+});
+
+describe('shapeOverview', () => {
+	const meta = new Map([
+		['season1', { label: 'Season 1 (2018)', shorthand: 'S1', mode: 'owl' as OverviewMode }],
+		['owcs-s3', { label: 'OWCS S3 (2026)', shorthand: 'S3', mode: 'owcs' as OverviewMode }],
+	]);
+	const roles = new Map([
+		[
+			'season1',
+			new Map<number, OverviewRole>([
+				[0, 'Tank'],
+				[1, 'Damage'],
+			]),
+		],
+		['owcs-s3', new Map<number, OverviewRole>([[0, 'Support']])],
+	]);
+	const raw: RawOverview = {
+		byDataset: [
+			{ dataset: 'season1', played: 10, wins: 6, winGuessSum: 18 },
+			{ dataset: 'owcs-s3', played: 4, wins: 4, winGuessSum: 8 },
+			{ dataset: 'owcs-s3-stage1', played: 1, wins: 0, winGuessSum: 0 }, // folds into owcs-s3
+		],
+		byWeekdayHour: [
+			{ weekday: 1, hour: 9, dataset: 'season1', played: 7 },
+			{ weekday: 1, hour: 9, dataset: 'owcs-s3', played: 3 },
+			{ weekday: 7, hour: 20, dataset: 'owcs-s3-stage1', played: 2 }, // mode owcs via base
+		],
+		firstRole: [
+			{ dataset: 'season1', id: 0, count: 5 }, // Tank
+			{ dataset: 'season1', id: 1, count: 5 }, // Damage
+			{ dataset: 'owcs-s3', id: 0, count: 4 }, // Support
+			{ dataset: 'season1', id: 999, count: 3 }, // unresolved → skipped
+			{ dataset: 'season1', id: null, count: 2 }, // null → skipped
+		],
+		allRole: [
+			{ dataset: 'season1', id: 0, count: 8 }, // Tank
+			{ dataset: 'owcs-s3-stage1', id: 0, count: 1 }, // base owcs-s3 id 0 → Support
+		],
+	};
+
+	const out = shapeOverview(raw, { datasetMeta: meta, roleByDatasetId: roles });
+
+	test('totalGames is sum of all played including stage', () => {
+		expect(out.totalGames).toBe(15); // 10 + 4 + 1
+	});
+
+	test('byDataset folds stage, computes winRate/avgGuesses, sorts played desc', () => {
+		expect(out.byDataset).toHaveLength(2);
+		const s1 = out.byDataset.find((d) => d.dataset === 'season1');
+		const o3 = out.byDataset.find((d) => d.dataset === 'owcs-s3');
+		expect(s1).toMatchObject({ played: 10, wins: 6, winRate: 60, avgGuesses: 3 });
+		expect(o3).toMatchObject({ played: 5, wins: 4, winRate: 80, avgGuesses: 2 }); // 4+1 folded
+		// sorted played desc → season1 first
+		expect(out.byDataset[0].dataset).toBe('season1');
+	});
+
+	test('byWeekday has 7 entries with correct mode-split counts', () => {
+		expect(out.byWeekday).toHaveLength(7);
+		const w1 = out.byWeekday.find((w) => w.weekday === 1);
+		const w7 = out.byWeekday.find((w) => w.weekday === 7);
+		expect(w1).toMatchObject({ played: 10, owl: 7, owcs: 3 });
+		expect(w7).toMatchObject({ played: 2, owl: 0, owcs: 2 });
+		// all other weekdays zero
+		expect(out.byWeekday.filter((w) => w.weekday !== 1 && w.weekday !== 7).every((w) => w.played === 0)).toBe(true);
+	});
+
+	test('byHour has 24 entries with correct mode-split counts', () => {
+		expect(out.byHour).toHaveLength(24);
+		const h9 = out.byHour.find((h) => h.hour === 9);
+		const h20 = out.byHour.find((h) => h.hour === 20);
+		expect(h9).toMatchObject({ played: 10, owl: 7, owcs: 3 });
+		expect(h20).toMatchObject({ played: 2, owl: 0, owcs: 2 });
+	});
+
+	test('heatmap contains correct cells', () => {
+		const cell1 = out.heatmap.find((c) => c.weekday === 1 && c.hour === 9);
+		const cell7 = out.heatmap.find((c) => c.weekday === 7 && c.hour === 20);
+		expect(cell1).toMatchObject({ played: 10 });
+		expect(cell7).toMatchObject({ played: 2 });
+	});
+
+	test('byRole resolves roles in fixed order, skips null/unresolved ids, folds stages', () => {
+		expect(out.byRole).toEqual([
+			{ role: 'Tank', first: 5, all: 8 },
+			{ role: 'Damage', first: 5, all: 0 },
+			{ role: 'Support', first: 4, all: 1 }, // stage1 id 0 → owcs-s3 id 0 → Support
+		]);
 	});
 });

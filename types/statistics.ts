@@ -79,3 +79,35 @@ export type PerDayResponse = {
 	timeframe: { range: TimeframeRange; fromIso: string; toIso: string; label: string };
 	perDay: DayPoint[]; // date asc (YYYY-MM-DD)
 };
+
+/** "Mode": OWL (Overwatch League) vs. OWCS (Champion Series). Mirrors DatasetMode. */
+export type OverviewMode = 'owl' | 'owcs';
+
+/** Roles a guessed player can have (from the roster). */
+export const OVERVIEW_ROLES = ['Tank', 'Damage', 'Support'] as const;
+export type OverviewRole = (typeof OVERVIEW_ROLES)[number];
+
+/** Response of the all-time, all-dataset overview endpoint. */
+export type OverviewResponse = {
+	/** Total games ever logged (sum of byDataset.played). */
+	totalGames: number;
+	/** Per base-dataset totals, played desc. Stage logs are folded into their base. */
+	byDataset: {
+		dataset: string; // base dataset id, e.g. 'owcs-s3'
+		label: string; // e.g. 'OWCS S3 (2026)'
+		shorthand: string; // e.g. 'S3'
+		mode: OverviewMode;
+		played: number;
+		wins: number;
+		winRate: number; // 0–100, integer
+		avgGuesses: number | null; // mean guesses among wins, 1 decimal; null if no wins
+	}[];
+	/** Games per ISO weekday (1=Mon … 7=Sun). All 7 present; split by mode for tooltips. */
+	byWeekday: { weekday: number; played: number; owl: number; owcs: number }[];
+	/** Games per hour of day (0–23, UTC). All 24 present; split by mode for tooltips. */
+	byHour: { hour: number; played: number; owl: number; owcs: number }[];
+	/** Sparse weekday×hour grid for the activity heatmap (only populated cells). */
+	heatmap: { weekday: number; hour: number; played: number }[];
+	/** Per role: how often guessed FIRST vs. across ALL guesses. Fixed order Tank/Damage/Support. */
+	byRole: { role: OverviewRole; first: number; all: number }[];
+};
