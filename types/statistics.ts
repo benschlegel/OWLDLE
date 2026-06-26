@@ -23,7 +23,13 @@ export type StatisticsQuery = z.infer<typeof statisticsQuerySchema>;
 export type GuessBucket = { bucket: string; count: number };
 export type NamedCount = { name: string; count: number };
 export type TeamCount = { team: string; count: number };
-export type DayPoint = { date: string; played: number; winRate: number };
+export type DayPoint = {
+	date: string;
+	played: number;
+	winRate: number; // 0–100, integer
+	totalGuesses: number; // sum of guesses across all games that day
+	avgGuesses: number | null; // mean guesses among that day's wins, 1 decimal; null if no wins
+};
 export type HardPuzzle = { iteration: number; player: string; winRate: number; played: number };
 
 export type StatisticsResponse = {

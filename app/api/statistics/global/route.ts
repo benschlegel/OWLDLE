@@ -20,7 +20,8 @@ export async function GET(request: NextRequest) {
 	}
 
 	try {
-		const totalGames = await getGlobalGamesPlayed();
+		const useProd = request.nextUrl.searchParams.get('prod') === '1';
+		const totalGames = await getGlobalGamesPlayed(useProd);
 		// add + tempTestOffset() for testing
 		return Response.json({ totalGames: totalGames }, { headers: { 'Cache-Control': 'no-store' } });
 	} catch {

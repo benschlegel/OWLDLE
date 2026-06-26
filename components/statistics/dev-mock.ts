@@ -73,7 +73,10 @@ export function injectDevMock(data: StatisticsResponse): StatisticsResponse {
 		const date = `2026-05-${String(i + 1).padStart(2, '0')}`;
 		const played = 40 + Math.round(35 * Math.sin(i / 3) + i);
 		const winRate = 45 + Math.round(20 * Math.sin(i / 4));
-		return { date, played, winRate };
+		const avgGuesses = Math.round((3 + Math.sin(i / 5)) * 10) / 10; // ~2.0–4.0
+		const wins = Math.round((played * winRate) / 100);
+		const totalGuesses = Math.round(wins * avgGuesses + (played - wins) * 7); // wins use avg, losses cap at 7
+		return { date, played, winRate, avgGuesses, totalGuesses };
 	});
 
 	const guessDistribution = [

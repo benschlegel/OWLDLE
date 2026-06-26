@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useStatisticsParams } from '@/hooks/use-statistics-params';
 import { useStatistics } from '@/hooks/use-statistics';
 import SeasonSelectDropdown from '@/components/season-selector/SeasonSelectDropdown';
 import TimeframeSelect, { TIMEFRAME_PRESETS } from '@/components/statistics/TimeframeSelect';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { datasetInfo } from '@/data/datasets';
 import {
@@ -43,11 +44,28 @@ function DashboardSkeleton() {
 	);
 }
 
+const BAR_CHART_PREVIEW_AMOUNT = 8;
+
 export default function StatisticsDashboard() {
 	const [params, setParams] = useStatisticsParams();
-	const { data: rawData, isLoading, isError, isPlaceholderData } = useStatistics(params);
-	const data = USE_DEV_MOCK && rawData ? injectDevMock(rawData) : rawData;
-	const shorthand = datasetInfo.find((d) => d.dataset === params.dataset)?.shorthand ?? params.dataset;
+
+	// Dev-only toggles (never shown or applied in a production build):
+	//  • mock: swap real statistics for deterministic placeholder data (style without a populated DB).
+	//  • prod: read the real production database instead of the dev one (verify against real data).
+	const isDev = process.env.NODE_ENV !== 'production';
+	const [useMock, setUseMock] = useState(USE_DEV_MOCK);
+	const [useProd, setUseProd] = useState(false);
+	const mockOn = isDev && useMock;
+	const prodOn = isDev && useProd;
+
+	const { data: rawData, isLoading, isError, isPlaceholderData } = useStatistics({ ...params, prod: prodOn });
+	const data = mockOn && rawData ? injectDevMock(rawData) : rawData;
+
+	const dataset = datasetInfo.find((d) => d.dataset === params.dataset);
+	const shorthand = dataset?.shorthand ?? params.dataset;
+	const datasetName = dataset?.formattedName ?? params.dataset;
+	const presetLabel = TIMEFRAME_PRESETS.find((p) => p.value === params.range)?.label;
+	const timeframeLabel = data?.timeframe.label ?? presetLabel ?? (params.from && params.to ? `${params.from} → ${params.to}` : 'Custom range');
 
 	const closeChartDialog = useCloseChartDialog();
 
@@ -75,9 +93,26 @@ export default function StatisticsDashboard() {
 
 	return (
 		<div className="mx-auto w-full max-w-7xl px-4 py-6 flex flex-col gap-4">
-			<header className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-				<h1 className="text-3xl font-owl text-primary-foreground">Statistics</h1>
+			<header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+				<div>
+					<h1 className="text-3xl font-owl text-primary-foreground">
+						Statistics <span className="text-foreground text-2xl ml-1"> {timeframeLabel}</span>
+					</h1>
+					<p className="text-lg font-owl tracking-wide text-muted-foreground">{datasetName}</p>
+				</div>
 				<div className="flex items-center gap-2 flex-wrap">
+					{isDev && (
+						<>
+							<label className="flex items-center gap-2 text-xs text-muted-foreground select-none">
+								<Switch size="sm" checked={useMock} onCheckedChange={(checked) => setUseMock(checked)} />
+								Mock data
+							</label>
+							<label className="flex items-center gap-2 text-xs text-muted-foreground select-none">
+								<Switch size="sm" checked={useProd} onCheckedChange={(checked) => setUseProd(checked)} />
+								Prod DB
+							</label>
+						</>
+					)}
 					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset })} />
 					<TimeframeSelect
 						range={params.range}
@@ -89,14 +124,8 @@ export default function StatisticsDashboard() {
 				</div>
 			</header>
 
-			{isLoading ? (
-				<Skeleton className="h-5 w-28 -mt-2" />
-			) : data?.timeframe.label ? (
-				<p className="text-sm text-muted-foreground -mt-2">{data.timeframe.label}</p>
-			) : null}
-
 			{/* Live, never-cached all-time count — independent of the timeframe data below. */}
-			<GlobalGamesCard />
+			<GlobalGamesCard prod={prodOn} />
 
 			{isLoading && <DashboardSkeleton />}
 			{isError && !data && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
@@ -113,15 +142,15 @@ export default function StatisticsDashboard() {
 
 							<div className="grid gap-4 sm:grid-cols-2">
 								<GuessDistributionChart data={data.guessDistribution} averageGuesses={data.summary.averageGuesses} />
-								<FirstGuessChart data={data.topFirstGuesses} previewCount={data.guessDistribution.length} />
+								<FirstGuessChart data={data.topFirstGuesses} previewCount={BAR_CHART_PREVIEW_AMOUNT} />
 							</div>
 
 							<GamesPerDayChart data={data.gamesPerDay} />
 							<WinRatePerDayChart data={data.gamesPerDay} />
 
 							<div className="grid gap-4 sm:grid-cols-2">
-								<FirstTeamChart data={data.topFirstTeams} previewCount={data.guessDistribution.length} />
-								<HardestPuzzlesChart data={data.hardestPuzzles} previewCount={data.guessDistribution.length} />
+								<FirstTeamChart data={data.topFirstTeams} previewCount={BAR_CHART_PREVIEW_AMOUNT} />
+								<HardestPuzzlesChart data={data.hardestPuzzles} previewCount={BAR_CHART_PREVIEW_AMOUNT} />
 							</div>
 						</>
 					)}

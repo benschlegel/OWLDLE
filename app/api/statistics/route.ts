@@ -23,12 +23,12 @@ function emptyResponse(dataset: Dataset, range: TimeframeRange): StatisticsRespo
 	};
 }
 
-async function buildStatistics(dataset: Dataset, range: TimeframeRange, from?: string, to?: string): Promise<StatisticsResponse> {
-	const boundaryMs = await getStatsBoundaryMs(dataset);
+async function buildStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, useProd: boolean): Promise<StatisticsResponse> {
+	const boundaryMs = await getStatsBoundaryMs(dataset, useProd);
 	if (boundaryMs === null) return emptyResponse(dataset, range);
 
 	const tf = resolveTimeframe(range, from, to, boundaryMs, GAME_CONFIG.nextResetHours);
-	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs);
+	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs, useProd);
 
 	const idToTeam = new Map((getDataset(dataset)?.playerData ?? []).map((p) => [p.id, p.team]));
 	return shapeStatistics(raw, {
@@ -39,13 +39,20 @@ async function buildStatistics(dataset: Dataset, range: TimeframeRange, from?: s
 	});
 }
 
-// Cached per (dataset, range, from, to). Historical timeframes only change once
+// Bump when the response shape changes so previously-cached entries are bypassed.
+const CACHE_VERSION = 'v2';
+
+// Cached per (version, dataset, range, from, to, db). Historical timeframes only change once
 // per day at reset, so a 1h revalidate keeps the DB cool while staying fresh.
-function getCachedStatistics(dataset: Dataset, range: TimeframeRange, from?: string, to?: string) {
-	return unstable_cache(() => buildStatistics(dataset, range, from, to), ['statistics', dataset, range, from ?? '', to ?? ''], {
-		revalidate: 3600,
-		tags: [`statistics:${dataset}`],
-	})();
+function getCachedStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, useProd: boolean) {
+	return unstable_cache(
+		() => buildStatistics(dataset, range, from, to, useProd),
+		['statistics', CACHE_VERSION, dataset, range, from ?? '', to ?? '', useProd ? 'prod' : 'dev'],
+		{
+			revalidate: 3600,
+			tags: [`statistics:${dataset}`],
+		}
+	)();
 }
 
 export async function GET(request: NextRequest) {
@@ -65,8 +72,11 @@ export async function GET(request: NextRequest) {
 	});
 	if (!parsed.success) return new Response('Invalid query', { status: 400 });
 
+	// Dev-only escape hatch to read real (production) data; a no-op when already running in prod.
+	const useProd = sp.get('prod') === '1';
+
 	try {
-		const data = await getCachedStatistics(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to);
+		const data = await getCachedStatistics(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, useProd);
 		return Response.json(data);
 	} catch {
 		return new Response(JSON.stringify({ message: "Couldn't fetch statistics." }), { status: 500 });

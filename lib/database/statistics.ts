@@ -1,7 +1,7 @@
 import type { Dataset } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
-import { getCurrentAnswer } from './answers';
-import { gameLogCollection, iterationCollection } from './client';
+import type { AnswerKey } from '@/types/database';
+import { getStatisticsCollections } from './client';
 
 const HOUR_MS = 3_600_000;
 /** Min games an iteration needs before it can rank as a "hardest puzzle". */
@@ -11,27 +11,31 @@ export type RawStatistics = {
 	summary: { gamesPlayed: number; wins: number; winGuessSum: number; solvedFirst: number };
 	distribution: { bucket: string; count: number }[];
 	firstGuesses: { id: number; name: string; count: number }[];
-	perDay: { date: string; played: number; wins: number }[];
+	perDay: { date: string; played: number; wins: number; totalGuesses: number; winGuessSum: number }[];
 	hardestPuzzles: { iteration: number; player: string; played: number; wins: number }[];
 };
 
 const EMPTY_RAW: RawStatistics = { summary: { gamesPlayed: 0, wins: 0, winGuessSum: 0, solvedFirst: 0 }, distribution: [], firstGuesses: [], perDay: [], hardestPuzzles: [] };
 
 /** Start of today's in-progress puzzle (ms). Games finishing before this are completed. */
-export async function getStatsBoundaryMs(dataset: Dataset): Promise<number | null> {
-	const answer = await getCurrentAnswer(dataset);
+export async function getStatsBoundaryMs(dataset: Dataset, useProd = false): Promise<number | null> {
+	const { answerCollection } = getStatisticsCollections(useProd);
+	const answer = await answerCollection.findOne({ _id: `current_${dataset}` as AnswerKey });
 	if (!answer) return null;
 	return new Date(answer.nextReset).getTime() - GAME_CONFIG.nextResetHours * HOUR_MS;
 }
 
 /** Total games ever logged across every dataset/mode. Uses collection metadata (O(1)). */
-export async function getGlobalGamesPlayed(): Promise<number> {
+export async function getGlobalGamesPlayed(useProd = false): Promise<number> {
+	const { gameLogCollection } = getStatisticsCollections(useProd);
 	return gameLogCollection.estimatedDocumentCount();
 }
 
 /** Run all statistics aggregation for a dataset over [fromMs, toMs). */
-export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number): Promise<RawStatistics> {
+export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number, useProd = false): Promise<RawStatistics> {
 	if (fromMs >= toMs) return EMPTY_RAW;
+
+	const { gameLogCollection, iterationCollection } = getStatisticsCollections(useProd);
 
 	const match = { dataset, finishedAt: { $gte: new Date(fromMs), $lt: new Date(toMs) } };
 
@@ -77,6 +81,8 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
 								_id: { $dateToString: { format: '%Y-%m-%d', date: '$finishedAt', timezone: 'UTC' } },
 								played: { $sum: 1 },
 								wins: { $sum: cond(isWon) },
+								totalGuesses: { $sum: { $size: '$gameData' } },
+								winGuessSum: { $sum: { $cond: [isWon, { $size: '$gameData' }, 0] } },
 							},
 						},
 						{ $sort: { _id: 1 } },
@@ -119,7 +125,13 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
 		firstGuesses: (agg?.firstGuesses ?? [])
 			.filter((g: { _id: { id: number | null; name: string | null } }) => g._id?.id != null && g._id?.name != null)
 			.map((g: { _id: { id: number; name: string }; count: number }) => ({ id: g._id.id, name: g._id.name, count: g.count })),
-		perDay: (agg?.perDay ?? []).map((d: { _id: string; played: number; wins: number }) => ({ date: d._id, played: d.played, wins: d.wins })),
+		perDay: (agg?.perDay ?? []).map((d: { _id: string; played: number; wins: number; totalGuesses: number; winGuessSum: number }) => ({
+			date: d._id,
+			played: d.played,
+			wins: d.wins,
+			totalGuesses: d.totalGuesses,
+			winGuessSum: d.winGuessSum,
+		})),
 		hardestPuzzles,
 	};
 }

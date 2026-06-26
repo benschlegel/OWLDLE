@@ -22,8 +22,8 @@ function AnimatedCount({ value }: { value: number }) {
 
 /** Timeframe-independent: total games ever logged across every dataset/mode.
  *  Fetches its own always-fresh count and animates the number on change. */
-export function GlobalGamesCard() {
-	const { data, isError } = useGlobalGames();
+export function GlobalGamesCard({ prod = false }: { prod?: boolean }) {
+	const { data, isError } = useGlobalGames(prod);
 
 	return (
 		<Card className="overflow-hidden border-primary-foreground/30 bg-primary-foreground/3">

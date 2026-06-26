@@ -1,14 +1,15 @@
 import type { StatisticsResponse, TimeframeRange } from '@/types/statistics';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-type Params = { dataset: string; range: TimeframeRange; from: string | null; to: string | null };
+type Params = { dataset: string; range: TimeframeRange; from: string | null; to: string | null; prod?: boolean };
 
-async function fetchStatistics({ dataset, range, from, to }: Params): Promise<StatisticsResponse> {
+async function fetchStatistics({ dataset, range, from, to, prod }: Params): Promise<StatisticsResponse> {
 	const sp = new URLSearchParams({ dataset, range });
 	if (range === 'custom' && from && to) {
 		sp.set('from', from);
 		sp.set('to', to);
 	}
+	if (prod) sp.set('prod', '1');
 	const res = await fetch(`/api/statistics?${sp.toString()}`);
 	if (!res.ok) throw new Error('Failed to load statistics');
 	return res.json();
@@ -16,7 +17,7 @@ async function fetchStatistics({ dataset, range, from, to }: Params): Promise<St
 
 export function useStatistics(params: Params) {
 	return useQuery({
-		queryKey: ['statistics', params.dataset, params.range, params.from, params.to],
+		queryKey: ['statistics', params.dataset, params.range, params.from, params.to, params.prod ?? false],
 		queryFn: () => fetchStatistics(params),
 		staleTime: 5 * 60 * 1000,
 		refetchOnWindowFocus: false,

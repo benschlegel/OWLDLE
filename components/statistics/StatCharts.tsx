@@ -2,7 +2,7 @@
 
 import { Maximize2, X } from 'lucide-react';
 import { type ReactNode, useEffect, useRef, useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Label, LabelList, Pie, PieChart, Sector, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, Label, LabelList, Pie, PieChart, ReferenceLine, Sector, XAxis, YAxis } from 'recharts';
 import type { PieSectorDataItem } from 'recharts/types/polar/Pie';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -96,7 +96,7 @@ function ChartCard({
 	}, [searchable]);
 
 	return (
-		<Card ref={cardRef} className="overflow-hidden">
+		<Card ref={cardRef} className="flex flex-col overflow-hidden">
 			<CardHeader className="p-4 pb-2">
 				<div className="flex items-center justify-between gap-2">
 					<CardTitle className="text-lg font-owl">{title}</CardTitle>
@@ -111,7 +111,7 @@ function ChartCard({
 				</div>
 				<Separator />
 			</CardHeader>
-			<CardContent className="p-4 pt-2">{children}</CardContent>
+			<CardContent className="flex flex-1 flex-col p-4 pt-2">{children}</CardContent>
 		</Card>
 	);
 }
@@ -161,13 +161,22 @@ function HorizontalBarChart({
 	const isMobile = useIsMobile();
 	const height = data.length * 40 + 16;
 	const valueInside = variant === 'value-inside';
-	const rightMargin = valueInside ? 120 : 56;
+	const rightMargin = valueInside ? 120 : 92;
+
+	const fmtValue = (v: number) => (valueFormatter ? valueFormatter(v) : String(v));
 
 	const truncate = (raw: string, px: number) => {
 		const maxChars = Math.floor(px / CHAR_PX);
 		if (maxChars < 2) return null;
 		return raw.length > maxChars ? `${raw.slice(0, Math.max(1, maxChars - 1))}…` : raw;
 	};
+	// Does the full (untruncated) name fit inside a bar this wide?
+	const nameFitsInside = (raw: string, width: number) => width > 28 && Math.floor((width - 14) / CHAR_PX) >= raw.length;
+
+	// Per-bar layout: 'value-inside' always shows the name on the right; 'name-inside' keeps the
+	// name inside while it fits and otherwise flips to value-inside/name-right (so long names in the
+	// short lower bars aren't truncated to the point of being unreadable).
+	const showNameOutside = (d: BarDatum, width: number) => valueInside || !nameFitsInside(d.label, width);
 
 	// y-axis tick: rank (#1…), top 3 in the accent color.
 	const RankTick = ({ x, y, payload }: { x?: number | string; y?: number | string; payload?: { index?: number } }) => {
@@ -188,7 +197,7 @@ function HorizontalBarChart({
 		);
 	};
 
-	// Label drawn inside the bar (name or value), truncated to the bar's pixel width.
+	// Inside the bar: the name when it fits, otherwise the (short) value.
 	const InsideLabel = (props: { x?: number | string; y?: number | string; width?: number | string; height?: number | string; index?: number }) => {
 		const x = Number(props.x ?? 0);
 		const y = Number(props.y ?? 0);
@@ -196,7 +205,7 @@ function HorizontalBarChart({
 		const h = Number(props.height ?? 0);
 		const d = data[props.index ?? -1];
 		if (!d) return null;
-		const raw = valueInside ? (valueFormatter ? valueFormatter(d.value) : String(d.value)) : d.label;
+		const raw = showNameOutside(d, width) ? fmtValue(d.value) : d.label;
 		const text = truncate(raw, width - 14);
 		if (!text) return null;
 		return (
@@ -206,17 +215,26 @@ function HorizontalBarChart({
 		);
 	};
 
-	// Name drawn to the right of the bar (value-inside variant only).
-	const RightNameLabel = (props: { x?: number | string; y?: number | string; width?: number | string; height?: number | string; index?: number }) => {
+	// To the right of the bar: the value when the name is inside, otherwise the full name (top-3 accented).
+	const RightLabel = (props: { x?: number | string; y?: number | string; width?: number | string; height?: number | string; index?: number }) => {
 		const x = Number(props.x ?? 0);
 		const y = Number(props.y ?? 0);
 		const width = Number(props.width ?? 0);
 		const h = Number(props.height ?? 0);
 		const d = data[props.index ?? -1];
 		if (!d) return null;
-		const text = truncate(d.label, rightMargin - 12) ?? d.label;
+		const nameOutside = showNameOutside(d, width);
+		const raw = nameOutside ? d.label : fmtValue(d.value);
+		const text = truncate(raw, rightMargin - 12) ?? raw;
+		const accent = nameOutside && d.rank <= 3;
 		return (
-			<text x={x + width + 8} y={y + h / 2} dominantBaseline="central" textAnchor="start" fontSize={12} className="fill-foreground font-medium">
+			<text
+				x={x + width + 8}
+				y={y + h / 2}
+				dominantBaseline="central"
+				textAnchor="start"
+				fontSize={12}
+				className={`${accent ? 'fill-primary-foreground' : 'fill-foreground'} font-medium`}>
 				{text}
 			</text>
 		);
@@ -232,22 +250,12 @@ function HorizontalBarChart({
 					cursor={false}
 					content={<ChartTooltipContent indicator="line" hideLabel formatter={(_v, _n, item) => (item?.payload as BarDatum)?.tip ?? ''} />}
 				/>
-				<Bar dataKey="value" radius={4} minPointSize={valueInside ? 30 : 2}>
+				<Bar dataKey="value" radius={4} minPointSize={30}>
 					{data.map((d) => (
 						<Cell key={`${d.rank}-${d.label}`} fill={barFill(d.rank)} />
 					))}
-					<LabelList dataKey={valueInside ? 'value' : 'label'} content={InsideLabel} />
-					{valueInside ? (
-						<LabelList dataKey="label" content={RightNameLabel} />
-					) : (
-						<LabelList
-							dataKey="value"
-							position="right"
-							offset={8}
-							className="fill-foreground text-xs"
-							formatter={valueFormatter ? (v: unknown) => valueFormatter(Number(v)) : undefined}
-						/>
-					)}
+					<LabelList dataKey="value" content={InsideLabel} />
+					<LabelList dataKey="value" content={RightLabel} />
 				</Bar>
 			</BarChart>
 		</ChartContainer>
@@ -314,7 +322,9 @@ function BarChartCard({
 							)}
 						</div>
 					)}
-					<ScrollArea className="max-h-[60vh] pr-3">
+					{/* Fixed height keeps the (vertically-centered) dialog from jumping as the
+					    result count — and thus the chart height — changes while searching. */}
+					<ScrollArea className="h-[60vh] pr-3">
 						{filtered.length > 0 ? (
 							<HorizontalBarChart
 								data={filtered}
@@ -325,7 +335,7 @@ function BarChartCard({
 								variant={variant}
 							/>
 						) : (
-							<p className="text-sm text-muted-foreground py-12 text-center">No matches.</p>
+							<p className="flex h-full items-center justify-center text-sm text-muted-foreground">No matches.</p>
 						)}
 					</ScrollArea>
 				</DialogContent>
@@ -336,47 +346,127 @@ function BarChartCard({
 
 // Reusable area (per-day) chart
 
+/** Lighter orange (the 3rd ramp stop, matching the donut/top-3 bars) for the secondary per-day
+ *  series — distinct from the vivid primary area but in the same palette. */
+const SECONDARY_LINE = rampStop(4 / 6);
+
+/** One plotted series (filled gradient area) in a per-day chart. Series sharing the left axis
+ *  keep their real magnitudes (a bigger series sits visibly above a smaller one); a series with a
+ *  wildly different scale (e.g. avg guesses vs. win-rate %) sets `secondaryAxis` to get its own
+ *  right axis instead of being squashed flat. The tooltip always shows real values. */
+type DaySeries = {
+	dataKey: 'played' | 'winRate' | 'totalGuesses' | 'avgGuesses';
+	color: string;
+	/** Render against an independent right-hand axis rather than the shared left one. */
+	secondaryAxis?: boolean;
+	domain?: [number, number];
+	axisFormatter?: (v: number) => string;
+	tipFormatter?: (v: number) => string;
+};
+
 function AreaChartBody({
 	data,
 	config,
-	dataKey,
-	gradientId,
+	series,
+	idPrefix,
 	className,
-	domain,
-	valueFormatter,
+	asLines = false,
+	referenceLines,
 }: {
 	data: DayPoint[];
 	config: ChartConfig;
-	dataKey: 'played' | 'winRate';
-	gradientId: string;
+	series: DaySeries[];
+	/** Unique per render so the gradient <defs> id never collides between the card and its dialog. */
+	idPrefix: string;
 	className: string;
-	domain?: [number, number];
-	valueFormatter?: (v: number) => string;
+	/** Render series as plain lines (no gradient fill). */
+	asLines?: boolean;
+	/** Horizontal dotted guide lines on the left axis (e.g. [25, 50, 75] for a 0–100 chart). */
+	referenceLines?: number[];
 }) {
 	const isMobile = useIsMobile();
 	return (
 		<ChartContainer config={config} className={`${className} aspect-auto ${isMobile ? '**:outline-none!' : ''}`}>
 			<AreaChart accessibilityLayer={!isMobile} data={data} margin={{ top: 4, right: 4, left: 0, bottom: 0 }}>
 				<defs>
-					<linearGradient id={gradientId} x1="0" y1="0" x2="0" y2="1">
-						<stop offset="5%" stopColor="var(--primary-foreground)" stopOpacity={0.25} />
-						<stop offset="95%" stopColor="var(--primary-foreground)" stopOpacity={0.02} />
-					</linearGradient>
+					{series.map((s, i) => (
+						<linearGradient key={s.dataKey} id={`${idPrefix}-fill-${i}`} x1="0" y1="0" x2="0" y2="1">
+							<stop offset="5%" stopColor={s.color} stopOpacity={0.25} />
+							<stop offset="95%" stopColor={s.color} stopOpacity={0.02} />
+						</linearGradient>
+					))}
 				</defs>
 				<CartesianGrid vertical={false} />
 				<XAxis dataKey="date" tickLine={false} axisLine={false} tickMargin={8} minTickGap={28} tickFormatter={dayLabel} interval="preserveStartEnd" />
-				<YAxis domain={domain} tickLine={false} axisLine={false} tickMargin={4} width={domain ? 40 : 36} tickFormatter={valueFormatter} />
+				{(() => {
+					// The left axis is driven by the first non-secondary series; an optional right axis is
+					// added only when some series opts into its own scale.
+					const left = series.find((s) => !s.secondaryAxis) ?? series[0];
+					const right = series.find((s) => s.secondaryAxis);
+					return (
+						<>
+							<YAxis
+								yAxisId="left"
+								domain={left.domain}
+								tickLine={false}
+								axisLine={false}
+								tickMargin={4}
+								width={left.domain || left.axisFormatter ? 40 : 36}
+								tickFormatter={left.axisFormatter}
+							/>
+							{right && (
+								<YAxis
+									yAxisId="right"
+									orientation="right"
+									domain={right.domain}
+									tickLine={false}
+									axisLine={false}
+									tickMargin={4}
+									width={right.domain || right.axisFormatter ? 40 : 36}
+									tickFormatter={right.axisFormatter}
+								/>
+							)}
+						</>
+					);
+				})()}
+				{referenceLines?.map((y) => (
+					<ReferenceLine key={y} yAxisId="left" y={y} stroke="var(--muted-foreground)" strokeDasharray="2 4" strokeOpacity={0.5} />
+				))}
 				<ChartTooltip
 					cursor={false}
 					content={
 						<ChartTooltipContent
 							indicator="line"
 							labelFormatter={(label) => dayLabel(String(label))}
-							formatter={valueFormatter ? (v) => valueFormatter(Number(v)) : undefined}
+							formatter={(value, name, item) => {
+								const s = series.find((x) => x.dataKey === name);
+								const formatted = s?.tipFormatter ? s.tipFormatter(Number(value)) : Number(value).toLocaleString();
+								return (
+									<div className="flex w-full items-center justify-between gap-3">
+										<span className="flex items-center gap-1.5 text-muted-foreground">
+											<span className="h-2.5 w-1 shrink-0 rounded-[2px]" style={{ backgroundColor: item.color }} />
+											{config[name as string]?.label ?? name}
+										</span>
+										<span className="font-mono font-medium tabular-nums text-foreground">{formatted}</span>
+									</div>
+								);
+							}}
 						/>
 					}
 				/>
-				<Area dataKey={dataKey} type="monotone" stroke="var(--primary-foreground)" strokeWidth={2} fill={`url(#${gradientId})`} />
+				{series.map((s, i) => (
+					<Area
+						key={s.dataKey}
+						yAxisId={s.secondaryAxis ? 'right' : 'left'}
+						dataKey={s.dataKey}
+						type="monotone"
+						stroke={s.color}
+						strokeWidth={2}
+						fill={asLines ? 'none' : `url(#${idPrefix}-fill-${i})`}
+						dot={false}
+						connectNulls
+					/>
+				))}
 			</AreaChart>
 		</ChartContainer>
 	);
@@ -388,19 +478,17 @@ function AreaChartCard({
 	chartKey,
 	data,
 	config,
-	dataKey,
-	gradientId,
-	domain,
-	valueFormatter,
+	series,
+	asLines,
+	referenceLines,
 }: {
 	title: string;
 	chartKey: Exclude<ChartKey, 'none'>;
 	data: DayPoint[];
 	config: ChartConfig;
-	dataKey: 'played' | 'winRate';
-	gradientId: string;
-	domain?: [number, number];
-	valueFormatter?: (v: number) => string;
+	series: DaySeries[];
+	asLines?: boolean;
+	referenceLines?: number[];
 }) {
 	const { open, setOpen } = useChartDialog(chartKey);
 	return (
@@ -408,10 +496,10 @@ function AreaChartCard({
 			<AreaChartBody
 				data={data}
 				config={config}
-				dataKey={dataKey}
-				gradientId={gradientId}
-				domain={domain}
-				valueFormatter={valueFormatter}
+				series={series}
+				asLines={asLines}
+				referenceLines={referenceLines}
+				idPrefix={`${chartKey}-card`}
 				className="h-56 w-full"
 			/>
 
@@ -423,10 +511,10 @@ function AreaChartCard({
 					<AreaChartBody
 						data={data}
 						config={config}
-						dataKey={dataKey}
-						gradientId={`${gradientId}-lg`}
-						domain={domain}
-						valueFormatter={valueFormatter}
+						series={series}
+						asLines={asLines}
+						referenceLines={referenceLines}
+						idPrefix={`${chartKey}-lg`}
 						className="h-[60vh] w-full"
 					/>
 				</DialogContent>
@@ -458,6 +546,51 @@ function guessSliceColor(index: number, nonFailed: number, isFailed: boolean): s
 	return rampStop(nonFailed > 1 ? index / (nonFailed - 1) : 0);
 }
 
+/** Outside label with a leader line connecting it to its slice, showing the bucket name
+ *  (e.g. "3 guesses"). Near-empty slices (<2%) are skipped so labels don't collide. The active
+ *  slice is drawn 6px larger, so its leader line starts from that enlarged edge (not the base
+ *  radius) — otherwise the line would visibly cut through the slice. */
+function renderSliceLabel(
+	{
+		cx,
+		cy,
+		midAngle,
+		outerRadius,
+		percent,
+		index,
+		payload,
+	}: {
+		cx?: number;
+		cy?: number;
+		midAngle?: number;
+		outerRadius?: number;
+		percent?: number;
+		index?: number;
+		payload?: DonutSlice;
+	},
+	activeIndex: number
+) {
+	if (!payload || (percent ?? 0) < 0.02) return null;
+	const RAD = Math.PI / 180;
+	const cos = Math.cos(-Number(midAngle ?? 0) * RAD);
+	const sin = Math.sin(-Number(midAngle ?? 0) * RAD);
+	const or = Number(outerRadius ?? 0) + (index === activeIndex ? 6 : 0);
+	const x0 = Number(cx ?? 0) + or * cos;
+	const y0 = Number(cy ?? 0) + or * sin;
+	const x1 = Number(cx ?? 0) + (or + 12) * cos;
+	const y1 = Number(cy ?? 0) + (or + 12) * sin;
+	const right = cos >= 0;
+	const x2 = x1 + (right ? 12 : -12);
+	return (
+		<g>
+			<polyline points={`${x0},${y0} ${x1},${y1} ${x2},${y1}`} className="fill-none stroke-foreground" strokeWidth={1} />
+			<text x={x2 + (right ? 4 : -4)} y={y1} textAnchor={right ? 'start' : 'end'} dominantBaseline="central" className="fill-foreground text-xs">
+				{payload.label}
+			</text>
+		</g>
+	);
+}
+
 function GuessDonut({
 	slices,
 	averageGuesses,
@@ -469,9 +602,12 @@ function GuessDonut({
 	activeIndex: number;
 	className: string;
 }) {
+	const isMobile = useIsMobile();
+	const innerRadius = isMobile ? '42%' : '50%';
+	const outerRadius = isMobile ? '58%' : '70%';
 	return (
-		<ChartContainer config={guessDonutConfig} className={`mx-auto aspect-square w-full ${className}`}>
-			<PieChart>
+		<ChartContainer config={guessDonutConfig} className={`mx-auto ${className}`}>
+			<PieChart margin={{ top: 12, right: 12, bottom: 12, left: 12 }}>
 				<ChartTooltip
 					cursor={false}
 					content={
@@ -489,12 +625,15 @@ function GuessDonut({
 					data={slices}
 					dataKey="count"
 					nameKey="label"
-					innerRadius="58%"
+					innerRadius={innerRadius}
+					outerRadius={outerRadius}
 					paddingAngle={2}
 					stroke="var(--card)"
 					strokeWidth={2}
+					label={(props) => renderSliceLabel(props, activeIndex)}
+					labelLine={false}
 					shape={({ index, outerRadius = 0, ...props }: PieSectorDataItem & { index?: number }) =>
-						index === activeIndex ? <Sector {...props} outerRadius={outerRadius + 8} /> : <Sector {...props} outerRadius={outerRadius} />
+						index === activeIndex ? <Sector {...props} outerRadius={outerRadius + 6} /> : <Sector {...props} outerRadius={outerRadius} />
 					}>
 					<Label
 						content={({ viewBox }) => {
@@ -519,19 +658,6 @@ function GuessDonut({
 	);
 }
 
-function GuessDonutLegend({ slices }: { slices: DonutSlice[] }) {
-	return (
-		<div className="mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1.5">
-			{slices.map((s) => (
-				<div key={s.bucket} className="flex items-center gap-1.5 text-xs text-muted-foreground">
-					<span className="size-2.5 rounded-[2px]" style={{ backgroundColor: s.fill }} />
-					<span>{s.label}</span>
-				</div>
-			))}
-		</div>
-	);
-}
-
 export function GuessDistributionChart({ data, averageGuesses }: { data: GuessBucket[]; averageGuesses: number | null }) {
 	const { open, setOpen } = useChartDialog('guess');
 	if (data.length === 0) return null;
@@ -553,9 +679,16 @@ export function GuessDistributionChart({ data, averageGuesses }: { data: GuessBu
 
 	return (
 		<ChartCard title="Guess Distribution" open={open} setOpen={setOpen}>
-			<p className="-mt-1 mb-1 text-xs text-muted-foreground">Share of games by how many guesses it took to win</p>
-			<GuessDonut slices={slices} averageGuesses={averageGuesses} activeIndex={activeIndex} className="max-w-75" />
-			<GuessDonutLegend slices={slices} />
+			{/* Fill the (grid-stretched) card height so this card matches its taller neighbour and the
+			    donut centers in whatever vertical space is available. */}
+			<div className="flex flex-1 flex-col">
+				<p className="-mt-1 mb-1 text-xs text-muted-foreground">Share of games by how many guesses it took to win</p>
+				{/* flex-1 + min-height lets the donut grow to fill the card (matching the taller bar-chart
+				    neighbour on desktop) while still having a sensible size when stacked on mobile. */}
+				<div className="flex min-h-72 flex-1 items-center justify-center">
+					<GuessDonut slices={slices} averageGuesses={averageGuesses} activeIndex={activeIndex} className="aspect-auto size-full max-w-2xl" />
+				</div>
+			</div>
 
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-2xl" aria-describedby="Guess Distribution chart">
@@ -563,8 +696,7 @@ export function GuessDistributionChart({ data, averageGuesses }: { data: GuessBu
 						<DialogTitle className="font-owl">Guess Distribution</DialogTitle>
 					</DialogHeader>
 					<p className="text-sm text-muted-foreground">Share of games by how many guesses it took to win</p>
-					<GuessDonut slices={slices} averageGuesses={averageGuesses} activeIndex={activeIndex} className="max-w-115" />
-					<GuessDonutLegend slices={slices} />
+					<GuessDonut slices={slices} averageGuesses={averageGuesses} activeIndex={activeIndex} className="aspect-square w-full max-w-115" />
 				</DialogContent>
 			</Dialog>
 		</ChartCard>
@@ -613,18 +745,33 @@ export function FirstTeamChart({ data, previewCount }: { data: TeamCount[]; prev
 
 // Games Played Per Day
 
-const gamesPerDayConfig = { played: { label: 'Games', color: 'var(--primary-foreground)' } } satisfies ChartConfig;
+const gamesPerDayConfig = {
+	played: { label: 'Games', color: 'var(--primary-foreground)' },
+	totalGuesses: { label: 'Total Guesses', color: SECONDARY_LINE },
+} satisfies ChartConfig;
 
 export function GamesPerDayChart({ data }: { data: DayPoint[] }) {
 	if (data.length === 0) return null;
 	return (
-		<AreaChartCard title="Games Played Per Day" chartKey="gamesPerDay" data={data} config={gamesPerDayConfig} dataKey="played" gradientId="gamesAreaFill" />
+		<AreaChartCard
+			title="Games Played Per Day"
+			chartKey="gamesPerDay"
+			data={data}
+			config={gamesPerDayConfig}
+			series={[
+				{ dataKey: 'played', color: 'var(--primary-foreground)' },
+				{ dataKey: 'totalGuesses', color: SECONDARY_LINE },
+			]}
+		/>
 	);
 }
 
 // Win Rate Per Day
 
-const winRateConfig = { winRate: { label: 'Win Rate', color: 'var(--primary-foreground)' } } satisfies ChartConfig;
+const winRateConfig = {
+	winRate: { label: 'Win Rate', color: SECONDARY_LINE },
+	avgGuesses: { label: 'Avg Guesses', color: 'var(--primary-foreground)' },
+} satisfies ChartConfig;
 
 export function WinRatePerDayChart({ data }: { data: DayPoint[] }) {
 	if (data.length === 0) return null;
@@ -634,10 +781,14 @@ export function WinRatePerDayChart({ data }: { data: DayPoint[] }) {
 			chartKey="winRate"
 			data={data}
 			config={winRateConfig}
-			dataKey="winRate"
-			gradientId="winRateAreaFill"
-			domain={[0, 100]}
-			valueFormatter={pctValue}
+			asLines
+			referenceLines={[25, 50, 75]}
+			series={[
+				{ dataKey: 'winRate', color: SECONDARY_LINE, domain: [0, 100], axisFormatter: pctValue, tipFormatter: pctValue },
+				// Avg guesses lives on a far smaller scale than win-rate %, so it gets its own right axis;
+				// the generous top keeps it reading as a low band beneath the win-rate area.
+				{ dataKey: 'avgGuesses', color: 'var(--primary-foreground)', secondaryAxis: true, domain: [0, 10], tipFormatter: (v) => v.toFixed(1) },
+			]}
 		/>
 	);
 }

@@ -43,7 +43,10 @@ export default function TimeframeSelect({ range, from, to, onPreset, onCustom }:
 		<div className="flex items-center gap-2">
 			<Select value={range === 'custom' ? '' : range} onValueChange={(v) => onPreset(v as TimeframeRange)}>
 				<SelectTrigger className="w-auto min-w-[8.5rem] h-9 text-sm" aria-label="Select timeframe">
-					<SelectValue placeholder={range === 'custom' ? 'Custom range' : 'Timeframe'} />
+					{/* Render the label explicitly so the per-item kbd chip never leaks into the trigger. */}
+					<SelectValue placeholder={range === 'custom' ? 'Custom range' : 'Timeframe'}>
+						{range === 'custom' ? 'Custom range' : TIMEFRAME_PRESETS.find((p) => p.value === range)?.label}
+					</SelectValue>
 				</SelectTrigger>
 				<SelectContent>
 					{TIMEFRAME_PRESETS.map((p) => (

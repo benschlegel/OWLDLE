@@ -9,6 +9,16 @@ function pct(n: number, d: number): number {
 	return d > 0 ? Math.round((n / d) * 100) : 0;
 }
 
+/** Keep the first entry per player (the input is hardest-first, so this keeps each player's hardest puzzle). */
+function dedupeByPlayer(puzzles: RawStatistics['hardestPuzzles']): RawStatistics['hardestPuzzles'] {
+	const seen = new Set<string>();
+	return puzzles.filter((p) => {
+		if (seen.has(p.player)) return false;
+		seen.add(p.player);
+		return true;
+	});
+}
+
 /** "Jun 1 – Jun 22" for the custom-range label. UTC to match server parsing. */
 function formatRangeLabel(from: string, to: string): string {
 	const fmt = (s: string) => new Date(`${s}T00:00:00.000Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -99,8 +109,16 @@ export function shapeStatistics(
 		guessDistribution,
 		topFirstGuesses,
 		topFirstTeams,
-		gamesPerDay: raw.perDay.map((d) => ({ date: d.date, played: d.played, winRate: pct(d.wins, d.played) })),
-		hardestPuzzles: raw.hardestPuzzles.map((p) => ({
+		gamesPerDay: raw.perDay.map((d) => ({
+			date: d.date,
+			played: d.played,
+			winRate: pct(d.wins, d.played),
+			totalGuesses: d.totalGuesses,
+			avgGuesses: d.wins > 0 ? Math.round((d.winGuessSum / d.wins) * 10) / 10 : null,
+		})),
+		// The same player can be the answer on several days; the raw list is hardest-first, so keep
+		// only each player's hardest puzzle to avoid duplicate names in the chart.
+		hardestPuzzles: dedupeByPlayer(raw.hardestPuzzles).map((p) => ({
 			iteration: p.iteration,
 			player: p.player,
 			played: p.played,
