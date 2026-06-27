@@ -11,6 +11,7 @@ export function useStatisticsParams() {
 			range: parseAsStringEnum([...TIMEFRAME_RANGES]).withDefault('all'),
 			from: parseAsString,
 			to: parseAsString,
+			stage: parseAsString.withDefault('all'),
 		},
 		{ history: 'push', clearOnDefault: true }
 	);

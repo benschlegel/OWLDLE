@@ -12,6 +12,7 @@ import { datasetInfo } from '@/data/datasets';
 import { FirstGuessChart, FirstTeamChart, GuessDistributionChart, HardestPuzzlesChart } from '@/components/statistics/StatCharts';
 import { OverviewSection } from '@/components/statistics/OverviewCharts';
 import { defaultGrouping, GamesPerDayChart, GROUPING_HOTKEYS, type PerDayParams, SCOPE_HOTKEYS, WinRatePerDayChart } from '@/components/statistics/PerDayChart';
+import StageSelect from '@/components/statistics/StageSelect';
 import { AvgGuessesCard, GamesRadialCard } from '@/components/statistics/SummaryCharts';
 import { GlobalGamesCard } from '@/components/statistics/GlobalGamesCard';
 import { StatisticsInfoDialog } from '@/components/statistics/StatisticsInfoDialog';
@@ -52,7 +53,7 @@ export default function StatisticsDashboard() {
 	const prodOn = isDev && useProd;
 
 	const { data, isLoading, isError, isPlaceholderData } = useStatistics({ ...params, prod: prodOn });
-	const perDayParams: PerDayParams = { dataset: params.dataset, range: params.range, from: params.from, to: params.to, prod: prodOn };
+	const perDayParams: PerDayParams = { dataset: params.dataset, range: params.range, from: params.from, to: params.to, prod: prodOn, stage: params.stage };
 
 	// Per-day grouping + scope are shared across every area chart (and driven by the
 	// hotkeys). Grouping has an explicit override; until set it follows the timeframe length.
@@ -120,7 +121,8 @@ export default function StatisticsDashboard() {
 							Prod DB
 						</label>
 					)}
-					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset })} />
+					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset, stage: 'all' })} />
+					<StageSelect value={params.stage} stages={data?.stages ?? []} onValueChange={(v) => setParams({ stage: v })} />
 					<TimeframeSelect
 						range={params.range}
 						from={params.from}

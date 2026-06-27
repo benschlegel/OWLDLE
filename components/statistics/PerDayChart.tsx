@@ -16,7 +16,7 @@ import type { DayCounts, DayGrouping, DayScope, TimeframeRange } from '@/types/s
 const ACCENT = 'var(--primary-foreground)';
 const SECONDARY = rampStop(4 / 6); // lighter orange, matches the 3rd bar/donut stop
 
-export type PerDayParams = { dataset: string; range: TimeframeRange; from: string | null; to: string | null; prod?: boolean };
+export type PerDayParams = { dataset: string; range: TimeframeRange; from: string | null; to: string | null; prod?: boolean; stage?: string };
 
 /** Shared grouping + scope state (lifted to the dashboard so the hotkeys drive every per-day chart). */
 export type PerDayControlsState = { grouping: DayGrouping; setGrouping: (g: DayGrouping) => void; scope: DayScope; setScope: (s: DayScope) => void };

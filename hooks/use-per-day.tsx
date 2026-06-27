@@ -1,15 +1,16 @@
 import type { DayCounts, DayPoint, DayScope, PerDayResponse, TimeframeRange } from '@/types/statistics';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
-type Params = { dataset: string; range: TimeframeRange; from: string | null; to: string | null; scope: DayScope; prod?: boolean };
+type Params = { dataset: string; range: TimeframeRange; from: string | null; to: string | null; scope: DayScope; prod?: boolean; stage?: string };
 
-async function fetchPerDay({ dataset, range, from, to, scope, prod }: Params): Promise<PerDayResponse> {
+async function fetchPerDay({ dataset, range, from, to, scope, prod, stage }: Params): Promise<PerDayResponse> {
 	const sp = new URLSearchParams({ dataset, range, scope });
 	if (range === 'custom' && from && to) {
 		sp.set('from', from);
 		sp.set('to', to);
 	}
 	if (prod) sp.set('prod', '1');
+	if (stage && stage !== 'all') sp.set('stage', stage);
 	const res = await fetch(`/api/statistics/perday?${sp.toString()}`);
 	if (!res.ok) throw new Error('Failed to load per-day statistics');
 	return res.json();
@@ -19,7 +20,7 @@ async function fetchPerDay({ dataset, range, from, to, scope, prod }: Params): P
  *  avg-guesses card and the games-per-day chart (both scope 'current') dedupe to one request. */
 export function usePerDay(params: Params) {
 	return useQuery({
-		queryKey: ['perday', params.dataset, params.range, params.from, params.to, params.scope, params.prod ?? false],
+		queryKey: ['perday', params.dataset, params.range, params.from, params.to, params.scope, params.prod ?? false, params.stage ?? 'all'],
 		queryFn: () => fetchPerDay(params),
 		staleTime: 5 * 60 * 1000,
 		refetchOnWindowFocus: false,
