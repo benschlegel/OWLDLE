@@ -91,7 +91,7 @@ function niceMax(dataMax: number): number {
 
 function MetricTabs({ points, metric, setMetric }: { points: DayBucket[]; metric: DayMetricKey; setMetric: (m: DayMetricKey) => void }) {
 	return (
-		<div className="-mx-1 mb-3 flex gap-1 overflow-x-auto px-1 pb-1">
+		<div className="-mx-1 mb-3 flex gap-1 overflow-x-auto px-1 py-1">
 			{METRICS.map((m) => {
 				const total = metricTotal(points, m.key);
 				const active = m.key === metric;
@@ -101,7 +101,7 @@ function MetricTabs({ points, metric, setMetric }: { points: DayBucket[]; metric
 						type="button"
 						onClick={() => setMetric(m.key)}
 						className={cn(
-							'flex min-w-26 shrink-0 flex-col items-start gap-0.5 rounded-md border px-3 py-2 text-left transition-colors',
+							'flex min-w-26 shrink-0 flex-col items-start gap-0.5 rounded-md border px-3 py-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-foreground',
 							active ? 'border-primary-foreground/40 bg-primary-foreground/10' : 'border-border/60 hover:bg-muted/50'
 						)}>
 						<span className="text-[0.65rem] font-medium uppercase tracking-wider text-muted-foreground">{m.label}</span>

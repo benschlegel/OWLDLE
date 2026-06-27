@@ -421,6 +421,7 @@ export function GuessDonut({
 			<PieChart margin={{ top: 12, right: 12, bottom: 12, left: 12 }}>
 				<ChartTooltip
 					cursor={false}
+					isAnimationActive={false}
 					content={
 						<ChartTooltipContent
 							nameKey="label"

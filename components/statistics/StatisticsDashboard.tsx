@@ -115,7 +115,7 @@ export default function StatisticsDashboard() {
 				</div>
 				<div className="flex items-center gap-2 flex-wrap">
 					{isDev && (
-						<label className="flex items-center gap-2 text-xs text-muted-foreground select-none">
+						<label className="sm:flex hidden items-center gap-2 text-xs text-muted-foreground select-none">
 							<Switch size="sm" checked={useProd} onCheckedChange={(checked) => setUseProd(checked)} />
 							Prod DB
 						</label>
