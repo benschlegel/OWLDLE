@@ -7,17 +7,29 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator';
 import { DrawerClose, DrawerContent, DrawerFooter, DrawerTitle } from '@/components/ui/drawer';
 import { SheetLinkButton } from '@/components/ui/sheet-link-button';
-import { DEFAULT_OWCS_DATASET_NAME, ENDLESS_PATHNAME, OWCS_PATHNAME, OWL_PATHNAME, OWL_DATASETS_REVERSED, OWCS_DATASETS_REVERSED } from '@/data/datasets';
+import {
+	DEFAULT_OWCS_DATASET_NAME,
+	ENDLESS_PATHNAME,
+	OWCS_PATHNAME,
+	OWL_PATHNAME,
+	OWL_DATASETS_REVERSED,
+	OWCS_DATASETS_REVERSED,
+	STATISTICS_PATHNAME,
+} from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
 import { DownloadIcon, SettingsIcon } from 'lucide-react';
 import { useCallback } from 'react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { usePWA } from '@/components/pwa-provider';
 
+const GLOBAL_STATISTICS_PATHNAME = `${STATISTICS_PATHNAME}/global`;
+
 const PATHNAME_TO_ACCORDION: Record<string, string> = {
 	[OWL_PATHNAME]: 'owl',
 	[OWCS_PATHNAME]: 'owcs',
 	[ENDLESS_PATHNAME]: 'endless',
+	[STATISTICS_PATHNAME]: 'statistics',
+	[GLOBAL_STATISTICS_PATHNAME]: 'statistics',
 };
 
 const triggerClass =
@@ -35,6 +47,8 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 	const owcsSeason = searchParams.get('season');
 	const activeOwcsDataset = pathname === OWCS_PATHNAME ? (owcsSeason ? `owcs-${owcsSeason}` : DEFAULT_OWCS_DATASET_NAME) : '';
 	const endlessSeason = searchParams.get('season');
+	const isActiveStatistics = pathname.startsWith(STATISTICS_PATHNAME) && !pathname.includes('/global');
+	const isActiveGlobalStatistics = pathname.startsWith(GLOBAL_STATISTICS_PATHNAME);
 	const activeEndlessDataset =
 		pathname === ENDLESS_PATHNAME
 			? (searchParams.get('mode') ?? 'owcs') === 'owcs'
@@ -158,12 +172,14 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 											href="/statistics"
 											className="font-mono font-semibold text-foreground sm:py-2.5"
 											onClick={() => setSheetOpen(false)}
+											active={isActiveStatistics}
 										/>
 										<SheetLinkButton
 											text="Global Metrics"
 											href="/statistics/global"
 											className="font-mono font-semibold text-foreground sm:py-2.5"
 											onClick={() => setSheetOpen(false)}
+											active={isActiveGlobalStatistics}
 										/>
 									</div>
 								</AccordionContent>
