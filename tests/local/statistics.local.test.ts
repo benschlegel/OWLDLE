@@ -1,35 +1,16 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs, getOverviewStatistics, getDatasetStageKeys } from '@/lib/databaseAccess';
+import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs, getOverviewStatistics, getDatasetStageKeys, getStatisticsCollections } from '@/lib/databaseAccess';
 import { resolveTimeframe, shapeStatistics, baseDataset, shapeOverview, resolveStages, SINGLE_STAGE_LABEL } from '@/lib/statistics';
 import type { RawStatistics, RawOverview } from '@/lib/database/statistics';
 import type { Dataset } from '@/data/datasets';
 import type { DbAnswer, DbPlayer } from '@/types/database';
-import { dbName, answerCollectionName, iterationsCollectionName } from '@/lib/databaseAccess';
 import type { OverviewMode, OverviewRole } from '@/types/statistics';
-import { MongoClient } from 'mongodb';
 
 const ds: Dataset = 'season1';
-const GAME_LOGS = 'game_logs';
-
-function getClient() {
-	const uri = process.env.MONGO_URI;
-	if (!uri) throw new Error('MONGO_URI not set');
-	return new MongoClient(uri);
-}
 
 async function clearCollections() {
-	const client = getClient();
-	try {
-		await client.connect();
-		const db = client.db(dbName);
-		await Promise.all([
-			db.collection(GAME_LOGS).deleteMany({}),
-			db.collection(answerCollectionName).deleteMany({}),
-			db.collection(iterationsCollectionName).deleteMany({}),
-		]);
-	} finally {
-		await client.close();
-	}
+	const { gameLogCollection, iterationCollection, answerCollection } = getStatisticsCollections();
+	await Promise.all([gameLogCollection.deleteMany({}), answerCollection.deleteMany({}), iterationCollection.deleteMany({})]);
 }
 
 function makeLog(opts: {
@@ -53,31 +34,23 @@ describe('getRawStatistics, summary & distribution', () => {
 	beforeEach(clearCollections);
 
 	test('correct summary counts for a mix of wins and losses', async () => {
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					// win with 1 guess (solvedFirst)
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					// win with 3 guesses
-					makeLog({
-						gameResult: 'won',
-						finishedAt: new Date('2026-06-20T11:00:00Z'),
-						gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }, { player: { name: 'C', id: 2 } }],
-					}),
-					// loss
-					makeLog({
-						gameResult: 'lost',
-						finishedAt: new Date('2026-06-20T12:00:00Z'),
-						gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
-					}),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			// win with 1 guess (solvedFirst)
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			// win with 3 guesses
+			makeLog({
+				gameResult: 'won',
+				finishedAt: new Date('2026-06-20T11:00:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }, { player: { name: 'C', id: 2 } }],
+			}),
+			// loss
+			makeLog({
+				gameResult: 'lost',
+				finishedAt: new Date('2026-06-20T12:00:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
+			}),
+		] as any);
 
 		const from = new Date('2026-06-20T00:00:00Z').getTime();
 		const to = new Date('2026-06-21T00:00:00Z').getTime();
@@ -90,24 +63,16 @@ describe('getRawStatistics, summary & distribution', () => {
 	});
 
 	test('distribution buckets reflect correct guess counts', async () => {
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({
-						gameResult: 'won',
-						finishedAt: new Date('2026-06-20T11:00:00Z'),
-						gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
-					}),
-					makeLog({ gameResult: 'lost', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({
+				gameResult: 'won',
+				finishedAt: new Date('2026-06-20T11:00:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
+			}),
+			makeLog({ gameResult: 'lost', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+		] as any);
 
 		const raw = await getRawStatistics(ds, new Date('2026-06-20T00:00:00Z').getTime(), new Date('2026-06-21T00:00:00Z').getTime());
 
@@ -122,21 +87,13 @@ describe('getRawStatistics, first-guess grouping', () => {
 	beforeEach(clearCollections);
 
 	test('groups and sorts first guesses by count descending', async () => {
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T11:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ gameResult: 'lost', finishedAt: new Date('2026-06-20T13:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T11:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ gameResult: 'lost', finishedAt: new Date('2026-06-20T13:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+		] as any);
 
 		const raw = await getRawStatistics(ds, new Date('2026-06-20T00:00:00Z').getTime(), new Date('2026-06-21T00:00:00Z').getTime());
 
@@ -153,23 +110,15 @@ describe('getRawStatistics, window boundaries', () => {
 		const from = new Date('2026-06-20T00:00:00Z').getTime();
 		const to = new Date('2026-06-21T00:00:00Z').getTime();
 
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					// inside window
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					// before window (excluded)
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-19T23:59:59Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
-					// at toMs boundary — excluded (lt, not lte)
-					makeLog({ gameResult: 'won', finishedAt: new Date(to), gameData: [{ player: { name: 'C', id: 2 } }] }),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			// inside window
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			// before window (excluded)
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-19T23:59:59Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+			// at toMs boundary — excluded (lt, not lte)
+			makeLog({ gameResult: 'won', finishedAt: new Date(to), gameData: [{ player: { name: 'C', id: 2 } }] }),
+		] as any);
 
 		const raw = await getRawStatistics(ds, from, to);
 		expect(raw.summary.gamesPlayed).toBe(1);
@@ -189,23 +138,15 @@ describe('getPerDaySeries', () => {
 	beforeEach(clearCollections);
 
 	test('produces ascending per-day rows with correct played/wins counts', async () => {
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					// day 1
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T08:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ gameResult: 'lost', finishedAt: new Date('2026-06-20T09:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
-					// day 2
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-21T08:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-21T09:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			// day 1
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-20T08:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ gameResult: 'lost', finishedAt: new Date('2026-06-20T09:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+			// day 2
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-21T08:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ gameResult: 'won', finishedAt: new Date('2026-06-21T09:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+		] as any);
 
 		const perDay = await getPerDaySeries(ds, new Date('2026-06-20T00:00:00Z').getTime(), new Date('2026-06-22T00:00:00Z').getTime(), 'current');
 
@@ -230,17 +171,11 @@ describe('getStatsBoundaryMs', () => {
 
 	test('returns nextReset − 24h when current answer exists', async () => {
 		const nextReset = new Date('2026-06-25T12:00:00Z');
-		const mockPlayer: DbPlayer = { name: 'Player', id: 1, role: 'Damage', team: 'Team', country: 'US', region: 'NA' } as unknown as DbPlayer;
+		const mockPlayer: DbPlayer = { name: 'Player', id: 1, role: 'Damage', team: 'BostonUprising', country: 'US', region: 'NA' } as unknown as DbPlayer;
 		const answer: DbAnswer = { iteration: 1, nextReset, player: mockPlayer };
 
-		const client = getClient();
-		try {
-			await client.connect();
-			const db = client.db(dbName);
-			await db.collection(answerCollectionName).updateOne({ _id: `current_${ds}` as any }, { $set: { _id: `current_${ds}`, ...answer } }, { upsert: true });
-		} finally {
-			await client.close();
-		}
+		const { answerCollection } = getStatisticsCollections();
+		await answerCollection.updateOne({ _id: `current_${ds}` as any }, { $set: { _id: `current_${ds}`, ...answer } }, { upsert: true });
 
 		const boundary = await getStatsBoundaryMs(ds);
 		const expectedBoundary = nextReset.getTime() - 24 * 3600 * 1000;
@@ -413,38 +348,30 @@ describe('getOverviewStatistics', () => {
 	beforeEach(clearCollections);
 
 	test('produces correct byDataset, byWeekdayHour, firstRole, allRole shapes', async () => {
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					// season1, won, Mon 2026-06-22 09:00 UTC (ISO weekday 1, hour 9), 2 guesses
-					makeLog({
-						dataset: 'season1',
-						gameResult: 'won',
-						finishedAt: new Date('2026-06-22T09:00:00Z'),
-						gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
-					}),
-					// season1, lost, Mon 2026-06-22 09:30 UTC (ISO weekday 1, hour 9), 1 guess
-					makeLog({
-						dataset: 'season1',
-						gameResult: 'lost',
-						finishedAt: new Date('2026-06-22T09:30:00Z'),
-						gameData: [{ player: { name: 'A', id: 0 } }],
-					}),
-					// owcs-s3, won, Sun 2026-06-28 20:00 UTC (ISO weekday 7, hour 20), 1 guess
-					makeLog({
-						dataset: 'owcs-s3',
-						gameResult: 'won',
-						finishedAt: new Date('2026-06-28T20:00:00Z'),
-						gameData: [{ player: { name: 'X', id: 0 } }],
-					}),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			// season1, won, Mon 2026-06-22 09:00 UTC (ISO weekday 1, hour 9), 2 guesses
+			makeLog({
+				dataset: 'season1',
+				gameResult: 'won',
+				finishedAt: new Date('2026-06-22T09:00:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
+			}),
+			// season1, lost, Mon 2026-06-22 09:30 UTC (ISO weekday 1, hour 9), 1 guess
+			makeLog({
+				dataset: 'season1',
+				gameResult: 'lost',
+				finishedAt: new Date('2026-06-22T09:30:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }],
+			}),
+			// owcs-s3, won, Sun 2026-06-28 20:00 UTC (ISO weekday 7, hour 20), 1 guess
+			makeLog({
+				dataset: 'owcs-s3' as any,
+				gameResult: 'won',
+				finishedAt: new Date('2026-06-28T20:00:00Z'),
+				gameData: [{ player: { name: 'X', id: 0 } }],
+			}),
+		] as any);
 
 		const raw = await getOverviewStatistics();
 
@@ -602,20 +529,12 @@ describe('getDatasetStageKeys', () => {
 	beforeEach(clearCollections);
 
 	test('returns base + archived stage keys for the given base, excludes other bases', async () => {
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					makeLog({ dataset: 'season1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ dataset: 'season1-stage1' as any, gameResult: 'won', finishedAt: new Date('2026-06-10T10:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
-					makeLog({ dataset: 'owcs-s1' as any, gameResult: 'won', finishedAt: new Date('2026-06-15T10:00:00Z'), gameData: [{ player: { name: 'C', id: 2 } }] }),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			makeLog({ dataset: 'season1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ dataset: 'season1-stage1' as any, gameResult: 'won', finishedAt: new Date('2026-06-10T10:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+			makeLog({ dataset: 'owcs-s1' as any, gameResult: 'won', finishedAt: new Date('2026-06-15T10:00:00Z'), gameData: [{ player: { name: 'C', id: 2 } }] }),
+		] as any);
 
 		const keys = await getDatasetStageKeys('season1');
 		expect(keys.sort()).toEqual(['season1', 'season1-stage1'].sort());
@@ -631,25 +550,17 @@ describe('getRawStatistics across stages', () => {
 		const from = new Date('2026-06-20T00:00:00Z').getTime();
 		const to = new Date('2026-06-21T00:00:00Z').getTime();
 
-		const client = getClient();
-		try {
-			await client.connect();
-			await client
-				.db(dbName)
-				.collection(GAME_LOGS)
-				.insertMany([
-					makeLog({ dataset: 'season1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ dataset: 'season1' as any, gameResult: 'lost', finishedAt: new Date('2026-06-20T11:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-					makeLog({ dataset: 'season1-stage1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
-				] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		await gameLogCollection.insertMany([
+			makeLog({ dataset: 'season1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ dataset: 'season1' as any, gameResult: 'lost', finishedAt: new Date('2026-06-20T11:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ dataset: 'season1-stage1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+		] as any);
 
-		const allStages = await getRawStatistics('season1' as any, from, to, false, ['season1', 'season1-stage1']);
+		const allStages = await getRawStatistics('season1' as any, from, to, ['season1', 'season1-stage1']);
 		expect(allStages.summary.gamesPlayed).toBe(3);
 
-		const stageOnly = await getRawStatistics('season1' as any, from, to, false, ['season1-stage1']);
+		const stageOnly = await getRawStatistics('season1' as any, from, to, ['season1-stage1']);
 		expect(stageOnly.summary.gamesPlayed).toBe(1);
 
 		const defaultCall = await getRawStatistics('season1' as any, from, to);
@@ -658,30 +569,25 @@ describe('getRawStatistics across stages', () => {
 });
 
 // hardest puzzles don't merge across stages
-describe('getRawStatistics hardest puzzles don\'t merge across stages', () => {
+describe("getRawStatistics hardest puzzles don't merge across stages", () => {
 	beforeEach(clearCollections);
 
 	test('iteration #1 in season1 and season1-stage1 appear as separate entries', async () => {
 		const from = new Date('2026-06-20T00:00:00Z').getTime();
 		const to = new Date('2026-06-21T00:00:00Z').getTime();
 
-		const client = getClient();
-		try {
-			await client.connect();
-			// seed 10 wins for iteration 1 in season1 (win rate = 100%)
-			const season1Logs = Array.from({ length: 10 }, (_, i) =>
-				makeLog({ dataset: 'season1' as any, iteration: 1, gameResult: 'won', finishedAt: new Date(`2026-06-20T${String(i).padStart(2, '0')}:00:00Z`), gameData: [{ player: { name: 'A', id: 0 } }] })
-			);
-			// seed 10 games (5 wins) for iteration 1 in season1-stage1 (win rate = 50%)
-			const stage1Logs = Array.from({ length: 10 }, (_, i) =>
-				makeLog({ dataset: 'season1-stage1' as any, iteration: 1, gameResult: i < 5 ? 'won' : 'lost', finishedAt: new Date(`2026-06-20T${String(i).padStart(2, '0')}:30:00Z`), gameData: [{ player: { name: 'B', id: 1 } }] })
-			);
-			await client.db(dbName).collection(GAME_LOGS).insertMany([...season1Logs, ...stage1Logs] as any);
-		} finally {
-			await client.close();
-		}
+		const { gameLogCollection } = getStatisticsCollections();
+		// seed 10 wins for iteration 1 in season1 (win rate = 100%)
+		const season1Logs = Array.from({ length: 10 }, (_, i) =>
+			makeLog({ dataset: 'season1' as any, iteration: 1, gameResult: 'won', finishedAt: new Date(`2026-06-20T${String(i).padStart(2, '0')}:00:00Z`), gameData: [{ player: { name: 'A', id: 0 } }] })
+		);
+		// seed 10 games (5 wins) for iteration 1 in season1-stage1 (win rate = 50%)
+		const stage1Logs = Array.from({ length: 10 }, (_, i) =>
+			makeLog({ dataset: 'season1-stage1' as any, iteration: 1, gameResult: i < 5 ? 'won' : 'lost', finishedAt: new Date(`2026-06-20T${String(i).padStart(2, '0')}:30:00Z`), gameData: [{ player: { name: 'B', id: 1 } }] })
+		);
+		await gameLogCollection.insertMany([...season1Logs, ...stage1Logs] as any);
 
-		const raw = await getRawStatistics('season1' as any, from, to, false, ['season1', 'season1-stage1']);
+		const raw = await getRawStatistics('season1' as any, from, to, ['season1', 'season1-stage1']);
 
 		// Both iteration-1 entries should be present as separate rows
 		const iter1Entries = raw.hardestPuzzles.filter((p) => p.iteration === 1);
