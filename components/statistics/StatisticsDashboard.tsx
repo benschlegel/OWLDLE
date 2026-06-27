@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { datasetInfo } from '@/data/datasets';
 import { FirstGuessChart, FirstTeamChart, GuessDistributionChart, HardestPuzzlesChart } from '@/components/statistics/StatCharts';
-import { OverviewSection } from '@/components/statistics/OverviewCharts';
+import { GlobalInsightsTeaser } from '@/components/statistics/OverviewCharts';
 import { defaultGrouping, GamesPerDayChart, GROUPING_HOTKEYS, type PerDayParams, SCOPE_HOTKEYS, WinRatePerDayChart } from '@/components/statistics/PerDayChart';
 import StageSelect from '@/components/statistics/StageSelect';
 import { AvgGuessesCard, GamesRadialCard } from '@/components/statistics/SummaryCharts';
@@ -170,7 +170,7 @@ export default function StatisticsDashboard() {
 				</div>
 			)}
 
-			<OverviewSection prod={prodOn} />
+			<GlobalInsightsTeaser prod={prodOn} />
 		</div>
 	);
 }

@@ -12,6 +12,10 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useOverview } from '@/hooks/use-overview';
 import type { OverviewMode, OverviewResponse } from '@/types/statistics';
 import { Marker, MarkerContent } from '@/components/ui/marker';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { STATISTICS_GLOBAL_PATHNAME } from '@/data/datasets';
+import { ArrowRight } from 'lucide-react';
 
 const ACCENT = 'var(--primary-foreground)';
 const MODE_LABELS: Record<OverviewMode, string> = { owl: 'Overwatch League', owcs: 'Champion Series' };
@@ -493,18 +497,24 @@ function OverviewSkeleton() {
 	);
 }
 
+function GlobalInsightsHeader() {
+	return (
+		<div className="sm:my-6 my-3">
+			<Marker variant="separator">
+				<MarkerContent>
+					<h2 className="sm:text-3xl text-2xl font-owl text-primary-foreground">Global Insights</h2>
+				</MarkerContent>
+			</Marker>
+			<p className="text-sm text-muted-foreground w-full justify-self-center text-center">Every game ever played, across every season &amp; mode</p>
+		</div>
+	);
+}
+
 export function OverviewSection({ prod = false }: { prod?: boolean }) {
 	const { data, isLoading, isError } = useOverview(prod);
 	return (
 		<section className="flex flex-col gap-4">
-			<div className="sm:my-6 my-3">
-				<Marker variant="separator">
-					<MarkerContent>
-						<h2 className="sm:text-3xl text-2xl font-owl text-primary-foreground">Global Insights</h2>
-					</MarkerContent>
-				</Marker>
-				<p className="text-sm text-muted-foreground w-full justify-self-center text-center">Every game ever played, across every season &amp; mode</p>
-			</div>
+			<GlobalInsightsHeader />
 			{isLoading && !data && <OverviewSkeleton />}
 			{isError && !data && <p className="text-muted-foreground">Couldn't load the overview right now.</p>}
 			{data && data.totalGames > 0 && (
@@ -520,6 +530,43 @@ export function OverviewSection({ prod = false }: { prod?: boolean }) {
 						<PerformanceByDatasetCard data={data.byDataset} />
 					</div>
 					<ActivityHeatmapCard data={data.heatmap} />
+				</>
+			)}
+		</section>
+	);
+}
+
+/** Compact Global Insights preview for the per-season /statistics page */
+export function GlobalInsightsTeaser({ prod = false }: { prod?: boolean }) {
+	const { data, isLoading, isError } = useOverview(prod);
+	return (
+		<section className="flex flex-col gap-4">
+			<GlobalInsightsHeader />
+			{isLoading && !data && (
+				<div className="grid gap-4 sm:grid-cols-2">
+					<Skeleton className="h-80 rounded-lg" />
+					<Skeleton className="h-80 rounded-lg" />
+				</div>
+			)}
+			{isError && !data && <p className="text-muted-foreground">Couldn't load the overview right now.</p>}
+			{data && data.totalGames > 0 && (
+				<>
+					<div className="grid gap-4 sm:grid-cols-2">
+						<DatasetDonutCard data={data.byDataset} total={data.totalGames} />
+						<RolesCard data={data.byRole} />
+					</div>
+					<div className="flex justify-center pt-1">
+						<Button
+							asChild
+							size="lg"
+							variant="outline"
+							className="font-owl border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10">
+							<Link href={STATISTICS_GLOBAL_PATHNAME}>
+								Show more
+								<ArrowRight className="p-0.75" />
+							</Link>
+						</Button>
+					</div>
 				</>
 			)}
 		</section>

@@ -16,6 +16,7 @@ import {
 	OWCS_PATHNAME,
 	OWL_DATASETS_REVERSED,
 	OWL_PATHNAME,
+	STATISTICS_GLOBAL_PATHNAME,
 	STATISTICS_PATHNAME,
 } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
@@ -36,6 +37,11 @@ import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/lib/navigation';
 export const TWITTER_LINK = 'https://x.com/owldle';
 export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
 const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
+
+const STATISTICS_PAGES = [
+	{ dataset: 'overview', formattedName: 'Statistics' },
+	{ dataset: 'global', formattedName: 'Global Insights' },
+];
 
 const skewStyle = (skewRight: boolean) => ({ transform: `skewX(${skewRight ? '' : '-'}12deg)` });
 
@@ -134,6 +140,22 @@ export function Navbar() {
 		[router, pathname]
 	);
 
+	const handleStatisticsSelect = useCallback(
+		(value: string) => {
+			const target = value === 'global' ? STATISTICS_GLOBAL_PATHNAME : STATISTICS_PATHNAME;
+			const isSamePath = pathname === target;
+			viewTransition(() => {
+				if (isSamePath) {
+					window.history.pushState(null, '', target);
+					router.refresh();
+				} else {
+					router.push(target);
+				}
+			});
+		},
+		[router, pathname]
+	);
+
 	return (
 		<Drawer direction="right" open={sheetOpen} onOpenChange={setSheetOpen}>
 			<nav className="sticky z-20 relaxed top-0 flex items-center justify-between bg-card shadow-sm">
@@ -180,11 +202,17 @@ export function Navbar() {
 									{/* <span className="2xl:hidden block">Endless</span> */}
 									<span className="">Endless</span>
 								</NavSelect>
+								<NavSelect
+									items={STATISTICS_PAGES}
+									onValueChange={handleStatisticsSelect}
+									value={pathname === STATISTICS_GLOBAL_PATHNAME ? 'global' : pathname === STATISTICS_PATHNAME ? 'overview' : ''}
+									highlight={pathname.startsWith(STATISTICS_PATHNAME)}
+									prefetchRoute={STATISTICS_PATHNAME}
+									className="hidden navbar-hidden:flex">
+									Statistics
+								</NavSelect>
 							</NavigationMenuList>
 						</NavigationMenu>
-						<NavButton className="hidden navbar-hidden:flex" href={STATISTICS_PATHNAME} highlight={pathname === STATISTICS_PATHNAME}>
-							Statistics
-						</NavButton>
 					</div>
 				</div>
 

@@ -157,6 +157,12 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
 							onClick={() => setSheetOpen(false)}
 						/>
+						<SheetLinkButton
+							text="Global Insights"
+							href="/statistics/global"
+							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
+							onClick={() => setSheetOpen(false)}
+						/>
 					</div>
 				</div>
 				<div className="flex flex-col">
