@@ -465,8 +465,8 @@ function GlobalInsightsHeader() {
 	);
 }
 
-export function OverviewSection({ prod = false }: { prod?: boolean }) {
-	const { data, isLoading, isError } = useOverview(prod);
+export function OverviewSection() {
+	const { data, isLoading, isError } = useOverview();
 	return (
 		<section className="flex flex-col gap-4">
 			<GlobalInsightsHeader />
@@ -491,8 +491,8 @@ export function OverviewSection({ prod = false }: { prod?: boolean }) {
 }
 
 /** Compact Global Metrics preview for the per-season /statistics page */
-export function GlobalInsightsTeaser({ prod = false }: { prod?: boolean }) {
-	const { data, isLoading, isError } = useOverview(prod);
+export function GlobalInsightsTeaser() {
+	const { data, isLoading, isError } = useOverview();
 	return (
 		<section className="flex flex-col gap-4">
 			<GlobalInsightsHeader />

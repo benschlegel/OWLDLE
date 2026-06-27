@@ -6,7 +6,6 @@ import { useStatistics } from '@/hooks/use-statistics';
 import SeasonSelectDropdown from '@/components/season-selector/SeasonSelectDropdown';
 import TimeframeSelect, { TIMEFRAME_PRESETS } from '@/components/statistics/TimeframeSelect';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
 import { cn } from '@/lib/utils';
 import { datasetInfo } from '@/data/datasets';
 import { FirstGuessChart, FirstTeamChart, GuessDistributionChart, HardestPuzzlesChart } from '@/components/statistics/StatCharts';
@@ -46,14 +45,8 @@ const BAR_CHART_PREVIEW_AMOUNT = 8;
 export default function StatisticsDashboard() {
 	const [params, setParams] = useStatisticsParams();
 
-	// Dev-only toggle (never shown or applied in a production build): read the real production
-	// database instead of the dev one, to verify the dashboard against real data.
-	const isDev = process.env.NODE_ENV !== 'production';
-	const [useProd, setUseProd] = useState(false);
-	const prodOn = isDev && useProd;
-
-	const { data, isLoading, isError, isPlaceholderData } = useStatistics({ ...params, prod: prodOn });
-	const perDayParams: PerDayParams = { dataset: params.dataset, range: params.range, from: params.from, to: params.to, prod: prodOn, stage: params.stage };
+	const { data, isLoading, isError, isPlaceholderData } = useStatistics(params);
+	const perDayParams: PerDayParams = { dataset: params.dataset, range: params.range, from: params.from, to: params.to, stage: params.stage };
 
 	// Per-day grouping + scope are shared across every area chart (and driven by the
 	// hotkeys). Grouping has an explicit override; until set it follows the timeframe length.
@@ -115,12 +108,6 @@ export default function StatisticsDashboard() {
 					<p className="text-lg font-owl tracking-wide text-muted-foreground">{datasetName}</p>
 				</div>
 				<div className="flex items-center gap-2 flex-wrap">
-					{isDev && (
-						<label className="sm:flex hidden items-center gap-2 text-xs text-muted-foreground select-none">
-							<Switch size="sm" checked={useProd} onCheckedChange={(checked) => setUseProd(checked)} />
-							Prod DB
-						</label>
-					)}
 					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset, stage: 'all' })} />
 					<StageSelect value={params.stage} stages={data?.stages ?? []} onValueChange={(v) => setParams({ stage: v })} />
 					<TimeframeSelect
@@ -135,7 +122,7 @@ export default function StatisticsDashboard() {
 			</header>
 
 			{/* Live, never-cached all-time count — independent of the timeframe data below. */}
-			<GlobalGamesCard dataset={params.dataset} prod={prodOn} />
+			<GlobalGamesCard dataset={params.dataset} />
 
 			{isLoading && <DashboardSkeleton />}
 			{isError && !data && <p className="text-muted-foreground">Couldn't load statistics. Try again later.</p>}
@@ -170,7 +157,7 @@ export default function StatisticsDashboard() {
 				</div>
 			)}
 
-			<GlobalInsightsTeaser prod={prodOn} />
+			<GlobalInsightsTeaser />
 		</div>
 	);
 }

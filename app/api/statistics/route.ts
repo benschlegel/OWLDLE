@@ -24,14 +24,14 @@ function emptyResponse(dataset: Dataset, range: TimeframeRange): StatisticsRespo
 	};
 }
 
-async function buildStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, stage: string | undefined, useProd: boolean): Promise<StatisticsResponse> {
-	const boundaryMs = await getStatsBoundaryMs(dataset, useProd);
+async function buildStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, stage: string | undefined): Promise<StatisticsResponse> {
+	const boundaryMs = await getStatsBoundaryMs(dataset);
 	if (boundaryMs === null) return emptyResponse(dataset, range);
 
 	const tf = resolveTimeframe(range, from, to, boundaryMs, GAME_CONFIG.nextResetHours);
-	const existingKeys = await getDatasetStageKeys(dataset, useProd);
+	const existingKeys = await getDatasetStageKeys(dataset);
 	const { stages, selected, datasetKeys } = resolveStages(dataset, existingKeys, stage);
-	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs, useProd, datasetKeys);
+	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs, datasetKeys);
 
 	const idToTeam = new Map((getDataset(dataset)?.playerData ?? []).map((p) => [p.id, p.team]));
 	return shapeStatistics(raw, {
@@ -49,10 +49,10 @@ const CACHE_VERSION = 'v3';
 
 // Cached per (version, dataset, range, from, to, stage, db). Historical timeframes only change once
 // per day at reset, so a 1h revalidate keeps the DB cool while staying fresh.
-function getCachedStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, stage: string | undefined, useProd: boolean) {
+function getCachedStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, stage: string | undefined) {
 	return unstable_cache(
-		() => buildStatistics(dataset, range, from, to, stage, useProd),
-		['statistics', CACHE_VERSION, dataset, range, from ?? '', to ?? '', stage ?? 'all', useProd ? 'prod' : 'dev'],
+		() => buildStatistics(dataset, range, from, to, stage),
+		['statistics', CACHE_VERSION, dataset, range, from ?? '', to ?? '', stage ?? 'all'],
 		{
 			revalidate: 3600,
 			tags: [`statistics:${dataset}`],
@@ -78,11 +78,8 @@ export async function GET(request: NextRequest) {
 	});
 	if (!parsed.success) return new Response('Invalid query', { status: 400 });
 
-	// Dev-only escape hatch to read real (production) data; a no-op when already running in prod.
-	const useProd = sp.get('prod') === '1';
-
 	try {
-		const data = await getCachedStatistics(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, parsed.data.stage, useProd);
+		const data = await getCachedStatistics(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, parsed.data.stage);
 		return Response.json(data);
 	} catch {
 		return new Response(JSON.stringify({ message: "Couldn't fetch statistics." }), { status: 500 });

@@ -17,14 +17,14 @@ function emptyResponse(dataset: Dataset, range: TimeframeRange, scope: DayScope)
 	return { dataset, scope, timeframe: { range, fromIso: nowIso, toIso: nowIso, label: '' }, perDay: [] };
 }
 
-async function buildPerDay(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, scope: DayScope, stage: string | undefined, useProd: boolean): Promise<PerDayResponse> {
-	const boundaryMs = await getStatsBoundaryMs(dataset, useProd);
+async function buildPerDay(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, scope: DayScope, stage: string | undefined): Promise<PerDayResponse> {
+	const boundaryMs = await getStatsBoundaryMs(dataset);
 	if (boundaryMs === null) return emptyResponse(dataset, range, scope);
 
 	const tf = resolveTimeframe(range, from, to, boundaryMs, GAME_CONFIG.nextResetHours);
-	const existingKeys = await getDatasetStageKeys(dataset, useProd);
+	const existingKeys = await getDatasetStageKeys(dataset);
 	const { datasetKeys } = resolveStages(dataset, existingKeys, stage);
-	const perDay = await getPerDaySeries(dataset, tf.fromMs, tf.toMs, scope, useProd, datasetKeys);
+	const perDay = await getPerDaySeries(dataset, tf.fromMs, tf.toMs, scope, datasetKeys);
 	return {
 		dataset,
 		scope,
@@ -34,10 +34,10 @@ async function buildPerDay(dataset: Dataset, range: TimeframeRange, from: string
 }
 
 // Cached per (version, dataset, range, from, to, scope, stage, db). 1h revalidate matches the daily reset.
-function getCachedPerDay(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, scope: DayScope, stage: string | undefined, useProd: boolean) {
+function getCachedPerDay(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, scope: DayScope, stage: string | undefined) {
 	return unstable_cache(
-		() => buildPerDay(dataset, range, from, to, scope, stage, useProd),
-		['perday', CACHE_VERSION, dataset, range, from ?? '', to ?? '', scope, stage ?? 'all', useProd ? 'prod' : 'dev'],
+		() => buildPerDay(dataset, range, from, to, scope, stage),
+		['perday', CACHE_VERSION, dataset, range, from ?? '', to ?? '', scope, stage ?? 'all'],
 		{ revalidate: 3600, tags: [`statistics:${dataset}`] }
 	)();
 }
@@ -61,11 +61,9 @@ export async function GET(request: NextRequest) {
 	if (!parsed.success) return new Response('Invalid query', { status: 400 });
 
 	const scope: DayScope = sp.get('scope') === 'all' ? 'all' : 'current';
-	// Dev-only escape hatch to read real (production) data; a no-op when already running in prod.
-	const useProd = sp.get('prod') === '1';
 
 	try {
-		const data = await getCachedPerDay(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, scope, parsed.data.stage, useProd);
+		const data = await getCachedPerDay(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, scope, parsed.data.stage);
 		return Response.json(data);
 	} catch {
 		return new Response(JSON.stringify({ message: "Couldn't fetch per-day statistics." }), { status: 500 });

@@ -24,14 +24,14 @@ function buildLookups() {
 	return { datasetMeta, roleByDatasetId };
 }
 
-async function buildOverview(useProd: boolean): Promise<OverviewResponse> {
-	const raw = await getOverviewStatistics(useProd);
+async function buildOverview(): Promise<OverviewResponse> {
+	const raw = await getOverviewStatistics();
 	return shapeOverview(raw, buildLookups());
 }
 
-// Cached per (version, db). One full-collection aggregation; 1h revalidate keeps the DB cool.
-function getCachedOverview(useProd: boolean) {
-	return unstable_cache(() => buildOverview(useProd), ['overview', CACHE_VERSION, useProd ? 'prod' : 'dev'], {
+// Cached per version. One full-collection aggregation; 1h revalidate keeps the DB cool.
+function getCachedOverview() {
+	return unstable_cache(() => buildOverview(), ['overview', CACHE_VERSION], {
 		revalidate: 3600,
 		tags: ['statistics:overview'],
 	})();
@@ -45,11 +45,8 @@ export async function GET(request: NextRequest) {
 		return new Response(JSON.stringify({ message: 'Too Many Requests' }), { status: 429 });
 	}
 
-	// Dev-only escape hatch to read real (production) data; a no-op when already running in prod.
-	const useProd = request.nextUrl.searchParams.get('prod') === '1';
-
 	try {
-		const data = await getCachedOverview(useProd);
+		const data = await getCachedOverview();
 		return Response.json(data);
 	} catch {
 		return new Response(JSON.stringify({ message: "Couldn't fetch overview statistics." }), { status: 500 });

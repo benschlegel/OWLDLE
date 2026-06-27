@@ -42,8 +42,8 @@ function BarsTooltip({ active, payload }: { active?: boolean; payload?: { value?
 }
 
 /** Subtle background histogram: games played per day across every dataset over the last 90 days. */
-function GlobalGamesBars({ dataset, prod }: { dataset: Dataset; prod: boolean }) {
-	const { data } = usePerDay({ dataset, range: 'last90', from: null, to: null, scope: 'all', prod });
+function GlobalGamesBars({ dataset }: { dataset: Dataset }) {
+	const { data } = usePerDay({ dataset, range: 'last90', from: null, to: null, scope: 'all' });
 	const points = data?.perDay ?? [];
 	if (points.length === 0) return null;
 	const chartData = points.map((p) => ({ date: p.date, played: p.played }));
@@ -58,8 +58,8 @@ function GlobalGamesBars({ dataset, prod }: { dataset: Dataset; prod: boolean })
 	);
 }
 
-export function GlobalGamesCard({ dataset, prod = false }: { dataset: Dataset; prod?: boolean }) {
-	const { data, isError } = useGlobalGames(prod);
+export function GlobalGamesCard({ dataset }: { dataset: Dataset }) {
+	const { data, isError } = useGlobalGames();
 	const isMobile = useIsMobile();
 
 	return (
@@ -82,7 +82,7 @@ export function GlobalGamesCard({ dataset, prod = false }: { dataset: Dataset; p
 				</div>
 				{!isMobile && (
 					<div className="flex flex-1 items-end self-stretch">
-						<GlobalGamesBars dataset={dataset} prod={prod} />
+						<GlobalGamesBars dataset={dataset} />
 					</div>
 				)}
 			</CardContent>

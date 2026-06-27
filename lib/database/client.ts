@@ -60,18 +60,15 @@ gameStatsCollection.createIndex({ dataset: 1, iteration: 1 }, { unique: true });
 /** True when the active database is the dev one (i.e. not running in production). */
 export const usesDevDatabase = useDevDatabase;
 
-/** Production-database handles for the read-only statistics path so the dashboard can be
- *  sanity-checked against real data from a dev environment. In production these resolve to the
- *  same collections as above (the active DB is already prod). */
+/** Collections used by the statistics aggregation. Always reads from the production database,
+ *  even in dev mode. */
 const prodDatabase = dbClient.db(PROD_NAME);
 const prodGameLogCollection = prodDatabase.collection<DbLoggedGame>(gameLogs);
 const prodIterationCollection = prodDatabase.collection<DbIteration>(iterationsId);
 const prodAnswerCollection = prodDatabase.collection<DbAnswerFull>(answerCollectionName);
 
-/** Collections used by the statistics aggregation. When `useProd` is set from a dev environment
- *  the production database is read instead of the dev one (no-op in production). */
-export function getStatisticsCollections(useProd: boolean) {
-	if (useProd && useDevDatabase) {
+export function getStatisticsCollections() {
+	if (useDevDatabase) {
 		return { gameLogCollection: prodGameLogCollection, iterationCollection: prodIterationCollection, answerCollection: prodAnswerCollection };
 	}
 	return { gameLogCollection, iterationCollection, answerCollection };

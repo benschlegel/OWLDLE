@@ -23,16 +23,16 @@ const EMPTY_RAW: RawStatistics = {
 };
 
 /** Start of today's in-progress puzzle (ms). Games finishing before this are completed. */
-export async function getStatsBoundaryMs(dataset: Dataset, useProd = false): Promise<number | null> {
-	const { answerCollection } = getStatisticsCollections(useProd);
+export async function getStatsBoundaryMs(dataset: Dataset): Promise<number | null> {
+	const { answerCollection } = getStatisticsCollections();
 	const answer = await answerCollection.findOne({ _id: `current_${dataset}` as AnswerKey });
 	if (!answer) return null;
 	return new Date(answer.nextReset).getTime() - GAME_CONFIG.nextResetHours * HOUR_MS;
 }
 
 /** Total games ever logged across every dataset/mode. Uses collection metadata (O(1)). */
-export async function getGlobalGamesPlayed(useProd = false): Promise<number> {
-	const { gameLogCollection } = getStatisticsCollections(useProd);
+export async function getGlobalGamesPlayed(): Promise<number> {
+	const { gameLogCollection } = getStatisticsCollections();
 	return gameLogCollection.estimatedDocumentCount();
 }
 
@@ -42,17 +42,17 @@ function escapeRegExp(s: string): string {
 
 /** Distinct game_logs dataset keys for a base dataset: the base plus any `<base>-stage<N>` archives.
  *  The anchored prefix regex uses the {dataset:1, finishedAt:1} index. */
-export async function getDatasetStageKeys(base: string, useProd = false): Promise<string[]> {
-	const { gameLogCollection } = getStatisticsCollections(useProd);
+export async function getDatasetStageKeys(base: string): Promise<string[]> {
+	const { gameLogCollection } = getStatisticsCollections();
 	const keys = await gameLogCollection.distinct('dataset', { dataset: { $regex: `^${escapeRegExp(base)}(-stage\\d+)?$` } });
 	return keys as string[];
 }
 
 /** Run all statistics aggregation for a dataset over [fromMs, toMs). */
-export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number, useProd = false, datasetKeys: string[] = [dataset]): Promise<RawStatistics> {
+export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number, datasetKeys: string[] = [dataset]): Promise<RawStatistics> {
 	if (fromMs >= toMs) return EMPTY_RAW;
 
-	const { gameLogCollection, iterationCollection } = getStatisticsCollections(useProd);
+	const { gameLogCollection, iterationCollection } = getStatisticsCollections();
 
 	const dsFilter = datasetKeys.length === 1 ? datasetKeys[0] : { $in: datasetKeys };
 	const match = { dataset: dsFilter, finishedAt: { $gte: new Date(fromMs), $lt: new Date(toMs) } };
@@ -139,9 +139,9 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
  * every dataset together (no per-day answer, since multiple datasets share a calendar day).
  * Returns daily granularity — the client aggregates into weeks/months as needed.
  */
-export async function getPerDaySeries(dataset: Dataset, fromMs: number, toMs: number, scope: DayScope, useProd = false, datasetKeys: string[] = [dataset]): Promise<DayPoint[]> {
+export async function getPerDaySeries(dataset: Dataset, fromMs: number, toMs: number, scope: DayScope, datasetKeys: string[] = [dataset]): Promise<DayPoint[]> {
 	if (fromMs >= toMs) return [];
-	return scope === 'all' ? getPerDayAllModes(fromMs, toMs, useProd) : getPerDayCurrent(datasetKeys, fromMs, toMs, useProd);
+	return scope === 'all' ? getPerDayAllModes(fromMs, toMs) : getPerDayCurrent(datasetKeys, fromMs, toMs);
 }
 
 const COUNT_ACCUMULATORS = {
@@ -152,8 +152,8 @@ const COUNT_ACCUMULATORS = {
 };
 
 /** Single-dataset (or multi-stage) per-day series, with each day's answer player resolved. */
-async function getPerDayCurrent(datasetKeys: string[], fromMs: number, toMs: number, useProd: boolean): Promise<DayPoint[]> {
-	const { gameLogCollection, iterationCollection } = getStatisticsCollections(useProd);
+async function getPerDayCurrent(datasetKeys: string[], fromMs: number, toMs: number): Promise<DayPoint[]> {
+	const { gameLogCollection, iterationCollection } = getStatisticsCollections();
 
 	const dsFilter = datasetKeys.length === 1 ? datasetKeys[0] : { $in: datasetKeys };
 	const rows = (await gameLogCollection
@@ -206,8 +206,8 @@ const EMPTY_OVERVIEW: RawOverview = { byDataset: [], byWeekdayHour: [], firstRol
  * hour-of-day area, and the heatmap; `firstRole`/`allRole` carry (dataset, id) so roles can be
  * resolved server-side against the roster (the log has no role).
  */
-export async function getOverviewStatistics(useProd = false): Promise<RawOverview> {
-	const { gameLogCollection } = getStatisticsCollections(useProd);
+export async function getOverviewStatistics(): Promise<RawOverview> {
+	const { gameLogCollection } = getStatisticsCollections();
 	const isWon = { $eq: ['$gameResult', 'won'] };
 	const tz = 'UTC';
 
@@ -273,8 +273,8 @@ export async function getOverviewStatistics(useProd = false): Promise<RawOvervie
 }
 
 /** Every-dataset per-day series: grouped by (day, dataset) so each day carries a per-mode breakdown plus the summed totals. */
-async function getPerDayAllModes(fromMs: number, toMs: number, useProd: boolean): Promise<DayPoint[]> {
-	const { gameLogCollection } = getStatisticsCollections(useProd);
+async function getPerDayAllModes(fromMs: number, toMs: number): Promise<DayPoint[]> {
+	const { gameLogCollection } = getStatisticsCollections();
 
 	const rows = (await gameLogCollection
 		.aggregate([
