@@ -40,7 +40,7 @@ const ONE_YEAR_SECONDS = 60 * 60 * 24 * 365;
 
 const STATISTICS_PAGES = [
 	{ dataset: 'overview', formattedName: 'Statistics' },
-	{ dataset: 'global', formattedName: 'Global Insights' },
+	{ dataset: 'global', formattedName: 'Global Metrics' },
 ];
 
 const skewStyle = (skewRight: boolean) => ({ transform: `skewX(${skewRight ? '' : '-'}12deg)` });
@@ -234,7 +234,7 @@ export function Navbar() {
 						}}>
 						<Button
 							variant={'ghost'}
-							onClick={() => preferTeams ? setTeamsOpen(!teamsOpen) : setHelpOpen(!helpOpen)}
+							onClick={() => (preferTeams ? setTeamsOpen(!teamsOpen) : setHelpOpen(!helpOpen))}
 							className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-secondary/60 transition-colors px-11 "
 							style={{
 								clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',

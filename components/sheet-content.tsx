@@ -158,7 +158,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 							onClick={() => setSheetOpen(false)}
 						/>
 						<SheetLinkButton
-							text="Global Insights"
+							text="Global Metrics"
 							href="/statistics/global"
 							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
 							onClick={() => setSheetOpen(false)}

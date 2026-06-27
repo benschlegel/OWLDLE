@@ -27,7 +27,7 @@ export default function GlobalInsightsDashboard() {
 			{/* Live all-time count — shown on both statistics pages. dataset only feeds the all-modes
 			    histogram, so the default dataset is fine here (no selector on this page). */}
 			<GlobalGamesCard dataset={DEFAULT_DATASET_NAME} prod={prodOn} />
-			{/* OverviewSection renders its own "Global Insights" header, which serves as the page title. */}
+			{/* OverviewSection renders its own "Global Metrics" header, which serves as the page title. */}
 			<OverviewSection prod={prodOn} />
 		</div>
 	);

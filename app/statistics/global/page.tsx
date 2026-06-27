@@ -8,11 +8,11 @@ export const metadata: Metadata = {
 	...prevMetadata,
 	openGraph: {
 		...prevMetadata.openGraph,
-		title: `${DEFAULT_TITLE} - Global Insights`,
+		title: `${DEFAULT_TITLE} - Global Metrics`,
 		url: `${GAME_CONFIG.siteUrl}/statistics/global`,
 		images: [
 			{
-				alt: `${DEFAULT_TITLE} - Global Insights`,
+				alt: `${DEFAULT_TITLE} - Global Metrics`,
 				url: '/open-graph/statistics.png',
 				width: OgConfig.ogImageWidth,
 				height: OgConfig.ogImageHeight,
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
 		images: [
 			{
 				url: `https://www.owldle.com/open-graph/statistics.png`,
-				alt: `${DEFAULT_TITLE} - Global Insights`,
+				alt: `${DEFAULT_TITLE} - Global Metrics`,
 				width: OgConfig.ogImageWidth,
 				height: OgConfig.ogImageHeight,
 				type: 'image/png',

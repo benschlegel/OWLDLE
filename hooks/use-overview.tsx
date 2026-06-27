@@ -7,7 +7,7 @@ async function fetchOverview(prod: boolean): Promise<OverviewResponse> {
 	return res.json();
 }
 
-/** All-time, all-dataset overview for "Global Insights" section. */
+/** All-time, all-dataset overview for "Global Metrics" section. */
 export function useOverview(prod = false) {
 	return useQuery({
 		queryKey: ['overview', prod],

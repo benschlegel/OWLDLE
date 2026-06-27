@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, LabelList, ReferenceLine, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, LabelList, ReferenceLine, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -81,60 +81,6 @@ function DatasetDonutCard({ data, total }: { data: OverviewResponse['byDataset']
 	);
 }
 
-// ---- Dataset Bars ----
-
-function DatasetBarsCard({ data, total }: { data: OverviewResponse['byDataset']; total: number }) {
-	const { open, setOpen } = useChartDialog('ovDatasetBars');
-	const isMobile = useIsMobile();
-	const chartData = data.map((d, i) => ({
-		label: datasetLabel(d),
-		played: d.played,
-		pct: total > 0 ? Math.round((d.played / total) * 100) : 0,
-		fill: rampStop(data.length > 1 ? i / (data.length - 1) : 0),
-	}));
-	const body = (className: string) => (
-		<ChartContainer config={{ played: { label: 'Games', color: ACCENT } }} className={`${className} aspect-auto ${isMobile ? '**:outline-none!' : ''}`}>
-			<BarChart accessibilityLayer={!isMobile} data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-				<CartesianGrid vertical={false} />
-				<XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} interval={0} angle={-30} textAnchor="end" height={48} fontSize={11} />
-				<YAxis tickLine={false} axisLine={false} width={40} tickFormatter={num} />
-				<ChartTooltip
-					cursor={{ fill: ACCENT, fillOpacity: 0.08 }}
-					content={({ active, payload }) => {
-						if (!active || !payload?.length) return null;
-						const p = payload[0]?.payload as { label: string; played: number; pct: number };
-						return (
-							<TooltipBox>
-								<div className="font-medium">{p.label}</div>
-								<Row label="Games" value={`${num(p.played)} (${p.pct}%)`} />
-							</TooltipBox>
-						);
-					}}
-				/>
-				<Bar dataKey="played" radius={4}>
-					{chartData.map((d) => (
-						<Cell key={d.label} fill={d.fill} />
-					))}
-				</Bar>
-			</BarChart>
-		</ChartContainer>
-	);
-	return (
-		<ChartCard title="Games by Dataset" open={open} setOpen={setOpen}>
-			{/* <p className="-mt-1 mb-2 text-xs text-muted-foreground">Every game ever played, split by season & mode</p> */}
-			{body('h-72 w-full')}
-			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="sm:max-w-3xl" aria-describedby="Games by Dataset bars">
-					<DialogHeader>
-						<DialogTitle className="font-owl">Games by Dataset</DialogTitle>
-					</DialogHeader>
-					{body('h-[60vh] w-full')}
-				</DialogContent>
-			</Dialog>
-		</ChartCard>
-	);
-}
-
 function GamesByWeekdayCard({ data }: { data: OverviewResponse['byWeekday'] }) {
 	const { open, setOpen } = useChartDialog('ovWeekday');
 	const isMobile = useIsMobile();
@@ -145,18 +91,25 @@ function GamesByWeekdayCard({ data }: { data: OverviewResponse['byWeekday'] }) {
 		label: WEEKDAY_LABELS[d.weekday - 1],
 		pct: total > 0 ? Math.round((d.played / total) * 1000) / 10 : 0,
 	}));
+	const domainMin = Math.max(0, Math.floor(Math.min(...chartData.map((d) => d.pct))) - 1);
 	const body = (className: string) => (
 		<ChartContainer config={{ pct: { label: '%', color: ACCENT } }} className={`${className} aspect-auto ${isMobile ? '**:outline-none!' : ''}`}>
-			<BarChart accessibilityLayer={!isMobile} data={chartData} margin={{ top: 20, right: 8, left: 0, bottom: 0 }}>
-				<CartesianGrid vertical={false} />
-				<XAxis dataKey="label" tickLine={false} axisLine={false} tickMargin={8} />
-				<YAxis tickLine={false} axisLine={false} width={36} tickFormatter={(v) => `${v}%`} />
+			<BarChart accessibilityLayer={!isMobile} data={chartData} layout="vertical" margin={{ top: 4, right: 44, left: 4, bottom: 4 }}>
+				<CartesianGrid horizontal={false} />
+				<XAxis
+					type="number"
+					domain={[domainMin, (dataMax: number) => Math.ceil(dataMax) + 1]}
+					tickLine={false}
+					axisLine={false}
+					tickFormatter={(v) => `${v}%`}
+				/>
+				<YAxis type="category" dataKey="label" tickLine={false} axisLine={false} width={36} />
 				<ReferenceLine
-					y={avgPct}
+					x={avgPct}
 					stroke="var(--muted-foreground)"
 					strokeDasharray="2 4"
 					strokeOpacity={0.5}
-					label={{ value: 'avg', position: 'right', fill: 'var(--muted-foreground)', fontSize: 10 }}
+					label={{ value: 'avg', position: 'top', fill: 'var(--muted-foreground)', fontSize: 10 }}
 				/>
 				<ChartTooltip
 					cursor={{ fill: ACCENT, fillOpacity: 0.08 }}
@@ -175,14 +128,16 @@ function GamesByWeekdayCard({ data }: { data: OverviewResponse['byWeekday'] }) {
 					}}
 				/>
 				<Bar dataKey="pct" radius={4} fill={ACCENT}>
-					<LabelList dataKey="pct" position="top" formatter={(v: unknown) => `${v}%`} fontSize={10} className="fill-muted-foreground" />
+					<LabelList dataKey="pct" position="right" formatter={(v: unknown) => `${v}%`} fontSize={10} className="fill-muted-foreground" />
 				</Bar>
 			</BarChart>
 		</ChartContainer>
 	);
 	return (
 		<ChartCard title="Games by Day of Week" open={open} setOpen={setOpen}>
-			{body('h-64 w-full')}
+			<div className="flex flex-1 flex-col">
+				<div className="flex min-h-64 flex-1">{body('w-full')}</div>
+			</div>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-3xl" aria-describedby="Games by day of week">
 					<DialogHeader>
@@ -502,7 +457,7 @@ function GlobalInsightsHeader() {
 		<div className="sm:my-6 my-3">
 			<Marker variant="separator">
 				<MarkerContent>
-					<h2 className="sm:text-3xl text-2xl font-owl text-primary-foreground">Global Insights</h2>
+					<h2 className="sm:text-3xl text-2xl font-owl text-primary-foreground">Global Metrics</h2>
 				</MarkerContent>
 			</Marker>
 			<p className="text-sm text-muted-foreground w-full justify-self-center text-center">Every game ever played, across every season &amp; mode</p>
@@ -521,10 +476,9 @@ export function OverviewSection({ prod = false }: { prod?: boolean }) {
 				<>
 					<div className="grid gap-4 sm:grid-cols-2">
 						<DatasetDonutCard data={data.byDataset} total={data.totalGames} />
-						<DatasetBarsCard data={data.byDataset} total={data.totalGames} />
+						<GamesByWeekdayCard data={data.byWeekday} />
 					</div>
 					<GamesByHourCard data={data.byHour} />
-					<GamesByWeekdayCard data={data.byWeekday} />
 					<div className="grid gap-4 sm:grid-cols-2">
 						<RolesCard data={data.byRole} />
 						<PerformanceByDatasetCard data={data.byDataset} />
@@ -536,7 +490,7 @@ export function OverviewSection({ prod = false }: { prod?: boolean }) {
 	);
 }
 
-/** Compact Global Insights preview for the per-season /statistics page */
+/** Compact Global Metrics preview for the per-season /statistics page */
 export function GlobalInsightsTeaser({ prod = false }: { prod?: boolean }) {
 	const { data, isLoading, isError } = useOverview(prod);
 	return (
