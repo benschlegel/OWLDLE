@@ -61,7 +61,7 @@ function DatasetDonutCard({ data, total }: { data: OverviewResponse['byDataset']
 	const activeIndex = 0; // already played-desc
 
 	return (
-		<ChartCard title="Games by Dataset" open={open} setOpen={setOpen}>
+		<ChartCard title="Games by Mode" open={open} setOpen={setOpen}>
 			<div className="flex flex-1 flex-col">
 				{/* <p className="-mt-1 mb-1 text-xs text-muted-foreground">Every game ever played, split by season &amp; mode</p> */}
 				<div className="flex min-h-72 flex-1 items-center justify-center">
@@ -69,9 +69,9 @@ function DatasetDonutCard({ data, total }: { data: OverviewResponse['byDataset']
 				</div>
 			</div>
 			<Dialog open={open} onOpenChange={setOpen}>
-				<DialogContent className="sm:max-w-2xl" aria-describedby="Games by Dataset chart">
+				<DialogContent className="sm:max-w-2xl" aria-describedby="Games by Mode chart">
 					<DialogHeader>
-						<DialogTitle className="font-owl">Games by Dataset</DialogTitle>
+						<DialogTitle className="font-owl">Games by Mode</DialogTitle>
 					</DialogHeader>
 					{/* <p className="text-sm text-muted-foreground">Every game ever played, split by season &amp; mode</p> */}
 					<GuessDonut slices={slices} center={center} activeIndex={activeIndex} className="aspect-square w-full max-w-115" />
