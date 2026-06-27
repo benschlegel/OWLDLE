@@ -36,13 +36,26 @@ export async function getGlobalGamesPlayed(useProd = false): Promise<number> {
 	return gameLogCollection.estimatedDocumentCount();
 }
 
+function escapeRegExp(s: string): string {
+	return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+/** Distinct game_logs dataset keys for a base dataset: the base plus any `<base>-stage<N>` archives.
+ *  The anchored prefix regex uses the {dataset:1, finishedAt:1} index. */
+export async function getDatasetStageKeys(base: string, useProd = false): Promise<string[]> {
+	const { gameLogCollection } = getStatisticsCollections(useProd);
+	const keys = await gameLogCollection.distinct('dataset', { dataset: { $regex: `^${escapeRegExp(base)}(-stage\\d+)?$` } });
+	return keys as string[];
+}
+
 /** Run all statistics aggregation for a dataset over [fromMs, toMs). */
-export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number, useProd = false): Promise<RawStatistics> {
+export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: number, useProd = false, datasetKeys: string[] = [dataset]): Promise<RawStatistics> {
 	if (fromMs >= toMs) return EMPTY_RAW;
 
 	const { gameLogCollection, iterationCollection } = getStatisticsCollections(useProd);
 
-	const match = { dataset, finishedAt: { $gte: new Date(fromMs), $lt: new Date(toMs) } };
+	const dsFilter = datasetKeys.length === 1 ? datasetKeys[0] : { $in: datasetKeys };
+	const match = { dataset: dsFilter, finishedAt: { $gte: new Date(fromMs), $lt: new Date(toMs) } };
 
 	const cond = (expr: unknown) => ({ $cond: [expr, 1, 0] });
 	const isWon = { $eq: ['$gameResult', 'won'] };
@@ -80,7 +93,7 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
 						},
 						{ $sort: { count: -1 } },
 					],
-					perIteration: [{ $group: { _id: '$iteration', played: { $sum: 1 }, wins: { $sum: cond(isWon) } } }],
+					perIteration: [{ $group: { _id: { dataset: '$dataset', iteration: '$iteration' }, played: { $sum: 1 }, wins: { $sum: cond(isWon) } } }],
 				},
 			},
 		] as any)
@@ -89,20 +102,20 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
 	const summaryRow = agg?.summary?.[0] ?? { gamesPlayed: 0, wins: 0, winGuessSum: 0, solvedFirst: 0 };
 
 	// Rank hardest puzzles, then resolve answer player for only the top few.
-	type RankedIteration = { iteration: number; played: number; wins: number };
+	type RankedIteration = { dataset: string; iteration: number; played: number; wins: number };
 	const ranked: RankedIteration[] = (agg?.perIteration ?? [])
 		.filter((r: { played: number }) => r.played >= MIN_HARDEST_SAMPLE)
-		.map((r: { _id: number; played: number; wins: number }) => ({ iteration: r._id, played: r.played, wins: r.wins }))
+		.map((r: { _id: { dataset: string; iteration: number }; played: number; wins: number }) => ({ dataset: r._id.dataset, iteration: r._id.iteration, played: r.played, wins: r.wins }))
 		.sort((a: { wins: number; played: number }, b: { wins: number; played: number }) => a.wins / a.played - b.wins / b.played)
 		.slice(0, 20);
 
 	let hardestPuzzles: RawStatistics['hardestPuzzles'] = [];
 	if (ranked.length > 0) {
 		const iterDocs = await iterationCollection
-			.find({ dataset, iteration: { $in: ranked.map((r: RankedIteration) => r.iteration) } }, { projection: { iteration: 1, 'player.name': 1, _id: 0 } })
+			.find({ dataset: { $in: datasetKeys } as any, iteration: { $in: ranked.map((r: RankedIteration) => r.iteration) } }, { projection: { dataset: 1, iteration: 1, 'player.name': 1, _id: 0 } })
 			.toArray();
-		const nameByIter = new Map(iterDocs.map((d) => [d.iteration, d.player?.name ?? `#${d.iteration}`]));
-		hardestPuzzles = ranked.map((r: RankedIteration) => ({ ...r, player: nameByIter.get(r.iteration) ?? `#${r.iteration}` }));
+		const nameByKey = new Map(iterDocs.map((d) => [`${d.dataset}-${d.iteration}`, d.player?.name ?? `#${d.iteration}`]));
+		hardestPuzzles = ranked.map((r: RankedIteration) => ({ iteration: r.iteration, played: r.played, wins: r.wins, player: nameByKey.get(`${r.dataset}-${r.iteration}`) ?? `#${r.iteration}` }));
 	}
 
 	return {
@@ -126,9 +139,9 @@ export async function getRawStatistics(dataset: Dataset, fromMs: number, toMs: n
  * every dataset together (no per-day answer, since multiple datasets share a calendar day).
  * Returns daily granularity — the client aggregates into weeks/months as needed.
  */
-export async function getPerDaySeries(dataset: Dataset, fromMs: number, toMs: number, scope: DayScope, useProd = false): Promise<DayPoint[]> {
+export async function getPerDaySeries(dataset: Dataset, fromMs: number, toMs: number, scope: DayScope, useProd = false, datasetKeys: string[] = [dataset]): Promise<DayPoint[]> {
 	if (fromMs >= toMs) return [];
-	return scope === 'all' ? getPerDayAllModes(fromMs, toMs, useProd) : getPerDayCurrent(dataset, fromMs, toMs, useProd);
+	return scope === 'all' ? getPerDayAllModes(fromMs, toMs, useProd) : getPerDayCurrent(datasetKeys, fromMs, toMs, useProd);
 }
 
 const COUNT_ACCUMULATORS = {
@@ -138,23 +151,25 @@ const COUNT_ACCUMULATORS = {
 	winGuessSum: { $sum: { $cond: [{ $eq: ['$gameResult', 'won'] }, { $size: '$gameData' }, 0] } },
 };
 
-/** Single-dataset per-day series, with each day's answer player resolved. */
-async function getPerDayCurrent(dataset: Dataset, fromMs: number, toMs: number, useProd: boolean): Promise<DayPoint[]> {
+/** Single-dataset (or multi-stage) per-day series, with each day's answer player resolved. */
+async function getPerDayCurrent(datasetKeys: string[], fromMs: number, toMs: number, useProd: boolean): Promise<DayPoint[]> {
 	const { gameLogCollection, iterationCollection } = getStatisticsCollections(useProd);
 
+	const dsFilter = datasetKeys.length === 1 ? datasetKeys[0] : { $in: datasetKeys };
 	const rows = (await gameLogCollection
 		.aggregate([
-			{ $match: { dataset, finishedAt: { $gte: new Date(fromMs), $lt: new Date(toMs) } } },
+			{ $match: { dataset: dsFilter, finishedAt: { $gte: new Date(fromMs), $lt: new Date(toMs) } } },
 			{
 				$group: {
 					_id: { $dateToString: { format: '%Y-%m-%d', date: '$finishedAt', timezone: 'UTC' } },
 					...COUNT_ACCUMULATORS,
 					iteration: { $first: '$iteration' },
+					dataset: { $first: '$dataset' },
 				},
 			},
 			{ $sort: { _id: 1 } },
 		] as any)
-		.toArray()) as { _id: string; played: number; wins: number; totalGuesses: number; winGuessSum: number; iteration: number | null }[];
+		.toArray()) as { _id: string; played: number; wins: number; totalGuesses: number; winGuessSum: number; iteration: number | null; dataset: string }[];
 
 	const points: DayPoint[] = rows.map((d) => ({ date: d._id, played: d.played, wins: d.wins, totalGuesses: d.totalGuesses, winGuessSum: d.winGuessSum }));
 
@@ -162,11 +177,11 @@ async function getPerDayCurrent(dataset: Dataset, fromMs: number, toMs: number, 
 		const iterations = [...new Set(rows.map((r) => r.iteration).filter((i): i is number => typeof i === 'number'))];
 		if (iterations.length > 0) {
 			const iterDocs = await iterationCollection
-				.find({ dataset, iteration: { $in: iterations } }, { projection: { iteration: 1, 'player.name': 1, _id: 0 } })
+				.find({ dataset: { $in: datasetKeys } as any, iteration: { $in: iterations } }, { projection: { dataset: 1, iteration: 1, 'player.name': 1, _id: 0 } })
 				.toArray();
-			const nameByIter = new Map(iterDocs.map((d) => [d.iteration, d.player?.name]));
+			const nameByKey = new Map(iterDocs.map((d) => [`${d.dataset}-${d.iteration}`, d.player?.name]));
 			rows.forEach((r, i) => {
-				const name = typeof r.iteration === 'number' ? nameByIter.get(r.iteration) : undefined;
+				const name = typeof r.iteration === 'number' ? nameByKey.get(`${r.dataset}-${r.iteration}`) : undefined;
 				if (name) points[i].answer = name;
 			});
 		}

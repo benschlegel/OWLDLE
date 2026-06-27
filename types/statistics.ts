@@ -13,6 +13,7 @@ export const statisticsQuerySchema = z
 		range: z.enum(TIMEFRAME_RANGES).default('yesterday'),
 		from: dateStringSchema.optional(),
 		to: dateStringSchema.optional(),
+		stage: z.string().optional(),
 	})
 	.refine((v) => v.range !== 'custom' || (v.from !== undefined && v.to !== undefined), {
 		message: 'custom range requires from and to',
@@ -55,6 +56,9 @@ export type DayPoint = DayCounts & {
 };
 export type HardPuzzle = { iteration: number; player: string; winRate: number; played: number };
 
+/** One selectable entry in the stage dropdown. `value` is the query param: 'all' | 'current' | '<N>'. */
+export type StageOption = { value: string; label: string };
+
 export type StatisticsResponse = {
 	dataset: Dataset;
 	timeframe: { range: TimeframeRange; fromIso: string; toIso: string; label: string };
@@ -70,6 +74,10 @@ export type StatisticsResponse = {
 	topFirstGuesses: NamedCount[]; // up to 50, count desc
 	topFirstTeams: TeamCount[]; // up to 50, count desc
 	hardestPuzzles: HardPuzzle[]; // up to 20, winRate asc; may be empty
+	/** Stages selectable for this dataset. ≤1 entry ⇒ no archived stages (disable the selector). */
+	stages: StageOption[];
+	/** The resolved selected stage value: 'all' | 'current' | '<N>'. */
+	stage: string;
 };
 
 /** Response of the per-day endpoint (its own request so the chart can re-fetch on scope change). */

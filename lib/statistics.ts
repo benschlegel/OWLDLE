@@ -1,7 +1,7 @@
 import type { Dataset } from '@/data/datasets';
 import type { RawOverview, RawStatistics } from '@/lib/database/statistics';
 import { OVERVIEW_ROLES } from '@/types/statistics';
-import type { OverviewMode, OverviewResponse, OverviewRole, StatisticsResponse, TimeframeRange } from '@/types/statistics';
+import type { OverviewMode, OverviewResponse, OverviewRole, StatisticsResponse, StageOption, TimeframeRange } from '@/types/statistics';
 
 const DAY_MS = 86_400_000;
 const HOUR_MS = 3_600_000;
@@ -69,6 +69,8 @@ export function shapeStatistics(
 		timeframe: StatisticsResponse['timeframe'];
 		idToTeam: Map<number, string>;
 		maxGuesses: number;
+		stages: StageOption[];
+		stage: string;
 	}
 ): StatisticsResponse {
 	const { gamesPlayed, wins, winGuessSum, solvedFirst } = raw.summary;
@@ -118,12 +120,69 @@ export function shapeStatistics(
 			played: p.played,
 			winRate: pct(p.wins, p.played),
 		})),
+		stages: opts.stages,
+		stage: opts.stage,
 	};
 }
 
 /** Strip a "-stage<N>" suffix so logged stage datasets fold into their base dataset. */
 export function baseDataset(dataset: string): string {
 	return dataset.replace(/-stage\d+$/, '');
+}
+
+/** Label shown by the (disabled) stage selector when a dataset has no archived stages. */
+export const SINGLE_STAGE_LABEL = 'Last stage';
+
+/** Parse the stage number from a key: `<base>-stage<N>` → N; the bare base → null. */
+function stageNumberOf(key: string, base: string): number | null {
+	if (key === base) return null;
+	const m = key.match(/-stage(\d+)$/);
+	return m ? Number(m[1]) : null;
+}
+
+export type StageResolution = {
+	stages: StageOption[];
+	/** The chosen stage value ('all' | 'current' | '<N>'). */
+	selected: string;
+	/** The game_logs `dataset` keys the selection covers. */
+	datasetKeys: string[];
+};
+
+/**
+ * Resolve the available stages for a dataset and the requested selection.
+ * `existingKeys` = distinct game_logs `dataset` values matching the base (from
+ * `getDatasetStageKeys`). Pure. Conventions:
+ *  - bare key = current/latest stage, labelled `Stage <maxArchivedN + 1>`
+ *  - `<base>-stage<N>` = archived stage N
+ *  - 'all' option (and default) only offered when ≥1 archived stage exists
+ *  - no archives ⇒ single disabled-style option labelled SINGLE_STAGE_LABEL
+ */
+export function resolveStages(base: string, existingKeys: string[], requested: string | undefined): StageResolution {
+	const archived = existingKeys
+		.map((k) => stageNumberOf(k, base))
+		.filter((n): n is number => n != null)
+		.sort((a, b) => b - a); // desc
+
+	if (archived.length === 0) {
+		return { stages: [{ value: 'current', label: SINGLE_STAGE_LABEL }], selected: 'current', datasetKeys: [base] };
+	}
+
+	const maxN = archived[0];
+	const stages: StageOption[] = [
+		{ value: 'all', label: 'All stages' },
+		{ value: 'current', label: `Stage ${maxN + 1}` },
+		...archived.map((n) => ({ value: String(n), label: `Stage ${n}` })),
+	];
+
+	const valid = new Set(stages.map((s) => s.value));
+	const selected = requested && valid.has(requested) ? requested : 'all';
+
+	let datasetKeys: string[];
+	if (selected === 'all') datasetKeys = [base, ...archived.map((n) => `${base}-stage${n}`)];
+	else if (selected === 'current') datasetKeys = [base];
+	else datasetKeys = [`${base}-stage${selected}`];
+
+	return { stages, selected, datasetKeys };
 }
 
 /**

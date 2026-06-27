@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs, getOverviewStatistics } from '@/lib/databaseAccess';
-import { resolveTimeframe, shapeStatistics, baseDataset, shapeOverview } from '@/lib/statistics';
+import { getPerDaySeries, getRawStatistics, getStatsBoundaryMs, getOverviewStatistics, getDatasetStageKeys } from '@/lib/databaseAccess';
+import { resolveTimeframe, shapeStatistics, baseDataset, shapeOverview, resolveStages, SINGLE_STAGE_LABEL } from '@/lib/statistics';
 import type { RawStatistics, RawOverview } from '@/lib/database/statistics';
 import type { Dataset } from '@/data/datasets';
 import type { DbAnswer, DbPlayer } from '@/types/database';
@@ -265,7 +265,7 @@ describe('shapeStatistics, pure function', () => {
 			hardestPuzzles: [],
 		};
 
-		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses });
+		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses, stages: [], stage: 'current' });
 
 		expect(result.guessDistribution).toHaveLength(maxGuesses + 1); // 1..7 + failed
 		expect(result.guessDistribution[0]).toEqual({ bucket: '1', count: 0 });
@@ -283,7 +283,7 @@ describe('shapeStatistics, pure function', () => {
 			hardestPuzzles: [],
 		};
 
-		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses });
+		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses, stages: [], stage: 'current' });
 
 		expect(result.summary.winRate).toBe(50); // 2/4 = 50%
 		expect(result.summary.averageGuesses).toBe(2.5); // 5/2
@@ -299,7 +299,7 @@ describe('shapeStatistics, pure function', () => {
 			hardestPuzzles: [],
 		};
 
-		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses });
+		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses, stages: [], stage: 'current' });
 		expect(result.summary.averageGuesses).toBeNull();
 	});
 
@@ -322,7 +322,7 @@ describe('shapeStatistics, pure function', () => {
 			[2, 'TeamY'],
 		]);
 
-		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam, maxGuesses });
+		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam, maxGuesses, stages: [], stage: 'current' });
 
 		expect(result.topFirstTeams).toHaveLength(2);
 		expect(result.topFirstTeams[0]).toEqual({ team: 'TeamX', count: 5 });
@@ -337,7 +337,7 @@ describe('shapeStatistics, pure function', () => {
 			hardestPuzzles: [],
 		};
 
-		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses });
+		const result = shapeStatistics(raw, { dataset: ds, timeframe: baseTimeframe, idToTeam: new Map(), maxGuesses, stages: [], stage: 'current' });
 
 		expect(result.summary.gamesPlayed).toBe(0);
 		expect(result.summary.wins).toBe(0);
@@ -561,5 +561,136 @@ describe('shapeOverview', () => {
 			{ role: 'Damage', first: 5, all: 0 },
 			{ role: 'Support', first: 4, all: 1 }, // stage1 id 0 → owcs-s3 id 0 → Support
 		]);
+	});
+});
+
+// resolveStages (pure, no DB)
+describe('resolveStages', () => {
+	test('no archives: single disabled option, selected=current, keys=[base]', () => {
+		const result = resolveStages('owcs-s3', ['owcs-s3'], undefined);
+		expect(result.stages).toHaveLength(1);
+		expect(result.stages[0]).toEqual({ value: 'current', label: SINGLE_STAGE_LABEL });
+		expect(result.selected).toBe('current');
+		expect(result.datasetKeys).toEqual(['owcs-s3']);
+	});
+
+	test('with archives: stages=[all,current,2,1], current=Stage 3, default selected=all, keys=all three', () => {
+		const result = resolveStages('owcs-s3', ['owcs-s3', 'owcs-s3-stage1', 'owcs-s3-stage2'], undefined);
+		expect(result.stages.map((s) => s.value)).toEqual(['all', 'current', '2', '1']);
+		expect(result.stages.find((s) => s.value === 'current')?.label).toBe('Stage 3');
+		expect(result.selected).toBe('all');
+		expect(result.datasetKeys).toContain('owcs-s3');
+		expect(result.datasetKeys).toContain('owcs-s3-stage1');
+		expect(result.datasetKeys).toContain('owcs-s3-stage2');
+		expect(result.datasetKeys).toHaveLength(3);
+	});
+
+	test('requested specific stage: selected=1, keys=[owcs-s3-stage1]', () => {
+		const result = resolveStages('owcs-s3', ['owcs-s3', 'owcs-s3-stage1', 'owcs-s3-stage2'], '1');
+		expect(result.selected).toBe('1');
+		expect(result.datasetKeys).toEqual(['owcs-s3-stage1']);
+	});
+
+	test('requested invalid stage: falls back to selected=all', () => {
+		const result = resolveStages('owcs-s3', ['owcs-s3', 'owcs-s3-stage1', 'owcs-s3-stage2'], '9');
+		expect(result.selected).toBe('all');
+	});
+});
+
+// getDatasetStageKeys
+describe('getDatasetStageKeys', () => {
+	beforeEach(clearCollections);
+
+	test('returns base + archived stage keys for the given base, excludes other bases', async () => {
+		const client = getClient();
+		try {
+			await client.connect();
+			await client
+				.db(dbName)
+				.collection(GAME_LOGS)
+				.insertMany([
+					makeLog({ dataset: 'season1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+					makeLog({ dataset: 'season1-stage1' as any, gameResult: 'won', finishedAt: new Date('2026-06-10T10:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+					makeLog({ dataset: 'owcs-s1' as any, gameResult: 'won', finishedAt: new Date('2026-06-15T10:00:00Z'), gameData: [{ player: { name: 'C', id: 2 } }] }),
+				] as any);
+		} finally {
+			await client.close();
+		}
+
+		const keys = await getDatasetStageKeys('season1');
+		expect(keys.sort()).toEqual(['season1', 'season1-stage1'].sort());
+		expect(keys).not.toContain('owcs-s1');
+	});
+});
+
+// getRawStatistics across stages
+describe('getRawStatistics across stages', () => {
+	beforeEach(clearCollections);
+
+	test('multi-key call aggregates games from all provided stage keys', async () => {
+		const from = new Date('2026-06-20T00:00:00Z').getTime();
+		const to = new Date('2026-06-21T00:00:00Z').getTime();
+
+		const client = getClient();
+		try {
+			await client.connect();
+			await client
+				.db(dbName)
+				.collection(GAME_LOGS)
+				.insertMany([
+					makeLog({ dataset: 'season1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+					makeLog({ dataset: 'season1' as any, gameResult: 'lost', finishedAt: new Date('2026-06-20T11:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+					makeLog({ dataset: 'season1-stage1' as any, gameResult: 'won', finishedAt: new Date('2026-06-20T12:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+				] as any);
+		} finally {
+			await client.close();
+		}
+
+		const allStages = await getRawStatistics('season1' as any, from, to, false, ['season1', 'season1-stage1']);
+		expect(allStages.summary.gamesPlayed).toBe(3);
+
+		const stageOnly = await getRawStatistics('season1' as any, from, to, false, ['season1-stage1']);
+		expect(stageOnly.summary.gamesPlayed).toBe(1);
+
+		const defaultCall = await getRawStatistics('season1' as any, from, to);
+		expect(defaultCall.summary.gamesPlayed).toBe(2);
+	});
+});
+
+// hardest puzzles don't merge across stages
+describe('getRawStatistics hardest puzzles don\'t merge across stages', () => {
+	beforeEach(clearCollections);
+
+	test('iteration #1 in season1 and season1-stage1 appear as separate entries', async () => {
+		const from = new Date('2026-06-20T00:00:00Z').getTime();
+		const to = new Date('2026-06-21T00:00:00Z').getTime();
+
+		const client = getClient();
+		try {
+			await client.connect();
+			// seed 10 wins for iteration 1 in season1 (win rate = 100%)
+			const season1Logs = Array.from({ length: 10 }, (_, i) =>
+				makeLog({ dataset: 'season1' as any, iteration: 1, gameResult: 'won', finishedAt: new Date(`2026-06-20T${String(i).padStart(2, '0')}:00:00Z`), gameData: [{ player: { name: 'A', id: 0 } }] })
+			);
+			// seed 10 games (5 wins) for iteration 1 in season1-stage1 (win rate = 50%)
+			const stage1Logs = Array.from({ length: 10 }, (_, i) =>
+				makeLog({ dataset: 'season1-stage1' as any, iteration: 1, gameResult: i < 5 ? 'won' : 'lost', finishedAt: new Date(`2026-06-20T${String(i).padStart(2, '0')}:30:00Z`), gameData: [{ player: { name: 'B', id: 1 } }] })
+			);
+			await client.db(dbName).collection(GAME_LOGS).insertMany([...season1Logs, ...stage1Logs] as any);
+		} finally {
+			await client.close();
+		}
+
+		const raw = await getRawStatistics('season1' as any, from, to, false, ['season1', 'season1-stage1']);
+
+		// Both iteration-1 entries should be present as separate rows
+		const iter1Entries = raw.hardestPuzzles.filter((p) => p.iteration === 1);
+		expect(iter1Entries).toHaveLength(2);
+
+		// The two entries must have different played/wins totals
+		const playedValues = iter1Entries.map((p) => p.played).sort((a, b) => a - b);
+		expect(playedValues).toEqual([10, 10]);
+		const winsValues = iter1Entries.map((p) => p.wins).sort((a, b) => a - b);
+		expect(winsValues).toEqual([5, 10]);
 	});
 });

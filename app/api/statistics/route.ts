@@ -3,8 +3,8 @@ import type { NextRequest } from 'next/server';
 import { RateLimiterMemory } from 'rate-limiter-flexible';
 import { type Dataset, getDataset } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
-import { getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
-import { resolveTimeframe, shapeStatistics } from '@/lib/statistics';
+import { getDatasetStageKeys, getRawStatistics, getStatsBoundaryMs } from '@/lib/databaseAccess';
+import { resolveStages, resolveTimeframe, shapeStatistics } from '@/lib/statistics';
 import { statisticsQuerySchema, type StatisticsResponse, type TimeframeRange } from '@/types/statistics';
 
 const rateLimiter = new RateLimiterMemory({ points: 30, duration: 60 });
@@ -19,15 +19,19 @@ function emptyResponse(dataset: Dataset, range: TimeframeRange): StatisticsRespo
 		topFirstGuesses: [],
 		topFirstTeams: [],
 		hardestPuzzles: [],
+		stages: [],
+		stage: 'all',
 	};
 }
 
-async function buildStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, useProd: boolean): Promise<StatisticsResponse> {
+async function buildStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, stage: string | undefined, useProd: boolean): Promise<StatisticsResponse> {
 	const boundaryMs = await getStatsBoundaryMs(dataset, useProd);
 	if (boundaryMs === null) return emptyResponse(dataset, range);
 
 	const tf = resolveTimeframe(range, from, to, boundaryMs, GAME_CONFIG.nextResetHours);
-	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs, useProd);
+	const existingKeys = await getDatasetStageKeys(dataset, useProd);
+	const { stages, selected, datasetKeys } = resolveStages(dataset, existingKeys, stage);
+	const raw = await getRawStatistics(dataset, tf.fromMs, tf.toMs, useProd, datasetKeys);
 
 	const idToTeam = new Map((getDataset(dataset)?.playerData ?? []).map((p) => [p.id, p.team]));
 	return shapeStatistics(raw, {
@@ -35,18 +39,20 @@ async function buildStatistics(dataset: Dataset, range: TimeframeRange, from: st
 		timeframe: { range, fromIso: new Date(tf.fromMs).toISOString(), toIso: new Date(tf.toMs).toISOString(), label: tf.label },
 		idToTeam,
 		maxGuesses: GAME_CONFIG.maxGuesses,
+		stages,
+		stage: selected,
 	});
 }
 
 // Bump when the response shape changes so previously-cached entries are bypassed.
-const CACHE_VERSION = 'v2';
+const CACHE_VERSION = 'v3';
 
-// Cached per (version, dataset, range, from, to, db). Historical timeframes only change once
+// Cached per (version, dataset, range, from, to, stage, db). Historical timeframes only change once
 // per day at reset, so a 1h revalidate keeps the DB cool while staying fresh.
-function getCachedStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, useProd: boolean) {
+function getCachedStatistics(dataset: Dataset, range: TimeframeRange, from: string | undefined, to: string | undefined, stage: string | undefined, useProd: boolean) {
 	return unstable_cache(
-		() => buildStatistics(dataset, range, from, to, useProd),
-		['statistics', CACHE_VERSION, dataset, range, from ?? '', to ?? '', useProd ? 'prod' : 'dev'],
+		() => buildStatistics(dataset, range, from, to, stage, useProd),
+		['statistics', CACHE_VERSION, dataset, range, from ?? '', to ?? '', stage ?? 'all', useProd ? 'prod' : 'dev'],
 		{
 			revalidate: 3600,
 			tags: [`statistics:${dataset}`],
@@ -68,6 +74,7 @@ export async function GET(request: NextRequest) {
 		range: sp.get('range') ?? undefined,
 		from: sp.get('from') ?? undefined,
 		to: sp.get('to') ?? undefined,
+		stage: sp.get('stage') ?? undefined,
 	});
 	if (!parsed.success) return new Response('Invalid query', { status: 400 });
 
@@ -75,7 +82,7 @@ export async function GET(request: NextRequest) {
 	const useProd = sp.get('prod') === '1';
 
 	try {
-		const data = await getCachedStatistics(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, useProd);
+		const data = await getCachedStatistics(parsed.data.dataset, parsed.data.range, parsed.data.from, parsed.data.to, parsed.data.stage, useProd);
 		return Response.json(data);
 	} catch {
 		return new Response(JSON.stringify({ message: "Couldn't fetch statistics." }), { status: 500 });
