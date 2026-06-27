@@ -273,9 +273,9 @@ export function Navbar() {
 						Donate
 					</NavButton>
 
-					{/* Settings button */}
-					<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSettingsOpen(true)}>
-						<SettingsIcon className="size-5" />
+					{/* Sidebar button */}
+					<NavButton isRightSkewed className="-mr-2 pr-6 hidden navbar-hidden:flex" onClick={() => setSheetOpen(true)}>
+						<MenuIcon className="size-5" />
 					</NavButton>
 
 					{/* desktop overflow hamburger menu */}

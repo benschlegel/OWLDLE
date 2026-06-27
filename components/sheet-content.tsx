@@ -124,7 +124,6 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 							<AccordionItem value="endless" className="border-none px-2">
 								<AccordionTrigger className={triggerClass}>Endless Mode</AccordionTrigger>
 								<AccordionContent>
-									<Separator className="mb-2" />
 									<div className="flex flex-col">
 										<p className="text-xs font-owl text-muted-foreground mb-1 ml-1">Overwatch League</p>
 										{OWL_DATASETS_REVERSED.map((dataset) => (
@@ -150,19 +149,26 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 									</div>
 								</AccordionContent>
 							</AccordionItem>
+							<AccordionItem value="statistics" className="border-none px-2">
+								<AccordionTrigger className={triggerClass}>Statistics</AccordionTrigger>
+								<AccordionContent>
+									<div className="flex flex-col">
+										<SheetLinkButton
+											text="Statistics"
+											href="/statistics"
+											className="font-mono font-semibold text-foreground sm:py-2.5"
+											onClick={() => setSheetOpen(false)}
+										/>
+										<SheetLinkButton
+											text="Global Metrics"
+											href="/statistics/global"
+											className="font-mono font-semibold text-foreground sm:py-2.5"
+											onClick={() => setSheetOpen(false)}
+										/>
+									</div>
+								</AccordionContent>
+							</AccordionItem>
 						</Accordion>
-						<SheetLinkButton
-							text="Statistics"
-							href="/statistics"
-							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
-							onClick={() => setSheetOpen(false)}
-						/>
-						<SheetLinkButton
-							text="Global Metrics"
-							href="/statistics/global"
-							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
-							onClick={() => setSheetOpen(false)}
-						/>
 					</div>
 				</div>
 				<div className="flex flex-col">
@@ -199,7 +205,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 						Install App
 					</Button>
 				)}
-				<Button variant={'outline'} className="h-auto py-1.5 gap-1" onClick={onSettingsClick}>
+				<Button variant={'outline'} className="h-auto py-1.5 gap-1 border-primary-foreground text-primary-foreground" onClick={onSettingsClick}>
 					<SettingsIcon className="size-4" />
 					Settings
 				</Button>

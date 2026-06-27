@@ -46,6 +46,8 @@ const hotkeys = [
 	{ keys: 'ctrl + y', description: 'Jump to search input' },
 	{ keys: 'ctrl + k', description: 'Open search in popup dialog' },
 	{ keys: 'ctrl + e', description: 'Open/close help dialog' },
+	{ keys: 'ctrl + b', description: 'Open/close sidebar' },
+	{ keys: 'ctrl + s', description: 'Open/close settings' },
 ];
 
 function countdownRenderer({ hours, minutes, seconds, completed }: CountdownRenderProps) {
