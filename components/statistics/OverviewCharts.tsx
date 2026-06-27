@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Area, AreaChart, Bar, BarChart, CartesianGrid, Cell, LabelList, ReferenceLine, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -15,6 +16,10 @@ import { Marker, MarkerContent } from '@/components/ui/marker';
 const ACCENT = 'var(--primary-foreground)';
 const MODE_LABELS: Record<OverviewMode, string> = { owl: 'Overwatch League', owcs: 'Champion Series' };
 const WEEKDAY_LABELS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']; // index = weekday-1
+const HOURS = Array.from({ length: 24 }, (_, i) => i); // 0..23
+
+const HEATMAP_SQUARE_CELLS = true;
+
 const hourLabel = (h: number) => `${h}:00`;
 const num = (n: number) => n.toLocaleString();
 
@@ -38,8 +43,6 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
 		</div>
 	);
 }
-
-// ---- Dataset Donut ----
 
 function DatasetDonutCard({ data, total }: { data: OverviewResponse['byDataset']; total: number }) {
 	const { open, setOpen } = useChartDialog('ovDatasetDonut');
@@ -128,8 +131,6 @@ function DatasetBarsCard({ data, total }: { data: OverviewResponse['byDataset'];
 	);
 }
 
-// ---- Games by Weekday ----
-
 function GamesByWeekdayCard({ data }: { data: OverviewResponse['byWeekday'] }) {
 	const { open, setOpen } = useChartDialog('ovWeekday');
 	const isMobile = useIsMobile();
@@ -190,8 +191,6 @@ function GamesByWeekdayCard({ data }: { data: OverviewResponse['byWeekday'] }) {
 	);
 }
 
-// ---- Games by Hour ----
-
 function GamesByHourCard({ data }: { data: OverviewResponse['byHour'] }) {
 	const { open, setOpen } = useChartDialog('ovHour');
 	const isMobile = useIsMobile();
@@ -251,8 +250,7 @@ function GamesByHourCard({ data }: { data: OverviewResponse['byHour'] }) {
 	);
 }
 
-// ---- Guessed-Player Roles ----
-
+// Guessed-Player Roles
 function RolesCard({ data }: { data: OverviewResponse['byRole'] }) {
 	const { open, setOpen } = useChartDialog('ovRoles');
 	const isMobile = useIsMobile();
@@ -319,7 +317,7 @@ function RolesCard({ data }: { data: OverviewResponse['byRole'] }) {
 	);
 }
 
-// ---- Performance by Dataset ----
+// Performance by Dataset
 
 function PerformanceByDatasetCard({ data }: { data: OverviewResponse['byDataset'] }) {
 	const { open, setOpen } = useChartDialog('ovPerf');
@@ -377,17 +375,40 @@ function HeatRow({
 	byKey,
 	cellOpacity,
 	cellClass,
-}: { label: string; weekday: number; byKey: Map<string, number>; cellOpacity: (v: number) => number; cellClass: string }) {
+	isMobile,
+	onTap,
+}: {
+	label: string;
+	weekday: number;
+	byKey: Map<string, number>;
+	cellOpacity: (v: number) => number;
+	cellClass: string;
+	isMobile: boolean;
+	onTap: (info: string) => void;
+}) {
 	return (
 		<>
-			<div className="flex items-center pr-1 text-[0.65rem] text-muted-foreground">{label}</div>
-			{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23].map((hour) => {
+			<div className="flex items-center pr-1.5 text-[0.65rem] text-muted-foreground">{label}</div>
+			{HOURS.map((hour) => {
 				const v = byKey.get(`${weekday}-${hour}`) ?? 0;
+				const cell = (
+					<div
+						className={`${cellClass} rounded-[2px] cursor-default`}
+						style={{ backgroundColor: ACCENT, opacity: cellOpacity(v) }}
+						onClick={isMobile ? () => onTap(`${label} ${hour}:00 — ${num(v)} games`) : undefined}
+						onKeyDown={
+							isMobile
+								? (e) => {
+										if (e.key === 'Enter' || e.key === ' ') onTap(`${label} ${hour}:00 — ${num(v)} games`);
+									}
+								: undefined
+						}
+					/>
+				);
+				if (isMobile) return <div key={`${weekday}-${hour}`}>{cell}</div>;
 				return (
 					<Tooltip key={`${weekday}-${hour}`}>
-						<TooltipTrigger asChild>
-							<div className={`${cellClass} m-px rounded-[2px] cursor-default`} style={{ backgroundColor: ACCENT, opacity: cellOpacity(v) }} />
-						</TooltipTrigger>
+						<TooltipTrigger asChild>{cell}</TooltipTrigger>
 						<TooltipContent side="top" className="text-xs">
 							<span className="font-medium">
 								{label} {hour}:00
@@ -403,43 +424,61 @@ function HeatRow({
 
 function ActivityHeatmapCard({ data }: { data: OverviewResponse['heatmap'] }) {
 	const { open, setOpen } = useChartDialog('ovHeatmap');
+	const isMobile = useIsMobile();
+	const [tapInfo, setTapInfo] = useState<string | null>(null);
 	const byKey = new Map(data.map((c) => [`${c.weekday}-${c.hour}`, c.played]));
 	const max = Math.max(1, ...data.map((c) => c.played));
 	const cellOpacity = (v: number) => (v <= 0 ? 0.04 : 0.12 + 0.88 * (v / max));
-	const grid = (cell: string) => (
+	// compact=true: card view, fixed 1rem columns so cells stay ~16px regardless of card width.
+	// compact=false: dialog view, fluid 1fr columns that fill the bounded dialog width.
+	const grid = (cell: string, compact: boolean) => (
 		<TooltipProvider delayDuration={80}>
-			<div className="min-w-140">
-				<div className="grid" style={{ gridTemplateColumns: `2.5rem repeat(24, 1fr)` }}>
+			<div className={compact ? 'mx-auto w-fit' : 'min-w-140'}>
+				<div
+					className="grid gap-0.75"
+					style={{
+						gridTemplateColumns: compact ? `2.5rem repeat(24, ${isMobile ? '1.2rem' : '2.25rem'})` : `2.5rem repeat(24, minmax(0, 1fr))`,
+					}}>
 					<div />
-					{[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23].map((hour) => (
-						<div key={`hdr-${hour}`} className="text-center text-[0.6rem] text-muted-foreground">
-							{hour % 3 === 0 ? hour : ''}
+					{HOURS.map((hour) => (
+						<div key={`hdr-${hour}`} className="min-w-0 text-center text-[0.6rem] text-muted-foreground tabular-nums">
+							{isMobile ? hour : `${hour}:00`}
 						</div>
 					))}
 					{WEEKDAY_LABELS.map((label, wi) => (
-						<HeatRow key={label} label={label} weekday={wi + 1} byKey={byKey} cellOpacity={cellOpacity} cellClass={cell} />
+						<HeatRow
+							key={label}
+							label={label}
+							weekday={wi + 1}
+							byKey={byKey}
+							cellOpacity={cellOpacity}
+							cellClass={cell}
+							isMobile={isMobile}
+							onTap={setTapInfo}
+						/>
 					))}
 				</div>
+				{isMobile && tapInfo && <p className="mt-1.5 text-center text-xs text-muted-foreground">{tapInfo}</p>}
 			</div>
 		</TooltipProvider>
 	);
 	return (
 		<ChartCard title="Activity Heatmap" open={open} setOpen={setOpen}>
 			<p className="-mt-1 mb-2 text-xs text-muted-foreground">Games by weekday &amp; hour (UTC), darker = busier</p>
-			<div className="overflow-x-auto">{grid('h-5')}</div>
+			<div className="overflow-x-auto">{grid(HEATMAP_SQUARE_CELLS ? 'aspect-square w-full' : 'h-5', true)}</div>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogContent className="sm:max-w-4xl" aria-describedby="Activity heatmap">
 					<DialogHeader>
 						<DialogTitle className="font-owl">Activity Heatmap</DialogTitle>
 					</DialogHeader>
-					<div className="overflow-x-auto">{grid('h-7')}</div>
+					<div className="overflow-x-auto">{grid(HEATMAP_SQUARE_CELLS ? 'aspect-square w-full' : 'h-7', false)}</div>
 				</DialogContent>
 			</Dialog>
 		</ChartCard>
 	);
 }
 
-// ---- Section wrapper ----
+// Section wrapper
 
 function OverviewSkeleton() {
 	return (
