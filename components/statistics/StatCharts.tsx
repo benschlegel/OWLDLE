@@ -17,6 +17,8 @@ import type { GuessBucket, HardPuzzle, NamedCount, TeamCount } from '@/types/sta
 
 // Shared chart card wrapper
 
+export const FAILED_COLOR = 'hsl(3 62% 57%)';
+
 /** Card shell with a title, separator, and an expand-to-fullscreen button.
  *  Hotkeys: "f" while hovering the card opens its dialog; "f" again closes it for non-search
  *  dialogs (search dialogs close via Esc or Alt+F). Hover is read from CSS `:hover` at keypress
@@ -351,7 +353,7 @@ const guessDonutConfig = { count: { label: 'Games' } } satisfies ChartConfig;
 
 /** Accent-orange ramp for the win buckets (1 = most saturated), a subtle red for "failed". */
 function guessSliceColor(index: number, nonFailed: number, isFailed: boolean): string {
-	if (isFailed) return 'hsl(3 62% 57%)';
+	if (isFailed) return FAILED_COLOR;
 	return rampStop(nonFailed > 1 ? index / (nonFailed - 1) : 0);
 }
 

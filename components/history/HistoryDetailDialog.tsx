@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { RadialBarChart, RadialBar, PolarRadiusAxis, Label } from 'recharts';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { GuessDonut, type DonutSlice, rampStop } from '@/components/statistics/StatCharts';
+import { GuessDonut, type DonutSlice, rampStop, FAILED_COLOR } from '@/components/statistics/StatCharts';
 import { ChartContainer, ChartTooltip } from '@/components/ui/chart';
 import type { ChartConfig } from '@/components/ui/chart';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -15,7 +15,7 @@ import type { HistoryEntry } from '@/types/history';
 import type { GuessBucket } from '@/types/statistics';
 
 function sliceColor(index: number, nonFailed: number, isFailed: boolean): string {
-	if (isFailed) return 'hsl(3 62% 57%)';
+	if (isFailed) return FAILED_COLOR;
 	return rampStop(nonFailed > 1 ? index / (nonFailed - 1) : 0);
 }
 
@@ -36,7 +36,7 @@ function buildSlices(dist: GuessBucket[]): { slices: DonutSlice[]; activeIndex: 
 	return { slices, activeIndex };
 }
 
-// Orange from the same ramp as the guess-distribution donut (first slice color).
+// First slice color.
 const WIN_COLOR = rampStop(0);
 
 const winRateConfig: ChartConfig = {
@@ -44,11 +44,7 @@ const winRateConfig: ChartConfig = {
 };
 
 function WinRateChart({ winRate }: { winRate: number }) {
-	// Drive the arc extent directly via endAngle so the proportion is always correct.
-	// Stacked-bar domain tricks don't work: Recharts uses max(individual values) not
-	// the cumulative sum, so win=70 would fill 70/70 = 100% of the arc.
-	// Instead: a static gray background chart (always full 180°) sits underneath an
-	// animated win chart whose endAngle = 180 - (winRate/100)*180.
+	// Helper so the arc only fills up to <win-percentage>% full
 	const winEndAngle = 180 - (winRate / 100) * 180;
 
 	const sharedProps = {
@@ -58,9 +54,6 @@ function WinRateChart({ winRate }: { winRate: number }) {
 	} as const;
 
 	return (
-		// h-40 + negative bottom margin shifts the polar center toward the bottom of
-		// the visible area so the semicircle fills the container without excess empty space.
-		// mt-2 gives breathing room above the top of the arc.
 		<div className="relative mx-auto mt-2 h-44 -mb-16 w-full">
 			{/* Static gray background,always full 180°, renders immediately */}
 			<div className="pointer-events-none absolute inset-0">
@@ -71,11 +64,18 @@ function WinRateChart({ winRate }: { winRate: number }) {
 				</ChartContainer>
 			</div>
 
-			{/* Animated win arc — endAngle controls exact fill proportion */}
+			{/* Animated win arc, endAngle controls exact fill proportion */}
 			<div className="absolute inset-0">
 				<ChartContainer config={winRateConfig} className="h-full w-full">
 					<RadialBarChart {...sharedProps} data={[{ win: 1 }]} startAngle={180} endAngle={winEndAngle}>
-						<RadialBar dataKey="win" fill={WIN_COLOR} cornerRadius={5} animationBegin={400} animationDuration={1500} className="stroke-transparent stroke-2" />
+						<RadialBar
+							dataKey="win"
+							fill={sliceColor(1, 7, false)}
+							cornerRadius={5}
+							animationBegin={400}
+							animationDuration={1500}
+							className="stroke-transparent stroke-2"
+						/>
 						<ChartTooltip
 							cursor={false}
 							content={({ active, payload }) => {
@@ -193,9 +193,13 @@ export default function HistoryDetailDialog({ dataset, iteration, entry, prevIte
 				)}
 
 				{data && (
-					<div className={cn('flex flex-col items-center gap-2 transition-opacity duration-300', isPlaceholderData && 'pointer-events-none opacity-50')}>
+					<div
+						className={cn(
+							'flex w-full min-w-0 flex-col items-center gap-2 transition-opacity duration-300',
+							isPlaceholderData && 'pointer-events-none opacity-50'
+						)}>
 						{data.summary.gamesPlayed === 0 ? (
-							<p className="w-full py-8 text-center font-owl text-muted-foreground">No games were played on this puzzle.</p>
+							<p className="w-full py-8 text-center font-owl text-muted-foreground">No games were played on this day.</p>
 						) : (
 							<>
 								{(() => {
@@ -219,13 +223,13 @@ export default function HistoryDetailDialog({ dataset, iteration, entry, prevIte
 					</div>
 				)}
 
-				<div className="flex justify-end gap-2 pt-1">
+				<div className="relative z-10 flex justify-end gap-2 pt-1">
 					<Button
 						variant="outline"
 						size="icon"
 						disabled={nextIteration == null || isPlaceholderData}
 						onClick={() => nextIteration != null && onNavigate(nextIteration)}
-						aria-label="Newer puzzle">
+						aria-label="Newer iteration">
 						<ChevronLeft className="size-4" />
 					</Button>
 					<Button
@@ -233,7 +237,7 @@ export default function HistoryDetailDialog({ dataset, iteration, entry, prevIte
 						size="icon"
 						disabled={prevIteration == null || isPlaceholderData}
 						onClick={() => prevIteration != null && onNavigate(prevIteration)}
-						aria-label="Older puzzle">
+						aria-label="Older iteration">
 						<ChevronRight className="size-4" />
 					</Button>
 				</div>
