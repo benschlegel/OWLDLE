@@ -11,6 +11,7 @@ export const OWCS_PATHNAME = '/owcs' as const;
 export const ENDLESS_PATHNAME = '/endless' as const;
 export const STATISTICS_PATHNAME = '/statistics' as const;
 export const STATISTICS_GLOBAL_PATHNAME = '/statistics/global' as const;
+export const HISTORY_PATHNAME = '/history' as const;
 
 export const DEFAULT_DATASET_NAME: Dataset = 'owcs-s3';
 

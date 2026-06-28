@@ -14,6 +14,7 @@ import {
 	OWL_PATHNAME,
 	OWL_DATASETS_REVERSED,
 	OWCS_DATASETS_REVERSED,
+	HISTORY_PATHNAME,
 	STATISTICS_PATHNAME,
 } from '@/data/datasets';
 import { useDialogState } from '@/hooks/use-dialog-param';
@@ -49,6 +50,7 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 	const endlessSeason = searchParams.get('season');
 	const isActiveStatistics = pathname.startsWith(STATISTICS_PATHNAME) && !pathname.includes('/global');
 	const isActiveGlobalStatistics = pathname.startsWith(GLOBAL_STATISTICS_PATHNAME);
+	const isActiveHistory = pathname === HISTORY_PATHNAME;
 	const activeEndlessDataset =
 		pathname === ENDLESS_PATHNAME
 			? (searchParams.get('mode') ?? 'owcs') === 'owcs'
@@ -185,6 +187,13 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 								</AccordionContent>
 							</AccordionItem>
 						</Accordion>
+						<SheetLinkButton
+							text="History"
+							href="/history"
+							className="font-owl text-foreground opacity-90 px-2 sm:text-lg text-base"
+							onClick={() => setSheetOpen(false)}
+							active={isActiveHistory}
+						/>
 					</div>
 				</div>
 				<div className="flex flex-col">

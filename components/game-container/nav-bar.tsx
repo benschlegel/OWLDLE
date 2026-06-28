@@ -18,6 +18,7 @@ import {
 	OWL_PATHNAME,
 	STATISTICS_GLOBAL_PATHNAME,
 	STATISTICS_PATHNAME,
+	HISTORY_PATHNAME,
 } from '@/data/datasets';
 import { viewTransition } from '@/lib/view-transition';
 import { cn } from '@/lib/utils';
@@ -213,6 +214,9 @@ export function Navbar() {
 								</NavSelect>
 							</NavigationMenuList>
 						</NavigationMenu>
+						<NavButton href={HISTORY_PATHNAME} highlight={pathname === HISTORY_PATHNAME} className="hidden navbar-hidden:flex h-full py-0 px-4">
+							History
+						</NavButton>
 					</div>
 				</div>
 
