@@ -6,6 +6,7 @@ import StatisticsDashboard from '@/components/statistics/StatisticsDashboard';
 
 export const metadata: Metadata = {
 	...prevMetadata,
+	title: `${DEFAULT_TITLE} - Statistics`,
 	openGraph: {
 		...prevMetadata.openGraph,
 		title: `${DEFAULT_TITLE} - Statistics`,

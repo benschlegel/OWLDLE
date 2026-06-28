@@ -6,6 +6,7 @@ import GlobalInsightsDashboard from '@/components/statistics/GlobalInsightsDashb
 
 export const metadata: Metadata = {
 	...prevMetadata,
+	title: `${DEFAULT_TITLE} - Statistics`,
 	openGraph: {
 		...prevMetadata.openGraph,
 		title: `${DEFAULT_TITLE} - Global Metrics`,
