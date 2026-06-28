@@ -33,8 +33,39 @@ function SortButton({ label, active, order, onClick }: { label: string; active: 
 	);
 }
 
+export function DatasetPopover({ dataset, datasetName, onDatasetChange }: Pick<Props, 'dataset' | 'datasetName' | 'onDatasetChange'>) {
+	const [open, setOpen] = useState(false);
+
+	function selectDataset(value: string) {
+		onDatasetChange(value);
+		setOpen(false);
+	}
+
+	return (
+		<Popover open={open} onOpenChange={setOpen}>
+			<PopoverTrigger asChild>
+				<Button type="button" variant="outline" size="sm" className="gap-1.5">
+					<span className="max-w-[12rem] truncate">{datasetName}</span>
+					<ChevronDown className="size-4 opacity-70" />
+				</Button>
+			</PopoverTrigger>
+			<PopoverContent align="end" className="w-64 p-1">
+				<div className="max-h-80 overflow-y-auto">
+					<p className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Champion Series</p>
+					{OWCS_DATASETS_REVERSED.map((d) => (
+						<DatasetItem key={d.dataset} active={d.dataset === dataset} label={d.formattedName} onClick={() => selectDataset(d.dataset)} />
+					))}
+					<p className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Overwatch League</p>
+					{OWL_DATASETS_REVERSED.map((d) => (
+						<DatasetItem key={d.dataset} active={d.dataset === dataset} label={d.formattedName} onClick={() => selectDataset(d.dataset)} />
+					))}
+				</div>
+			</PopoverContent>
+		</Popover>
+	);
+}
+
 export default function HistoryControls({ dataset, datasetName, onDatasetChange, search, onSearchChange, sort, order, onSortChange }: Props) {
-	const [datasetOpen, setDatasetOpen] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
 	// Ctrl/Cmd+K focuses the search field.
@@ -49,11 +80,6 @@ export default function HistoryControls({ dataset, datasetName, onDatasetChange,
 		document.addEventListener('keydown', onKey);
 		return () => document.removeEventListener('keydown', onKey);
 	}, []);
-
-	function selectDataset(value: string) {
-		onDatasetChange(value);
-		setDatasetOpen(false);
-	}
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -81,26 +107,9 @@ export default function HistoryControls({ dataset, datasetName, onDatasetChange,
 					<SortButton label="Games" active={sort === 'played'} order={order} onClick={() => onSortChange('played')} />
 				</ButtonGroup>
 
-				<Popover open={datasetOpen} onOpenChange={setDatasetOpen}>
-					<PopoverTrigger asChild>
-						<Button type="button" variant="outline" size="sm" className="gap-1.5">
-							<span className="max-w-[12rem] truncate">{datasetName}</span>
-							<ChevronDown className="size-4 opacity-70" />
-						</Button>
-					</PopoverTrigger>
-					<PopoverContent align="end" className="w-64 p-1">
-						<div className="max-h-80 overflow-y-auto">
-							<p className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Champion Series</p>
-							{OWCS_DATASETS_REVERSED.map((d) => (
-								<DatasetItem key={d.dataset} active={d.dataset === dataset} label={d.formattedName} onClick={() => selectDataset(d.dataset)} />
-							))}
-							<p className="px-2 py-1.5 text-sm font-semibold text-muted-foreground">Overwatch League</p>
-							{OWL_DATASETS_REVERSED.map((d) => (
-								<DatasetItem key={d.dataset} active={d.dataset === dataset} label={d.formattedName} onClick={() => selectDataset(d.dataset)} />
-							))}
-						</div>
-					</PopoverContent>
-				</Popover>
+				<div className="hidden sm:block">
+					<DatasetPopover dataset={dataset} datasetName={datasetName} onDatasetChange={onDatasetChange} />
+				</div>
 			</div>
 		</div>
 	);

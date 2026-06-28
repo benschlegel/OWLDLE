@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Fuse, { type IFuseOptions } from 'fuse.js';
-import HistoryControls from '@/components/history/HistoryControls';
+import HistoryControls, { DatasetPopover } from '@/components/history/HistoryControls';
 import HistoryDetailDialog from '@/components/history/HistoryDetailDialog';
 import HistoryList from '@/components/history/HistoryList';
 import RandomGameSection from '@/components/history/RandomGameSection';
@@ -100,7 +100,12 @@ export default function HistoryDashboard() {
 		<div className="mx-auto w-full max-w-3xl px-4 py-6 flex flex-col gap-8">
 			<section className="flex flex-col gap-4 snap-start scroll-mt-20">
 				<header className="flex flex-col gap-1">
-					<h1 className="sm:text-4xl text-3xl font-owl text-primary-foreground">History</h1>
+					<div className="flex items-center justify-between">
+						<h1 className="sm:text-4xl text-3xl font-owl text-primary-foreground">History</h1>
+						<div className="sm:hidden">
+							<DatasetPopover dataset={mode} datasetName={datasetName} onDatasetChange={(v) => setParams({ mode: v as typeof mode, iteration: null, stage: null })} />
+						</div>
+					</div>
 					{/* <p className="text-lg font-owl tracking-wide text-muted-foreground">{datasetName}</p> */}
 				</header>
 
