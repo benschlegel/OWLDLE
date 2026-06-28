@@ -49,12 +49,12 @@ export default function RandomGameSection() {
 	}, [reroll]);
 
 	return (
-		<div className="flex flex-col gap-4">
+		<div className="flex flex-col sm:gap-4 gap-1">
 			<p className="text-sm text-muted-foreground text-center">
-				Pick a random, anonymous game played by someone across any dataset and replay how their board looked. Hit reroll for a new one.
+				Roll a random, anonymous game played by someone across any dataset and replay how their board looked. Hit reroll for a new one.
 			</p>
 
-			<div className="flex flex-wrap items-center justify-center gap-2">
+			<div className="flex flex-wrap items-center justify-center gap-2 sm:my-0 my-2">
 				<Popover open={modeOpen} onOpenChange={setModeOpen}>
 					<PopoverTrigger asChild>
 						<Button type="button" variant="outline" className="gap-1.5">
@@ -76,21 +76,13 @@ export default function RandomGameSection() {
 						</div>
 					</PopoverContent>
 				</Popover>
-
-				<Button type="button" onClick={reroll} className="gap-2" variant="secondary">
-					<Dices className="size-4" />
-					Reroll
-					<Kbd>r</Kbd>
-				</Button>
 			</div>
 
 			{current && (
-				<Card>
-					<CardContent className="grid grid-cols-2 gap-x-4 gap-y-2 p-4 text-sm sm:grid-cols-4">
+				<Card className="w-full max-w-lg mx-auto">
+					<CardContent className="grid grid-cols-2 gap-x-4 gap-y-2 p-4 text-sm sm:grid-cols-2">
 						<InfoItem label="Dataset" value={currentDatasetName} />
-						<InfoItem label="Iteration" value={`#${current.iteration}`} />
-						<InfoItem label="Answer" value={current.answer} />
-						<InfoItem label="Finished" value={formatDateTime(current.finishedAt)} />
+						<InfoItem label="Answer" value={current.answer} isRightAligned />
 					</CardContent>
 				</Card>
 			)}
@@ -99,6 +91,27 @@ export default function RandomGameSection() {
 			<div className="w-full max-w-lg mx-auto">
 				<GameLogGrid game={current} />
 			</div>
+
+			<div className="max-w-lg mx-auto w-full">
+				<Button
+					type="button"
+					onClick={reroll}
+					className="gap-2 border-primary-foreground border-2 w-full focus-visible:ring-primary-foreground hover:bg-primary-foreground/40"
+					variant="outline">
+					<Dices className="size-4" />
+					Reroll
+					<Kbd>r</Kbd>
+				</Button>
+			</div>
+
+			{current && (
+				<Card className="w-full max-w-lg mx-auto">
+					<CardContent className="grid grid-cols-2 gap-x-4 gap-y-2 p-4 text-sm sm:grid-cols-2">
+						<InfoItem label="Iteration" value={`#${current.iteration}`} />
+						<InfoItem label="Finished" value={formatDateTime(current.finishedAt)} isRightAligned />
+					</CardContent>
+				</Card>
+			)}
 		</div>
 	);
 }
@@ -117,11 +130,11 @@ function ModeItem({ label, active, onClick }: { label: string; active: boolean; 
 	);
 }
 
-function InfoItem({ label, value }: { label: string; value: string }) {
+function InfoItem({ label, value, isRightAligned = false }: { label: string; value: string; isRightAligned?: boolean }) {
 	return (
 		<div className="flex flex-col">
-			<span className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">{label}</span>
-			<span className="font-owl text-foreground truncate">{value}</span>
+			<span className={cn('text-xs uppercase tracking-wide text-muted-foreground font-semibold', isRightAligned && 'text-right')}>{label}</span>
+			<span className={cn('font-owl text-foreground truncate', isRightAligned && 'text-right')}>{value}</span>
 		</div>
 	);
 }

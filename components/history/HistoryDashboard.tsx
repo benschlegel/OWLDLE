@@ -126,7 +126,7 @@ export default function HistoryDashboard() {
 				/>
 			</section>
 
-			<section ref={randomRef} id={RANDOM_ANCHOR} className="flex flex-col gap-3 snap-start scroll-mt-20 min-h-[60vh]">
+			<section ref={randomRef} id={RANDOM_ANCHOR} className="flex flex-col gap-3 snap-start scroll-mt-20 min-h-[60vh] mt-5">
 				<Marker variant="separator">
 					<MarkerContent>
 						<h2 className="sm:text-xl text-lg font-owl text-foreground">completed game logs</h2>
