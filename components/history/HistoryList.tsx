@@ -87,7 +87,7 @@ export default function HistoryList({ items, grouped, showStage, showPlayed, isL
 									transform: `translateY(${virtualRow.start}px)`,
 								}}>
 								{item.type === 'marker' ? (
-									<div className="flex h-full items-center px-1 pt-2">
+									<div className="flex h-full items-center px-1 py-2">
 										<Marker variant="separator">
 											<MarkerContent>
 												<h2 className="sm:text-xl text-lg font-owl text-foreground">{item.stageLabel}</h2>
