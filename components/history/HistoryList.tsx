@@ -71,7 +71,7 @@ export default function HistoryList({ items, grouped, showStage, showPlayed, isL
 
 	return (
 		<Card className="p-2">
-			<div ref={parentRef} className="max-h-120 overflow-y-auto pr-1">
+			<div ref={parentRef} className="max-h-120 overflow-y-auto pr-1 scroll-fade-10 scroll-fade scrollbar-none">
 				<div style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}>
 					{rowVirtualizer.getVirtualItems().map((virtualRow) => {
 						const item = items[virtualRow.index];
@@ -108,7 +108,7 @@ export default function HistoryList({ items, grouped, showStage, showPlayed, isL
 
 function LoadingSkeleton() {
 	return (
-		<Skeleton className="h-116.5 rounded-lg p-2 flex flex-col gap-1.5 pr-5.5 pl-2.5">
+		<Skeleton className="h-124.5 rounded-lg p-2 flex flex-col gap-1.5 pr-5.5 pl-2.5">
 			<Skeleton className="h-14 bg-secondary/40" />
 			<Skeleton className="h-14 bg-secondary/40" />
 			<Skeleton className="h-14 bg-secondary/40" />
