@@ -124,31 +124,34 @@ function formatDate(iso: string): string {
 interface Props {
 	dataset: string;
 	iteration: number | null;
+	stage: string | null;
 	entry: HistoryEntry | null;
-	prevIteration: number | null;
-	nextIteration: number | null;
+	newerEntry: HistoryEntry | null;
+	olderEntry: HistoryEntry | null;
 	onClose: () => void;
-	onNavigate: (it: number) => void;
+	onNavigate: (entry: HistoryEntry) => void;
 }
 
-export default function HistoryDetailDialog({ dataset, iteration, entry, prevIteration, nextIteration, onClose, onNavigate }: Props) {
-	const { data, isLoading, isError, isPlaceholderData } = useHistoryDetail(dataset, iteration);
+export default function HistoryDetailDialog({ dataset, iteration, stage, entry, newerEntry, olderEntry, onClose, onNavigate }: Props) {
+	const { data, isLoading, isError, isPlaceholderData } = useHistoryDetail(dataset, iteration, stage);
 	const open = iteration != null;
 
 	// Fall back to list entry data for immediate header display before detail resolves.
-	const displayPlayer = data?.player ?? entry?.player;
-	const displayDate = data?.date ?? entry?.date;
-	const displayIteration = data?.iteration ?? entry?.iteration ?? iteration;
+	const displayPlayer = entry?.player ?? data?.player;
+	const displayDate = entry?.date ?? data?.date;
+	const displayIteration = entry?.iteration ?? data?.iteration ?? iteration;
+	// While switching iterations, the previous detail lingers (keepPreviousData); dim the answer card.
+	const isSwitching = isPlaceholderData;
 
 	useEffect(() => {
 		if (!open) return;
 		const handleKey = (e: KeyboardEvent) => {
-			if (e.key === 'ArrowLeft' && nextIteration != null) onNavigate(nextIteration);
-			if (e.key === 'ArrowRight' && prevIteration != null) onNavigate(prevIteration);
+			if (e.key === 'ArrowLeft' && newerEntry) onNavigate(newerEntry);
+			if (e.key === 'ArrowRight' && olderEntry) onNavigate(olderEntry);
 		};
 		window.addEventListener('keydown', handleKey);
 		return () => window.removeEventListener('keydown', handleKey);
-	}, [open, prevIteration, nextIteration, onNavigate]);
+	}, [open, newerEntry, olderEntry, onNavigate]);
 
 	const isInitialLoading = isLoading && !data;
 
@@ -167,16 +170,24 @@ export default function HistoryDetailDialog({ dataset, iteration, entry, prevIte
 					) : null}
 				</DialogHeader>
 
-				{/* Answer card (shows immediately from list entry, games count fills in after detail loads) */}
+				{/* Answer card (shows immediately from list entry; dims + crossfades while switching iterations) */}
 				{displayPlayer != null ? (
 					<div className="flex items-center justify-between rounded-md bg-secondary/40 px-4 py-3">
 						<div>
 							<p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">Answer</p>
-							<p className="font-semibold font-owl text-primary-foreground text-2xl">{displayPlayer}</p>
+							<p className={cn('font-semibold font-owl text-2xl transition-colors', isSwitching ? 'text-muted-foreground' : 'text-primary-foreground')}>
+								{displayPlayer}
+							</p>
 						</div>
 						<div className="text-right">
 							<p className="text-xs uppercase tracking-wide text-muted-foreground font-semibold">Games played</p>
-							{data ? <p className="font-semibold font-owl text-2xl">{data.summary.gamesPlayed.toLocaleString()}</p> : <Skeleton className="h-8 rounded-md" />}
+							{data ? (
+								<p className={cn('font-semibold font-owl text-2xl transition-colors', isSwitching && 'text-muted-foreground')}>
+									{data.summary.gamesPlayed.toLocaleString()}
+								</p>
+							) : (
+								<Skeleton className="h-8 w-16 rounded-md" />
+							)}
 						</div>
 					</div>
 				) : (
@@ -186,9 +197,12 @@ export default function HistoryDetailDialog({ dataset, iteration, entry, prevIte
 				{isError && <p className="py-8 text-center text-muted-foreground">Couldn't load this puzzle.</p>}
 
 				{isInitialLoading && !isError && (
-					<div className="flex flex-col items-center gap-4">
+					// Mirror the loaded layout exactly (donut h-64 + win-rate arc h-44 -mb-16, gap-2) to avoid layout shift.
+					<div className="flex w-full min-w-0 flex-col items-center gap-2">
 						<Skeleton className="h-64 w-full rounded-lg" />
-						<Skeleton className="h-40 w-full rounded-lg" />
+						<div className="mt-2 h-44 -mb-16 w-full">
+							<Skeleton className="mx-auto h-28 w-full max-w-xs rounded-lg" />
+						</div>
 					</div>
 				)}
 
@@ -227,16 +241,16 @@ export default function HistoryDetailDialog({ dataset, iteration, entry, prevIte
 					<Button
 						variant="outline"
 						size="icon"
-						disabled={nextIteration == null || isPlaceholderData}
-						onClick={() => nextIteration != null && onNavigate(nextIteration)}
+						disabled={newerEntry == null || isPlaceholderData}
+						onClick={() => newerEntry && onNavigate(newerEntry)}
 						aria-label="Newer iteration">
 						<ChevronLeft className="size-4" />
 					</Button>
 					<Button
 						variant="outline"
 						size="icon"
-						disabled={prevIteration == null || isPlaceholderData}
-						onClick={() => prevIteration != null && onNavigate(prevIteration)}
+						disabled={olderEntry == null || isPlaceholderData}
+						onClick={() => olderEntry && onNavigate(olderEntry)}
 						aria-label="Older iteration">
 						<ChevronRight className="size-4" />
 					</Button>

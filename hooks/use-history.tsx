@@ -1,20 +1,17 @@
 import type { HistoryListResponse } from '@/types/history';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 
-async function fetchHistory(dataset: string, cursor?: number): Promise<HistoryListResponse> {
-	const params = new URLSearchParams({ dataset });
-	if (cursor !== undefined) params.set('cursor', String(cursor));
-	const res = await fetch(`/api/history?${params}`);
+async function fetchHistory(dataset: string): Promise<HistoryListResponse> {
+	const res = await fetch(`/api/history?dataset=${encodeURIComponent(dataset)}`);
 	if (!res.ok) throw new Error('Failed to load history');
 	return res.json();
 }
 
+/** Loads the entire history (all stages, all iterations) for a dataset at once. */
 export function useHistory(dataset: string) {
-	return useInfiniteQuery({
+	return useQuery({
 		queryKey: ['history', dataset],
-		queryFn: ({ pageParam }) => fetchHistory(dataset, pageParam),
-		initialPageParam: undefined as number | undefined,
-		getNextPageParam: (lastPage) => lastPage.nextCursor ?? undefined,
+		queryFn: () => fetchHistory(dataset),
 		staleTime: 5 * 60 * 1000,
 		refetchOnWindowFocus: false,
 	});

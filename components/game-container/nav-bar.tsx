@@ -178,8 +178,9 @@ export function Navbar() {
 									label="Overwatch League"
 									prefetchRoute={OWL_PATHNAME}
 									className={'2xl:ml-0 2xl:pl-5 -ml-1.5 pl-6'}>
-									<span className="2xl:block hidden">Overwatch League</span>
-									<span className="2xl:hidden block">OWL</span>
+									{/* <span className="2xl:block hidden">Overwatch League</span>
+									<span className="2xl:hidden block">OWL</span> */}
+									<span>OWL</span>
 								</NavSelect>
 								<NavSelect
 									label="Champion Series"

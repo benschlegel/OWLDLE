@@ -1,25 +1,47 @@
 import type { Dataset } from '@/data/datasets';
 import type { RawHistoryDetail, RawHistoryEntry } from '@/lib/database/history';
 import type { HistoryDetailResponse, HistoryListResponse } from '@/types/history';
+import type { StageOption } from '@/types/statistics';
 
 /** Win-rate as a 0–100 integer. Mirrors `pct` in lib/statistics.ts. */
 function pct(n: number, d: number): number {
 	return d > 0 ? Math.round((n / d) * 100) : 0;
 }
 
-/** Shape raw history rows into the list response. Pure. Input is already iteration-desc. */
-export function shapeHistoryList(dataset: Dataset, raw: RawHistoryEntry[], nextCursor: number | null): HistoryListResponse {
-	return {
-		dataset,
-		entries: raw.map((r) => ({
-			iteration: r.iteration,
-			date: r.date.toISOString(),
-			player: r.player,
-			played: r.played,
-			winRate: pct(r.wins, r.played),
-		})),
-		nextCursor,
-	};
+/** Stage value/label/number for a game_logs key, given the resolved stage options. */
+function stageMetaForKey(key: string, stages: StageOption[]): { stage: string; stageLabel: string; stageNumber: number } {
+	const m = key.match(/-stage(\d+)$/);
+	if (m) {
+		const n = Number(m[1]);
+		const opt = stages.find((s) => s.value === String(n));
+		return { stage: String(n), stageLabel: opt?.label ?? `Stage ${n}`, stageNumber: n };
+	}
+	// Bare base key = live/current stage.
+	const opt = stages.find((s) => s.value === 'current');
+	const labelNum = opt?.label.match(/Stage (\d+)/);
+	return { stage: 'current', stageLabel: opt?.label ?? 'Current', stageNumber: labelNum ? Number(labelNum[1]) : Number.MAX_SAFE_INTEGER };
+}
+
+/**
+ * Shape raw history rows into the list response. Attaches per-entry stage metadata and
+ * sorts by stageNumber DESC then iteration DESC (newest stage / newest puzzle first).
+ */
+export function shapeHistoryList(dataset: Dataset, raw: RawHistoryEntry[], stages: StageOption[]): HistoryListResponse {
+	const entries = raw
+		.map((r) => {
+			const meta = stageMetaForKey(r.datasetKey, stages);
+			return {
+				iteration: r.iteration,
+				date: r.date.toISOString(),
+				player: r.player,
+				played: r.played,
+				winRate: pct(r.wins, r.played),
+				datasetKey: r.datasetKey,
+				...meta,
+			};
+		})
+		.sort((a, b) => b.stageNumber - a.stageNumber || b.iteration - a.iteration);
+	return { dataset, stages, entries };
 }
 
 /** Shape raw puzzle detail into the detail response. Pure. `maxGuesses` from GAME_CONFIG. */

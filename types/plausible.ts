@@ -6,6 +6,7 @@ export type PlausibleEvents = {
 	copyResult: { state: GameResult; dataset: Dataset };
 	openSocials: never;
 	followSocial: { social: string };
+	rerollHistory: never;
 };
 
 type GameResult = 'won' | 'lost';

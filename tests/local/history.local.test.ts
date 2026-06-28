@@ -1,16 +1,18 @@
 import { describe, expect, test, beforeEach } from 'vitest';
-import { getRawHistory, getRawHistoryDetail, getStatisticsCollections } from '@/lib/databaseAccess';
+import { getAllRawHistory, getRawHistory, getRawHistoryDetail, getStatisticsCollections } from '@/lib/databaseAccess';
 import { shapeHistoryList, shapeHistoryDetail } from '@/lib/history';
+import type { StageOption } from '@/types/statistics';
 import type { Dataset } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 
 const ds: Dataset = 'season1';
+const SINGLE_STAGE: StageOption[] = [{ value: 'current', label: 'Last stage' }];
 
 async function clearCollections() {
 	const { gameLogCollection, iterationCollection, answerCollection } = getStatisticsCollections();
 	await Promise.all([
-		gameLogCollection.deleteMany({ dataset: ds }),
-		iterationCollection.deleteMany({ dataset: ds }),
+		gameLogCollection.deleteMany({ dataset: { $regex: `^${ds}` } as any }),
+		iterationCollection.deleteMany({ dataset: { $regex: `^${ds}` } as any }),
 		answerCollection.deleteMany({ _id: { $regex: `^current_${ds}` } as any }),
 	]);
 }
@@ -106,8 +108,8 @@ describe('getRawHistory — win rate and zero-game days', () => {
 			// iteration 2 has no logs
 		]);
 
-		const { entries, nextCursor } = await getRawHistory(ds);
-		const shaped = shapeHistoryList(ds, entries, nextCursor);
+		const { entries } = await getRawHistory(ds);
+		const shaped = shapeHistoryList(ds, entries, SINGLE_STAGE);
 
 		const e1 = shaped.entries.find((e) => e.iteration === 1);
 		expect(e1).toBeDefined();
@@ -202,5 +204,71 @@ describe('getRawHistoryDetail — spoiler guard', () => {
 		expect(await getRawHistoryDetail(ds, 5)).toBeNull(); // current
 		expect(await getRawHistoryDetail(ds, 6)).toBeNull(); // future
 		expect(await getRawHistoryDetail(ds, 2)).toBeNull(); // past but no iteration doc
+	});
+});
+
+describe('getAllRawHistory — multi-stage', () => {
+	beforeEach(clearCollections);
+
+	const stageKey = `${ds}-stage1`;
+	const STAGES: StageOption[] = [
+		{ value: 'all', label: 'All stages' },
+		{ value: 'current', label: 'Stage 2' },
+		{ value: '1', label: 'Stage 1' },
+	];
+
+	test('excludes the live base current iteration but includes all archived-stage iterations', async () => {
+		await seedCurrentAnswer(3); // live base current = 3
+		await seedIterations([
+			{ iteration: 1, playerName: 'BaseP1' },
+			{ iteration: 2, playerName: 'BaseP2' },
+			{ iteration: 3, playerName: 'BaseP3' }, // current → excluded
+		]);
+		// archived stage1 has no current answer → all included, even high iterations
+		await seedIterations([
+			{ iteration: 1, playerName: 'StageP1', dataset: stageKey as Dataset },
+			{ iteration: 2, playerName: 'StageP2', dataset: stageKey as Dataset },
+		]);
+
+		const entries = await getAllRawHistory(ds, [ds, stageKey]);
+		const base = entries.filter((e) => e.datasetKey === ds);
+		const stage = entries.filter((e) => e.datasetKey === stageKey);
+		expect(base.map((e) => e.iteration).sort()).toEqual([1, 2]); // 3 excluded
+		expect(stage.map((e) => e.iteration).sort()).toEqual([1, 2]); // all included
+	});
+
+	test('iteration 1 in base and stage1 are kept as separate entries; shaping sorts newest stage first', async () => {
+		await seedCurrentAnswer(2);
+		await seedIterations([{ iteration: 1, playerName: 'BaseP1' }]);
+		await seedIterations([{ iteration: 1, playerName: 'StageP1', dataset: stageKey as Dataset }]);
+		await seedLogs([
+			makeLog({ iteration: 1, gameResult: 'won', finishedAt: new Date('2026-01-01T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({ dataset: stageKey as Dataset, iteration: 1, gameResult: 'lost', finishedAt: new Date('2026-01-01T10:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+		]);
+
+		const entries = await getAllRawHistory(ds, [ds, stageKey]);
+		expect(entries).toHaveLength(2);
+
+		const shaped = shapeHistoryList(ds, entries, STAGES);
+		// Current stage (Stage 2) sorts before archived Stage 1.
+		expect(shaped.entries[0].datasetKey).toBe(ds);
+		expect(shaped.entries[0].stageLabel).toBe('Stage 2');
+		expect(shaped.entries[1].datasetKey).toBe(stageKey);
+		expect(shaped.entries[1].stageLabel).toBe('Stage 1');
+		expect(shaped.entries[1].stageNumber).toBe(1);
+	});
+
+	test('detail honors stage keys: archived stage has no spoiler guard', async () => {
+		await seedCurrentAnswer(2); // live base current = 2
+		await seedIterations([{ iteration: 5, playerName: 'StageP5', dataset: stageKey as Dataset }]);
+		await seedLogs([
+			makeLog({ dataset: stageKey as Dataset, iteration: 5, gameResult: 'won', finishedAt: new Date('2026-01-05T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+		]);
+
+		// iteration 5 would be "future" for the base, but on an archived stage there's no guard.
+		const raw = await getRawHistoryDetail(stageKey, 5);
+		expect(raw).not.toBeNull();
+		expect(raw?.player).toBe('StageP5');
+		expect(raw?.summary.gamesPlayed).toBe(1);
 	});
 });

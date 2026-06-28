@@ -1,21 +1,32 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Card } from '@/components/ui/card';
+import { Marker, MarkerContent } from '@/components/ui/marker';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useHistory } from '@/hooks/use-history';
+import type { HistoryViewItem } from '@/lib/history-view';
 import type { HistoryEntry } from '@/types/history';
 
 const ROW_HEIGHT = 56; // button height in px
 const GAP = 6; // vertical gap between buttons
-const ITEM_SLOT = ROW_HEIGHT + GAP; // virtualizer slot height
+const ROW_SLOT = ROW_HEIGHT + GAP; // virtualizer slot height for a row
+const MARKER_SLOT = 48; // virtualizer slot height for a stage separator marker
 
 function formatDate(iso: string): string {
 	return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 }
 
-function HistoryRow({ entry, onSelect }: { entry: HistoryEntry; onSelect: (entry: HistoryEntry) => void }) {
+function HistoryRow({
+	entry,
+	showStage,
+	showPlayed,
+	onSelect,
+}: { entry: HistoryEntry; showStage: boolean; showPlayed: boolean; onSelect: (entry: HistoryEntry) => void }) {
+	let value: string;
+	if (entry.played === 0) value = 'No games';
+	else if (showPlayed) value = `${entry.played.toLocaleString()} games`;
+	else value = `${entry.winRate}% win`;
 	return (
 		<button
 			type="button"
@@ -26,70 +37,85 @@ function HistoryRow({ entry, onSelect }: { entry: HistoryEntry; onSelect: (entry
 				<span className="font-semibold font-mono leading-tight">{entry.player}</span>
 				<span className="text-xs text-muted-foreground">
 					{formatDate(entry.date)} · #{entry.iteration}
+					{showStage ? ` · ${entry.stageLabel}` : ''}
 				</span>
 			</div>
-			<span className="shrink-0 text-sm font-owl text-primary-foreground">{entry.played > 0 ? `${entry.winRate}% win` : 'No games'}</span>
+			<span className="shrink-0 text-sm font-owl text-primary-foreground">{value}</span>
 		</button>
 	);
 }
 
-export default function HistoryList({ dataset, onSelect }: { dataset: string; onSelect: (entry: HistoryEntry) => void }) {
-	const { data, isLoading, isError, hasNextPage, isFetchingNextPage, fetchNextPage } = useHistory(dataset);
-	const entries = data?.pages.flatMap((p) => p.entries) ?? [];
+type Props = {
+	items: HistoryViewItem[];
+	grouped: boolean;
+	showStage: boolean;
+	showPlayed: boolean;
+	isLoading: boolean;
+	isError: boolean;
+	onSelect: (entry: HistoryEntry) => void;
+};
 
+export default function HistoryList({ items, grouped, showStage, showPlayed, isLoading, isError, onSelect }: Props) {
 	const parentRef = useRef<HTMLDivElement>(null);
-	const sentinelRef = useRef<HTMLDivElement>(null);
 
 	const rowVirtualizer = useVirtualizer({
-		count: entries.length,
+		count: items.length,
 		getScrollElement: () => parentRef.current,
-		estimateSize: () => ITEM_SLOT,
-		overscan: 5,
+		estimateSize: (index) => (items[index].type === 'marker' ? MARKER_SLOT : ROW_SLOT),
+		overscan: 8,
 	});
 
-	// Fetch the next page when the sentinel scrolls into view.
-	useEffect(() => {
-		const sentinel = sentinelRef.current;
-		if (!sentinel) return;
-		const observer = new IntersectionObserver(
-			([entry]) => {
-				if (entry.isIntersecting && hasNextPage && !isFetchingNextPage) fetchNextPage();
-			},
-			{ root: parentRef.current, threshold: 0.1 }
-		);
-		observer.observe(sentinel);
-		return () => observer.disconnect();
-	}, [hasNextPage, isFetchingNextPage, fetchNextPage]);
-
-	if (isLoading) return <Skeleton className="h-96 rounded-lg" />;
+	if (isLoading) return <LoadingSkeleton />;
 	if (isError) return <p className="text-muted-foreground">Couldn't load history. Try again later.</p>;
-	if (entries.length === 0) return <p className="text-center text-muted-foreground py-16 font-owl text-xl">No past puzzles yet.</p>;
+	if (items.length === 0) return <p className="text-center text-muted-foreground py-16 font-owl text-xl">No matching puzzles.</p>;
 
 	return (
 		<Card className="p-2">
-			{/* Fixed-height scroll container (for TanStack Virtual measure) */}
-			<div ref={parentRef} className="max-h-112 overflow-y-auto pr-1">
-				{/* Total height spacer so the scrollbar is correctly sized */}
+			<div ref={parentRef} className="max-h-120 overflow-y-auto pr-1">
 				<div style={{ height: rowVirtualizer.getTotalSize(), position: 'relative' }}>
-					{rowVirtualizer.getVirtualItems().map((virtualRow) => (
-						<div
-							key={virtualRow.key}
-							style={{
-								position: 'absolute',
-								top: 0,
-								left: 0,
-								width: '100%',
-								height: ITEM_SLOT,
-								transform: `translateY(${virtualRow.start}px)`,
-							}}>
-							<HistoryRow entry={entries[virtualRow.index]} onSelect={onSelect} />
-						</div>
-					))}
+					{rowVirtualizer.getVirtualItems().map((virtualRow) => {
+						const item = items[virtualRow.index];
+						return (
+							<div
+								key={virtualRow.key}
+								style={{
+									position: 'absolute',
+									top: 0,
+									left: 0,
+									width: '100%',
+									height: virtualRow.size,
+									transform: `translateY(${virtualRow.start}px)`,
+								}}>
+								{item.type === 'marker' ? (
+									<div className="flex h-full items-center px-1 pt-2">
+										<Marker variant="separator">
+											<MarkerContent>
+												<h2 className="sm:text-xl text-lg font-owl text-foreground">{item.stageLabel}</h2>
+											</MarkerContent>
+										</Marker>
+									</div>
+								) : (
+									<HistoryRow entry={item.entry} showStage={!grouped && showStage} showPlayed={showPlayed} onSelect={onSelect} />
+								)}
+							</div>
+						);
+					})}
 				</div>
-				{/* Sentinel: triggers next-page fetch when visible */}
-				<div ref={sentinelRef} className="h-1" />
 			</div>
-			{isFetchingNextPage && <p className="py-2 text-center text-xs text-muted-foreground">Loading more…</p>}
 		</Card>
+	);
+}
+
+function LoadingSkeleton() {
+	return (
+		<Skeleton className="h-116.5 rounded-lg p-2 flex flex-col gap-1.5 pr-5.5 pl-2.5">
+			<Skeleton className="h-14 bg-secondary/40" />
+			<Skeleton className="h-14 bg-secondary/40" />
+			<Skeleton className="h-14 bg-secondary/40" />
+			<Skeleton className="h-14 bg-secondary/40" />
+			<Skeleton className="h-14 bg-secondary/40" />
+			<Skeleton className="h-14 bg-secondary/40" />
+			<Skeleton className="h-14 bg-secondary/40" />
+		</Skeleton>
 	);
 }

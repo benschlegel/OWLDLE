@@ -66,10 +66,16 @@ const prodDatabase = dbClient.db(PROD_NAME);
 const prodGameLogCollection = prodDatabase.collection<DbLoggedGame>(gameLogs);
 const prodIterationCollection = prodDatabase.collection<DbIteration>(iterationsId);
 const prodAnswerCollection = prodDatabase.collection<DbAnswerFull>(answerCollectionName);
+const prodPlayerCollection = prodDatabase.collection<DbFormattedPlayers>(playerCollectionName);
 
 export function getStatisticsCollections() {
 	if (useDevDatabase) {
-		return { gameLogCollection: prodGameLogCollection, iterationCollection: prodIterationCollection, answerCollection: prodAnswerCollection };
+		return {
+			gameLogCollection: prodGameLogCollection,
+			iterationCollection: prodIterationCollection,
+			answerCollection: prodAnswerCollection,
+			playerCollection: prodPlayerCollection,
+		};
 	}
-	return { gameLogCollection, iterationCollection, answerCollection };
+	return { gameLogCollection, iterationCollection, answerCollection, playerCollection };
 }

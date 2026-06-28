@@ -29,33 +29,27 @@ const customCountryImages: Partial<Record<CountryCode, string>> = {
 	'GB-NI': '/countries/GB-NI.avif',
 };
 
+/** Flag image URL for a country code (honoring custom overrides). */
+export function getCountryImg(country: CountryCode): string {
+	return customCountryImages[country] ?? `https://vectorflags.s3.amazonaws.com/flags/${country.toLowerCase()}-square-01.png`;
+}
+
+/** Region image (only OWL Atlantic/Pacific divisions have one). */
+export function getRegionImg(region: string | null | undefined): string {
+	if (region === 'AtlanticDivison') return '/regions/atlantic.webp';
+	if (region === 'PacificDivision') return '/regions/pacific.webp';
+	return '';
+}
+
 for (let i = 0; i < ALL_PLAYERS.length; i++) {
 	const currentPlayers = ALL_PLAYERS[i];
 	const currDataset = DATASETS[i];
 	const formattedPlayers = currentPlayers.map((player, index) => {
-		// Default url for vectorflags country flag api
-		let countryImg = `https://vectorflags.s3.amazonaws.com/flags/${player.country.toLowerCase()}-square-01.png`;
-		let regionImg = '';
-
-		// Override with custom image if one is defined for this country code
-		const customImg = customCountryImages[player.country];
-		if (customImg) {
-			countryImg = customImg;
-		}
-
 		// Set player region
-
 		const region = getRegion<typeof currDataset>(player.team, currDataset);
 
-		// Set region image
-		if (region === 'AtlanticDivison') {
-			regionImg = '/regions/atlantic.webp';
-		} else if (region === 'PacificDivision') {
-			regionImg = '/regions/pacific.webp';
-		}
-
 		// Take original player data and add auto calculated fields
-		return { ...player, countryImg, regionImg, id: index, region: region };
+		return { ...player, countryImg: getCountryImg(player.country), regionImg: getRegionImg(region), id: index, region: region };
 	});
 	FORMATTED_PLAYERS.push({ dataset: currDataset, players: formattedPlayers });
 }
