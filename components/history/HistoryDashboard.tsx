@@ -103,9 +103,14 @@ export default function HistoryDashboard() {
 					<div className="flex items-center justify-between">
 						<h1 className="sm:text-4xl text-3xl font-owl text-primary-foreground">History</h1>
 						<div className="sm:hidden">
-							<DatasetPopover dataset={mode} datasetName={datasetName} onDatasetChange={(v) => setParams({ mode: v as typeof mode, iteration: null, stage: null })} />
+							<DatasetPopover
+								dataset={mode}
+								datasetName={datasetName}
+								onDatasetChange={(v) => setParams({ mode: v as typeof mode, iteration: null, stage: null })}
+							/>
 						</div>
 					</div>
+					<p className="text-muted-foreground sm:block hidden">Select entry for more details</p>
 					{/* <p className="text-lg font-owl tracking-wide text-muted-foreground">{datasetName}</p> */}
 				</header>
 

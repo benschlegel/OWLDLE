@@ -230,7 +230,10 @@ export default function HamburgerSheetContent({ setSheetOpen }: Props) {
 						Install App
 					</Button>
 				)}
-				<Button variant={'outline'} className="h-auto py-1.5 gap-1 border-primary-foreground text-primary-foreground" onClick={onSettingsClick}>
+				<Button
+					variant={'outline'}
+					className="h-auto py-1.5 gap-1 border-primary-foreground text-primary-foreground hover:bg-primary-foreground/40"
+					onClick={onSettingsClick}>
 					<SettingsIcon className="size-4" />
 					Settings
 				</Button>
