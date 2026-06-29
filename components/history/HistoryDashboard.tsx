@@ -13,7 +13,7 @@ import { useHistory } from '@/hooks/use-history';
 import { useHistoryParams } from '@/hooks/use-history-params';
 import type { HistoryEntry } from '@/types/history';
 
-const RANDOM_ANCHOR = 'game-logs';
+const RANDOM_ANCHOR = 'game-replays';
 
 // Same as live game search (components/game-container/search.tsx).
 const FUSE_OPTIONS: IFuseOptions<HistoryEntry> = {
@@ -139,7 +139,7 @@ export default function HistoryDashboard() {
 			<section ref={randomRef} id={RANDOM_ANCHOR} className="flex flex-col gap-3 snap-start scroll-mt-20 min-h-[60vh] mt-5">
 				<Marker variant="separator">
 					<MarkerContent>
-						<h2 className="sm:text-xl text-lg font-owl text-foreground">completed game logs</h2>
+						<h2 className="sm:text-xl text-lg font-owl text-foreground">random game replays</h2>
 					</MarkerContent>
 				</Marker>
 				<RandomGameSection />

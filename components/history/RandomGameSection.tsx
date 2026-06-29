@@ -134,7 +134,7 @@ function InfoItem({ label, value, isRightAligned = false }: { label: string; val
 	return (
 		<div className="flex flex-col">
 			<span className={cn('text-xs uppercase tracking-wide text-muted-foreground font-semibold', isRightAligned && 'text-right')}>{label}</span>
-			<span className={cn('font-owl text-foreground truncate', isRightAligned && 'text-right')}>{value}</span>
+			<span className={cn('font-owl text-foreground truncate text-lg opacity-95', isRightAligned && 'text-right')}>{value}</span>
 		</div>
 	);
 }

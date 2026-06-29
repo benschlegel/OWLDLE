@@ -32,7 +32,7 @@ function HistoryRow({
 			type="button"
 			onClick={() => onSelect(entry)}
 			style={{ height: ROW_HEIGHT }}
-			className="flex w-full items-center justify-between cursor-pointer gap-3 rounded-md bg-secondary/40 px-4 text-left transition-colors hover:bg-secondary">
+			className="flex w-full items-center justify-between cursor-pointer gap-3 rounded-md dark:bg-secondary/40 bg-background  px-4 text-left transition-colors hover:bg-secondary">
 			<div className="flex flex-col">
 				<span className="font-semibold font-mono leading-tight">{entry.player}</span>
 				<span className="text-xs text-muted-foreground">
