@@ -14,7 +14,7 @@
 		"enabled": true,
 		"rules": {
 			// "recommended": true,
-			"correctness": {},
+			"correctness": { "noUnusedVariables": "off" },
 			"style": {
 				"noUnusedTemplateLiteral": "off",
 				"noParameterAssign": "error",

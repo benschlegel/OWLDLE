@@ -86,18 +86,19 @@ A superseded stage is identified by `<dataset>-stage<N>`, where `N` is the
 Example: `owcs-s3` moves from Stage 1 to Stage 2 (substitute your dataset id
 and camelCase name throughout).
 
-1. **`data/players/players.ts`**, add the new roster as `owcsS3Stage2Players:
+1. **`data/teams/teams.ts`**, if the team list changed, add the new stage's
+   region arrays and a named const (e.g. `OWCS_S3_STAGE2_TEAMS`), then repoint
+   the `ALL_TEAMS` `'owcs-s3'` entry to it.
+2. **`data/players/players.ts`**, add the new roster as `owcsS3Stage2Players:
    Player<'owcs-s3'>[]`. Move the previous stage's roster into
    `data/stage-archive.ts` under key `'owcs-s3-stage1'` (relaxed `ArchivedPlayer`
    type, see the type definition in that file), then repoint the alias:
    `export const owcsS3Players = owcsS3Stage2Players;`.
-2. **`data/teams/teams.ts`**, if the team list changed, add the new stage's
-   region arrays and a named const (e.g. `OWCS_S3_STAGE2_TEAMS`), then repoint
-   the `ALL_TEAMS` `'owcs-s3'` entry to it.
-3. **`data/teams/logos.ts`**, add/adjust logos for new teams; repoint the
-   `'owcs-s3'` `LOGOS` entry to the latest-stage logos.
-4. **Verify**: `bun run verify && bun run build`. The integrity test confirms
-   players/teams/logos are mutually consistent.
+3. If necessary, add new countries to `countries.ts`
+4. **`data/teams/logos.ts`**, add/adjust logos for new teams. Override the entry for the latest dataset, no better workaround yet. Add images to `/public/teams/<dataset>`. Optimize the images using squoosh (to .avif, quality around 50%, effort 10, resize to 50% or less, final image should be <6kb)
+5. Update `registry.ts` to disable teams for daily mode.
+6. **Verify**: `bun run verify && bun run build`. The integrity test confirms
+   players/teams/logos are mutually consistent. Check if all teams show up in the help dialog correctly and guess some new players to check if the cells look as expected, check if players from disabled teams are available in endless mode.
 
 This is the only repo change. It is small, typed, and reviewable, no parallel
 arrays are reordered.

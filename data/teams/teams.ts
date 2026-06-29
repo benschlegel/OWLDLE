@@ -1,5 +1,4 @@
 import type { Dataset } from '@/data/datasets';
-import { PLAYERS_S1 } from '@/data/players/formattedPlayers';
 import type { Player } from '@/types/players';
 
 // * Team data
@@ -171,30 +170,36 @@ const ALL_WESTERN = [
 ] as const;
 
 const EMEA_OWCS_S3 = ['TeamPeps', 'TwistedMinds', 'VirtusPro', 'GeekayEsports', 'AlQadsiah', 'AnyonesLegend'] as const;
+const EMEA_OWCS_S3_STAGE_2 = ['TwistedMinds', 'VirtusPro', 'GeekayEsports', 'AlQadsiah', '1234', 'Telacy'] as const;
 const NA_OWCS_S3 = ['DallasFuel', 'Disguised', 'SpacestationGaming', 'TeamLiquid', 'LuneXGaming', 'Extinction'] as const;
+const NA_OWCS_S3_STAGE_2 = ['DallasFuel', 'Disguised', 'SpacestationGaming', 'TeamLiquid', 'LuneXGaming', 'TheKafe'] as const;
 const KR_OWCS_S3 = ['T1', 'TeamFalcons', 'CrazyRaccoon', 'ZETADIVISION', 'NewEra', 'OnsideGaming', 'ZANEsports', 'Cheeseburger', 'PokerFace'] as const;
+const KR_OWCS_S3_STAGE_2 = ['T1', 'TeamFalcons', 'CrazyRaccoon', 'ZETADIVISION', 'ZANSIDEGAMING', 'Cheeseburger', 'O2Blast', 'SuperBad', 'PokerFace'] as const;
 const CN_OWCS_S3 = ['WeiboGaming', 'JDGaming', 'AllGamers', 'MilkTea', 'HomieE', 'DEG', 'SolusVictorem', 'NaivePiggy'] as const;
+const CN_OWCS_S3_STAGE_2 = ['WeiboGaming', 'JDGaming', 'AllGamers', 'HUNENG', '4AM', 'ReturnZ', 'SolusVictorem', 'KitsuneKage'] as const;
 
 const ALL_EMEA = [
 	{ dataset: 'owcs-s1', data: EMEA_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: EMEA_OWCS_S2 },
-	{ dataset: 'owcs-s3', data: EMEA_OWCS_S3 },
+	{ dataset: 'owcs-s3', data: EMEA_OWCS_S3_STAGE_2 },
 ];
 const ALL_NA = [
 	{ dataset: 'owcs-s1', data: NA_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: NA_OWCS_S2 },
-	{ dataset: 'owcs-s3', data: NA_OWCS_S3 },
+	{ dataset: 'owcs-s3', data: NA_OWCS_S3_STAGE_2 },
 ];
 const ALL_KR = [
 	{ dataset: 'owcs-s1', data: KR_OWCS_S1 },
 	{ dataset: 'owcs-s2', data: KR_OWCS_S2 },
-	{ dataset: 'owcs-s3', data: KR_OWCS_S3 },
+	{ dataset: 'owcs-s3', data: KR_OWCS_S3_STAGE_2 },
 ];
-const ALL_CN = [{ dataset: 'owcs-s3', data: CN_OWCS_S3 }];
+const ALL_CN = [{ dataset: 'owcs-s3', data: CN_OWCS_S3_STAGE_2 }];
 
 // Latest stage of OWCS S3's team list. Next stage: add OWCS_S3_STAGE2_TEAMS and
 // repoint the ALL_TEAMS 'owcs-s3' entry to it.
 const OWCS_S3_STAGE1_TEAMS = [...EMEA_OWCS_S3, ...NA_OWCS_S3, ...KR_OWCS_S3, ...CN_OWCS_S3] as const;
+
+const OWCS_S3_STAGE2_TEAMS = [...EMEA_OWCS_S3_STAGE_2, ...NA_OWCS_S3_STAGE_2, ...KR_OWCS_S3_STAGE_2, ...CN_OWCS_S3_STAGE_2];
 
 export const ALL_TEAMS = [
 	{ dataset: 'season1', data: [...EASTERN, ...WESTERN] },
@@ -205,7 +210,7 @@ export const ALL_TEAMS = [
 	{ dataset: 'season6', data: [...EASTERN_S6, ...WESTERN_S6] },
 	{ dataset: 'owcs-s1', data: [...EMEA_OWCS_S1, ...NA_OWCS_S1, ...KR_OWCS_S1] },
 	{ dataset: 'owcs-s2', data: [...EMEA_OWCS_S2, ...NA_OWCS_S2, ...KR_OWCS_S2] },
-	{ dataset: 'owcs-s3', data: [...EMEA_OWCS_S3, ...NA_OWCS_S3, ...KR_OWCS_S3, ...CN_OWCS_S3] },
+	{ dataset: 'owcs-s3', data: OWCS_S3_STAGE2_TEAMS },
 ] as const;
 
 export type TeamName<T extends Dataset = 'season1'> = Extract<(typeof ALL_TEAMS)[number], { dataset: T }>['data'][number];
@@ -311,9 +316,10 @@ export const PARTNERED_TEAMS_OWCS_S3 = [
 	'SpacestationGaming',
 	'TeamLiquid',
 	// EMEA
-	'TeamPeps',
+	'GeekayEsports',
 	'VirtusPro',
 	'TwistedMinds',
+	'VirtusPro',
 	// Korea
 	'T1',
 	'TeamFalcons',
@@ -323,7 +329,6 @@ export const PARTNERED_TEAMS_OWCS_S3 = [
 	'WeiboGaming',
 	'JDGaming',
 	'AllGamers',
-	'MilkTea',
 ] as const satisfies ReadonlyArray<TeamName<'owcs-s3'>>;
 
 export const atlanticPacificTeams: Dataset[] = ['season1', 'season2', 'season3'] as const;

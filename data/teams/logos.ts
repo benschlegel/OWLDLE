@@ -318,7 +318,9 @@ if (oldGlads) {
 }
 
 const teamLogosS6Raw = [...TEAM_LOGOS_S5] as unknown as TeamLogoData<'season6'>[];
-const TEAM_LOGOS_S6 = teamLogosS6Raw.filter((l) => l.teamName !== ('PhiladelphiaFusion' as string) && l.teamName !== ('ParisEternal' as string) && l.teamName !== ('ChengduHunters' as string));
+const TEAM_LOGOS_S6 = teamLogosS6Raw.filter(
+	(l) => l.teamName !== ('PhiladelphiaFusion' as string) && l.teamName !== ('ParisEternal' as string) && l.teamName !== ('ChengduHunters' as string)
+);
 TEAM_LOGOS_S6.push(teamLogosS6[0]);
 TEAM_LOGOS_S6.push(teamLogosS6[1]);
 
@@ -394,31 +396,35 @@ const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
 	/**
 	 * EMEA
 	 */
-	{ teamName: 'AnyonesLegend', displayName: "Anyone's Legend", backgroundColor: '#202127' },
+	{ teamName: 'Telacy', displayName: 'Telacy', backgroundColor: '#202127' },
+	{ teamName: '1234', displayName: '1234', backgroundColor: '#202127' },
 	/**
 	 * NA
 	 */
 	{ teamName: 'DallasFuel', displayName: 'Dallas Fuel', backgroundColor: '#202127' },
 	{ teamName: 'Disguised', displayName: 'Disguised', backgroundColor: '#202127' },
 	{ teamName: 'LuneXGaming', displayName: 'LuneX Gaming', backgroundColor: '#202127' },
+	{ teamName: 'TheKafe', displayName: 'The Kafe', backgroundColor: '#202127' },
 	/**
 	 * Korea
 	 */
-	{ teamName: 'NewEra', displayName: 'New Era', backgroundColor: '#202127' },
-	{ teamName: 'ZANEsports', displayName: 'ZAN Esports', backgroundColor: '#202127' },
+	// { teamName: 'NewEra', displayName: 'New Era', backgroundColor: '#202127' },
+	{ teamName: 'ZANSIDEGAMING', displayName: 'ZANSIDE GAMING', backgroundColor: '#202127' },
 	{ teamName: 'Cheeseburger', displayName: 'Cheeseburger', backgroundColor: '#202127' },
 	{ teamName: 'PokerFace', displayName: 'Poker Face', backgroundColor: '#202127' },
+	{ teamName: 'O2Blast', displayName: 'O2 Blast', backgroundColor: '#202127' },
+	{ teamName: 'SuperBad', displayName: 'SuperBad', backgroundColor: '#202127' },
 	/**
 	 * China
 	 */
 	{ teamName: 'WeiboGaming', displayName: 'Weibo Gaming', backgroundColor: '#202127' },
 	{ teamName: 'JDGaming', displayName: 'JD Gaming', backgroundColor: '#202127' },
 	{ teamName: 'AllGamers', displayName: 'All Gamers', backgroundColor: '#202127' },
-	{ teamName: 'MilkTea', displayName: 'Milk Tea', backgroundColor: '#202127' },
-	{ teamName: 'HomieE', displayName: 'Homie E', backgroundColor: '#202127' },
-	{ teamName: 'DEG', displayName: 'DEG', backgroundColor: '#202127' },
 	{ teamName: 'SolusVictorem', displayName: 'Solus Victorem', backgroundColor: '#202127' },
-	{ teamName: 'NaivePiggy', displayName: 'Naive Piggy', backgroundColor: '#202127' },
+	{ teamName: 'HUNENG', displayName: 'HUNENG', backgroundColor: '#202127' },
+	{ teamName: '4AM', displayName: '4AM', backgroundColor: '#202127' },
+	{ teamName: 'ReturnZ', displayName: 'ReturnZ', backgroundColor: '#202127' },
+	{ teamName: 'KitsuneKage', displayName: 'Kitsune Kage', backgroundColor: '#202127' },
 ];
 
 // Reuse S2 logos for teams that carry over to S3

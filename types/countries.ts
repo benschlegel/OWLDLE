@@ -208,6 +208,7 @@ export const countries = [
 	'GB-SCT', // Scotland
 	'GB-NI', // Northern Ireland
 	'AX', // Åland
+	'HK', // Hong Kong
 ] as const;
 
 // The list of country codes and names as an object
@@ -430,4 +431,5 @@ export const customCountryNames: Partial<Record<CountryCode, string>> = {
 	'GB-SCT': 'Scotland',
 	AX: 'Åland',
 	'GB-NI': 'Northern Ireland',
+	HK: 'Hong Kong',
 };

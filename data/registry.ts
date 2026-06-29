@@ -122,6 +122,6 @@ export const DATASET_REGISTRY: { [D in Dataset]: DatasetDefinition<D> } = {
 		league: 'owcs',
 		href: 'owcs?season=s3',
 		prettyHref: '/owcs/season3',
-		disabledTeams: ['Cheeseburger', 'PokerFace', 'NewEra', 'DEG', 'HomieE', 'MilkTea', 'NaivePiggy'],
+		disabledTeams: ['Cheeseburger', 'PokerFace', 'SuperBad', 'Cheeseburger', 'ReturnZ', 'KitsuneKage', 'HUNENG', '4AM'],
 	},
 };
