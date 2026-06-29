@@ -121,7 +121,7 @@ function SettingsEntries() {
 			)}
 			<SettingsSwitchEntry
 				label="Show confetti"
-				id="stats-setting"
+				id="confetti-setting"
 				onSwitch={onConfettiSwitch}
 				initialChecked={showConfetti}
 				description="Show confetti after winning a game."
