@@ -1,16 +1,32 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.8.3/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.5.1./schema.json",
 	"files": {
-		"ignore": ["**/*.js", "node_modules/"],
-		"include": ["*.tsx", "*.ts", "next.config.mjs"]
+		"includes": [
+			"**/*.tsx",
+			"**/*.ts",
+			"**/next.config.mjs",
+			"!**/*.js",
+			"!**/node_modules/"
+		]
 	},
-	"organizeImports": { "enabled": true },
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true,
+			// "recommended": true,
 			"correctness": {},
-			"style": { "noUnusedTemplateLiteral": "off" },
+			"style": {
+				"noUnusedTemplateLiteral": "off",
+				"noParameterAssign": "error",
+				"useAsConstAssertion": "error",
+				"useDefaultParameterLast": "error",
+				"useEnumInitializers": "error",
+				"useSelfClosingElements": "error",
+				"useSingleVarDeclarator": "error",
+				"useNumberNamespace": "error",
+				"noInferrableTypes": "error",
+				"noUselessElse": "error"
+			},
 			"suspicious": { "noExplicitAny": "warn" }
 		}
 	},

@@ -69,7 +69,7 @@ bun run verify && bun run build
 
 `bun run test` includes a dataset-integrity check that confirms every dataset in `DATASETS` has corresponding player, logo, and team data.
 
-## Switching a season to a new stage
+# Switching a season to a new stage
 
 A "stage" is a mid-season roster/team change within an existing dataset (e.g.
 OWCS S3 Stage 1 → Stage 2). The **bare dataset key always holds the latest
