@@ -122,14 +122,7 @@ describe('stage-switch: happy-path full-collection swap', () => {
 	});
 
 	test('after swap: BASE records equal staged data, archive equals old live data', async () => {
-		const session = client.startSession();
-		try {
-			await session.withTransaction(async () => {
-				await swapStage(db, BASE, STAGE_N, session);
-			});
-		} finally {
-			await session.endSession();
-		}
+		await swapStage(db, BASE, STAGE_N);
 
 		const archive = archiveName(BASE, STAGE_N);
 
@@ -202,14 +195,7 @@ describe('stage-switch: answers + backlog archival (all five collections archive
 	});
 
 	test('after swap, current_<archive>, next_<archive>, and backlog _id:<archive> all exist', async () => {
-		const session = client.startSession();
-		try {
-			await session.withTransaction(async () => {
-				await swapStage(db, BASE, STAGE_N, session);
-			});
-		} finally {
-			await session.endSession();
-		}
+		await swapStage(db, BASE, STAGE_N);
 
 		const archive = archiveName(BASE, STAGE_N);
 
@@ -237,14 +223,7 @@ describe('stage-switch: idempotency precondition guard, archive already exists',
 
 	test('checkSwitchPreconditions returns ok:false once archive exists', async () => {
 		// Perform the swap so archive is created
-		const session = client.startSession();
-		try {
-			await session.withTransaction(async () => {
-				await swapStage(db, BASE, STAGE_N, session);
-			});
-		} finally {
-			await session.endSession();
-		}
+		await swapStage(db, BASE, STAGE_N);
 
 		const result = await checkSwitchPreconditions(db, BASE, STAGE_N);
 		expect(result.ok).toBe(false);
@@ -293,24 +272,10 @@ describe('stage-switch: rollback restores original state', () => {
 
 	test('after swap then rollback, live BASE records equal original old-stage records', async () => {
 		// Swap first
-		const swapSession = client.startSession();
-		try {
-			await swapSession.withTransaction(async () => {
-				await swapStage(db, BASE, STAGE_N, swapSession);
-			});
-		} finally {
-			await swapSession.endSession();
-		}
+		await swapStage(db, BASE, STAGE_N);
 
 		// Then rollback
-		const rollbackSession = client.startSession();
-		try {
-			await rollbackSession.withTransaction(async () => {
-				await rollbackStage(db, BASE, STAGE_N, rollbackSession);
-			});
-		} finally {
-			await rollbackSession.endSession();
-		}
+		await rollbackStage(db, BASE, STAGE_N);
 
 		// Live BASE players should be back to old roster
 		const restoredPlayers = await db.collection(COLLECTION_NAMES.players).findOne({ _id: BASE } as any);

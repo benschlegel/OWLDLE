@@ -1,6 +1,7 @@
 import type { Db, ClientSession } from 'mongodb';
 import type { Dataset } from '@/data/datasetIds';
 import { SORTED_PLAYERS } from '@/data/players/formattedPlayers';
+import { getDisabledTeams } from '@/data/disabledTeams';
 import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import { GAME_CONFIG } from '@/lib/config';
 import type { DbPlayer } from '@/types/database';
@@ -77,28 +78,33 @@ export async function moveAllCollections(db: Db, from: DatasetKey, to: DatasetKe
 	await moveDatasetField(db, COLLECTION_NAMES.gameLogs, from, to, session);
 }
 
-// ─── Atomic swap / rollback (require a session/transaction) ──────────────────
+// ─── Swap / rollback ─────────────────────────────────────────────────────────
+//
+// NOTE: These are NOT wrapped in a transaction. MongoDB transactions require a
+// replica set / mongos ("Transaction numbers are only allowed on a replica set
+// member or mongos"), which a standalone deployment does not provide. The moves
+// are ordered so there is only a brief window where the live `base` key is
+// absent (between archiving it and promoting the staged records onto it).
 
 /**
  * Archive live records (base → archiveName(base, n)), then promote staged records
- * onto the live key (stagingKey(base) → base). Both sides of the swap happen
- * inside the caller's transaction.
+ * onto the live key (stagingKey(base) → base).
  *
  * Order matters: archive first so the base _ids are freed before the promote
  * step writes them.
  */
-export async function swapStage(db: Db, base: Dataset, n: number, session: ClientSession): Promise<void> {
-	await moveAllCollections(db, base, archiveName(base, n), session);
-	await moveAllCollections(db, stagingKey(base), base, session);
+export async function swapStage(db: Db, base: Dataset, n: number): Promise<void> {
+	await moveAllCollections(db, base, archiveName(base, n));
+	await moveAllCollections(db, stagingKey(base), base);
 }
 
 /**
  * Restore a previously archived stage onto the live key.
  * Parks the current live records back under the staging key.
  */
-export async function rollbackStage(db: Db, base: Dataset, n: number, session: ClientSession): Promise<void> {
-	await moveAllCollections(db, base, stagingKey(base), session);
-	await moveAllCollections(db, archiveName(base, n), base, session);
+export async function rollbackStage(db: Db, base: Dataset, n: number): Promise<void> {
+	await moveAllCollections(db, base, stagingKey(base));
+	await moveAllCollections(db, archiveName(base, n), base);
 }
 
 // ─── prepareStaging ───────────────────────────────────────────────────────────
@@ -118,9 +124,12 @@ export async function prepareStaging(db: Db, base: Dataset, currentPlayer: DbPla
 	// players doc
 	await db.collection(COLLECTION_NAMES.players).updateOne({ _id: sk } as any, { $set: { _id: sk, players: dbPlayers } } as any, { upsert: true });
 
-	// Backlog: all roster players except the two answers, shuffled, capped at backlogMaxSize
+	// Backlog: all roster players except the two answers and disabled-team players,
+	// shuffled, capped at backlogMaxSize. Mirrors generateBacklog's disabled-team
+	// filter so disabled-team players never enter the backlog (or become answers).
 	const excluded = new Set([currentPlayer.name, nextPlayer.name]);
-	const backlogCandidates = dbPlayers.filter((p) => !excluded.has(p.name));
+	const disabledTeams = getDisabledTeams(base);
+	const backlogCandidates = dbPlayers.filter((p) => !excluded.has(p.name) && !disabledTeams.includes(p.team as string));
 	// Fisher-Yates shuffle
 	for (let i = backlogCandidates.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
@@ -146,6 +155,23 @@ export async function prepareStaging(db: Db, base: Dataset, currentPlayer: DbPla
 
 	// First iteration record
 	await db.collection(COLLECTION_NAMES.iterations).insertOne({ dataset: sk, iteration: 1, player: currentPlayer, resetAt: firstReset } as any);
+}
+
+// ─── Staging cleanup ───────────────────────────────────────────────────────────
+
+/**
+ * Delete all orphaned staging records for a base across the five collections.
+ * Use this to recover after a failed/aborted switch left `<base>__staging` docs
+ * behind (which otherwise trip checkSwitchPreconditions). Touches only the
+ * staging key, never the live base or any archive.
+ */
+export async function cleanupStaging(db: Db, base: Dataset): Promise<void> {
+	const sk = stagingKey(base);
+	await db.collection(COLLECTION_NAMES.players).deleteOne({ _id: sk } as any);
+	await db.collection(COLLECTION_NAMES.backlog).deleteOne({ _id: sk } as any);
+	await db.collection(COLLECTION_NAMES.answers).deleteMany({ _id: { $in: [`current_${sk}`, `next_${sk}`] } } as any);
+	await db.collection(COLLECTION_NAMES.iterations).deleteMany({ dataset: sk } as any);
+	await db.collection(COLLECTION_NAMES.gameLogs).deleteMany({ dataset: sk } as any);
 }
 
 // ─── Precondition check ───────────────────────────────────────────────────────
@@ -210,7 +236,7 @@ export async function checkSwitchPreconditions(db: Db, base: Dataset, n: number)
  */
 export async function runStageSwitch(
 	db: Db,
-	client: { startSession(): ClientSession },
+	_client: unknown,
 	opts: {
 		base: Dataset;
 		endingStage: number;
@@ -225,27 +251,13 @@ export async function runStageSwitch(
 
 	await prepareStaging(db, opts.base, opts.currentPlayer, opts.nextPlayer, opts.firstReset, opts.secondReset);
 
-	const session = client.startSession();
-	try {
-		await session.withTransaction(async () => {
-			await swapStage(db, opts.base, opts.endingStage, session);
-		});
-	} finally {
-		await session.endSession();
-	}
+	await swapStage(db, opts.base, opts.endingStage);
 }
 
 /**
  * Restore the previously archived stage onto the live key.
  * Parks the current live records under the staging key.
  */
-export async function runStageRollback(db: Db, client: { startSession(): ClientSession }, base: Dataset, endingStage: number): Promise<void> {
-	const session = client.startSession();
-	try {
-		await session.withTransaction(async () => {
-			await rollbackStage(db, base, endingStage, session);
-		});
-	} finally {
-		await session.endSession();
-	}
+export async function runStageRollback(db: Db, _client: unknown, base: Dataset, endingStage: number): Promise<void> {
+	await rollbackStage(db, base, endingStage);
 }
