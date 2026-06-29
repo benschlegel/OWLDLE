@@ -210,7 +210,7 @@ export function Navbar() {
 									value={pathname === STATISTICS_GLOBAL_PATHNAME ? 'global' : pathname === STATISTICS_PATHNAME ? 'overview' : ''}
 									highlight={pathname.startsWith(STATISTICS_PATHNAME)}
 									prefetchRoute={STATISTICS_PATHNAME}
-									className="hidden navbar-hidden:flex">
+									className="hidden navbar-hidden:flex w-full">
 									Statistics
 								</NavSelect>
 							</NavigationMenuList>

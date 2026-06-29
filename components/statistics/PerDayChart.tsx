@@ -381,7 +381,7 @@ function usePerDayBuckets(params: PerDayParams, scope: DayScope, grouping: DayGr
 }
 
 /** Trends Over Time, single accent area; metric chosen via the tabs (default: games played). */
-export function GamesPerDayChart({ params, grouping, setGrouping, scope, setScope }: { params: PerDayParams } & PerDayControlsState) {
+export function TrendsOverTimeChart({ params, grouping, setGrouping, scope, setScope }: { params: PerDayParams } & PerDayControlsState) {
 	const [metric, setMetric] = useState<DayMetricKey>('played');
 	const buckets = usePerDayBuckets(params, scope, grouping);
 	const { open, setOpen } = useChartDialog('gamesPerDay');

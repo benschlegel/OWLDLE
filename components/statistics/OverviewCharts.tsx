@@ -49,7 +49,7 @@ function Row({ label, value, color }: { label: string; value: string; color?: st
 }
 
 function DatasetDonutCard({ data, total }: { data: OverviewResponse['byDataset']; total: number }) {
-	const { open, setOpen } = useChartDialog('ovDatasetDonut');
+	const { open, setOpen } = useChartDialog('ovModes');
 	const center = { value: total.toLocaleString(), label: 'games played' };
 	const slices: DonutSlice[] = data.map((d, i, arr) => ({
 		bucket: d.dataset,
@@ -514,7 +514,7 @@ export function GlobalInsightsTeaser() {
 							asChild
 							size="lg"
 							variant="outline"
-							className="font-owl border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10">
+							className="font-owl border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground/70">
 							<Link href={STATISTICS_GLOBAL_PATHNAME}>
 								Show more
 								<ArrowRight className="p-0.75" />

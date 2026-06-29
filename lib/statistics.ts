@@ -131,7 +131,7 @@ export function baseDataset(dataset: string): string {
 }
 
 /** Label shown by the (disabled) stage selector when a dataset has no archived stages. */
-export const SINGLE_STAGE_LABEL = 'Last stage';
+export const SINGLE_STAGE_LABEL = 'Latest stage';
 
 /** Parse the stage number from a key: `<base>-stage<N>` → N; the bare base → null. */
 function stageNumberOf(key: string, base: string): number | null {

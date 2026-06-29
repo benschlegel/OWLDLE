@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import type { StageOption } from '@/types/statistics';
 
 /** Fallback label while the stages list is still loading or empty. Mirrors the server's SINGLE_STAGE_LABEL. */
-const FALLBACK_LABEL = 'Last stage';
+const FALLBACK_LABEL = 'Latest stage';
 
 type Props = {
 	value: string;

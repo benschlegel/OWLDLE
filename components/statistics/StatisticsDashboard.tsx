@@ -10,7 +10,14 @@ import { cn } from '@/lib/utils';
 import { datasetInfo } from '@/data/datasets';
 import { FirstGuessChart, FirstTeamChart, GuessDistributionChart, HardestPuzzlesChart } from '@/components/statistics/StatCharts';
 import { GlobalInsightsTeaser } from '@/components/statistics/OverviewCharts';
-import { defaultGrouping, GamesPerDayChart, GROUPING_HOTKEYS, type PerDayParams, SCOPE_HOTKEYS, WinRatePerDayChart } from '@/components/statistics/PerDayChart';
+import {
+	defaultGrouping,
+	TrendsOverTimeChart,
+	GROUPING_HOTKEYS,
+	type PerDayParams,
+	SCOPE_HOTKEYS,
+	WinRatePerDayChart,
+} from '@/components/statistics/PerDayChart';
 import StageSelect from '@/components/statistics/StageSelect';
 import { AvgGuessesCard, GamesRadialCard } from '@/components/statistics/SummaryCharts';
 import { GlobalGamesCard } from '@/components/statistics/GlobalGamesCard';
@@ -108,7 +115,11 @@ export default function StatisticsDashboard() {
 					<p className="text-lg font-owl tracking-wide text-muted-foreground">{datasetName}</p>
 				</div>
 				<div className="flex items-center gap-2 flex-wrap">
-					<SeasonSelectDropdown value={params.dataset} currentShorthand={shorthand} onValueChange={(v) => setParams({ dataset: v as typeof params.dataset, stage: 'all' })} />
+					<SeasonSelectDropdown
+						value={params.dataset}
+						currentShorthand={shorthand}
+						onValueChange={(v) => setParams({ dataset: v as typeof params.dataset, stage: 'all' })}
+					/>
 					<StageSelect value={params.stage} stages={data?.stages ?? []} onValueChange={(v) => setParams({ stage: v })} />
 					<TimeframeSelect
 						range={params.range}
@@ -140,7 +151,7 @@ export default function StatisticsDashboard() {
 								<FirstGuessChart data={data.topFirstGuesses} previewCount={BAR_CHART_PREVIEW_AMOUNT} />
 							</div>
 
-							<GamesPerDayChart params={perDayParams} {...perDayControls} />
+							<TrendsOverTimeChart params={perDayParams} {...perDayControls} />
 							<WinRatePerDayChart params={perDayParams} {...perDayControls} />
 
 							<div className="grid gap-4 sm:grid-cols-2">

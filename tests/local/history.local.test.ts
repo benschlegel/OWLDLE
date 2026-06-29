@@ -6,7 +6,7 @@ import type { Dataset } from '@/data/datasets';
 import { GAME_CONFIG } from '@/lib/config';
 
 const ds: Dataset = 'season1';
-const SINGLE_STAGE: StageOption[] = [{ value: 'current', label: 'Last stage' }];
+const SINGLE_STAGE: StageOption[] = [{ value: 'current', label: 'Latest stage' }];
 
 async function clearCollections() {
 	const { gameLogCollection, iterationCollection, answerCollection } = getStatisticsCollections();
@@ -46,7 +46,14 @@ async function seedCurrentAnswer(iteration: number, dataset: Dataset = ds) {
 	const { answerCollection } = getStatisticsCollections();
 	await answerCollection.updateOne(
 		{ _id: `current_${dataset}` as any },
-		{ $set: { _id: `current_${dataset}`, iteration, nextReset: new Date('2026-06-30T12:00:00Z'), player: { name: 'Current', id: 99, role: 'Damage', team: 'BostonUprising', country: 'US', region: 'NA' } } },
+		{
+			$set: {
+				_id: `current_${dataset}`,
+				iteration,
+				nextReset: new Date('2026-06-30T12:00:00Z'),
+				player: { name: 'Current', id: 99, role: 'Damage', team: 'BostonUprising', country: 'US', region: 'NA' },
+			},
+		},
 		{ upsert: true }
 	);
 }
@@ -168,10 +175,18 @@ describe('getRawHistoryDetail — happy path', () => {
 	test('summary counts match seeded logs; guessDistribution has maxGuesses+1 buckets in order', async () => {
 		const maxGuesses = GAME_CONFIG.maxGuesses;
 		await seedCurrentAnswer(3);
-		await seedIterations([{ iteration: 1, playerName: 'AnswerPlayer' }, { iteration: 2, playerName: 'AnswerPlayer2' }]);
+		await seedIterations([
+			{ iteration: 1, playerName: 'AnswerPlayer' },
+			{ iteration: 2, playerName: 'AnswerPlayer2' },
+		]);
 		await seedLogs([
 			makeLog({ iteration: 1, gameResult: 'won', finishedAt: new Date('2026-01-01T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-			makeLog({ iteration: 1, gameResult: 'won', finishedAt: new Date('2026-01-01T11:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }] }),
+			makeLog({
+				iteration: 1,
+				gameResult: 'won',
+				finishedAt: new Date('2026-01-01T11:00:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }, { player: { name: 'B', id: 1 } }],
+			}),
 			makeLog({ iteration: 1, gameResult: 'lost', finishedAt: new Date('2026-01-01T12:00:00Z'), gameData: [{ player: { name: 'C', id: 2 } }] }),
 		]);
 
@@ -243,7 +258,13 @@ describe('getAllRawHistory — multi-stage', () => {
 		await seedIterations([{ iteration: 1, playerName: 'StageP1', dataset: stageKey as Dataset }]);
 		await seedLogs([
 			makeLog({ iteration: 1, gameResult: 'won', finishedAt: new Date('2026-01-01T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
-			makeLog({ dataset: stageKey as Dataset, iteration: 1, gameResult: 'lost', finishedAt: new Date('2026-01-01T10:00:00Z'), gameData: [{ player: { name: 'B', id: 1 } }] }),
+			makeLog({
+				dataset: stageKey as Dataset,
+				iteration: 1,
+				gameResult: 'lost',
+				finishedAt: new Date('2026-01-01T10:00:00Z'),
+				gameData: [{ player: { name: 'B', id: 1 } }],
+			}),
 		]);
 
 		const entries = await getAllRawHistory(ds, [ds, stageKey]);
@@ -262,7 +283,13 @@ describe('getAllRawHistory — multi-stage', () => {
 		await seedCurrentAnswer(2); // live base current = 2
 		await seedIterations([{ iteration: 5, playerName: 'StageP5', dataset: stageKey as Dataset }]);
 		await seedLogs([
-			makeLog({ dataset: stageKey as Dataset, iteration: 5, gameResult: 'won', finishedAt: new Date('2026-01-05T10:00:00Z'), gameData: [{ player: { name: 'A', id: 0 } }] }),
+			makeLog({
+				dataset: stageKey as Dataset,
+				iteration: 5,
+				gameResult: 'won',
+				finishedAt: new Date('2026-01-05T10:00:00Z'),
+				gameData: [{ player: { name: 'A', id: 0 } }],
+			}),
 		]);
 
 		// iteration 5 would be "future" for the base, but on an archived stage there's no guard.
