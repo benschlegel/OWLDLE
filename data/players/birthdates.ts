@@ -353,8 +353,44 @@ export const BIRTHDATES = {
 	/**
 	 * Manually added players
 	 */
+	Hybrid: '2001-03-28',
+	Ryan: '2006-06-03',
+	Talisman: '2001-11-13',
+	FiNN: '2003-09-19',
+	Haku: '1999-07-19',
+	Evil: '2006-12-19',
+	Astro: '2005-05-07',
+	TCC: '2002-02-18',
+	Hypnos: '2004-06-05',
 } satisfies Partial<Record<OwcsPlayerName, string>>;
 
 /**
- * Pak, Ken, Strebor, eden, sxj, Mesopos, Matriera, china, cookie084, Hybrid, Sugureru, K41, Ryan, ACETKILLER, Fidel, AMADOU, amadien, Talisman, Bun, vyese, v1ctory, skier, FiNN, Haku, cookie, Evil, Astro, Karmez, juice, GoldenPants, cartifan22, TenTen, WuTian, Gamjung, SENTIER, TCC, Hypnos, asphy, Imdaon, Ign0re, Dosoldier, Ripples, Ringleader, Chai, Moon1ightT, L1tPk, Jackjieke, Gurkmeister
+ *  Gurkmeister
+ */
+
+/**
+ * Don't have liquipedia page or no birthday listed:
+ * Pak
+ * Ken
+ * Strebor
+ * eden
+ * sxj
+ * Matriera
+ * cookie084
+ * Sugureru
+ * K41
+ * ACETKILLER
+ * Fidel
+ * AMADOU
+ * amadien
+ * GoldenPants
+ * cartifan22
+ * juice
+ * Karmez
+ * TenTen
+ * WuTian
+ * Gamjung
+ * SENTIER
+ * asphy, Imdaon, Ign0re, Dosoldier, Ripples, Ringleader, Chai, Moon1ightT, L1tPk, Jackjieke
+ * Gurkmeister
  */
