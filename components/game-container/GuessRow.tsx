@@ -1,8 +1,8 @@
 'use client';
 
-import { ArrowDown, ArrowUp, HelpCircle } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useContext, useEffect, useRef, useState } from 'react';
+import AgeCell from '@/components/game-container/AgeCell';
 import ImageCell from '@/components/game-container/CountryCell';
 import GameCell, { toCellState } from '@/components/game-container/GameCell';
 import type { RowData } from '@/components/game-container/GameContainer';
@@ -13,7 +13,7 @@ import { isOwcsDataset } from '@/data/datasets';
 import { getTeamLogo } from '@/data/teams/logos';
 import { atlanticPacificTeams } from '@/data/teams/teams';
 import { getCountryDisplayName, getRoleLabel } from '@/lib/client';
-import { cn, getAgeFromDate } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 
 type Props = {
 	data?: RowData;
@@ -85,6 +85,10 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		useAtlanticPacificImage = true;
 	}
 
+	const isOwcs = isOwcsDataset(dataset.dataset);
+	// OWCS rows have one extra cell, shrink on mobile to fit
+	const owcsCellSize = isOwcs ? 'w-[2.5rem] h-[2.5rem]' : undefined;
+
 	let region = '';
 	let regionTooltip = '';
 	if (data) {
@@ -110,10 +114,6 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 	}
 
 	const teamDisplayName = data ? getTeamLogo(dataset.dataset, data.player.team)?.displayName : undefined;
-	const guessedAge = data?.player.dateBorn ? getAgeFromDate(data.player.dateBorn) : undefined;
-	const ac = data?.guessResult.ageComparison;
-	const ageTooltip =
-		ac === 'equal' ? `Same age (${guessedAge})` : ac === 'higher' ? `Older than ${guessedAge})` : ac === 'lower' ? `Younger than (${guessedAge})` : undefined;
 
 	// track if this row was empty at mount (for detecting fresh guesses vs reloads)
 	const mountedWithoutData = useRef(data === undefined);
@@ -154,10 +154,15 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		: {};
 
 	return (
-		<RowComponent className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] h-12 transition-colors`} {...rowMotionProps}>
+		<RowComponent className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] ${isOwcs ? 'h-10' : 'h-12'} transition-colors`} {...rowMotionProps}>
 			{/* Player name */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay} className="flex-1">
-				<GameCell isLarge cellState={toCellState(data?.guessResult.isNameCorrect)} tooltipDescription="Player" tooltipValue={data?.player.name}>
+				<GameCell
+					isLarge
+					cellState={toCellState(data?.guessResult.isNameCorrect)}
+					tooltipDescription="Player"
+					tooltipValue={data?.player.name}
+					className={owcsCellSize}>
 					<div className="rounded-md h-full flex justify-center sm:px-4 px-2 items-center">
 						<p className={`text-white opacity-90 font-extrabold text-center tracking-tight ${useSmallerFont ? 'text-sm' : 'text-xl'} md:text-2xl`}>
 							{data?.player.name}
@@ -170,7 +175,8 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 				<GameCell
 					cellState={toCellState(data?.guessResult.isCountryCorrect)}
 					tooltipDescription="Country"
-					tooltipValue={getCountryDisplayName(data?.player.country)}>
+					tooltipValue={getCountryDisplayName(data?.player.country)}
+					className={owcsCellSize}>
 					<ImageCell imgSrc={data?.player.countryImg} />
 				</GameCell>
 			</FlipCard>
@@ -179,14 +185,25 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 				<GameCell
 					cellState={data?.guessResult.roleMatch ?? toCellState(data?.guessResult.isRoleCorrect)}
 					tooltipDescription="Role"
-					tooltipValue={getRoleLabel(data?.player.role, data?.player.subRole)}>
+					tooltipValue={getRoleLabel(data?.player.role, data?.player.subRole)}
+					className={owcsCellSize}>
 					<RoleCell role={data?.player.role} subRole={data?.player.subRole} />
 				</GameCell>
 			</FlipCard>
-			{/* Region */}
-			{!isOwcsDataset(dataset.dataset) ? (
+			{/* Age (OWCS only) */}
+			{isOwcs && (
 				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-					<GameCell cellState={toCellState(data?.guessResult.isRegionCorrect)} tooltipDescription="Region" tooltipValue={regionTooltip}>
+					<AgeCell hasGuess={data !== undefined} dateBorn={data?.player.dateBorn} ageComparison={data?.guessResult.ageComparison} className={owcsCellSize} />
+				</FlipCard>
+			)}
+			{/* Region */}
+			{!isOwcs ? (
+				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
+					<GameCell
+						cellState={toCellState(data?.guessResult.isRegionCorrect)}
+						tooltipDescription="Region"
+						tooltipValue={regionTooltip}
+						className={owcsCellSize}>
 						{useAtlanticPacificImage ? (
 							<ImageCell imgSrc={data?.player.regionImg} />
 						) : (
@@ -196,7 +213,11 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 				</FlipCard>
 			) : (
 				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-					<GameCell cellState={toCellState(data?.guessResult.isRegionCorrect)} tooltipDescription="Region" tooltipValue={regionTooltip}>
+					<GameCell
+						cellState={toCellState(data?.guessResult.isRegionCorrect)}
+						tooltipDescription="Region"
+						tooltipValue={regionTooltip}
+						className={owcsCellSize}>
 						{region === 'EMEA' ? (
 							<p className="text-sm sm:text-xl font-bold sm:tracking-tighter text-white opacity-90">{region}</p>
 						) : (
@@ -207,26 +228,10 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 			)}
 			{/* Team */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-				<GameCell cellState={toCellState(data?.guessResult.isTeamCorrect)} tooltipDescription="Team" tooltipValue={teamDisplayName}>
+				<GameCell cellState={toCellState(data?.guessResult.isTeamCorrect)} tooltipDescription="Team" tooltipValue={teamDisplayName} className={owcsCellSize}>
 					<TeamLogo teamName={data?.player.team} />
 				</GameCell>
 			</FlipCard>
-			{/* Age */}
-			{isOwcsDataset(dataset.dataset) && (
-				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-					<GameCell cellState={ac === 'equal' ? 'correct' : ac ? 'partial' : undefined} tooltipDescription="Age unknown" tooltipGuess={ageTooltip}>
-						{ac ? (
-							<div className="flex flex-col items-center justify-center gap-0.5">
-								{ac === 'higher' && <ArrowUp className="w-3 h-3 text-white opacity-90" />}
-								<p className="text-white opacity-90 font-bold text-lg leading-none">{guessedAge ?? '?'}</p>
-								{ac === 'lower' && <ArrowDown className="w-3 h-3 text-white opacity-90" />}
-							</div>
-						) : data !== undefined ? (
-							<HelpCircle className="w-6 h-6 text-white opacity-75" />
-						) : null}
-					</GameCell>
-				</FlipCard>
-			)}
 		</RowComponent>
 	);
 }
