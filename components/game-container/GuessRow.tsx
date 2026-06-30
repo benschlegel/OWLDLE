@@ -1,5 +1,6 @@
 'use client';
 
+import { ArrowDown, ArrowUp, HelpCircle } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import ImageCell from '@/components/game-container/CountryCell';
@@ -12,7 +13,7 @@ import { isOwcsDataset } from '@/data/datasets';
 import { getTeamLogo } from '@/data/teams/logos';
 import { atlanticPacificTeams } from '@/data/teams/teams';
 import { getCountryDisplayName, getRoleLabel } from '@/lib/client';
-import { cn } from '@/lib/utils';
+import { cn, getAgeFromDate } from '@/lib/utils';
 
 type Props = {
 	data?: RowData;
@@ -109,6 +110,10 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 	}
 
 	const teamDisplayName = data ? getTeamLogo(dataset.dataset, data.player.team)?.displayName : undefined;
+	const guessedAge = data?.player.dateBorn ? getAgeFromDate(data.player.dateBorn) : undefined;
+	const ac = data?.guessResult.ageComparison;
+	const ageTooltip =
+		ac === 'equal' ? `Same age (${guessedAge})` : ac === 'higher' ? `Older than ${guessedAge})` : ac === 'lower' ? `Younger than (${guessedAge})` : undefined;
 
 	// track if this row was empty at mount (for detecting fresh guesses vs reloads)
 	const mountedWithoutData = useRef(data === undefined);
@@ -206,6 +211,22 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 					<TeamLogo teamName={data?.player.team} />
 				</GameCell>
 			</FlipCard>
+			{/* Age */}
+			{isOwcsDataset(dataset.dataset) && (
+				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
+					<GameCell cellState={ac === 'equal' ? 'correct' : ac ? 'partial' : undefined} tooltipDescription="Age unknown" tooltipGuess={ageTooltip}>
+						{ac ? (
+							<div className="flex flex-col items-center justify-center gap-0.5">
+								{ac === 'higher' && <ArrowUp className="w-3 h-3 text-white opacity-90" />}
+								<p className="text-white opacity-90 font-bold text-lg leading-none">{guessedAge ?? '?'}</p>
+								{ac === 'lower' && <ArrowDown className="w-3 h-3 text-white opacity-90" />}
+							</div>
+						) : data !== undefined ? (
+							<HelpCircle className="w-6 h-6 text-white opacity-75" />
+						) : null}
+					</GameCell>
+				</FlipCard>
+			)}
 		</RowComponent>
 	);
 }

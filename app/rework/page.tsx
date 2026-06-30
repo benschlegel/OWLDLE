@@ -1,3 +1,4 @@
+import { ArrowDown, ArrowDownIcon, ChevronDownIcon, MoveDownIcon, MoveUpIcon } from 'lucide-react';
 import GameCell from '@/components/game-container/GameCell';
 import GuessRow from '@/components/game-container/GuessRow';
 import RoleCell from '@/components/game-container/RoleCell';
@@ -6,7 +7,6 @@ import { Separator } from '@/components/ui/separator';
 import DamageIcon from '@/data/roles/Damage';
 import FlexIcon from '@/data/roles/Flex';
 import SupportIcon from '@/data/roles/Support';
-import { ArrowDown, ArrowDownIcon, ChevronDownIcon, MoveDownIcon, MoveUpIcon } from 'lucide-react';
 
 export default function Rework() {
 	return (

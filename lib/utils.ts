@@ -33,3 +33,20 @@ export function trimAndAddHours(date: Date, hours: number) {
 export function isMacDevice() {
 	return typeof window !== 'undefined' ? navigator.platform.toUpperCase().indexOf('MAC') >= 0 : false;
 }
+
+/**
+ * Computes a player's current integer age from an ISO "YYYY-MM-DD" birth date.
+ * Recomputed at read time so the displayed age rolls over on the player's birthday.
+ * Returns undefined for an unparseable input.
+ */
+export function getAgeFromDate(dateBorn: string): number | undefined {
+	const parts = dateBorn.split('-').map(Number);
+	if (parts.length !== 3 || parts.some((n) => Number.isNaN(n))) return undefined;
+	const [year, month, day] = parts;
+	const now = new Date();
+	let age = now.getFullYear() - year;
+	const monthNow = now.getMonth() + 1;
+	const hasHadBirthday = monthNow > month || (monthNow === month && now.getDate() >= day);
+	if (!hasHadBirthday) age -= 1;
+	return age;
+}

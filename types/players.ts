@@ -50,6 +50,12 @@ export const playerSchema = <T extends Dataset = 'season1'>(season: T) =>
 		 */
 		subRole: z.enum(SUB_ROLES).optional(),
 		/**
+		 * Player's date of birth as an ISO string "YYYY-MM-DD".
+		 * Only present for OWCS datasets, and only for players whose age is known
+		 * (progressive enhancement — see data/players/birthdates.ts).
+		 */
+		dateBorn: z.string().optional(),
+		/**
 		 * Player id
 		 */
 		id: z.number().optional(),

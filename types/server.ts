@@ -11,6 +11,7 @@ export const GuessSchema = z.object({
 	isNameCorrect: z.boolean(),
 	isRegionCorrect: z.boolean(),
 	roleMatch: z.enum(['correct', 'partial', 'incorrect']).optional(),
+	ageComparison: z.enum(['higher', 'lower', 'equal']).optional(),
 });
 
 export const feedbackSchema = z.object({
