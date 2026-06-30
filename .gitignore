@@ -45,7 +45,9 @@ next-env.d.ts
 
 # player data
 players.json
+birthdates.json
 
 data-scripts/team-images/
 data-scripts/extractPlayersUpdated.ts
 data-scripts/extractTeamImages.ts
+data-scripts/extractPlayerBirthdates.ts

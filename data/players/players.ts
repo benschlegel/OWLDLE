@@ -1614,7 +1614,7 @@ export const s6Players: Player<'season6'>[] = [
 	{ name: 'Teru', country: 'KR', role: 'Support', team: 'WashingtonJustice' },
 ] as const;
 
-export const owcsS1Players: Player<'owcs-s1'>[] = [
+export const owcsS1Players = [
 	/**
 	 *
 	 * EMEA
@@ -1924,9 +1924,9 @@ export const owcsS1Players: Player<'owcs-s1'>[] = [
 	{ name: 'RULER', country: 'KR', role: 'Tank', team: 'OldOcean' },
 	{ name: 'Faith', country: 'KR', role: 'Support', team: 'OldOcean' },
 	{ name: 'ryujehong', country: 'KR', role: 'Support', team: 'OldOcean' },
-];
+] satisfies Player<'owcs-s1'>[];
 
-export const owcsS2Players: Player<'owcs-s2'>[] = [
+export const owcsS2Players = [
 	/**
 	 *
 	 *
@@ -2105,7 +2105,7 @@ export const owcsS2Players: Player<'owcs-s2'>[] = [
 	{ name: 'Kellan', country: 'KR', role: 'Tank', team: 'OnsideGaming' },
 	{ name: 'OPENER', country: 'KR', role: 'Support', team: 'OnsideGaming' },
 	{ name: 'irony', country: 'KR', role: 'Support', team: 'OnsideGaming' },
-];
+] satisfies Player<'owcs-s2'>[];
 
 // Latest stage of OWCS S3. When a new stage ships: add `owcsS3Stage2Players`
 // below, move the prior stage's roster into data/stage-archive.ts, and repoint
@@ -2325,7 +2325,7 @@ export const owcsS3Stage1Players: any[] = [
 	{ name: 'Coldj', country: 'CN', role: 'Support', team: 'NaivePiggy' },
 ];
 
-export const owcsS3Stage2Players: Player<'owcs-s3'>[] = [
+export const owcsS3Stage2Players = [
 	/**
 	 *
 	 * EMEA
@@ -2530,7 +2530,7 @@ export const owcsS3Stage2Players: Player<'owcs-s3'>[] = [
 	{ name: 'Moon1ightT', country: 'CN', role: 'Support', team: 'KitsuneKage' },
 	{ name: 'L1tPk', country: 'CN', role: 'Support', team: 'KitsuneKage' },
 	{ name: 'Jackjieke', country: 'CN', role: 'Support', team: 'KitsuneKage' },
-];
+] satisfies Player<'owcs-s3'>[];
 
 export type CombinedPlayers =
 	| Player<'season1'>[]
