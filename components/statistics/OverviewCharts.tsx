@@ -438,16 +438,19 @@ function ActivityHeatmapCard({ data }: { data: OverviewResponse['heatmap'] }) {
 }
 
 // Section wrapper
-
 function OverviewSkeleton() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="grid gap-4 sm:grid-cols-2">
-				<Skeleton className="h-80 rounded-lg" />
-				<Skeleton className="h-80 rounded-lg" />
+				<Skeleton className="h-92 rounded-lg" />
+				<Skeleton className="h-92 rounded-lg" />
 			</div>
-			<Skeleton className="h-64 rounded-lg" />
-			<Skeleton className="h-64 rounded-lg" />
+			<Skeleton className="h-90 rounded-lg" />
+			<div className="grid gap-4 sm:grid-cols-2">
+				<Skeleton className="h-90 rounded-lg" />
+				<Skeleton className="h-90 rounded-lg" />
+			</div>
+			<Skeleton className="h-96 rounded-lg" />
 		</div>
 	);
 }
@@ -498,8 +501,8 @@ export function GlobalInsightsTeaser() {
 			<GlobalInsightsHeader />
 			{isLoading && !data && (
 				<div className="grid gap-4 sm:grid-cols-2">
-					<Skeleton className="h-80 rounded-lg" />
-					<Skeleton className="h-80 rounded-lg" />
+					<Skeleton className="h-92 rounded-lg" />
+					<Skeleton className="h-92 rounded-lg" />
 				</div>
 			)}
 			{isError && !data && <p className="text-muted-foreground">Couldn't load the overview right now.</p>}

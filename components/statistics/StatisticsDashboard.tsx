@@ -28,20 +28,19 @@ import type { DayGrouping, DayScope } from '@/types/statistics';
 function DashboardSkeleton() {
 	return (
 		<div className="flex flex-col gap-4">
-			<div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4">
-				{(['played', 'winRate', 'avgGuesses', 'firstGuess', 'wins'] as const).map((k) => (
-					<Skeleton key={k} className="h-24 rounded-lg" />
-				))}
+			<div className="grid gap-4 sm:grid-cols-2">
+				<Skeleton className="h-110 rounded-lg" />
+				<Skeleton className="h-110 rounded-lg" />
+			</div>
+			<Skeleton className="h-104 rounded-lg" />
+			<Skeleton className="h-84 rounded-lg" />
+			<div className="grid gap-4 sm:grid-cols-2">
+				<Skeleton className="h-48 rounded-lg" />
+				<Skeleton className="h-48 rounded-lg" />
 			</div>
 			<div className="grid gap-4 sm:grid-cols-2">
-				<Skeleton className="h-72 rounded-lg" />
-				<Skeleton className="h-72 rounded-lg" />
-			</div>
-			<Skeleton className="h-60 rounded-lg" />
-			<Skeleton className="h-60 rounded-lg" />
-			<div className="grid gap-4 sm:grid-cols-2">
-				<Skeleton className="h-64 rounded-lg" />
-				<Skeleton className="h-64 rounded-lg" />
+				<Skeleton className="h-110 rounded-lg" />
+				<Skeleton className="h-110 rounded-lg" />
 			</div>
 		</div>
 	);
