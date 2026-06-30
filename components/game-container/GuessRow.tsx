@@ -1,18 +1,18 @@
 'use client';
 
+import { motion, useReducedMotion } from 'motion/react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import ImageCell from '@/components/game-container/CountryCell';
-import GameCell from '@/components/game-container/GameCell';
+import GameCell, { toCellState } from '@/components/game-container/GameCell';
 import type { RowData } from '@/components/game-container/GameContainer';
 import RoleCell from '@/components/game-container/RoleCell';
 import TeamLogo from '@/components/game-container/TeamLogo';
 import { DatasetContext } from '@/context/DatasetContext';
 import { isOwcsDataset } from '@/data/datasets';
-import { atlanticPacificTeams } from '@/data/teams/teams';
 import { getTeamLogo } from '@/data/teams/logos';
-import { getCountryDisplayName } from '@/lib/client';
+import { atlanticPacificTeams } from '@/data/teams/teams';
+import { getCountryDisplayName, getRoleLabel } from '@/lib/client';
 import { cn } from '@/lib/utils';
-import { motion, useReducedMotion } from 'motion/react';
-import { useContext, useEffect, useRef, useState } from 'react';
 
 type Props = {
 	data?: RowData;
@@ -41,7 +41,12 @@ function FlipCard({
 	animationMode,
 	dismissDelay = 0,
 	className,
-}: { children: React.ReactNode; animationMode: AnimationMode; dismissDelay?: number; className?: string }) {
+}: {
+	children: React.ReactNode;
+	animationMode: AnimationMode;
+	dismissDelay?: number;
+	className?: string;
+}) {
 	if (animationMode === 'none') {
 		return <>{children}</>;
 	}
@@ -79,8 +84,8 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		useAtlanticPacificImage = true;
 	}
 
-	let region = undefined;
-	let regionTooltip = undefined;
+	let region = '';
+	let regionTooltip = '';
 	if (data) {
 		if (data.player.region === 'AtlanticDivison') {
 			region = 'E';
@@ -147,7 +152,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		<RowComponent className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] h-12 transition-colors`} {...rowMotionProps}>
 			{/* Player name */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay} className="flex-1">
-				<GameCell isLarge isCorrect={data?.guessResult.isNameCorrect} tooltipDescription="Player" tooltipValue={data?.player.name}>
+				<GameCell isLarge cellState={toCellState(data?.guessResult.isNameCorrect)} tooltipDescription="Player" tooltipValue={data?.player.name}>
 					<div className="rounded-md h-full flex justify-center sm:px-4 px-2 items-center">
 						<p className={`text-white opacity-90 font-extrabold text-center tracking-tight ${useSmallerFont ? 'text-sm' : 'text-xl'} md:text-2xl`}>
 							{data?.player.name}
@@ -158,7 +163,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 			{/* Country */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
 				<GameCell
-					isCorrect={data?.guessResult.isCountryCorrect}
+					cellState={toCellState(data?.guessResult.isCountryCorrect)}
 					tooltipDescription="Country"
 					tooltipValue={getCountryDisplayName(data?.player.country)}>
 					<ImageCell imgSrc={data?.player.countryImg} />
@@ -166,24 +171,27 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 			</FlipCard>
 			{/* Role */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-				<GameCell isCorrect={data?.guessResult.isRoleCorrect} tooltipDescription="Role" tooltipValue={data?.player.role}>
-					<RoleCell role={data?.player.role} />
+				<GameCell
+					cellState={data?.guessResult.roleMatch ?? toCellState(data?.guessResult.isRoleCorrect)}
+					tooltipDescription="Role"
+					tooltipValue={getRoleLabel(data?.player.role, data?.player.subRole)}>
+					<RoleCell role={data?.player.role} subRole={data?.player.subRole} />
 				</GameCell>
 			</FlipCard>
 			{/* Region */}
 			{!isOwcsDataset(dataset.dataset) ? (
 				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-					<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
+					<GameCell cellState={toCellState(data?.guessResult.isRegionCorrect)} tooltipDescription="Region" tooltipValue={regionTooltip}>
 						{useAtlanticPacificImage ? (
 							<ImageCell imgSrc={data?.player.regionImg} />
 						) : (
-							<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90">{region}</p>
+							<p className="text-3xl sm:text-4xl font-bold tracking-tight text-white opacity-90 font-owl">{region}</p>
 						)}
 					</GameCell>
 				</FlipCard>
 			) : (
 				<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-					<GameCell isCorrect={data?.guessResult.isRegionCorrect} tooltipDescription="Region" tooltipValue={regionTooltip}>
+					<GameCell cellState={toCellState(data?.guessResult.isRegionCorrect)} tooltipDescription="Region" tooltipValue={regionTooltip}>
 						{region === 'EMEA' ? (
 							<p className="text-sm sm:text-xl font-bold sm:tracking-tighter text-white opacity-90">{region}</p>
 						) : (
@@ -194,7 +202,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 			)}
 			{/* Team */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay}>
-				<GameCell isCorrect={data?.guessResult.isTeamCorrect} tooltipDescription="Team" tooltipValue={teamDisplayName}>
+				<GameCell cellState={toCellState(data?.guessResult.isTeamCorrect)} tooltipDescription="Team" tooltipValue={teamDisplayName}>
 					<TeamLogo teamName={data?.player.team} />
 				</GameCell>
 			</FlipCard>

@@ -1,5 +1,6 @@
 import { type Dataset, datasetInfo } from '@/data/datasets';
-import { customCountryNames, type CountryCode } from '@/types/countries';
+import { type CountryCode, customCountryNames } from '@/types/countries';
+import type { SubRole } from '@/types/players';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 
 export type FormatConfig = {
@@ -72,16 +73,12 @@ function getEmojRow(guess: GuessResponse) {
 		return '🟩🟩🟩🟩✅';
 	}
 
-	// The global order for what column corresponds to what emoji
-	const guessOrder = [guess.isCountryCorrect, guess.isRoleCorrect, guess.isRegionCorrect, guess.isTeamCorrect];
-
-	// Contains formatted string
+	// Build row in column order: country, role, region, team
 	let row = '';
-
-	// Format entire row based on each entry
-	for (const isGuessCorrect of guessOrder) {
-		row += getEmojiCell(isGuessCorrect);
-	}
+	row += getEmojiCell(guess.isCountryCorrect);
+	row += guess.roleMatch === 'partial' ? '🟧' : getEmojiCell(guess.isRoleCorrect);
+	row += getEmojiCell(guess.isRegionCorrect);
+	row += getEmojiCell(guess.isTeamCorrect);
 	return row;
 }
 
@@ -133,4 +130,12 @@ export async function fetchAnswer(dataset: Dataset): Promise<ValidateResponse> {
 
 export function formatDataset(dataset: string) {
 	return `${dataset.charAt(0).toUpperCase() + dataset.slice(1, -1)} ${dataset.slice(-1)}`;
+}
+
+export function getRoleLabel(role?: string, subRole?: SubRole): string | undefined {
+	if (subRole === 'MainSupport') return 'Main Support';
+	if (subRole === 'FlexSupport') return 'Flex Support';
+	if (subRole === 'Hitscan') return 'Hitscan';
+	if (subRole === 'FlexDPS') return 'Flex DPS';
+	return role;
 }

@@ -10,6 +10,10 @@ export type Player<T extends Dataset = 'season1'> = z.infer<ReturnType<typeof pl
 
 const ROLES = ['Damage', 'Tank', 'Support'] as const;
 
+const SUB_ROLES = ['MainSupport', 'FlexSupport', 'Hitscan', 'FlexDPS'] as const;
+
+export type SubRole = (typeof SUB_ROLES)[number];
+
 const REGIONS = ['AtlanticDivison', 'PacificDivision', 'EMEA', 'Korea', 'NA', 'CN'] as const;
 
 export type Region = (typeof REGIONS)[number];
@@ -41,6 +45,10 @@ export const playerSchema = <T extends Dataset = 'season1'>(season: T) =>
 		 * Wether player is marked as flex by liquipedia
 		 */
 		isFlex: z.boolean().optional(),
+		/**
+		 * Sub-role of the player (only present for datasets that include sub-role data)
+		 */
+		subRole: z.enum(SUB_ROLES).optional(),
 		/**
 		 * Player id
 		 */

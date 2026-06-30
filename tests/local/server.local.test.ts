@@ -78,3 +78,44 @@ describe('validate guesses', () => {
 		});
 	});
 });
+
+describe('sub-role matching', () => {
+	const CORRECT_FLEX_SUPPORT: any = { name: 'Twilight', country: 'KR', role: 'Support', team: 'LosAngelesValiant', region: 'PacificDivision', subRole: 'FlexSupport' };
+	const CORRECT_HITSCAN: any = { name: 'Fleta', country: 'KR', role: 'Damage', team: 'SeoulDynasty', region: 'PacificDivision', subRole: 'Hitscan' };
+
+	test('same role, different subRole → partial, isRoleCorrect true', () => {
+		const guess: any = { name: 'Shaz', country: 'FI', role: 'Support', team: 'LosAngelesGladiators', region: 'PacificDivision', subRole: 'MainSupport' };
+		const result = validateGuess(guess, CORRECT_FLEX_SUPPORT);
+		expect(result.isRoleCorrect).toBe(true);
+		expect(result.roleMatch).toBe('partial');
+	});
+
+	test('same role + same subRole → correct, isRoleCorrect true', () => {
+		const guess: any = { name: 'Izayaki', country: 'KR', role: 'Support', team: 'LosAngelesGladiators', region: 'PacificDivision', subRole: 'FlexSupport' };
+		const result = validateGuess(guess, CORRECT_FLEX_SUPPORT);
+		expect(result.isRoleCorrect).toBe(true);
+		expect(result.roleMatch).toBe('correct');
+	});
+
+	test('different role with subRole on correct player → incorrect, isRoleCorrect false', () => {
+		const guess: any = { name: 'super', country: 'US', role: 'Tank', team: 'SanFranciscoShock', region: 'PacificDivision' };
+		const result = validateGuess(guess, CORRECT_FLEX_SUPPORT);
+		expect(result.isRoleCorrect).toBe(false);
+		expect(result.roleMatch).toBe('incorrect');
+	});
+
+	test('legacy (no subRole on answer) → roleMatch is undefined', () => {
+		const correctNoSubRole: any = { name: 'JJoNak', country: 'KR', role: 'Support', team: 'NewYorkExcelsior', region: 'AtlanticDivison' };
+		const guess: any = { name: 'Shaz', country: 'FI', role: 'Support', team: 'LosAngelesGladiators', region: 'PacificDivision' };
+		const result = validateGuess(guess, correctNoSubRole);
+		expect(result.isRoleCorrect).toBe(true);
+		expect(result.roleMatch).toBeUndefined();
+	});
+
+	test('Damage axis: Hitscan vs FlexDPS → partial', () => {
+		const guess: any = { name: 'profit', country: 'KR', role: 'Damage', team: 'LosAngelesValiant', region: 'PacificDivision', subRole: 'FlexDPS' };
+		const result = validateGuess(guess, CORRECT_HITSCAN);
+		expect(result.isRoleCorrect).toBe(true);
+		expect(result.roleMatch).toBe('partial');
+	});
+});

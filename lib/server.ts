@@ -21,8 +21,19 @@ export function validateGuess(guess: CombinedFormattedPlayer, correct?: DbPlayer
 	if (guess.name === correct.name) {
 		response.isNameCorrect = true;
 	}
-	if (guess.role === correct.role) {
+	const sameRole = guess.role === correct.role;
+	if (sameRole) {
 		response.isRoleCorrect = true;
+	}
+
+	if (correct.subRole) {
+		if (!sameRole) {
+			response.roleMatch = 'incorrect';
+		} else if (guess.subRole === correct.subRole) {
+			response.roleMatch = 'correct';
+		} else {
+			response.roleMatch = 'partial';
+		}
 	}
 	if (guess.team === correct.team) {
 		response.isTeamCorrect = true;

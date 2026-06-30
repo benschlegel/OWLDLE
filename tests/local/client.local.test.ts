@@ -102,6 +102,29 @@ describe.todo('game result', () => {
 // 	});
 // });
 
+describe('partial role emoji', () => {
+	test('roleMatch partial produces 🟧 in share row', () => {
+		const guess: GuessResponse = {
+			isCountryCorrect: true,
+			isRoleCorrect: true,
+			isRegionCorrect: false,
+			isTeamCorrect: false,
+			isNameCorrect: false,
+			roleMatch: 'partial',
+		};
+		const config: FormatConfig = {
+			guesses: [guess],
+			gameIteration: 1,
+			gameName: 'TEST',
+			maxGuesses: 8,
+			siteUrl: 'test.com/',
+			dataset: 'season1',
+		};
+		const result = formatResult(config);
+		expect(result).toContain('🟧');
+	});
+});
+
 function getExpectedString(config: FormatConfig, content: string) {
 	const datasetPostfix = config.dataset ?? '';
 	const seasonText =

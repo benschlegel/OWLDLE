@@ -10,6 +10,7 @@ export const GuessSchema = z.object({
 	isTeamCorrect: z.boolean(),
 	isNameCorrect: z.boolean(),
 	isRegionCorrect: z.boolean(),
+	roleMatch: z.enum(['correct', 'partial', 'incorrect']).optional(),
 });
 
 export const feedbackSchema = z.object({
