@@ -1,24 +1,25 @@
 'use client';
 
+import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
+import { useVirtualizer } from '@tanstack/react-virtual';
+import Fuse, { type IFuseOptions } from 'fuse.js';
+import { Dices, Search, UserIcon } from 'lucide-react';
+import { usePathname } from 'next/navigation';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ButtonGroup } from '@/components/ui/button-group';
 import { Combobox, ComboboxContent, ComboboxEmpty, ComboboxList } from '@/components/ui/combobox';
+import HotkeyBadge from '@/components/ui/hotkey-badge';
 import { DatasetContext } from '@/context/DatasetContext';
 import { GuessContext } from '@/context/GuessContext';
-import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { ENDLESS_PATHNAME } from '@/data/datasets';
 import { getDisabledTeams } from '@/data/disabledTeams';
+import type { FormattedPlayer } from '@/data/players/formattedPlayers';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useToast } from '@/hooks/use-toast';
 import { GAME_CONFIG } from '@/lib/config';
 import { cn } from '@/lib/utils';
 import type { Player } from '@/types/players';
-import { Combobox as ComboboxPrimitive } from '@base-ui/react/combobox';
-import { useVirtualizer } from '@tanstack/react-virtual';
-import Fuse, { type IFuseOptions } from 'fuse.js';
-import { Dices, Search, UserIcon } from 'lucide-react';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { usePathname } from 'next/navigation';
 
 const ITEM_HEIGHT = 44;
 
@@ -108,7 +109,7 @@ export default function PlayerSearch({ className }: Props) {
 
 	useEffect(() => {
 		const down = (e: KeyboardEvent) => {
-			if (e.key === 'y' && (e.metaKey || e.ctrlKey)) {
+			if (e.key === 'x' && (e.metaKey || e.ctrlKey)) {
 				e.preventDefault();
 				inputRef.current?.focus();
 				setOpen(true);
@@ -160,7 +161,7 @@ export default function PlayerSearch({ className }: Props) {
 						<Search className="mr-2 h-4 w-4 shrink-0 opacity-50" />
 						<ComboboxPrimitive.Input
 							ref={inputRef}
-							placeholder="Search for player..."
+							placeholder="Guess player..."
 							className="flex h-11 w-full bg-transparent py-3 outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50 text-[16px] sm:text-base"
 							onKeyDown={(e) => {
 								if (e.key === 'Enter' && selectedPlayer !== null && !open) {
@@ -169,6 +170,7 @@ export default function PlayerSearch({ className }: Props) {
 								}
 							}}
 						/>
+						<HotkeyBadge hotkey={'x'} className="px-2.5" />
 					</div>
 					<Button
 						data-slot="button"

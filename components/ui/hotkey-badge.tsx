@@ -1,14 +1,14 @@
 'use client';
-import { CommandItem, CommandShortcut } from '@/components/ui/command';
 import { Kbd } from '@/components/ui/kbd';
-import { isMacDevice } from '@/lib/utils';
+import { cn, isMacDevice } from '@/lib/utils';
 
 type Props = {
 	hotkey: string;
 	usesControl?: boolean;
+	className?: string;
 };
-export default function HotkeyBadge({ hotkey, usesControl = true }: Props) {
-	return <Kbd className="font-mono sm:flex hidden opacity-95">{usesControl ? convertPlattformKey(hotkey) : hotkey}</Kbd>;
+export default function HotkeyBadge({ hotkey, usesControl = true, className }: Props) {
+	return <Kbd className={cn('font-mono sm:flex hidden opacity-95', className)}>{usesControl ? convertPlattformKey(hotkey) : hotkey}</Kbd>;
 }
 
 /**
