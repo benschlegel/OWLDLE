@@ -164,7 +164,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 					tooltipValue={data?.player.name}
 					className={owcsCellSize}>
 					<div className="rounded-md h-full flex justify-center sm:px-4 px-2 items-center">
-						<p className={`text-white opacity-90 font-extrabold text-center tracking-tight ${useSmallerFont ? 'text-sm' : 'text-xl'} md:text-2xl`}>
+						<p className={`text-white opacity-90 font-extrabold text-center tracking-tight font-owl ${useSmallerFont ? 'text-sm' : 'text-xl'} md:text-2xl`}>
 							{data?.player.name}
 						</p>
 					</div>
@@ -176,7 +176,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 					cellState={toCellState(data?.guessResult.isCountryCorrect)}
 					tooltipDescription="Country"
 					tooltipValue={getCountryDisplayName(data?.player.country)}
-					className={owcsCellSize}>
+					className={cn(owcsCellSize, 'p-0!')}>
 					<ImageCell imgSrc={data?.player.countryImg} />
 				</GameCell>
 			</FlipCard>
@@ -219,9 +219,9 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 						tooltipValue={regionTooltip}
 						className={owcsCellSize}>
 						{region === 'EMEA' ? (
-							<p className="text-sm sm:text-xl font-bold sm:tracking-tighter text-white opacity-90">{region}</p>
+							<p className="text-sm sm:text-xl font-bold sm:tracking-tighter text-white opacity-90 font-owl">{region}</p>
 						) : (
-							<p className="text-xl sm:text-2xl font-bold tracking-tight text-white opacity-90">{region}</p>
+							<p className="text-xl sm:text-2xl font-bold tracking-tight text-white opacity-90 font-owl">{region}</p>
 						)}
 					</GameCell>
 				</FlipCard>

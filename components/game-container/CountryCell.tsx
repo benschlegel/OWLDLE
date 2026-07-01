@@ -8,7 +8,7 @@ export default function ImageCell({ imgSrc }: Props) {
 	if (!imgSrc) return <></>;
 
 	return (
-		<div className="rounded-md flex justify-center items-center m-[0.28rem] aspect-square">
+		<div className="rounded-md flex justify-center items-center sm:m-[0.28rem] m-0.75 aspect-square">
 			<Image
 				src={imgSrc}
 				alt={`Country logo`}

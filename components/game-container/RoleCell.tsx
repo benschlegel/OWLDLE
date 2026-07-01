@@ -18,7 +18,7 @@ export default function RoleCell({ role, subRole, className }: Props) {
 	if (isFlexVariant) {
 		const BaseIcon = subRole === 'FlexSupport' ? SupportIcon : DamageIcon;
 		return (
-			<div className={cn('p-2 flex justify-center items-center relative', className)}>
+			<div className={cn('sm:p-2 p-1.5 flex justify-center items-center relative', className)}>
 				<BaseIcon className="fill-white opacity-85 h-full w-full" />
 				<FlexIcon className="fill-[#3c3c44] drop-shadow-lg h-[45%] w-[45%] absolute top-0.5 right-0.5" />
 			</div>
@@ -28,7 +28,7 @@ export default function RoleCell({ role, subRole, className }: Props) {
 	const mappedImages = { Damage: DamageIcon, Tank: TankIcon, Support: SupportIcon };
 	const RoleIcon = mappedImages[role];
 	return (
-		<div className={cn('p-2 flex justify-center items-center', className)}>
+		<div className={cn('sm:p-2 p-1.5 flex justify-center items-center', className)}>
 			<RoleIcon className="fill-white opacity-90 h-full w-full" />
 		</div>
 	);

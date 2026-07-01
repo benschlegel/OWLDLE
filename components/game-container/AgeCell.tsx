@@ -2,6 +2,7 @@
 
 import { MoveDownIcon, MoveUpIcon } from 'lucide-react';
 import GameCell from '@/components/game-container/GameCell';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { cn, getAgeFromDate } from '@/lib/utils';
 
 type AgeComparison = 'higher' | 'lower' | 'equal';
@@ -17,8 +18,14 @@ type Props = {
 	className?: string;
 };
 
+const mobileStrokeWidth = 2.25;
+const desktopStrokeWidth = 2.65;
+const mobileHeight = 17;
+const desktopHeight = 24;
+
 export default function AgeCell({ hasGuess, dateBorn, ageComparison, className }: Props) {
-	// No guess yet → empty gray cell, matching the other columns.
+	const isMobile = useIsMobile();
+	// No guess yet => empty gray cell, matching the other columns.
 	if (!hasGuess) {
 		return <GameCell tooltipDescription="Age" className={className} />;
 	}
@@ -27,7 +34,7 @@ export default function AgeCell({ hasGuess, dateBorn, ageComparison, className }
 	if (!dateBorn) {
 		return (
 			<GameCell tooltipDescription="Age (Unknown)" tooltipValue="Unknown" className={cn('flex justify-center items-center', className)}>
-				<span className="font-owl text-xl sm:text-2xl opacity-70">?</span>
+				<span className="font-owl text-2xl sm:text-4xl opacity-70">?</span>
 			</GameCell>
 		);
 	}
@@ -53,10 +60,26 @@ export default function AgeCell({ hasGuess, dateBorn, ageComparison, className }
 			cellState={cellState}
 			tooltipDescription="Age"
 			tooltipGuess={tooltipGuess}
-			className={cn('flex flex-row gap-0.5 justify-center items-center', className)}>
-			<span className="font-owl text-2xl sm:text-3xl">{age}</span>
-			{ageComparison === 'higher' && <MoveUpIcon viewBox="6 0 12 24" width={12} className="-mr-1 text-[#3c3c44]" strokeWidth={2.75} />}
-			{ageComparison === 'lower' && <MoveDownIcon viewBox="6 0 12 24" width={12} className="-mr-1 text-[#3c3c44]" strokeWidth={2.75} />}
+			className={cn('flex flex-row sm:gap-0.5 gap-0 justify-center items-center', className)}>
+			<span className="font-owl text-xl sm:text-3xl">{age}</span>
+			{ageComparison === 'higher' && (
+				<MoveUpIcon
+					viewBox="6 0 12 24"
+					width={12}
+					height={isMobile ? mobileHeight : desktopHeight}
+					className="-mr-1 text-[#3c3c44]"
+					strokeWidth={isMobile ? mobileStrokeWidth : desktopStrokeWidth}
+				/>
+			)}
+			{ageComparison === 'lower' && (
+				<MoveDownIcon
+					viewBox="6 0 12 24"
+					width={12}
+					height={isMobile ? mobileHeight : desktopHeight}
+					className="sm:-mr-1 -mr-0.5 text-[#3c3c44]"
+					strokeWidth={isMobile ? mobileStrokeWidth : desktopStrokeWidth}
+				/>
+			)}
 		</GameCell>
 	);
 }
