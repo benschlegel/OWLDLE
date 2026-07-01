@@ -1,25 +1,25 @@
 'use client';
+import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
+import type React from 'react';
+import { useCallback, useContext } from 'react';
+import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 import HelpExample from '@/components/game-container/dialogs/HelpExample';
 import TeamLogo from '@/components/game-container/TeamLogo';
 import LinkButton from '@/components/LinkButton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Button } from '@/components/ui/button';
 import CustomCell from '@/components/ui/CustomCell';
-import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { DialogContent, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { DatasetContext } from '@/context/DatasetContext';
 import { type CombinedDatasetMetadata, isOwcsDataset } from '@/data/datasets';
-import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { getDisabledTeams } from '@/data/disabledTeams';
+import { atlanticPacificTeams, getAtlantic, getCn, getEmea, getKr, getNa, getPacific } from '@/data/teams/teams';
 import { useAnswerQuery } from '@/hooks/use-answer-query';
 import { useDialogParams } from '@/hooks/use-dialog-param';
 import { useHelpDialogStore } from '@/store/help-dialog-store';
 import { useSettings } from '@/store/settings-store';
-import { CircleHelpIcon, Clapperboard, Dices, Gamepad, LightbulbIcon } from 'lucide-react';
-import type React from 'react';
-import { useContext, useCallback } from 'react';
-import Countdown, { type CountdownRenderProps, zeroPad } from 'react-countdown';
 
 type Props = {
 	setOpen: (value: boolean) => void;
@@ -43,7 +43,7 @@ const demoCells: DemoCell[] = [
 ];
 
 const hotkeys = [
-	{ keys: 'ctrl + y', description: 'Jump to search input' },
+	{ keys: 'ctrl + x', description: 'Jump to search input' },
 	{ keys: 'ctrl + k', description: 'Open search in popup dialog' },
 	{ keys: 'ctrl + e', description: 'Open/close help dialog' },
 ];

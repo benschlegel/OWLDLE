@@ -1,5 +1,6 @@
-import { type Dataset, datasetInfo } from '@/data/datasets';
-import { customCountryNames, type CountryCode } from '@/types/countries';
+import { type Dataset, datasetInfo, isOwcsDataset } from '@/data/datasets';
+import { type CountryCode, customCountryNames } from '@/types/countries';
+import type { SubRole } from '@/types/players';
 import type { GuessResponse, ValidateResponse } from '@/types/server';
 
 export type FormatConfig = {
@@ -45,7 +46,7 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
 
 	// Format every guess to emoji row
 	guesses.forEach((guess, index) => {
-		result += getEmojRow(guess);
+		result += getEmojRow(guess, dataset);
 		if (index !== guesses.length - 1) {
 			result += '\n';
 		}
@@ -66,21 +67,28 @@ export function formatResult({ guesses, gameIteration, maxGuesses, gameName, sit
  * @param guess guess to format
  * @returns row formatted as a string with emojis corresponding to current guess
  */
-function getEmojRow(guess: GuessResponse) {
+function getEmojRow(guess: GuessResponse, dataset?: Dataset) {
+	const isOwcs = dataset ? isOwcsDataset(dataset) : false;
+
 	// Check special cases (if row is correct and game is won)
 	if (guess.isNameCorrect) {
-		return '🟩🟩🟩🟩✅';
+		return isOwcs ? '🟩🟩🟩🟩🟩✅' : '🟩🟩🟩🟩✅';
 	}
 
-	// The global order for what column corresponds to what emoji
-	const guessOrder = [guess.isCountryCorrect, guess.isRoleCorrect, guess.isRegionCorrect, guess.isTeamCorrect];
-
-	// Contains formatted string
+	// Build row in column order: country, role, region, team[, age for OWCS]
 	let row = '';
-
-	// Format entire row based on each entry
-	for (const isGuessCorrect of guessOrder) {
-		row += getEmojiCell(isGuessCorrect);
+	row += getEmojiCell(guess.isCountryCorrect);
+	row += guess.roleMatch === 'partial' ? '🟧' : getEmojiCell(guess.isRoleCorrect);
+	row += getEmojiCell(guess.isRegionCorrect);
+	row += getEmojiCell(guess.isTeamCorrect);
+	if (isOwcs) {
+		if (guess.ageComparison === 'equal') {
+			row += '🟩';
+		} else if (guess.ageComparison === 'higher' || guess.ageComparison === 'lower') {
+			row += '🟧';
+		} else {
+			row += '❓';
+		}
 	}
 	return row;
 }
@@ -133,4 +141,12 @@ export async function fetchAnswer(dataset: Dataset): Promise<ValidateResponse> {
 
 export function formatDataset(dataset: string) {
 	return `${dataset.charAt(0).toUpperCase() + dataset.slice(1, -1)} ${dataset.slice(-1)}`;
+}
+
+export function getRoleLabel(role?: string, subRole?: SubRole): string | undefined {
+	if (subRole === 'MainSupport') return 'Main Support';
+	if (subRole === 'FlexSupport') return 'Flex Support';
+	if (subRole === 'Hitscan') return 'Hitscan';
+	if (subRole === 'FlexDPS') return 'Flex DPS';
+	return role;
 }

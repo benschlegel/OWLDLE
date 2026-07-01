@@ -1,14 +1,22 @@
 'use client';
 
+import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
+import Link from 'next/link';
+// import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { usePlausible } from 'next-plausible';
+import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
+import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { Button } from '@/components/ui/button';
+import { Drawer } from '@/components/ui/drawer';
 import {
 	NavigationMenu,
 	NavigationMenuContent,
 	NavigationMenuItem,
-	NavigationMenuLink,
 	NavigationMenuList,
 	NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
 	DEFAULT_OWCS_DATASET_NAME,
 	ENDLESS_PATHNAME,
@@ -18,20 +26,11 @@ import {
 	OWL_PATHNAME,
 	STATISTICS_PATHNAME,
 } from '@/data/datasets';
-import { viewTransition } from '@/lib/view-transition';
-import { cn } from '@/lib/utils';
-import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
-import Link from 'next/link';
-// import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from 'react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Drawer } from '@/components/ui/drawer';
-import { usePlausible } from 'next-plausible';
-import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { useDialogState } from '@/hooks/use-dialog-param';
-import { useSettings } from '@/store/settings-store';
 import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/lib/navigation';
+import { cn } from '@/lib/utils';
+import { viewTransition } from '@/lib/view-transition';
+import { useSettings } from '@/store/settings-store';
 
 export const TWITTER_LINK = 'https://x.com/owldle';
 export const DISCORD_LINK = 'https://discord.gg/URFyM3kg7S';
@@ -56,8 +55,8 @@ export function Navbar() {
 	const owlValue = pathname === OWL_PATHNAME ? `season${searchParams.get('season') ?? '6'}` : '';
 	const owcsSeason = searchParams.get('season');
 	const owcsValue = pathname === OWCS_PATHNAME ? (owcsSeason ? `owcs-${owcsSeason}` : DEFAULT_OWCS_DATASET_NAME) : '';
-	const endlessMode = pathname === ENDLESS_PATHNAME ? searchParams.get('mode') ?? 'owcs' : '';
-	const endlessSeason = pathname === ENDLESS_PATHNAME ? searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME.slice('owcs-'.length) : '';
+	const endlessMode = pathname === ENDLESS_PATHNAME ? (searchParams.get('mode') ?? 'owcs') : '';
+	const endlessSeason = pathname === ENDLESS_PATHNAME ? (searchParams.get('season') ?? DEFAULT_OWCS_DATASET_NAME.slice('owcs-'.length)) : '';
 
 	useEffect(() => {
 		if (ALLOWED_PATHS.includes(pathname)) {
@@ -154,6 +153,7 @@ export function Navbar() {
 									highlight={pathname === OWL_PATHNAME}
 									label="Overwatch League"
 									prefetchRoute={OWL_PATHNAME}
+									getHref={(dataset) => `${OWL_PATHNAME}?season=${dataset.slice('season'.length)}`}
 									className={'2xl:ml-0 2xl:pl-5 -ml-1.5 pl-6'}>
 									<span className="2xl:block hidden">Overwatch League</span>
 									<span className="2xl:hidden block">OWL</span>
@@ -164,14 +164,15 @@ export function Navbar() {
 									onValueChange={handleOwcsSelect}
 									value={owcsValue}
 									highlight={pathname === OWCS_PATHNAME}
-									prefetchRoute={OWCS_PATHNAME}>
+									showNew
+									prefetchRoute={OWCS_PATHNAME}
+									getHref={(dataset) => `${OWCS_PATHNAME}?season=${dataset.slice('owcs-'.length)}`}>
 									OWCS
 								</NavSelect>
 								<NavSelect
 									onValueChange={handleEndlessSelect}
 									value={pathname === ENDLESS_PATHNAME ? `${endlessMode}:${endlessSeason}` : ''}
 									highlight={pathname === ENDLESS_PATHNAME}
-									showNew
 									prefetchRoute={ENDLESS_PATHNAME}
 									menuContent={
 										<EndlessNavContent onValueChange={handleEndlessSelect} value={pathname === ENDLESS_PATHNAME ? `${endlessMode}:${endlessSeason}` : ''} />
@@ -206,7 +207,7 @@ export function Navbar() {
 						}}>
 						<Button
 							variant={'ghost'}
-							onClick={() => preferTeams ? setTeamsOpen(!teamsOpen) : setHelpOpen(!helpOpen)}
+							onClick={() => (preferTeams ? setTeamsOpen(!teamsOpen) : setHelpOpen(!helpOpen))}
 							className="group relative flex h-full items-center justify-center gap-2 bg-secondary/90 font-bold text-lg tracking-wide hover:bg-secondary/60 transition-colors px-11 "
 							style={{
 								clipPath: 'polygon(6% 0%, 94% 0%, 100% 18%, 88% 100%, 12% 100%, 0% 18%)',
@@ -275,6 +276,7 @@ function NavSelect({
 	label,
 	prefetchRoute,
 	showNew = false,
+	getHref,
 }: {
 	children: React.ReactNode;
 	label?: string;
@@ -287,6 +289,7 @@ function NavSelect({
 	menuContent?: ReactNode;
 	prefetchRoute?: string;
 	showNew?: boolean;
+	getHref?: (dataset: string) => string;
 }) {
 	const router = useRouter();
 	return (
@@ -320,11 +323,11 @@ function NavSelect({
 						<ul className="flex flex-col w-48 p-1">
 							{items?.map((dataset) => (
 								<li key={dataset.dataset}>
-									<NavigationMenuLink
-										closeOnClick
+									<Link
+										href={getHref ? getHref(dataset.dataset) : '#'}
 										onClick={() => onValueChange(dataset.dataset)}
 										className={cn(
-											'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+											'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
 											value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
 										)}>
 										{value === dataset.dataset && (
@@ -333,7 +336,7 @@ function NavSelect({
 											</span>
 										)}
 										<span className="opacity-75">{dataset.formattedName}</span>
-									</NavigationMenuLink>
+									</Link>
 								</li>
 							))}
 						</ul>
@@ -408,13 +411,14 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 				<ul className="flex flex-col w-44 p-1">
 					{OWL_DATASETS_REVERSED?.map((dataset) => {
 						const ev = toEndlessValue(dataset.dataset);
+						const [mode, season] = ev.split(':');
 						return (
 							<li key={dataset.dataset}>
-								<NavigationMenuLink
-									closeOnClick
+								<Link
+									href={`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`}
 									onClick={() => onValueChange?.(ev)}
 									className={cn(
-										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
 										value === ev && 'font-semibold text-primary-foreground font-mono'
 									)}>
 									{value === ev && (
@@ -423,7 +427,7 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 										</span>
 									)}
 									<span className="opacity-75">{dataset.formattedName}</span>
-								</NavigationMenuLink>
+								</Link>
 							</li>
 						);
 					})}
@@ -434,13 +438,14 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 				<ul className="flex flex-col w-44 p-1">
 					{OWCS_DATASETS_REVERSED?.map((dataset) => {
 						const ev = toEndlessValue(dataset.dataset);
+						const [mode, season] = ev.split(':');
 						return (
 							<li key={dataset.dataset}>
-								<NavigationMenuLink
-									closeOnClick
+								<Link
+									href={`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`}
 									onClick={() => onValueChange?.(ev)}
 									className={cn(
-										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono',
+										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
 										value === ev && 'font-semibold text-primary-foreground font-mono'
 									)}>
 									{value === ev && (
@@ -449,7 +454,7 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 										</span>
 									)}
 									<span className="opacity-75">{dataset.formattedName}</span>
-								</NavigationMenuLink>
+								</Link>
 							</li>
 						);
 					})}

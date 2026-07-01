@@ -1,6 +1,6 @@
 import type { CombinedFormattedPlayer } from '@/data/players/formattedPlayers';
+import { getAgeFromDate } from '@/lib/utils';
 import type { DbPlayer } from '@/types/database';
-import type { Player } from '@/types/players';
 import type { GuessResponse } from '@/types/server';
 
 /**
@@ -21,8 +21,32 @@ export function validateGuess(guess: CombinedFormattedPlayer, correct?: DbPlayer
 	if (guess.name === correct.name) {
 		response.isNameCorrect = true;
 	}
-	if (guess.role === correct.role) {
+	const sameRole = guess.role === correct.role;
+	if (sameRole) {
 		response.isRoleCorrect = true;
+	}
+
+	if (correct.subRole) {
+		if (!sameRole) {
+			response.roleMatch = 'incorrect';
+		} else if (guess.subRole === correct.subRole) {
+			response.roleMatch = 'correct';
+		} else {
+			response.roleMatch = 'partial';
+		}
+	}
+	if (correct.dateBorn && guess.dateBorn) {
+		const guessAge = getAgeFromDate(guess.dateBorn);
+		const correctAge = getAgeFromDate(correct.dateBorn);
+		if (guessAge !== undefined && correctAge !== undefined) {
+			if (correctAge === guessAge) {
+				response.ageComparison = 'equal';
+			} else if (correctAge > guessAge) {
+				response.ageComparison = 'higher';
+			} else {
+				response.ageComparison = 'lower';
+			}
+		}
 	}
 	if (guess.team === correct.team) {
 		response.isTeamCorrect = true;

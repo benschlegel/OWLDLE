@@ -1,12 +1,12 @@
 'use client';
-import { getTeamLogo } from '@/data/teams/logos';
 import Image from 'next/image';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { cn } from '@/lib/utils';
 import type React from 'react';
 import { useContext } from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { DatasetContext } from '@/context/DatasetContext';
+import { getTeamLogo } from '@/data/teams/logos';
 import { useMobileTooltip } from '@/hooks/use-mobile-tooltip';
+import { cn } from '@/lib/utils';
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
 	teamName?: string;
@@ -28,7 +28,7 @@ export default function TeamLogo({ teamName, className, useTabIndex, disableBord
 		<TooltipProvider delayDuration={0}>
 			<Tooltip open={open}>
 				<TooltipTrigger asChild>
-					<div className="p-1">
+					<div className="sm:p-1 p-0.75">
 						<div
 							ref={triggerRef as React.RefObject<HTMLDivElement>}
 							className={cn(

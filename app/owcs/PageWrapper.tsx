@@ -15,7 +15,7 @@ export default function SeasonPageWrapper() {
 	const [slug] = useOwcsParams();
 	const areCreditsVisible = useSettings((s) => s.areCreditsVisible);
 	return (
-		<div className="relative animate-in fade-in duration-300">
+		<div className="relative animate-in fade-in duration-300 sm:w-[36rem] sm:-mx-8">
 			<LeftColumn />
 			<RightColumn />
 			<MemoizedHeader />

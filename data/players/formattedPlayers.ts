@@ -1,4 +1,5 @@
 import { DATASETS, type Dataset } from '@/data/datasetIds';
+import { BIRTHDATES } from '@/data/players/birthdates';
 import { ALL_PLAYERS } from '@/data/players/players';
 import { getRegion } from '@/data/teams/teams';
 import type { CountryCode } from '@/types/countries';
@@ -54,8 +55,10 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 			regionImg = '/regions/pacific.webp';
 		}
 
+		// Attach birth date only for OWCS datasets (progressive enhancement).
+		const dateBorn = currDataset.startsWith('owcs') ? BIRTHDATES[player.name as keyof typeof BIRTHDATES] : undefined;
 		// Take original player data and add auto calculated fields
-		return { ...player, countryImg, regionImg, id: index, region: region };
+		return { ...player, countryImg, regionImg, id: index, region: region, ...(dateBorn ? { dateBorn } : {}) };
 	});
 	FORMATTED_PLAYERS.push({ dataset: currDataset, players: formattedPlayers });
 }

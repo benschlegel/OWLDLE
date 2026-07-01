@@ -5,7 +5,8 @@
     "**/*.spec.ts": true
   },
   "editor.codeActionsOnSave": {
-    "quickfix.biome": "explicit"
+    "quickfix.biome": "explicit",
+    "source.organizeImports.biome": "explicit",
   },
   "editor.formatOnSave": true,
   "eslint.format.enable": true,

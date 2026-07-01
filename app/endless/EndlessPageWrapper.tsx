@@ -14,7 +14,8 @@ import { useSettings } from '@/store/settings-store';
 
 export default function EndlessPageWrapper() {
 	const { dataset } = useEndlessParams();
-	const modeLabel = isOwcsDataset(dataset) ? 'OWCS' : 'Overwatch League';
+	const isOwcs = isOwcsDataset(dataset);
+	const modeLabel = isOwcs ? 'OWCS' : 'Overwatch League';
 	const datasetMetadata = useMemo(() => getDataset(dataset) ?? DEFAULT_DATASET, [dataset]);
 	const datasetContextValue = useMemo(
 		(): [CombinedDatasetMetadata, Dispatch<SetStateAction<CombinedDatasetMetadata>>] => [datasetMetadata, () => {}],
@@ -30,7 +31,7 @@ export default function EndlessPageWrapper() {
 
 	return (
 		<DatasetContext.Provider value={datasetContextValue}>
-			<div className="relative animate-in fade-in duration-300">
+			<div className={`relative animate-in fade-in duration-300 ${isOwcs ? 'sm:w-[36rem] sm:-mx-8' : ''}`}>
 				<EndlessGameHeader
 					topLabel={<EndlessHeaderBadge />}
 					modeLabel={modeLabel}
