@@ -56,7 +56,7 @@ for (let i = 0; i < ALL_PLAYERS.length; i++) {
 		}
 
 		// Attach birth date only for OWCS datasets (progressive enhancement).
-		const dateBorn = currDataset.startsWith('owcs') ? BIRTHDATES[player.name] : undefined;
+		const dateBorn = currDataset.startsWith('owcs') ? BIRTHDATES[player.name as keyof typeof BIRTHDATES] : undefined;
 		// Take original player data and add auto calculated fields
 		return { ...player, countryImg, regionImg, id: index, region: region, ...(dateBorn ? { dateBorn } : {}) };
 	});
