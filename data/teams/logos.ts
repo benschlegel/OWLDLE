@@ -422,7 +422,7 @@ const teamLogosOWCS_S3_New: Partial<TeamLogoData<'owcs-s3'>>[] = [
 	{ teamName: 'AllGamers', displayName: 'All Gamers', backgroundColor: '#202127' },
 	{ teamName: 'SolusVictorem', displayName: 'Solus Victorem', backgroundColor: '#202127' },
 	{ teamName: 'HUNENG', displayName: 'HUNENG', backgroundColor: '#202127' },
-	{ teamName: '4AM', displayName: '4AM', backgroundColor: '#202127' },
+	{ teamName: '4AM', displayName: 'Four Angry Men', backgroundColor: '#202127' },
 	{ teamName: 'ReturnZ', displayName: 'ReturnZ', backgroundColor: '#202127' },
 	{ teamName: 'KitsuneKage', displayName: 'Kitsune Kage', backgroundColor: '#202127' },
 ];
