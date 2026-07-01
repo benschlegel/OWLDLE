@@ -73,7 +73,7 @@ function FlipCard({
 	);
 }
 
-const cellSize = '3.75rem';
+const mobileOwcsCellSize = '44px';
 
 // How many characters until smaller font gets used
 const fontBreakpoint = 7;
@@ -87,7 +87,9 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 
 	const isOwcs = isOwcsDataset(dataset.dataset);
 	// OWCS rows have one extra cell, shrink on mobile to fit
-	const owcsCellSize = isOwcs ? 'w-[2.5rem] h-[2.5rem]' : undefined;
+	// const owcsCellSize = isOwcs ? `size-[${mobileOwcsCellSize}]` : undefined;
+	const owcsCellSize = isOwcs ? `size-[44px]` : undefined;
+	// const owcsCellSize = isOwcs ? 'w-[2.5rem] h-[2.5rem]' : undefined;
 
 	let region = '';
 	let regionTooltip = '';
@@ -154,7 +156,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 		: {};
 
 	return (
-		<RowComponent className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] ${isOwcs ? 'h-10' : 'h-12'} transition-colors`} {...rowMotionProps}>
+		<RowComponent className={`flex flex-row sm:gap-2 gap-1 w-full sm:h-[3.7rem] ${isOwcs ? `h-[44px]` : 'h-12'} transition-colors`} {...rowMotionProps}>
 			{/* Player name */}
 			<FlipCard animationMode={animationMode} dismissDelay={dismissDelay} className="flex-1">
 				<GameCell
@@ -176,7 +178,7 @@ export default function GuessRow({ data, isDismissing, dismissDelay = 0 }: Props
 					cellState={toCellState(data?.guessResult.isCountryCorrect)}
 					tooltipDescription="Country"
 					tooltipValue={getCountryDisplayName(data?.player.country)}
-					className={cn(owcsCellSize, 'p-0!')}>
+					className={cn(owcsCellSize)}>
 					<ImageCell imgSrc={data?.player.countryImg} />
 				</GameCell>
 			</FlipCard>
