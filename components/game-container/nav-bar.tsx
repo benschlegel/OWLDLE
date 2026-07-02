@@ -1,5 +1,6 @@
 'use client';
 
+import { NavigationMenu as NavigationMenuPrimitive } from '@base-ui/react/navigation-menu';
 import { Check, Home, MenuIcon, SettingsIcon } from 'lucide-react';
 import Link from 'next/link';
 // import { ALLOWED_PATHS, LAST_GAME_COOKIE } from '@/proxy';
@@ -9,13 +10,7 @@ import { lazy, type ReactNode, Suspense, useCallback, useEffect, useState } from
 import { DONATION_LINK, SocialPopoverContent } from '@/components/landing-page/socials';
 import { Button } from '@/components/ui/button';
 import { Drawer } from '@/components/ui/drawer';
-import {
-	NavigationMenu,
-	NavigationMenuContent,
-	NavigationMenuItem,
-	NavigationMenuList,
-	NavigationMenuTrigger,
-} from '@/components/ui/navigation-menu';
+import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuList, NavigationMenuTrigger } from '@/components/ui/navigation-menu';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
 	DEFAULT_OWCS_DATASET_NAME,
@@ -323,20 +318,25 @@ function NavSelect({
 						<ul className="flex flex-col w-48 p-1">
 							{items?.map((dataset) => (
 								<li key={dataset.dataset}>
-									<Link
-										href={getHref ? getHref(dataset.dataset) : '#'}
-										onClick={() => onValueChange(dataset.dataset)}
-										className={cn(
-											'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
-											value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
-										)}>
-										{value === dataset.dataset && (
-											<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-												<Check className="h-4 w-4" />
-											</span>
-										)}
-										<span className="opacity-75">{dataset.formattedName}</span>
-									</Link>
+									<NavigationMenuPrimitive.Link
+										closeOnClick
+										render={
+											<Link
+												href={getHref ? getHref(dataset.dataset) : '#'}
+												onClick={() => onValueChange(dataset.dataset)}
+												className={cn(
+													'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
+													value === dataset.dataset && 'font-semibold text-primary-foreground font-mono'
+												)}>
+												{value === dataset.dataset && (
+													<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+														<Check className="h-4 w-4" />
+													</span>
+												)}
+												<span className="opacity-75">{dataset.formattedName}</span>
+											</Link>
+										}
+									/>
 								</li>
 							))}
 						</ul>
@@ -414,20 +414,25 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 						const [mode, season] = ev.split(':');
 						return (
 							<li key={dataset.dataset}>
-								<Link
-									href={`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`}
-									onClick={() => onValueChange?.(ev)}
-									className={cn(
-										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
-										value === ev && 'font-semibold text-primary-foreground font-mono'
-									)}>
-									{value === ev && (
-										<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-											<Check className="h-4 w-4" />
-										</span>
-									)}
-									<span className="opacity-75">{dataset.formattedName}</span>
-								</Link>
+								<NavigationMenuPrimitive.Link
+									closeOnClick
+									render={
+										<Link
+											href={`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`}
+											onClick={() => onValueChange?.(ev)}
+											className={cn(
+												'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
+												value === ev && 'font-semibold text-primary-foreground font-mono'
+											)}>
+											{value === ev && (
+												<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+													<Check className="h-4 w-4" />
+												</span>
+											)}
+											<span className="opacity-75">{dataset.formattedName}</span>
+										</Link>
+									}
+								/>
 							</li>
 						);
 					})}
@@ -441,20 +446,25 @@ function EndlessNavContent({ onValueChange, value }: EndlessProps) {
 						const [mode, season] = ev.split(':');
 						return (
 							<li key={dataset.dataset}>
-								<Link
-									href={`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`}
-									onClick={() => onValueChange?.(ev)}
-									className={cn(
-										'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
-										value === ev && 'font-semibold text-primary-foreground font-mono'
-									)}>
-									{value === ev && (
-										<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-											<Check className="h-4 w-4" />
-										</span>
-									)}
-									<span className="opacity-75">{dataset.formattedName}</span>
-								</Link>
+								<NavigationMenuPrimitive.Link
+									closeOnClick
+									render={
+										<Link
+											href={`${ENDLESS_PATHNAME}?mode=${mode}&season=${season}`}
+											onClick={() => onValueChange?.(ev)}
+											className={cn(
+												'cursor-pointer relative py-1.5 pl-8 pr-2 rounded-sm text-sm hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground outline-none font-semibold font-mono block',
+												value === ev && 'font-semibold text-primary-foreground font-mono'
+											)}>
+											{value === ev && (
+												<span className="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
+													<Check className="h-4 w-4" />
+												</span>
+											)}
+											<span className="opacity-75">{dataset.formattedName}</span>
+										</Link>
+									}
+								/>
 							</li>
 						);
 					})}

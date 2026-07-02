@@ -51,3 +51,5 @@ data-scripts/team-images/
 data-scripts/extractPlayersUpdated.ts
 data-scripts/extractTeamImages.ts
 data-scripts/extractPlayerBirthdates.ts
+
+db-scripts/fixStageIterationOverlap.ts

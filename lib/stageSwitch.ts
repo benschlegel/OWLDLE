@@ -1,9 +1,9 @@
-import type { Db, ClientSession } from 'mongodb';
+import type { ClientSession, Db } from 'mongodb';
 import type { Dataset } from '@/data/datasetIds';
-import { SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { getDisabledTeams } from '@/data/disabledTeams';
-import { formattedToDbPlayer } from '@/lib/databaseHelpers';
+import { SORTED_PLAYERS } from '@/data/players/formattedPlayers';
 import { GAME_CONFIG } from '@/lib/config';
+import { formattedToDbPlayer } from '@/lib/databaseHelpers';
 import type { DbPlayer } from '@/types/database';
 
 export type StageArchiveName = `${Dataset}-stage${number}`;
@@ -117,6 +117,15 @@ export async function rollbackStage(db: Db, base: Dataset, n: number): Promise<v
 export async function prepareStaging(db: Db, base: Dataset, currentPlayer: DbPlayer, nextPlayer: DbPlayer, firstReset: Date, secondReset: Date): Promise<void> {
 	const sk = stagingKey(base);
 
+	// Continue the dataset's iteration numbering instead of restarting at 1.
+	// `game_stats` is keyed by `stats_${dataset}_${iteration}` and, unlike the other
+	// four collections, is never archived on a stage switch (it's a running per-day
+	// tally, not per-stage state). If a new stage restarted at iteration 1 it would
+	// collide with the old stage's `game_stats` docs for those same iteration numbers
+	const liveCurrentAnswer = await db.collection<{ iteration: number }>(COLLECTION_NAMES.answers).findOne({ _id: `current_${base}` } as any);
+	const liveNextAnswer = await db.collection<{ iteration: number }>(COLLECTION_NAMES.answers).findOne({ _id: `next_${base}` } as any);
+	const startIteration = Math.max(liveCurrentAnswer?.iteration ?? 0, liveNextAnswer?.iteration ?? 0) + 1;
+
 	// Build new roster from SORTED_PLAYERS
 	const roster = SORTED_PLAYERS.find((p) => p.dataset === base)?.players ?? [];
 	const dbPlayers: DbPlayer[] = roster.map(formattedToDbPlayer);
@@ -139,22 +148,26 @@ export async function prepareStaging(db: Db, base: Dataset, currentPlayer: DbPla
 
 	await db.collection(COLLECTION_NAMES.backlog).updateOne({ _id: sk } as any, { $set: { _id: sk, players: backlogPlayers } } as any, { upsert: true });
 
-	// answers: current (iteration 1) + next (iteration 2)
+	// answers: current (iteration startIteration) + next (iteration startIteration + 1)
 	const currentAnswerKey = `current_${sk}`;
 	const nextAnswerKey = `next_${sk}`;
 	await db
 		.collection(COLLECTION_NAMES.answers)
-		.updateOne({ _id: currentAnswerKey } as any, { $set: { _id: currentAnswerKey, player: currentPlayer, iteration: 1, nextReset: firstReset } } as any, {
-			upsert: true,
-		});
+		.updateOne(
+			{ _id: currentAnswerKey } as any,
+			{ $set: { _id: currentAnswerKey, player: currentPlayer, iteration: startIteration, nextReset: firstReset } } as any,
+			{ upsert: true }
+		);
 	await db
 		.collection(COLLECTION_NAMES.answers)
-		.updateOne({ _id: nextAnswerKey } as any, { $set: { _id: nextAnswerKey, player: nextPlayer, iteration: 2, nextReset: secondReset } } as any, {
-			upsert: true,
-		});
+		.updateOne(
+			{ _id: nextAnswerKey } as any,
+			{ $set: { _id: nextAnswerKey, player: nextPlayer, iteration: startIteration + 1, nextReset: secondReset } } as any,
+			{ upsert: true }
+		);
 
 	// First iteration record
-	await db.collection(COLLECTION_NAMES.iterations).insertOne({ dataset: sk, iteration: 1, player: currentPlayer, resetAt: firstReset } as any);
+	await db.collection(COLLECTION_NAMES.iterations).insertOne({ dataset: sk, iteration: startIteration, player: currentPlayer, resetAt: firstReset } as any);
 }
 
 // ─── Staging cleanup ───────────────────────────────────────────────────────────
